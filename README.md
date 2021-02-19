@@ -48,11 +48,13 @@ data-java-online="{
     'id': 'Beispiel_1',
     'withBottomPanel': false
 }">
+
 <script type="text/plain" title="Test1">
 for(int i = 0; i < 10; i++){
     println("Das ist Zeile " + (i + 1));
 }
 </script>
+
 </div>
 ```
 Dieses Beispiel erscheint so im Browser:
@@ -69,10 +71,12 @@ data-java-online="{
     'withConsole': true,
     'withErrorList': true
 }">
+
 <script type="text/plain" title="Hauptprogramm.java">
 World w = new World();
 new Quadrat(40, 20, 300);
 </script>
+
 <script type="text/plain" title="Quadrat.java">
 class Quadrat extends Rectangle {
     public Quadrat(double left, double top, double width){
@@ -80,6 +84,7 @@ class Quadrat extends Rectangle {
     }
 }
 </script>
+
 <script type="text/plain" title="Tipp" data-type="hint">
 ## Tipp:
 Tipps werden in einer einfachen Markdown-Syntax 
@@ -93,6 +98,8 @@ vx = v * Math.cos(w);
 vy = v * Math.sin(w);
 /``` (den / weglassen!)            
 </script>
+
+</div>
 ```
 Dieses Beispiel erscheint so im Browser:
 ![Beispiel 2](images/Beispiel_2.png)

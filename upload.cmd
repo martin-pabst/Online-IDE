@@ -1,1 +1,0 @@
-"C:\programs_portable\WinSCP-5.14.5.RC-Portable\WinSCP.exe" /script=./material/winscp-scripts/upload_webpack.txt /log=./material/winscp-scripts/winscp-log.txt

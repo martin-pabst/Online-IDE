@@ -349,7 +349,6 @@ export class SynchroWorkspace {
                 main.networkManager.sendCreateFile(m, workspace, main.user.id,
                     (error: string) => {
                         if (error == null) {
-
                         } else {
                             alert('Der Server ist nicht erreichbar!');
 

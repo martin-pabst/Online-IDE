@@ -302,6 +302,7 @@ export class ProjectExplorer {
                                 };
 
                                 this.workspaceListPanel.addElement(newWorkspace.panelElement);
+                                this.workspaceListPanel.sortElements();
                             }
                             if (error != null) {
                                 alert(error);
@@ -448,6 +449,8 @@ export class ProjectExplorer {
                 this.renderHomeworkButton(m.file);
             }
 
+            this.fileListPanel.sortElements();
+
         }
     }
 
@@ -468,6 +471,7 @@ export class ProjectExplorer {
             w.renderSynchronizeButton(w.panelElement);
         }
 
+        this.workspaceListPanel.sortElements();
         this.fileListPanel.enableNewButton(workspaceList.length > 0);
 
 

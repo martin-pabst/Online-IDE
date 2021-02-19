@@ -4,6 +4,7 @@ import { escapeHtml } from "../../tools/StringTools.js";
 
 export type AccordionElement = {
     name: string;
+    sortName?: string;      // if sortName == null, then name will be used when sorting
     externalElement?: any;
     iconClass?: string;
     $htmlFirstLine?: JQuery<HTMLElement>;
@@ -119,7 +120,6 @@ export class AccordionPanel {
 
                     });
 
-
                 });
 
             });
@@ -163,11 +163,19 @@ export class AccordionPanel {
 
     }
 
-
     addElement(element: AccordionElement) {
         this.elements.push(element);
         element.$htmlFirstLine = this.renderElement(element);
         this.$listElement.prepend(element.$htmlFirstLine);
+    }
+
+    sortElements(){
+        this.elements.sort((a, b) => {
+            let aName = a.sortName ? a.sortName : a.name;
+            let bName = b.sortName ? b.sortName : b.name;
+            return (aName.localeCompare(bName));
+        });
+        this.elements.forEach((element) => {this.$listElement.append(element.$htmlFirstLine)});
     }
 
     setTextAfterFilename(element: AccordionElement, text: string, cssClass: string) {
@@ -300,8 +308,8 @@ export class AccordionPanel {
             element.name = newText;
             $div.html(element.name);
             if (callback != null) callback();
+            that.sortElements();
         }, selection);
-
     }
 
     select(externalElement: any, invokeCallback: boolean = true) {

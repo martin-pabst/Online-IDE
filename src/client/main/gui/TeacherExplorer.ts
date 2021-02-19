@@ -137,10 +137,12 @@ export class TeacherExplorer {
         for (let ud of userDataList) {
             let ae: AccordionElement = {
                 name: ud.rufname + " " + ud.familienname,
+                sortName: ud.familienname + " " + ud.rufname,
                 externalElement: ud
             }
             this.studentPanel.addElement(ae);
         }
+
     }
 
     renderClasses(classDataList: ClassData[]) {
@@ -159,6 +161,7 @@ export class TeacherExplorer {
             }
             this.classPanel.addElement(ae);
         }
+
     }
 
 

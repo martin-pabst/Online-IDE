@@ -1,11 +1,11 @@
 # Online-IDE
 Java-ähnliche Programmiersprache (Compiler, Interpreter, Debugger) mit IDE, die **komplett im Browser** ausgeführt wird.
 
-Die IDE gibt es in zwei Varianten: Eine Online-IDE für Schulen (kommerziell) sowie - als spin-off - eine kleine Embedded-IDE, die in beliebige Webseiten eingebunden werden kann.
+Die IDE gibt es in zwei Varianten: als **Online-IDE für Schulen** (kommerziell) zur Verwendung im Unterricht und bei den Schüler/innen zuhause sowie als kleine **Embedded-IDE** (Open Source, MIT-License), die in beliebige Webseiten eingebunden werden kann und mit der beispielsweise Informatiklehrkräfte begleitend zum Unterricht eine Interaktive Dokumentation für die Schüler/innen erstellen können, [ähnlich wie LearnJ](https://www.learnj.de).
 
-## Online-IDE für Schulen
+## 1. Online-IDE für Schulen
 ![Online-IDE](images/Online-IDE.png)
-Mit der Online-IDE können Schüler/innen im Browser in einer Java-ähnlichen Programiersprache programmieren. Die Programme werden auf dem Server gespeichert, so dass zuhause dieselbe Programmierumgebung bereitsteht wie in der Schule - ganz ohne Installation.
+Mit der Online-IDE können Schüler/innen im Browser [in einer Java-ähnlichen Programiersprache](https://www.learnj.de/doku.php?id=unterschiede_zu_java:start) programmieren. Die Programme werden auf dem Server gespeichert, so dass zuhause dieselbe Programmierumgebung bereitsteht wie in der Schule - ganz ohne Installation.
 
 Die Lehrkraft hat Zugriff auf die Workspaces der Schüler/innen, so dass sie Hausaufgaben bequem korrigieren und bei Programmfehlern schnell helfen kann.
 
@@ -18,9 +18,10 @@ Die Lehrkraft hat Zugriff auf die Workspaces der Schüler/innen, so dass sie Hau
   - Debugger mit Breakpoints, Anzeige der lokalen Variablen, Watch-Expressions
   - Ausführung wahlweise im Einzelschritt
   - Console-Fenster zur Eingabe und sofortigen Ausführung einzelner Anweisungen
+  - Schneller, bequemer Hausaufgaben-Workflow
 
 
-## Anwendungsbeispiel der embedded-IDE
+## 2. Embedded-IDE
 Die Java-ähnliche Programmiersprache ist im [LearnJ-Wiki](https://www.learnj.de) ausführlich beschrieben und dort ist die IDE in Embedded-Form auch vielfach zu sehen. Hier [ein schönes Beispiel des vollen Funktionsumfangs!](https://www.learnj.de/doku.php?id=api:documentation:grafik:animation#beispiel_4feuerwerk)
 
 ## Integration in eigene Webseiten

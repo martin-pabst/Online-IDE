@@ -1,7 +1,26 @@
 # Online-IDE
 Java-ähnliche Programmiersprache (Compiler, Interpreter, Debugger) mit IDE, die **komplett im Browser** ausgeführt wird.
 
-## Anwendungsbeispiel
+Die IDE gibt es in zwei Varianten: Eine Online-IDE für Schulen (kommerziell) sowie - als spin-off - eine kleine Embedded-IDE, die in beliebige Webseiten eingebunden werden kann.
+
+## Online-IDE für Schulen
+![Online-IDE](images/Online-IDE.png)
+Mit der Online-IDE können Schüler/innen im Browser in einer Java-ähnlichen Programiersprache programmieren. Die Programme werden auf dem Server gespeichert, so dass zuhause dieselbe Programmierumgebung bereitsteht wie in der Schule - ganz ohne Installation.
+
+Die Lehrkraft hat Zugriff auf die Workspaces der Schüler/innen, so dass sie Hausaufgaben bequem korrigieren und bei Programmfehlern schnell helfen kann.
+
+**Weitere Features**:
+  - Integriertes Repository für Gruppenarbeiten
+  - Code-Vervollständigung, Parameterhilfe, Refactor->Rename, Anzeige von Referenzen usw. wie in jeder modernen Entwicklungsumgebung
+  - Automatisches Kompilieren und Fehleranzeige während der Eingabe
+  - Schneller Programmstart ("Play-Button")
+  - Ausführungsgeschwindigkeit regelbar
+  - Debugger mit Breakpoints, Anzeige der lokalen Variablen, Watch-Expressions
+  - Ausführung wahlweise im Einzelschritt
+  - Console-Fenster zur Eingabe und sofortigen Ausführung einzelner Anweisungen
+
+
+## Anwendungsbeispiel der embedded-IDE
 Die Java-ähnliche Programmiersprache ist im [LearnJ-Wiki](https://www.learnj.de) ausführlich beschrieben und dort ist die IDE in Embedded-Form auch vielfach zu sehen. Hier [ein schönes Beispiel des vollen Funktionsumfangs!](https://www.learnj.de/doku.php?id=api:documentation:grafik:animation#beispiel_4feuerwerk)
 
 ## Integration in eigene Webseiten

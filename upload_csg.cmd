@@ -1,1 +1,0 @@
-"C:\Program Files (x86)\WinSCP\WinSCP.exe" /script=./material/winscp-scripts/upload_webpack_csg.txt /log=./material/winscp-scripts/winscp-log.txt

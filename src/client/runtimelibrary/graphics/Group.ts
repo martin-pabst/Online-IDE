@@ -1,0 +1,470 @@
+import { Module } from "../../compiler/parser/Module.js";
+import { Klass, Visibility } from "../../compiler/types/Class.js";
+import { doublePrimitiveType, intPrimitiveType, booleanPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
+import { Method, Parameterlist, Value, Attribute, Type } from "../../compiler/types/Types.js";
+import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
+import { FilledShapeHelper } from "./FilledShape.js";
+import { WorldHelper } from "./World.js";
+import { EnumRuntimeObject } from "../../compiler/types/Enum.js";
+import { ShapeHelper, ShapeClass } from "./Shape.js";
+import { HitPolygonStore } from "./PolygonStore.js";
+import { ArrayType } from "../../compiler/types/Array.js";
+import { Point, PRECISION, TilingSprite } from "pixi.js";
+import { Interpreter } from "../../interpreter/Interpreter.js";
+
+
+export class CollisionPairClass extends Klass {
+
+    constructor(module: Module) {
+
+        super("CollisionPair", module, "Speichert die Referenzen auf zwei Figuren, die gerade kollidiert sind. Diese Klasse von den Kollisionsmethden der Klasse Group benutzt.");
+
+        this.setBaseClass(<Klass>module.typeStore.getType("Object"));
+
+        let shapeType = module.typeStore.getType("Shape");
+
+        this.addAttribute(new Attribute("shapeA", shapeType,
+            (value) => {
+
+                let rto: RuntimeObject = value.object;
+                value.value = rto.intrinsicData["ShapeA"];
+
+            }, false, Visibility.public, true, "Erstes an der Kollision beteiligtes Shape"));
+
+        this.addAttribute(new Attribute("shapeB", shapeType,
+            (value) => {
+
+                let rto: RuntimeObject = value.object;
+                value.value = rto.intrinsicData["ShapeB"];
+
+            }, false, Visibility.public, true, "Zweites an der Kollision beteiligtes Shape"));
+
+    }
+}
+
+
+
+export class GroupClass extends Klass {
+
+    constructor(module: Module) {
+
+        super("Group", module, "Klasse zum Gruppieren grafischer Elemente. Die gruppierten Elemente können miteinander verschoben, gedreht, gestreckt sowie ein- und ausgeblendet werden. Zudem besitzt die Klasse Methoden zur schnellen Erkennung von Kollision mit Elementen außerhalb der Gruppe.");
+
+        this.setBaseClass(<Klass>module.typeStore.getType("Shape"));
+
+        let collisionPairType = module.typeStore.getType("CollisionPair");
+        let collisionPairArrayType = new ArrayType(collisionPairType);
+        let shapeType = module.typeStore.getType("Shape");
+
+
+        this.addMethod(new Method("Group", new Parameterlist([
+        ]), null,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+
+                let rh = new GroupHelper(module.main.getInterpreter(), o);
+                o.intrinsicData["Actor"] = rh;
+
+            }, false, false, 'Instanziert eine neue Gruppe. Ihr können mit der Methode add Elemente hinzugefügt werden, die dann mit der Gruppe verschoben, gedreht, ... werden.', true));
+
+        this.addMethod(new Method("Group", new Parameterlist([
+            { identifier: "shapes", type: new ArrayType(module.typeStore.getType("Shape")), declaration: null, usagePositions: null, isFinal: true, isEllipsis: true },
+        ]), null,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let shapes: Value[] = parameters[1].value;
+
+                let rh = new GroupHelper(module.main.getInterpreter(), o);
+                o.intrinsicData["Actor"] = rh;
+
+                for (let s of shapes) {
+                    rh.add(s.value);
+                }
+
+            }, false, false, 'Instanziert eine neue Gruppe und fügt die übergebenen Grafikobjekte der Gruppe hinzu. Der Gruppe können mit der Methode add weitere Grafikobjekte hinzugefügt werden, die dann mit der Gruppe verschoben, gedreht, ... werden.', true));
+
+        this.addMethod(new Method("add", new Parameterlist([
+            { identifier: "shapes", type: new ArrayType(shapeType), declaration: null, usagePositions: null, isFinal: true, isEllipsis: true },
+
+        ]), null,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let shapes: Value[] = parameters[1].value;
+                let sh: GroupHelper = <GroupHelper>o.intrinsicData["Actor"];
+
+                for (let s of shapes) {
+                    sh.add(s.value);
+                }
+
+            }, false, false, 'Fügt die Grafikobjekte der Gruppe hinzu.', false));
+
+        this.addMethod(new Method("get", new Parameterlist([
+            { identifier: "index", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+
+        ]), shapeType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let index: number = parameters[1].value;
+                let sh: GroupHelper = <GroupHelper>o.intrinsicData["Actor"];
+
+                return sh.getElement(index);
+
+            }, false, false, 'Gibt das Grafikelement der Gruppe mit dem entsprechenden Index zurück. VORSICHT: Das erste Element hat Index 0!', false));
+
+        this.addMethod(new Method("remove", new Parameterlist([
+            { identifier: "index", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+
+        ]), null,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let index: number = parameters[1].value;
+                let sh: GroupHelper = <GroupHelper>o.intrinsicData["Actor"];
+
+                sh.removeElementAt(index);
+
+            }, false, false, 'Entfernt das Grafikelement aus der Gruppe mit dem entsprechenden Index, zerstört es jedoch nicht. VORSICHT: Das erste Element hat Index 0!', false));
+
+        this.addMethod(new Method("remove", new Parameterlist([
+            { identifier: "shape", type: shapeType, declaration: null, usagePositions: null, isFinal: true },
+
+        ]), null,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let shape: RuntimeObject = parameters[1].value;
+                let sh: GroupHelper = <GroupHelper>o.intrinsicData["Actor"];
+
+                sh.remove(shape);
+
+            }, false, false, 'Entfernt das übergebene Grafikelement aus der Gruppe, zerstört es jedoch nicht.', false));
+
+
+        let shapeArrayType = new ArrayType(shapeType);
+
+        this.addMethod(new Method("getCollidingShapes", new Parameterlist([
+            { identifier: "shape", type: module.typeStore.getType("Shape"), declaration: null, usagePositions: null, isFinal: true },
+
+        ]), shapeArrayType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let shape: RuntimeObject = parameters[1].value;
+                let sh: GroupHelper = <GroupHelper>o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("getCollidingShapes") || shape == null) return [];
+
+                let shapes: RuntimeObject[] = sh.getCollidingObjects(shape);
+
+                let values: Value[] = [];
+                for (let sh of shapes) {
+                    values.push({
+                        type: shapeType,
+                        value: sh
+                    })
+
+                }
+
+                return values;
+
+            }, false, false, 'Gibt die Objekte der Gruppe zurück, die mit dem übergebenen Shape kollidieren.', false));
+
+        this.addMethod(new Method("getCollisionPairs", new Parameterlist([
+            { identifier: "group", type: this, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "maxOneCollisionPerShape", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), collisionPairArrayType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let group2: RuntimeObject = parameters[1].value;
+                let maxOneCollisionPerShape: boolean = parameters[2].value;
+                let sh: GroupHelper = <GroupHelper>o.intrinsicData["Actor"];
+                let groupHelper2: GroupHelper = <GroupHelper>group2.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("getCollidingShapes")) return;
+
+                return sh.getCollidingObjects2(groupHelper2, collisionPairType, maxOneCollisionPerShape);
+
+            }, false, false, 'Überprüft, welche Objekte der Gruppe mit welchen der anderen kollidieren.' +
+            ' Gibt für jede Kollision ein Collisionpair-Objekt zurück, das die beiden kollidierenden Objekte enthält.' +
+        ' Falls maxOneCollisionPerShape == true ist jedes Objekt dabei aber nur in max. einem Collisionpair-Objekt enthalten.', false));
+
+
+        this.addMethod(new Method("size", new Parameterlist([
+        ]), intPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: GroupHelper = <GroupHelper>o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("size")) return;
+
+                return sh.shapes.length;
+
+            }, false, false, 'Gibt zurück, wie viele Elemente in der Gruppe enthalten sind.', false));
+
+
+        (<Klass>shapeType).addMethod(new Method("getCollidingShapes", new Parameterlist([
+            { identifier: "group", type: this, declaration: null, usagePositions: null, isFinal: true },
+        ]), shapeArrayType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let group: RuntimeObject = parameters[1].value;
+                let groupHelper: GroupHelper = group.intrinsicData["Actor"];
+                let sh: ShapeHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("getCollidingShapes")) return;
+
+                return sh.getCollidingShapes(groupHelper, shapeType);
+
+            }, false, false, 'Gibt alle Shapes der Gruppe group zurück, die mit dem Shape kollidieren.', false));
+
+        this.addMethod(new Method("copy", new Parameterlist([
+        ]), this,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: GroupHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("copy")) return;
+
+                return sh.getCopy(<Klass>o.class);
+
+            }, false, false, 'Erstellt eine Kopie des Group-Objekts (und aller seiner enthaltenen Grafikobjekte!) und git sie zurück.', false));
+
+
+    }
+
+}
+
+export class GroupHelper extends ShapeHelper {
+
+    shapes: RuntimeObject[] = [];
+
+    constructor(interpreter: Interpreter, runtimeObject: RuntimeObject) {
+        super(interpreter, runtimeObject);
+        this.displayObject = new PIXI.Container();
+        this.worldHelper.stage.addChild(this.displayObject);
+        this.addToDefaultGroup();
+
+    }
+
+    removeElementAt(index: number) {
+        if(index < 0 || index >= this.shapes.length){
+            this.worldHelper.interpreter.throwException("In der Gruppe gibt es kein Element mit Index " + index + ".");
+            return;
+        }
+
+        let shape = this.shapes[index];
+        this.remove(shape);
+    }
+
+    getElement(index: number): RuntimeObject {
+        if(index < 0 || index >= this.shapes.length){
+            this.worldHelper.interpreter.throwException("In der Gruppe gibt es kein Element mit Index " + index + ".");
+            return;
+        }
+        return this.shapes[index];
+    }
+
+    getCopy(klass: Klass): RuntimeObject {
+
+        let ro: RuntimeObject = new RuntimeObject(klass);
+        let groupHelperCopy: GroupHelper = new GroupHelper(this.worldHelper.interpreter, ro);
+        ro.intrinsicData["Actor"] = groupHelperCopy;
+
+        for (let ro of this.shapes) {
+            let shapeHelper: ShapeHelper = ro.intrinsicData["Actor"];
+
+            let roCopy: RuntimeObject = shapeHelper.getCopy(<Klass>ro.class)
+            let shapeHelperCopy: ShapeHelper = roCopy.intrinsicData["Actor"];
+
+            groupHelperCopy.shapes.push(roCopy);
+
+            shapeHelperCopy.belongsToGroup = groupHelperCopy;
+
+            (<PIXI.Container>groupHelperCopy.displayObject).addChild(shapeHelperCopy.displayObject);
+
+        }
+
+        groupHelperCopy.copyFrom(this);
+        groupHelperCopy.render();
+
+        return ro;
+    }
+
+    setTimerPaused(tp: boolean) {
+        this.timerPaused = tp;
+
+        for (let shape of this.shapes) {
+            let sh: ShapeHelper = <ShapeHelper>shape.intrinsicData["Actor"];
+            sh.timerPaused = tp;
+        }
+
+    }
+
+
+    add(shape: RuntimeObject) {
+
+        let shapeHelper: ShapeHelper = <ShapeHelper>shape.intrinsicData["Actor"];
+
+        if (shapeHelper.isDestroyed) {
+            this.worldHelper.interpreter.throwException("Ein schon zerstörtes Objekt kann keiner Gruppe hinzugefügt werden.");
+            return;
+        }
+
+        this.shapes.push(shape);
+
+        if (shapeHelper.belongsToGroup != null) {
+            shapeHelper.belongsToGroup.remove(shape);
+        }
+
+        shapeHelper.belongsToGroup = this;
+        
+        let inverse = new PIXI.Matrix().copyFrom(this.displayObject.transform.worldTransform);
+        inverse.invert();
+        shapeHelper.displayObject.localTransform.prepend(inverse.prepend(this.worldHelper.stage.localTransform));     
+        shapeHelper.displayObject.transform.onChange();   
+        
+        (<PIXI.Container>this.displayObject).addChild(shapeHelper.displayObject);
+        shapeHelper.displayObject.updateTransform();
+
+        let xSum: number = 0;
+        let ySum: number = 0;
+
+        for (let shape of this.shapes) {
+            let sh: ShapeHelper = <ShapeHelper>shape.intrinsicData["Actor"];
+            xSum += sh.getCenterX();
+            ySum += sh.getCenterY();
+        }
+
+        let x = xSum / this.shapes.length;
+        let y = ySum / this.shapes.length;
+
+        this.displayObject.updateTransform();
+        let p1: PIXI.Point = this.displayObject.worldTransform.applyInverse(new PIXI.Point(x, y));
+
+        this.centerXInitial = p1.x;
+        this.centerYInitial = p1.y;
+    }
+
+    public remove(shape: RuntimeObject) {
+        let index = this.shapes.indexOf(shape);
+        if (index >= 0) {
+            this.shapes.splice(index, 1);
+            
+            let shapeHelper: ShapeHelper = shape.intrinsicData['Actor'];
+            
+            let transform = new PIXI.Matrix().copyFrom(shapeHelper.displayObject.transform.worldTransform);
+            
+            (<PIXI.Container>this.displayObject).removeChildAt(index);
+
+            let inverseStageTransform = new PIXI.Matrix().copyFrom(this.worldHelper.stage.localTransform);
+            inverseStageTransform.invert();
+            shapeHelper.displayObject.localTransform.identity();
+            shapeHelper.displayObject.localTransform.append(transform.prepend(inverseStageTransform));
+            shapeHelper.displayObject.transform.onChange();
+            this.worldHelper.stage.addChild(shapeHelper.displayObject);
+            shapeHelper.displayObject.updateTransform();
+            shapeHelper.belongsToGroup = null;
+        }
+    }
+
+    public render(): void {
+    }
+
+    public destroy(): void {
+        for (let shape of this.shapes.slice(0)) {
+            let sh: ShapeHelper = <ShapeHelper>shape.intrinsicData["Actor"];
+            sh.destroy();
+        }
+        super.destroy();
+    }
+
+    collidesWith(shapeHelper: ShapeHelper) {
+        for (let shape of this.shapes) {
+            let sh: ShapeHelper = <ShapeHelper>shape.intrinsicData["Actor"];
+            if (sh.collidesWith(shapeHelper)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    setHitPolygonDirty(dirty: boolean){
+        for (let shape of this.shapes) {
+            let sh: ShapeHelper = <ShapeHelper>shape.intrinsicData["Actor"];
+            sh.setHitPolygonDirty(dirty);
+        }
+    }
+
+    containsPoint(x: number, y: number) {
+        for (let shape of this.shapes) {
+            let sh: ShapeHelper = <ShapeHelper>shape.intrinsicData["Actor"];
+            if (sh.containsPoint(x, y)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    getCollidingObjects(shape: RuntimeObject): RuntimeObject[] {
+
+        let collidingShapes: RuntimeObject[] = [];
+        let shapeHelper: ShapeHelper = <ShapeHelper>shape.intrinsicData["Actor"];
+
+        for (let s of this.shapes) {
+            let sh: ShapeHelper = <ShapeHelper>s.intrinsicData["Actor"];
+            if (sh.collidesWith(shapeHelper)) {
+                collidingShapes.push(s);
+            }
+        }
+
+        return collidingShapes;
+
+    }
+
+    getCollidingObjects2(groupHelper2: GroupHelper, collisionPairType: Type,
+        maxOneCollisionPerShape: boolean): Value[] {
+
+        let collisionPairs: Value[] = [];
+
+        let alreadyCollidedHelpers2: Map<ShapeHelper, boolean> = new Map();
+
+        for (let shape1 of this.shapes) {
+            let shapeHelper1: ShapeHelper = <ShapeHelper>shape1.intrinsicData["Actor"];
+            for (let shape2 of groupHelper2.shapes) {
+                let shapeHelper2: ShapeHelper = <ShapeHelper>shape2.intrinsicData["Actor"];
+                if (shapeHelper1.collidesWith(shapeHelper2)) {
+
+                    if (!maxOneCollisionPerShape || alreadyCollidedHelpers2.get(shapeHelper2) == null) {
+                        alreadyCollidedHelpers2.set(shapeHelper2, true);
+                        let rto: RuntimeObject = new RuntimeObject(<Klass>collisionPairType);
+                        rto.initializeAttributeValues();
+
+                        rto.intrinsicData["ShapeA"] = shapeHelper1.runtimeObject;
+                        rto.intrinsicData["ShapeB"] = shapeHelper2.runtimeObject;
+                        collisionPairs.push({
+                            type: collisionPairType,
+                            value: rto
+                        });
+                    }
+
+                    if (maxOneCollisionPerShape) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        return collisionPairs;
+
+    }
+
+
+}

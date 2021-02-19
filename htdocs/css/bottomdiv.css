@@ -1,0 +1,321 @@
+:root {
+    --bottomdiv-tabheading-hover: white;
+    --bottomdiv-tabheading-active: rgb(97,97,255);
+    --noErrorMessage: rgb(37, 211, 37);
+    --console-top-borderbottom: #c4c4c4;
+    --console-top-background: #1e1e1e;
+    --consoleEntry-withBorder: #303030;
+    --consoleEntryValue: white;
+    --consoleEntryIdentifier: rgb(156, 156, 235);
+    --consoleEntryNoValue: gray;
+    --consoleEntryCaption: white;
+    --error-Caption: rgb(166, 165, 176);
+    --console-error: rgb(236, 41, 41);
+    --homework-workspace: rgb(77, 77, 224);
+    --homework-file: green;
+}
+
+
+.jo_bottomdiv-inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+
+.jo_tabheadings {
+    width: 100%;
+    min-height: 25px;
+    font-size: 10pt;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 4px;
+}
+
+.jo_tabheading {
+    line-height: 24px;
+    padding: 0 5px;
+    margin: 0 2px;
+    user-select: none;
+}
+
+.jo_tabheading:hover {
+    color: var(--bottomdiv-tabheading-hover);
+    cursor: pointer;
+}
+
+.jo_tabheading.jo_active {
+    border-bottom: 1px solid var(--bottomdiv-tabheading-active);
+}
+
+.jo_tabheading-right {
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    right: 8px;
+    height: 16px;
+    top: 6px;
+}
+
+.jo_tabs {
+    overflow: visible;
+    height: calc(100% - 30px);
+}
+
+.jo_tabs>div {
+    display: none;
+}
+
+.jo_tabs>div.jo_active {
+    display: block;
+}
+
+.jo_tab {
+    height: 100%;
+    position: relative;
+}
+
+.jo_pcodeTab {
+    font-family: Consolas, "Courier New", monospace;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 12px;
+    letter-spacing: 0px;
+    overflow: auto;
+    height: 100%;
+    position: relative;
+}
+
+.jo_pcodeTab h3 {
+    margin-bottom: 0.5em;
+}
+
+.jo_label_destination:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.jo_errorsTab {
+    height: 100%;
+    overflow: auto;
+    padding-left: 4px;
+}
+
+.jo_noErrorMessage {
+    color: var(--noErrorMessage);
+    user-select: none;
+}
+
+.jo_consoleTab {
+    height: 100%;
+    overflow: visible;
+}
+
+.jo_console-inner{
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+    height: 100%;
+}
+
+.jo_console-top{
+    flex-grow: 1;
+    overflow: auto;
+    /* border-bottom: 1px solid #414141; */
+    border-bottom: 1px solid var(--console-top-borderbottom);
+    box-sizing: border-box;
+    background-color: var(--console-top-background);
+}
+
+.jo_commandline{
+    height: 25px;
+    margin-top: 1px;
+    margin-left: 16px;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.jo_commandline .jo_decorationsOverviewRuler {
+    display: none;
+}
+
+.jo_commandline::before {
+    z-index: 1000;
+    content: url('data:image/svg+xml,%3Csvg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath fill-rule="evenodd" clip-rule="evenodd" d="M10.0719 7.99999L5.71461 12.3573L6.33333 12.976L11 8.30935V7.69063L6.33333 3.02396L5.71461 3.64268L10.0719 7.99999Z" fill="white"/%3E%3C/svg%3E%0A'); /*img(tree-collapsed-hc.svg)*/
+    position: absolute;
+    top: 3px;
+    left: -16px;
+    margin-right: 0px;
+}
+
+.jo_consoleEntry.jo_cannotOpen>.jo_ceFirstline::before {
+    content: url('data:image/svg+xml,%3C%3Fxml version="1.0" encoding="UTF-8" standalone="no"%3F%3E%3Csvg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns%23" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns%23" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="16" height="16" viewBox="0 0 16 16" fill="none" version="1.1" id="svg4" sodipodi:docname="result-arrow.svg" inkscape:version="0.92.3 (2405546, 2018-03-11)"%3E%3Cmetadata id="metadata10"%3E%3Crdf:RDF%3E%3Ccc:Work rdf:about=""%3E%3Cdc:format%3Eimage/svg+xml%3C/dc:format%3E%3Cdc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" /%3E%3C/cc:Work%3E%3C/rdf:RDF%3E%3C/metadata%3E%3Cdefs id="defs8" /%3E%3Csodipodi:namedview pagecolor="%23ffffff" bordercolor="%23666666" borderopacity="1" objecttolerance="10" gridtolerance="10" guidetolerance="10" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-width="1920" inkscape:window-height="1001" id="namedview6" showgrid="false" inkscape:zoom="32" inkscape:cx="17.495207" inkscape:cy="3.0295945" inkscape:window-x="-9" inkscape:window-y="-9" inkscape:window-maximized="1" inkscape:current-layer="svg4" /%3E%3Cpath style="clip-rule:evenodd;fill:%23ffffff;fill-rule:evenodd" d="M 12.097656 5.2539062 L 11.550781 5.8242188 L 13.144531 7.4921875 L 1.796875 7.4921875 L 1.796875 8.5761719 L 13.080078 8.5761719 L 11.550781 10.175781 L 12.097656 10.746094 L 14.558594 8.3085938 L 14.558594 7.6914062 L 12.097656 5.2539062 z " id="path2" /%3E%3C/svg%3E%0A'); /*img(result-arrow.svg)*/
+    position: relative;
+    top: 3px;
+    left: -1px;
+    margin-right: 0px;
+}
+
+.jo_consoleEntry.jo_canOpen>.jo_ceFirstline::before {
+    content: url('data:image/svg+xml,%3Csvg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath fill-rule="evenodd" clip-rule="evenodd" d="M10.0719 7.99999L5.71461 12.3573L6.33333 12.976L11 8.30935V7.69063L6.33333 3.02396L5.71461 3.64268L10.0719 7.99999Z" fill="white"/%3E%3C/svg%3E%0A'); /*img(tree-collapsed-hc.svg)*/
+    position: relative;
+    top: 3px;
+    left: -1px;
+    margin-right: 0px;
+}
+
+.jo_consoleEntry.jo_canOpen.jo_expanded>.jo_ceFirstline::before {
+    content: url('data:image/svg+xml,%3Csvg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath fill-rule="evenodd" clip-rule="evenodd" d="M7.97602 10.0719L12.3333 5.71461L12.952 6.33333L8.28538 11L7.66666 11L3 6.33333L3.61872 5.71461L7.97602 10.0719Z" fill="white"/%3E%3C/svg%3E%0A'); /*img(tree-expanded-hc.svg)*/
+    position: relative;
+    margin-right: 0px;
+}
+
+.jo_consoleEntry>.jo_ceChildContainer {
+    display: none;
+}
+
+.jo_consoleEntry.jo_expanded>.jo_ceChildContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.jo_ceFirstline {
+    white-space: nowrap;
+    overflow: hidden;
+    user-select: none;
+    /* font-size: 10pt; */
+    font-family: 'Consolas', 'Roboto Mono', monospace;
+    padding-left: 15px;
+}
+
+.jo_consoleEntry.jo_withBorder {
+    border-bottom: 1px solid var(--consoleEntry-withBorder);
+    margin-bottom: 3px;
+}
+
+.jo_consoleEntry.jo_canOpen>.jo_ceFirstline, .jo_consoleEntry.jo_cannotOpen>.jo_ceFirstline {
+    padding-left: 0px;
+}
+
+.jo_ceValue {
+    color: var(--consoleEntryIdentifier);
+}
+
+.jo_ceIdentifier {
+    color: var(--consoleEntryIdentifier);
+}
+
+.jo_ceNoValue {
+    color: var(--consoleEntryNoValue);
+}
+
+.jo_ceCaption {
+    /* font-size: 10pt; */
+    color: var(--consoleEntryCaption);
+}
+
+.jo_runtimeErrorPosition{
+    cursor: pointer;
+}
+
+.jo_runtimeErrorPosition:hover{
+    font-weight: bold;
+}
+
+.jo_error-caption {
+    color: var(--error-Caption);
+}
+
+.jo_network-busy {
+    display: none;
+    margin-right: 8px;
+}
+
+.jo_console-error {
+    color: var(--console-error);
+}
+
+.jo_homeworkTabheading {
+    visibility: hidden;
+}
+
+.jo_homeworkTab {
+    display: none;
+    height: 100%;
+}
+
+.jo_homeworkTab.jo_active {
+    display: flex !important;
+    flex-direction: row;
+}
+
+.jo_homeworkTabLeft {
+    display: flex;
+    padding: 0 4px;
+    flex-direction: column;
+    flex: 1;
+    border-right: 1px solid gray;
+    overflow: auto;
+}
+
+.jo_homeworkTabRight {
+    display: flex;
+    padding: 0 4px;
+    flex-direction: column;
+    flex: 4;
+    overflow: auto;
+}
+
+.jo_homeworkDate {
+    border-bottom: 1px dotted gray;
+    cursor: pointer;
+    user-select: none;
+}
+
+.jo_homeworkDate:hover, .jo_homeworkEntry:hover {
+    background-color: var(--file-hover);
+}
+
+.jo_homeworkDate:active, .jo_homeworkEntry:active {
+    filter: brightness(130%);
+}
+
+.jo_homeworkEntry {
+    cursor: pointer;
+    user-select: none;
+}
+
+.jo_homeworkDate.jo_active:hover {
+    background-color: var(--file-active-hover);
+}
+
+.jo_homeworkDate.jo_active {
+    background-color: var(--file-active);
+}
+
+.jo_homeworkHeading {
+    color: var(--fontColorLight);
+    font-weight: bold;
+}
+
+.jo_homeworkRevisionButton {
+    background-color: var(--loginButtonBackground);
+    color: var(--loginButtonFontColor);
+    padding: 2px 4px;
+    margin-right: 10px;
+    border-radius: 2px;
+}
+
+.img_homework-corrected {
+    width: 24px !important;
+} 
+
+.jo_homework-workspace {
+    color: var(--homework-workspace);
+}
+
+.jo_homework-file {
+    color: var(--homework-file);
+}
+

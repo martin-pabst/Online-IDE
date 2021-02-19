@@ -1,0 +1,142 @@
+#dialog {
+    visibility: hidden;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    z-index: 1000;
+    background-color: var(--backgroundDark);
+    top: 0;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.dialog-main {
+    width: 80%;
+    border: 1px solid gray;
+    display: flex;
+    padding: 10px; 
+    flex-direction: column;
+}
+
+.dialog-main>div, .dialog-main>input {
+    margin-bottom: 10px;
+}
+
+.dialog-main .dialog-heading {
+    font-size: 200%;
+}
+
+.dialog-input {
+    width: 20em;
+}
+
+#dialog button {
+    width: fit-content;
+    padding: 8px;
+    border: 1px solid gray;
+    font-size: 150%;
+}
+
+#dialog button:hover {
+    cursor: pointer;
+    filter: brightness(120%);
+}
+
+#dialog button:active {
+    cursor: pointer;
+    filter: brightness(200%) !important;
+}
+
+#dialog .dialog-buttonRow {
+    display: flex;
+    flex-direction: row;
+    margin-top: 20px;
+}
+
+.dialog-main .dialog-wait {
+    display: flex;
+    visibility: hidden;
+    flex-direction: row;
+}
+
+.dialog-main .dialog-wait>img {
+    margin-left: 20px;
+}
+
+/* Distribute to selected students dialog */
+
+.jo_ds_heading {
+    font-size: 200%;
+}
+
+.jo_ds_settings {
+    display: grid;
+    grid-template-columns: 15em 1fr;
+    width: 40em;
+    margin: 10px;
+}
+
+.jo_ds_settings_caption {
+    justify-self: start;
+    font-weight: bold;
+    line-height: 20px;
+    margin-right: 20px;
+}
+
+.jo_ds_workspacename {
+    justify-self: start;
+}
+
+.jo_ds_student_list {
+    background-color: var(--backgroundLight);
+    flex: 1;
+    width: 40em;
+    display: flex;
+    flex-direction: column;
+    margin: 10px 0;
+    overflow-y: auto;
+}
+
+.jo_ds_student_line {
+    display: flex;
+    flex-direction: row;
+    cursor: pointer;
+    padding: 2px;
+    user-select: none;
+}
+
+.jo_ds_student_line:hover {
+    background-color: var(--file-hover);
+}
+
+.jo_ds_student_line.jo_active {
+    background-color: var(--file-active);
+}
+
+.jo_ds_student_line.jo_active:hover {
+    background-color: var(--file-active-hover);
+}
+
+.jo_ds_student_class {
+    margin-right: 5px;
+}
+
+.jo_ds_selected_message {
+    font-weight: bold;
+}
+
+#jo_ds_cancel_button {
+    background-color: rgba(126, 126, 126, 0.664);
+    margin-right: 50px;
+}
+
+#jo_ds_distribute_button {
+    background-color: rgb(36, 170, 36);
+}
+
+.jo_ds_buttonRow {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}

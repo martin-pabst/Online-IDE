@@ -1,0 +1,868 @@
+.Ship_1_0{
+   width: 536px;
+   height: 423px;
+   background-position: 0px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Ship_1_1{
+   width: 477px;
+   height: 397px;
+   background-position: -538px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Ship_1_2{
+   width: 286px;
+   height: 500px;
+   background-position: 0px -425px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_0{
+   width: 32px;
+   height: 32px;
+   background-position: -288px -425px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_1{
+   width: 32px;
+   height: 32px;
+   background-position: -321px -425px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_2{
+   width: 32px;
+   height: 32px;
+   background-position: -354px -425px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_3{
+   width: 32px;
+   height: 32px;
+   background-position: -387px -425px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_4{
+   width: 32px;
+   height: 32px;
+   background-position: -420px -425px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_5{
+   width: 32px;
+   height: 32px;
+   background-position: -453px -425px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_6{
+   width: 32px;
+   height: 32px;
+   background-position: -486px -425px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_7{
+   width: 32px;
+   height: 32px;
+   background-position: -519px -425px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_8{
+   width: 32px;
+   height: 32px;
+   background-position: -552px -425px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_9{
+   width: 32px;
+   height: 32px;
+   background-position: -585px -425px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_10{
+   width: 32px;
+   height: 32px;
+   background-position: -618px -425px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_11{
+   width: 32px;
+   height: 32px;
+   background-position: -651px -425px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_12{
+   width: 32px;
+   height: 32px;
+   background-position: -684px -425px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_13{
+   width: 32px;
+   height: 32px;
+   background-position: -717px -425px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_14{
+   width: 32px;
+   height: 32px;
+   background-position: -750px -425px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_15{
+   width: 32px;
+   height: 32px;
+   background-position: -783px -425px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_16{
+   width: 32px;
+   height: 32px;
+   background-position: -816px -425px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_17{
+   width: 32px;
+   height: 32px;
+   background-position: -849px -425px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_18{
+   width: 32px;
+   height: 32px;
+   background-position: -882px -425px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_19{
+   width: 32px;
+   height: 32px;
+   background-position: -915px -425px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_22{
+   width: 32px;
+   height: 64px;
+   background-position: -288px -459px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_23{
+   width: 32px;
+   height: 64px;
+   background-position: -320px -459px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_24{
+   width: 32px;
+   height: 64px;
+   background-position: -352px -459px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_25{
+   width: 32px;
+   height: 64px;
+   background-position: -384px -459px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_26{
+   width: 32px;
+   height: 64px;
+   background-position: -416px -459px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_27{
+   width: 32px;
+   height: 64px;
+   background-position: -448px -459px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_28{
+   width: 32px;
+   height: 64px;
+   background-position: -480px -459px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_29{
+   width: 32px;
+   height: 64px;
+   background-position: -512px -459px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_30{
+   width: 32px;
+   height: 64px;
+   background-position: -544px -459px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Minesweeper_31{
+   width: 32px;
+   height: 64px;
+   background-position: -576px -459px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Bird_0{
+   width: 15px;
+   height: 10px;
+   background-position: -1181px -870px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Ship_Adrian_0{
+   width: 64px;
+   height: 64px;
+   background-position: -1115px -784px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Ship_Adrian_1{
+   width: 64px;
+   height: 64px;
+   background-position: -1115px -850px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Ship_Adrian_2{
+   width: 64px;
+   height: 64px;
+   background-position: -1115px -916px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Ship_Adrian_3{
+   width: 64px;
+   height: 64px;
+   background-position: -610px -459px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Ship_Adrian_4{
+   width: 64px;
+   height: 64px;
+   background-position: -676px -459px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Asteroid_Adrian_0{
+   width: 64px;
+   height: 64px;
+   background-position: -742px -459px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Gegner_Adrian_0{
+   width: 64px;
+   height: 64px;
+   background-position: -808px -459px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Schuss_Adrian_0{
+   width: 20px;
+   height: 7px;
+   background-position: -1181px -882px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Schuss_Adrian_1{
+   width: 18px;
+   height: 18px;
+   background-position: -1181px -784px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Schuss_Adrian_2{
+   width: 18px;
+   height: 18px;
+   background-position: -1181px -804px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Schuss_Adrian_3{
+   width: 18px;
+   height: 18px;
+   background-position: -1181px -824px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Schuss_Adrian_4{
+   width: 18px;
+   height: 18px;
+   background-position: -1181px -850px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_Adrian_0{
+   width: 35px;
+   height: 35px;
+   background-position: -1115px -982px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_Adrian_1{
+   width: 35px;
+   height: 35px;
+   background-position: -1152px -982px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_Adrian_2{
+   width: 35px;
+   height: 35px;
+   background-position: -1017px -882px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_Adrian_3{
+   width: 35px;
+   height: 35px;
+   background-position: -1054px -882px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_Adrian_4{
+   width: 35px;
+   height: 35px;
+   background-position: -874px -459px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_Adrian_5{
+   width: 35px;
+   height: 35px;
+   background-position: -911px -459px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_Adrian_6{
+   width: 35px;
+   height: 35px;
+   background-position: -948px -459px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_Adrian_7{
+   width: 35px;
+   height: 35px;
+   background-position: -974px -525px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_Adrian_8{
+   width: 35px;
+   height: 35px;
+   background-position: -974px -562px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_Adrian_9{
+   width: 35px;
+   height: 35px;
+   background-position: -974px -623px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_Adrian_10{
+   width: 35px;
+   height: 35px;
+   background-position: -974px -660px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_Adrian_11{
+   width: 35px;
+   height: 35px;
+   background-position: -974px -721px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_0{
+   width: 96px;
+   height: 96px;
+   background-position: -288px -525px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_1{
+   width: 96px;
+   height: 96px;
+   background-position: -386px -525px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_2{
+   width: 96px;
+   height: 96px;
+   background-position: -484px -525px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_3{
+   width: 96px;
+   height: 96px;
+   background-position: -582px -525px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_4{
+   width: 96px;
+   height: 96px;
+   background-position: -680px -525px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_5{
+   width: 96px;
+   height: 96px;
+   background-position: -778px -525px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_6{
+   width: 96px;
+   height: 96px;
+   background-position: -876px -525px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_7{
+   width: 96px;
+   height: 96px;
+   background-position: -288px -623px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_8{
+   width: 96px;
+   height: 96px;
+   background-position: -386px -623px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_9{
+   width: 96px;
+   height: 96px;
+   background-position: -484px -623px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_10{
+   width: 96px;
+   height: 96px;
+   background-position: -582px -623px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_11{
+   width: 96px;
+   height: 96px;
+   background-position: -680px -623px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_12{
+   width: 96px;
+   height: 96px;
+   background-position: -778px -623px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_13{
+   width: 96px;
+   height: 96px;
+   background-position: -876px -623px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_14{
+   width: 96px;
+   height: 96px;
+   background-position: -288px -721px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_15{
+   width: 96px;
+   height: 96px;
+   background-position: -386px -721px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_16{
+   width: 96px;
+   height: 96px;
+   background-position: -484px -721px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_17{
+   width: 96px;
+   height: 96px;
+   background-position: -582px -721px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_18{
+   width: 96px;
+   height: 96px;
+   background-position: -680px -721px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_19{
+   width: 96px;
+   height: 96px;
+   background-position: -778px -721px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_20{
+   width: 96px;
+   height: 96px;
+   background-position: -876px -721px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_21{
+   width: 96px;
+   height: 96px;
+   background-position: -288px -819px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_22{
+   width: 96px;
+   height: 96px;
+   background-position: -386px -819px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_23{
+   width: 96px;
+   height: 96px;
+   background-position: -484px -819px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_24{
+   width: 96px;
+   height: 96px;
+   background-position: -582px -819px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_25{
+   width: 96px;
+   height: 96px;
+   background-position: -680px -819px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_26{
+   width: 96px;
+   height: 96px;
+   background-position: -778px -819px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_27{
+   width: 96px;
+   height: 96px;
+   background-position: -876px -819px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_28{
+   width: 96px;
+   height: 96px;
+   background-position: -1017px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_29{
+   width: 96px;
+   height: 96px;
+   background-position: -1017px -98px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_30{
+   width: 96px;
+   height: 96px;
+   background-position: -1017px -196px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_31{
+   width: 96px;
+   height: 96px;
+   background-position: -1017px -294px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_32{
+   width: 96px;
+   height: 96px;
+   background-position: -1017px -392px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_33{
+   width: 96px;
+   height: 96px;
+   background-position: -1017px -490px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_34{
+   width: 96px;
+   height: 96px;
+   background-position: -1017px -588px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_35{
+   width: 96px;
+   height: 96px;
+   background-position: -1017px -686px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_36{
+   width: 96px;
+   height: 96px;
+   background-position: -1017px -784px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_37{
+   width: 96px;
+   height: 96px;
+   background-position: 0px -927px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_38{
+   width: 96px;
+   height: 96px;
+   background-position: -98px -927px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_39{
+   width: 96px;
+   height: 96px;
+   background-position: -196px -927px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_40{
+   width: 96px;
+   height: 96px;
+   background-position: -294px -927px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_41{
+   width: 96px;
+   height: 96px;
+   background-position: -392px -927px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_42{
+   width: 96px;
+   height: 96px;
+   background-position: -490px -927px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_43{
+   width: 96px;
+   height: 96px;
+   background-position: -588px -927px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_44{
+   width: 96px;
+   height: 96px;
+   background-position: -686px -927px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_45{
+   width: 96px;
+   height: 96px;
+   background-position: -784px -927px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_46{
+   width: 96px;
+   height: 96px;
+   background-position: -882px -927px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_47{
+   width: 96px;
+   height: 96px;
+   background-position: -980px -927px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_48{
+   width: 96px;
+   height: 96px;
+   background-position: -1115px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_49{
+   width: 96px;
+   height: 96px;
+   background-position: -1115px -98px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_50{
+   width: 96px;
+   height: 96px;
+   background-position: -1115px -196px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_51{
+   width: 96px;
+   height: 96px;
+   background-position: -1115px -294px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_52{
+   width: 96px;
+   height: 96px;
+   background-position: -1115px -392px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_53{
+   width: 96px;
+   height: 96px;
+   background-position: -1115px -490px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_54{
+   width: 96px;
+   height: 96px;
+   background-position: -1115px -588px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Explosion_1_55{
+   width: 96px;
+   height: 96px;
+   background-position: -1115px -686px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Boulders_0{
+   width: 32px;
+   height: 32px;
+   background-position: -949px -425px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Boulders_1{
+   width: 32px;
+   height: 32px;
+   background-position: -983px -425px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Boulders_2{
+   width: 32px;
+   height: 32px;
+   background-position: -974px -758px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Boulders_3{
+   width: 32px;
+   height: 32px;
+   background-position: -974px -819px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Boulders_4{
+   width: 32px;
+   height: 32px;
+   background-position: -974px -853px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Boulders_5{
+   width: 32px;
+   height: 32px;
+   background-position: -1078px -927px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Boulders_6{
+   width: 32px;
+   height: 32px;
+   background-position: -1078px -961px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Boulders_7{
+   width: 32px;
+   height: 32px;
+   background-position: 0px -1025px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Boulders_8{
+   width: 32px;
+   height: 32px;
+   background-position: -34px -1025px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Boulders_9{
+   width: 32px;
+   height: 32px;
+   background-position: -68px -1025px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+

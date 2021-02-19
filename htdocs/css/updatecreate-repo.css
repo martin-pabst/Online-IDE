@@ -1,0 +1,237 @@
+:root {
+    --cancelButtonBackground: #b0b0b0;
+    --cancelButtonColor: #000;
+
+}
+
+
+#createRepo-div, #updateRepo-div, #checkoutRepo-div {
+    visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    background-color: var(--backgroundDark);
+    top: 0;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.createUpdateRepo-mainHeading{
+        font-size: 20pt;
+        width: 100%;
+        color: var(--fontColorNormal);
+        user-select: none;
+        background-color: var(--backgroundLight);
+        padding: 2px;
+        margin: 0 2px;
+        border-bottom: 2px solid blue;
+}
+
+#updateRepo-mainHeading, #checkoutRepo-mainHeading {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 10px;
+    padding: 5px 10px;
+    box-sizing: border-box;
+    margin: 0;
+}
+
+.createUpdateRepo-settingsDiv {
+    display: grid;
+    grid-template-columns: fit-content(400px) auto;
+    margin-bottom: 15px;
+    padding: 10px;
+
+}
+
+.createUpdateRepo-settingsLabel {
+    grid-column: 1;
+}
+
+.createUpdateRepo-inputcolumn {
+    min-width: 300px;
+    grid-column: 2;
+    background-color: var(--backgroundLight);
+    color: var(--fontColorLight);
+    border: 1px solid gray;
+    margin: 3px;
+}
+
+#createRepo-buttonDiv {
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    justify-content: space-evenly;
+    font-size: 130%
+}
+
+#updateRepo-divBelow {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+}
+
+#checkoutRepo-divBelow {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+#updateRepo-divLeft {
+    flex: 4;
+    box-sizing: border-box;
+    height: 100%;
+    padding: 10px;
+    border-right: 1px solid blue;
+    display: flex;
+    flex-direction: column;
+}
+
+.updateRepo-repoListItem {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    height: 20px;
+    border-bottom: 1px dotted gray;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.updateRepo-repoListItem:hover {
+    background-color: var(--file-hover);
+}
+
+.updateRepo-repoListItem:active {
+    filter: brightness(130%);
+}
+
+.updateRepo-repoListItem.active {
+    background-color: var(--file-active);
+}
+
+.updateRepo-repoListItem.active:hover {
+    background-color: var(--file-active-hover);
+}
+
+#updateRepo-repoListDiv {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+#updateRepo-divRight {
+    flex: 6;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+#updateRepo-userlistDiv {
+    display: grid;
+    grid-template-columns: auto auto;
+    margin-top: 10px;
+    border-top: 1px solid blue;
+    width: 100%;
+    padding: 0px 10px;
+    align-content: start;
+    box-sizing: border-box;
+    overflow: auto;
+}
+
+#updateRepo-buttonDiv {
+    height: 60px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    border-top: 1px solid blue;
+    margin-top: 10px;
+    align-items: center;
+
+}
+
+.updateRepo-minorHeading {
+    color: var(--fontColorLight);
+    padding-bottom: 5px;
+    border-bottom: 1px solid blue;
+    width: fit-content;
+}
+
+.updateRepo-userlistheading {
+    color: var(--fontColorLight);
+    padding: 5px 0;
+    border-bottom: 1px solid gray;
+    position: sticky;
+    top: 0px;
+}
+
+.checkoutRepo-chooseDiv {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    margin: 10px 5px 10px 0;
+    align-items: center;
+}
+
+.checkoutRepo-minorHeading {
+    color: var(--fontColorLight);
+    margin-right: 10px;
+}
+
+#checkoutRepo-repoListDiv{
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+    overflow: auto;
+}
+
+.checkoutRepo-repoListItem {
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px dotted gray;
+}
+
+.checkoutRepo-repoListItem:hover {
+    background-color: var(--file-hover);
+}
+
+.checkoutRepo-repoListItem:active {
+    filter: brightness(130%);
+}
+
+.checkoutRepo-repoListItem.active {
+    background-color: var(--file-active);
+}
+
+.checkoutRepo-repoListItem.active:hover {
+    background-color: var(--file-active-hover);
+}
+
+.checkoutRepo-repoListItemLeft {
+    flex: 4;
+    display: flex;
+    flex-direction: column;
+}
+
+.checkoutRepo-repoListItemRight {
+    flex: 6;
+    max-height: 80px;
+    overflow: auto;
+}
+
+.checkoutRepo-repoListName{
+    color: var(--fontColorLight);
+}
+
+.checkoutRepo-repoListOwner{
+    color: var(--fontColorNormal);
+}

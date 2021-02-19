@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "outDir": "./htdocs/js",
+    "allowJs": true,
+    "target": "es6",
+//     "sourceMap": true,
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    /* jsx */
+    "jsx": "react",
+    "jsxFactory": "DOMCreateElement",
+    "typeRoots": ["./node_modules/@types"],
+    "strict": false
+  },
+  "include": [
+    "./src/client/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+
+}

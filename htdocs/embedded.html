@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Embedded-Test</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <link rel="preload" href="lib/monaco-editor/dev/vs/editor/editor.main.js" as="script">
+    <link rel="preload" href="lib/monaco-editor/dev/vs/editor/editor.main.nls.de.js" as="script">
+
+    <link rel='stylesheet' type='text/css' media='screen' href='assets/fonts/fonts.css'>
+    <link rel='stylesheet' type='text/css' media='screen' href='css/editor.css'>
+    <link rel='stylesheet' type='text/css' media='screen' href='css/bottomdiv.css'>
+    <link rel='stylesheet' type='text/css' media='screen' href='css/run.css'>
+    <link rel='stylesheet' type='text/css' media='screen' href='css/diagram.css'>
+    <link rel='stylesheet' type='text/css' media='screen' href='css/debugger.css'>
+    <link rel='stylesheet' type='text/css' media='screen' href='css/icons.css'>
+    <link rel='stylesheet' type='text/css' media='screen' href='css/embedded.css'>
+    <script src="lib/p5.js/p5.js"></script>
+    <script src="lib/jquery/jquery-3.3.1.js"></script>
+    <script src="lib/markdownit/markdownit.min.js"></script>
+    <script src="lib/monaco-editor/dev/vs/loader.js"></script>
+    <script src="js/runtimelibrary/graphics/SpriteLibrary.js"></script>
+    <script src="lib/howler/howler.core.min.js"></script>
+    <script src="js/main/gui/diagrams/classdiagram/Router.js"></script>
+
+    <script type="module" src="js/embedded/EmbeddedStarter.js"></script>
+
+    <!-- to use packed version just alter last line to:-->
+    <!-- <script src="js.webpack/main.js"></script> -->
+    <script src="lib/pixijs/pixi.js"></script>
+
+</head>
+
+<body>
+    <!-- <h1>Erstes Beispiel</h1>
+
+    <div class="java-online" style="width: calc(100% - 10px); height: 400px; margin-left: 5px"
+    data-java-online="{
+        'id': 'abcd'
+    }">
+        <script type="text/plain" title="Test1.java" data-type="java">
+new Test();
+class Test extends Polygon {
+    public Test(){
+        super(true);
+        addPoints(new double[]{10, 10, 300, 10, 150, 200});
+    }
+}
+                    </script>
+    </div>
+
+<h1>Zweites Beispiel</h1>
+
+    <div class="java-online" style="width: 600px; height: 200px; margin-left: 5px" data-java-online="{
+        'withFileList': false,
+        'withPCode': false,
+        'withConsole': false,
+        'withErrorList': false,
+        'id': 'abcd2'
+    }">
+        <script type="text/plain" title="Test1.java" data-type="java">
+World w = new World();
+new Circle(200, 200, 100);
+        </script>
+    </div> -->
+
+    <h1>Drittes Beispiel</h1>
+
+    <div class="java-online" style="width: 1000px; height: 500px; margin-left: 5px" data-java-online="{
+        'withBottomPanel': true,
+        'id': 'abcd3'
+    }">
+        <script type="text/plain" title="Test2.java" data-type="java">
+World w = new World();
+new Circle(200, 200, 100);
+        </script>
+        <script type="text/plain" title="Test3.java" data-type="java">
+            println("Hier!");
+        </script>
+    </div> 
+
+    <div style="width: 100%; height: 800px; background-color: blue"></div>
+
+
+</body>
+
+</html>

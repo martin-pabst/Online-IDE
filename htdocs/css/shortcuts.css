@@ -1,0 +1,69 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    overflow: hidden;
+}
+
+body {
+    background-color: #1e1e1e;
+    font-family: Arial, Helvetica, sans-serif;
+    color: rgb(180, 180, 180);
+}
+
+#outer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+#outer-heading {
+    width: 100%;
+    border-bottom: 1px solid gray;
+    font-size: 180%;
+    font-weight: bold;
+    color: white;
+
+}
+
+#outer-heading>div {
+    margin: 10px;
+}
+
+#outer-bottom {
+    flex-grow: 1;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+}
+
+#main {
+    flex-grow: 8;
+    padding: 10px;
+    overflow: auto;
+}
+
+.jo_heading {
+    color: rgb(67, 185, 82);
+    font-size: 150%;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.jo_key {
+    color: rgb(101, 101, 230);
+    font-weight: bold;
+}
+
+td {
+    padding: 5px;
+}

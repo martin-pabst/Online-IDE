@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Embedded-Test</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <link rel="preload" href="lib/monaco-editor/dev/vs/editor/editor.main.js" as="script">
+    <link rel="preload" href="lib/monaco-editor/dev/vs/editor/editor.main.nls.de.js" as="script">
+
+    <script src="lib/pixijs/pixi.js"></script>
+
+    <!-- <link rel='stylesheet' type='text/css' media='screen' href='assets/fonts/fonts.css'> -->
+    <link rel='stylesheet' type='text/css' media='screen' href='js.webpack/javaOnlineEmbedded.css'>
+    <script src="lib/jquery/jquery-3.3.1.js"></script>
+    <script src="lib/markdownit/markdownit.min.js"></script>
+    <script src="lib/monaco-editor/dev/vs/loader.js"></script>
+    <script src="js/runtimelibrary/graphics/SpriteLibrary.js"></script>
+    <script src="lib/howler/howler.core.min.js"></script>
+    <script src="lib/p5.js/p5.js"></script>
+
+    <script type="module" src="js.webpack/javaOnline-embedded.js"></script>
+
+    <!-- to use packed version just alter last line to:-->
+    <!-- <script src="js.webpack/main.js"></script> -->
+
+</head>
+
+<body>
+    <h1>Erstes Beispiel</h1>
+
+    <div class="java-online" style="width: calc(100% - 10px); height: 400px; margin-left: 5px">
+        <script type="text/plain" title="Test1.java">
+
+            class Test extends Polygon {
+                public Test(){
+                    super();
+                }
+            }
+
+
+        </script>
+    </div>
+
+    <h1>Zweites Beispiel</h1>
+
+<div class="java-online" style="width: 800px; height: 400px; margin-left: 5px" data-java-online="{
+    'id': 'Vererbung_Beispiel_1',
+    'withBottomPanel': true, 
+    'withFileList': true,
+    'withPCode': true,
+    'withConsole': true,
+    'withErrorList': true
+}">
+<script type="text/plain" title="Test1.java">
+World w = new World();
+new Quadrat(40, 20, 300);
+</script>
+<script type="text/plain" title="Test2.java">
+class Quadrat extends Rectangle {
+    public Quadrat(double left, double top, double width){
+        super(left, top, width, width); 
+    }
+}
+</script>
+<script type="text/plain" title="Tipp" data-type="hint">
+## Tipp:
+Tipps werden in einer einfachen Markdown-Syntax verfasst, die **Fettschrift** u.ä. ermöglicht, aber auch Syntax-Highlighting im Fließtext (``class Quadrat extends Rectangle { }``) und in ganzen Absätzen:
+```
+double v = Math.random()*8 + 2; // Betrag der Geschwindigkeit zwischen 2 und 10
+double w = Math.random()*2*Math.PI; // Winkel zwischen 0 und 2*PI
+vx = v * Math.cos(w);
+vy = v * Math.sin(w);
+```
+            
+</script>
+
+</div>
+
+
+
+</body>
+
+</html>

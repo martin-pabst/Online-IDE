@@ -1,0 +1,11 @@
+/node_modules
+/htdocs/js
+# /htdocs/js.webpack
+/*.7z
+/*.zip
+/material
+/upload*.cm
+/package-lock.json
+/babel.config.js
+/htdocs/assets/mp3
+/htdocs/assets/fonts

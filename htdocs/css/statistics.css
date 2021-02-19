@@ -1,0 +1,19 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+  #userlist {
+    width: 100%;
+    font-size: 10px;
+}
+
+#chartdiv {
+    position: relative;
+    width: 100%;
+    height: 500px;
+}
+
+#updatetimer {
+    margin-top: 10px;
+}

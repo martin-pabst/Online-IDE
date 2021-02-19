@@ -1,0 +1,197 @@
+body,
+html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    overflow: hidden;
+}
+
+body {
+    background-color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    color: black;
+}
+
+#outer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+#outer-heading {
+    width: 100%;
+    border-bottom: 1px solid gray;
+    font-size: 180%;
+    font-weight: bold;
+    color: darkblue;
+}
+
+#outer-heading>div {
+    margin: 10px;
+}
+
+#outer-bottom {
+    flex-grow: 1;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+}
+
+#menu {
+    padding-right: 12px;
+    border-right: 1px solid gray;
+}
+
+#menu>div {
+    padding: 5px;
+}
+
+#main {
+    flex-grow: 1;
+    flex-shrink: 0;
+    padding: 10px;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+#main-tables {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    position: relative;
+}
+
+#main-table-left {
+    flex: 1;
+    margin-right: 10px;
+    min-width: 0;
+    width: min-content;
+    position: relative;
+}
+
+#main-table-right {
+    flex: 1;
+    min-width: 0;
+}
+
+.jo_menuitem {
+    padding: 5px;
+    width: 100%;
+    border: 1px solid darkblue;
+    margin-bottom: 3px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.jo_menuitem:hover {
+    background-color: lightgray;
+}
+
+.jo_menuitem:active {
+    background-color: rgb(235, 235, 235);
+}
+
+.jo_menuitem.jo_active {
+    background-color: lightskyblue;
+    font-weight: bold;
+}
+
+.pw_button {
+    border: 1px solid gray;
+    background-color: rgb(175, 175, 175);
+    cursor: pointer;
+    width: fit-content;
+    margin-left: 5px !important;
+}
+
+.pw_button:hover {
+    background-color: lightblue;
+}
+
+.pw_button:active {
+    background-color: #ffffff;
+}
+
+.jo_bulk_heading {
+    font-size: 130%;
+    color: darkblue;
+}
+
+.jo_bulk_description {
+    font-size: small;
+    margin-top: 10px;
+    width: 100%;
+    overflow: auto;
+}
+
+.jo_bulk_importarea {
+    margin-top: 10px;
+    width: 100%;
+    height: 15em;
+    box-sizing: border-box;
+}
+
+.jo_bulk_buttondiv {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+}
+
+.jo_button {
+    padding: 5px;
+    border: 1px solid gray;
+    border-radius: 3px;
+    user-select: none;
+}
+
+.jo_button:hover {
+    filter: brightness(150%);
+    cursor: pointer;
+}
+
+.jo_button.jo_active:active {
+    transform: scale(1.2);
+}
+
+.jo_button:not(.jo_active) {
+    filter: grayscale();
+}
+
+.jo_buttonContinue {
+    background-color: rgb(135, 175, 65);
+}
+
+.jo_buttonWriteUsers {
+    background-color: rgb(255, 130, 80);
+}
+
+.jo_bulk_heading_protocol {
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+.jo_bulk_protocol {
+    width: 100%;
+    padding: 5px;
+    height: 10em;
+    overflow: auto;
+    border: 1px solid gray;
+    box-sizing: border-box;
+    font-size: small;
+}
+
+.jo_bulk_error {
+    color: red;
+}
+
+
+

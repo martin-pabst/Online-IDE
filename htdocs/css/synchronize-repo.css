@@ -1,0 +1,432 @@
+:root {
+    --updateButtonBackground: #965c11;
+    --updateButtonColor: #ffffff;
+    --createButtonBackground: #22bd14;
+    --createButtonColor: #ffffff;
+    --deleteButtonBackground: #bd1414;
+    --deleteButtonColor: #ffffff;
+    
+
+    --writeChangesButtonColor: #961a11;
+    --backToButtonColor: #1b8386;
+
+    --fontColorDark: #808080;
+
+    --fileDirtyColor: #ff3030;
+
+    --markAsMergedButtonBackground: #19830f;
+    --markAsMergedButtonColor: #ffffff;
+
+    --mergedDivColor: #89d185;
+
+}
+
+.joe_slider:hover {
+    filter: brightness(130%);
+}
+
+.joe_slider:active {
+    background-color: rgb(255, 166, 0) !important;
+}
+
+#synchronize-div {
+    visibility: hidden;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    background-color: var(--backgroundDark);
+    top: 0;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+#jo_synchro_main_heading {
+    font-size: 20pt;
+    width: 100%;
+    color: var(--fontColorNormal);
+    user-select: none;
+    background-color: var(--backgroundLight);
+    padding: 2px;
+    border-bottom: 2px solid var(--slider);
+    /* background-color: green; */
+}
+
+#jo_synchro_below_main_heading {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    /* background-color: blue; */
+}
+
+#jo_synchro_leftDiv {
+    flex: 5;
+    display: flex;
+    flex-direction: column;
+    /* background-color: yellow; */
+}
+
+#jo_synchro_historyOuterDiv {
+    flex: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-left: 3px solid var(--slider);
+    padding: 0 5px;
+    box-sizing: border-box;
+    /* background-color: bisque; */
+}
+
+#jo_synchro_historyHeader, .jo_synchro_fileListHeader {
+    font-size: 10pt;
+    background-color: var(--backgroundHeading);
+    padding: 6px 2px;
+    user-select: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    color: var(--fontColorLight);
+}
+
+.jo_synchro_fileListHeaderContainerRight {
+    display: flex;
+    flex: 2 0;
+    flex-direction: column;
+}
+
+.jo_synchro_commitDialogDiv {
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    background-color: var(--backgroundHeading);
+}
+
+.jo_synchro_commitDialogCaption {
+    margin-bottom: 5px;
+}
+
+.jo_synchro_commitDialogTextarea {
+    height: 60px;
+    overflow: auto;
+    background-color: black;
+    color: white;
+}
+
+.jo_synchro_commitDialogButtonDiv {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    padding: 8px;
+}
+
+#jo_synchro_historyHeader>.jo_synchro_tabHeading, .jo_synchro_fileListHeader>.jo_synchro_tabHeading {
+    border-bottom: 1px solid var(--bottomdiv-tabheading-active);
+    width: fit-content;
+    padding-bottom: 8px;
+    margin-right: 5px;
+}
+
+#jo_synchro_leftUpper {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    /* background-color: gray; */
+}
+
+#jo_synchro_editor {
+    flex: 4;
+    position: relative;
+    /* background-color: lightblue */
+}
+
+#jo_synchro_editor>.joe_slider {
+    position:absolute;
+    z-index: 10;
+    top: -4px !important;
+    /* background-color: lightblue */
+}
+
+#jo_synchro_fileListOuter {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    /* background-color: lightgreen; */
+    overflow-y: scroll;
+    user-select: none;
+}
+
+#jo_synchro_fileListHeaderOuter, #jo_synchro_fileListOuter {
+    display: flex;
+    flex-direction: row;
+}
+
+.jo_synchro_fileList {
+    flex: 2 0;
+}
+
+.jo_synchro_scrollbarPlaceholder {
+    flex: 0 0 13px;
+    /* background-color: black; */
+}
+
+.jo_synchro_fileListHeaderCenter {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    flex: 1 0;
+    background-color: var(--backgroundHeading);
+    padding: 4px 0;
+    /* background-color: red; */
+}
+
+.jo_synchro_fileListButtonsLeft, .jo_synchro_fileListButtonsRight {
+    flex: 0.5 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.jo_synchro_fileListButtonsLeft {
+    border-left: 1px solid var(--slider);
+}
+
+.jo_synchro_fileListButtonsRight {
+    border-right: 1px solid var(--slider);
+}
+
+.jo_synchro_fileList {
+    flex: 2 0;
+}
+
+.jo_synchro_workspaceFileDiv {
+    display: flex;
+    flex-direction: row;
+}
+
+
+.jo_synchro_markAsMergedButton {
+    background-color: var(--markAsMergedButtonBackground);
+    color: var(--markAsMergedButtonColor);
+}
+
+.jo_synchro_mergedDiv {
+    color: var(--mergedDivColor);
+}
+
+#jo_synchro_fileListFooter {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 10px;
+    /* border-bottom: 2px solid var(--slider); */
+}
+
+.jo_synchro_button {
+    position: relative;
+    border: 1px solid var(--slider);
+    border-radius: 2px;
+    padding: 3px 6px;
+    cursor: pointer;
+    user-select: none;
+    width: fit-content;
+    height: fit-content;
+}
+
+.jo_synchro_button:hover {
+    filter: brightness(130%);
+}
+
+.jo_synchro_button:active {
+    filter: brightness(100%);
+}
+
+#jo_synchro_buttonsTopRight {
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+}
+
+#jo_synchro_exitButton {
+    background-color: var(--speedcontrol-grip);
+    color: var(--fontColorLight);
+    font-size: 10pt;
+}
+
+#jo_synchro_writeChangesButton {
+    background-color: var(--writeChangesButtonColor);
+    font-size: 10pt;
+    margin-right: 10px;
+}
+
+.jo_synchro_backToButton {
+    background-color: var(--backToButtonColor);
+    color: white;
+    font-size: 10pt;
+    margin-right: 10px;
+}
+
+.jo_synchro_arrowLeft {
+    padding-left: 16px;
+}
+
+.jo_synchro_arrowLeft:before {
+    content: " ";
+    position: absolute;
+    top: 3px;
+    left: 0px;
+    width: 16px;
+    height: 16px;
+    background-repeat: no-repeat;
+    background-image: url('data:image/svg+xml,%3C%3Fxml version="1.0" encoding="UTF-8" standalone="no"%3F%3E%3Csvg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns%23" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns%23" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" inkscape:version="1.0 (4035a4fb49, 2020-05-01)" sodipodi:docname="my-arrow-left-dark.svg" id="svg4" version="1.1" viewBox="0 0 11 11"%3E%3Cmetadata id="metadata10"%3E%3Crdf:RDF%3E%3Ccc:Work rdf:about=""%3E%3Cdc:format%3Eimage/svg+xml%3C/dc:format%3E%3Cdc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" /%3E%3Cdc:title%3E%3C/dc:title%3E%3C/cc:Work%3E%3C/rdf:RDF%3E%3C/metadata%3E%3Cdefs id="defs8" /%3E%3Csodipodi:namedview inkscape:current-layer="svg4" inkscape:window-maximized="1" inkscape:window-y="-9" inkscape:window-x="-9" inkscape:cy="5.3277471" inkscape:cx="4.071905" inkscape:zoom="47.761846" showgrid="false" id="namedview6" inkscape:window-height="1001" inkscape:window-width="1920" inkscape:pageshadow="2" inkscape:pageopacity="0" guidetolerance="10" gridtolerance="10" objecttolerance="10" borderopacity="1" bordercolor="%23666666" pagecolor="%23ffffff" /%3E%3Cpath d="M 3.5917969 2.8828125 L 0.72851562 5.3300781 L 3.5917969 7.9804688 L 4.3066406 7.3691406 L 2.7421875 5.8828125 L 9.8203125 5.8828125 L 9.8203125 4.8417969 L 2.7304688 4.8417969 L 4.3066406 3.4941406 L 3.5917969 2.8828125 z " style="fill:%23cccccc;stroke-width:0.999999" id="path2" /%3E%3C/svg%3E%0A');
+}
+
+.jo_synchro_arrowRight {
+    padding-right: 16px;
+}
+
+.jo_synchro_arrowRight:after {
+    content: " ";
+    position: absolute;
+    top: 3px;
+    right: 0px;
+    width: 16px;
+    height: 16px;
+    background-repeat: no-repeat;
+    background-image: url('data:image/svg+xml,%3C%3Fxml version="1.0" encoding="UTF-8" standalone="no"%3F%3E%3Csvg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns%23" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns%23" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" inkscape:version="1.0 (4035a4fb49, 2020-05-01)" sodipodi:docname="my-arrow-right-dark.svg" id="svg4" version="1.1" viewBox="0 0 11 11"%3E%3Cmetadata id="metadata10"%3E%3Crdf:RDF%3E%3Ccc:Work rdf:about=""%3E%3Cdc:format%3Eimage/svg+xml%3C/dc:format%3E%3Cdc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" /%3E%3Cdc:title%3E%3C/dc:title%3E%3C/cc:Work%3E%3C/rdf:RDF%3E%3C/metadata%3E%3Cdefs id="defs8" /%3E%3Csodipodi:namedview inkscape:current-layer="svg4" inkscape:window-maximized="1" inkscape:window-y="-9" inkscape:window-x="-9" inkscape:cy="5.3277471" inkscape:cx="4.071905" inkscape:zoom="47.761846" showgrid="false" id="namedview6" inkscape:window-height="1001" inkscape:window-width="1920" inkscape:pageshadow="2" inkscape:pageopacity="0" guidetolerance="10" gridtolerance="10" objecttolerance="10" borderopacity="1" bordercolor="%23666666" pagecolor="%23ffffff" /%3E%3Cpath d="M 6.9570312,2.8828125 9.8203125,5.3300781 6.9570312,7.9804688 6.2421875,7.3691406 7.8066406,5.8828125 H 0.72851562 V 4.8417969 H 7.8183593 L 6.2421875,3.4941406 Z" style="fill:%23cccccc;stroke-width:0.999999" id="path2" /%3E%3C/svg%3E%0A');
+}
+
+.jo_synchro_listDiv {
+    height: 28px;
+    min-height: 28px;
+    border-bottom: 1px dotted var(--slider);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+}
+
+.jo_synchro_buttonDiv {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+}
+
+.jo_synchro_buttonLeftDiv {
+    justify-content: flex-end;
+}
+
+.jo_synchro_buttonRightDiv {
+    justify-content: flex-start;
+}
+
+.jo_synchro_5px_spacer {
+    height: 4px;
+    width: 5px;
+}
+
+.jo_synchro_filename {
+    padding: 1px 5px;
+}
+
+.jo_dirty>.jo_synchro_filename {
+    color: var(--fileDirtyColor);
+}
+
+.jo_synchro_withChanges {
+    color: var(--fileDirtyColor);
+}
+
+.jo_synchro_fileVersion {
+    color: var(--fontColorDark);
+    padding-left: 5px;
+}
+
+.jo_synchro_hoverLine {
+    background-color: var(--file-hover);
+}
+
+.jo_synchro_hoverActiveLine {
+    filter: brightness(130%);
+}
+
+.jo_synchro_activeLine {
+    background-color: var(--file-active);
+}
+
+div.jo_synchro_activeLine.jo_synchro_hoverLine {
+    background-color: var(--file-active-hover);   
+}
+
+.jo_synchro_commitButton, .jo_synchro_updateButton {
+    background-color: var(--updateButtonBackground);
+    color: var(--updateButtonColor);
+}
+
+.jo_synchro_createButton {
+    background-color: var(--createButtonBackground);
+    color: var(--createButtonColor);
+}
+
+.jo_synchro_deleteButton {
+    background-color: var(--deleteButtonBackground);
+    color: var(--deleteButtonColor);
+}
+
+#historyScrollDiv {
+    flex: 1;
+    width: 100%;
+}
+
+.jo_synchro_historyElement {
+    width: 100%;
+    border-bottom: 1px solid var(--slider);
+    cursor: pointer;
+    user-select: none;
+}
+
+.jo_synchro_historyElement:hover {
+    background-color: var(--file-hover);
+}
+
+.jo_synchro_historyElement:active {
+    filter: brightness(130%);
+}
+
+
+.jo_synchro_historyElement.active {
+    background-color: var(--file-active);
+}
+
+.jo_synchro_historyElement.active:hover {
+    background-color: var(--file-active-hover);
+}
+
+.jo_synchro_historyElementLine1 {
+    display: flex;
+    flex-direction: line;
+    width: 100%;
+    justify-content: space-between;   
+}
+
+.jo_synchro_historyElementLine2 {
+    width: 100%;
+    color: var(--fontColorDark);
+}
+
+.jo_synchro_historyElementLine3 {
+    width: 100%;
+    font-size: 70%;
+}
+
+[draggable=true] {
+    cursor: move;
+  }
+ 
+.jo_synchro_dragZone {
+    background-color: #648b0980
+}

@@ -35,6 +35,7 @@ Im Header der Webseite müssen die verwendeten Bibliotheken geladen werden:
     <script type="module" src="js.webpack/javaOnline-embedded.js"></script>
 
 </head>
+```
 
 Die Bestandteile des verwendeten Monaco Editors werden dynamisch aus dem Unterverzeichnis `lib/monaco-editor/dev`nachgeladen. Falls dieser Ort ungünstig ist, kann er durch Setzen der Variablen `window.monacoEditorPath` geändert werden. Ihr Defaultwert ist `"lib/monaco-editor/dev/vs"`.
 

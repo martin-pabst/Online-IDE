@@ -9,8 +9,8 @@
 /babel.config.js
 /htdocs/assets/mp3
 /htdocs/assets/fonts
-/htdocs/javaOnline-apiDoc*
-/htdocs/javaOnline.css
-/htdocs/javaOnline.css.map
-/htdocs/javaOnline.js
-/htdocs/javaOnline.js.map
+/htdocs/js.webpack/javaOnline-apiDoc*
+/htdocs/js.webpack/javaOnline.css
+/htdocs/js.webpack/javaOnline.css.map
+/htdocs/js.webpack/javaOnline.js
+/htdocs/js.webpack/javaOnline.js.map

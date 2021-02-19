@@ -4,7 +4,8 @@
 /*.7z
 /*.zip
 /material
-/upload*.cmd
+/upload.cmd
+/upload_csg.cmd
 /package-lock.json
 /babel.config.js
 /htdocs/assets/mp3

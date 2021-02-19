@@ -82,7 +82,10 @@ class Quadrat extends Rectangle {
 </script>
 <script type="text/plain" title="Tipp" data-type="hint">
 ## Tipp:
-Tipps werden in einer einfachen Markdown-Syntax verfasst, die **Fettschrift** u.ä. ermöglicht, aber auch Syntax-Highlighting im Fließtext (``class Quadrat extends Rectangle { }``) und in ganzen Absätzen:
+Tipps werden in einer einfachen Markdown-Syntax 
+verfasst, die **Fettschrift** u.ä. ermöglicht, aber
+ auch Syntax-Highlighting im Fließtext (``class Quadrat extends Rectangle { }``) 
+ und in ganzen Absätzen:
 /```  (den / weglassen!)
 double v = Math.random()*8 + 2; // Betrag der Geschwindigkeit zwischen 2 und 10
 double w = Math.random()*2*Math.PI; // Winkel zwischen 0 und 2*PI

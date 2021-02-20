@@ -318,6 +318,10 @@ export class GroupHelper extends ShapeHelper {
             return;
         }
 
+        if(this.hasCircularReference(shape)){
+            return;
+        }
+
         this.shapes.push(shape);
 
         if (shapeHelper.belongsToGroup != null) {
@@ -466,5 +470,21 @@ export class GroupHelper extends ShapeHelper {
 
     }
 
+    hasCircularReference(shapeToAdd: RuntimeObject){
+        let gh = shapeToAdd.intrinsicData["Actor"];
+        if(gh instanceof GroupHelper){
+            if(gh == this){
+                this.worldHelper.interpreter.throwException("Eine Group darf sich nicht selbst enthalten!");
+                return true;
+            } else {
+                for(let shape of gh.shapes){
+                    if(this.hasCircularReference(shape)){
+                        return true;
+                    };
+                }
+            }
+        }
+        return false;
+    }
 
 }

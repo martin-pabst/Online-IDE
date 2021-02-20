@@ -144,6 +144,8 @@ export class CircleHelper extends FilledShapeHelper {
         if (this.fillColor != null) {
             g.endFill();
         }
+
+        g.calculateBounds();
     };
 
     setRadius(r: number) {

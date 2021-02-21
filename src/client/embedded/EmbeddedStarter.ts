@@ -150,7 +150,7 @@ jQuery(function () {
     //@ts-ignore
     if(window.monacoEditorPath != null){
         //@ts-ignore
-        prefix = window.monacoEditorPath;
+        editorPath = window.monacoEditorPath;
     }
 
     //@ts-ignore

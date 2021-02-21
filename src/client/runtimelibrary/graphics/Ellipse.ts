@@ -89,17 +89,6 @@ export class EllipseHelper extends FilledShapeHelper {
         this.centerXInitial = mx;
         this.centerYInitial = my;
 
-        this.hitPolygonInitial = [];
-
-        let deltaAlpha = Math.PI/8;
-        for(let i = 0; i < 16; i++){
-            let alpha = deltaAlpha * i;
-            this.hitPolygonInitial.push({
-                x: mx + rx*Math.cos(alpha),
-                y: my + ry*Math.sin(alpha)
-            });
-        }
-
         this.render();
         this.addToDefaultGroup();
 
@@ -119,6 +108,17 @@ export class EllipseHelper extends FilledShapeHelper {
 
     
     render(): void {
+
+        this.hitPolygonInitial = [];
+
+        let deltaAlpha = Math.PI/8;
+        for(let i = 0; i < 16; i++){
+            let alpha = deltaAlpha * i;
+            this.hitPolygonInitial.push({
+                x: this.mx + this.rx*Math.cos(alpha),
+                y: this.my + this.ry*Math.sin(alpha)
+            });
+        }
 
         let g: PIXI.Graphics = <any>this.displayObject;
 

@@ -89,17 +89,6 @@ export class CircleHelper extends FilledShapeHelper {
         this.centerXInitial = mx;
         this.centerYInitial = my;
 
-        this.hitPolygonInitial = [];
-
-        let deltaAlpha = Math.PI / 8;
-        for (let i = 0; i < 16; i++) {
-            let alpha = deltaAlpha * i;
-            this.hitPolygonInitial.push({
-                x: mx + r * Math.cos(alpha),
-                y: my + r * Math.sin(alpha)
-            });
-        }
-
         this.render();
         this.addToDefaultGroup();
 
@@ -119,6 +108,18 @@ export class CircleHelper extends FilledShapeHelper {
 
 
     render(): void {
+
+        this.hitPolygonInitial = [];
+
+        let deltaAlpha = Math.PI / 8;
+        for (let i = 0; i < 16; i++) {
+            let alpha = deltaAlpha * i;
+            this.hitPolygonInitial.push({
+                x: this.mx + this.r * Math.cos(alpha),
+                y: this.my + this.r * Math.sin(alpha)
+            });
+        }
+        this.hitPolygonDirty = true;
 
         let g: PIXI.Graphics = <any>this.displayObject;
 
@@ -145,7 +146,6 @@ export class CircleHelper extends FilledShapeHelper {
             g.endFill();
         }
 
-        g.calculateBounds();
     };
 
     setRadius(r: number) {

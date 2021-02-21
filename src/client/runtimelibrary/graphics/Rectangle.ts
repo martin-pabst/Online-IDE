@@ -120,10 +120,6 @@ export class RectangleHelper extends FilledShapeHelper {
         this.centerXInitial = left + width / 2;
         this.centerYInitial = top + height / 2;
 
-        this.hitPolygonInitial = [
-            { x: left, y: top }, { x: left, y: top + height }, { x: left + width, y: top + height }, { x: left + width, y: top }
-        ];
-
         this.render();
 
         this.addToDefaultGroup();
@@ -143,6 +139,11 @@ export class RectangleHelper extends FilledShapeHelper {
     }
 
     render(): void {
+
+        this.hitPolygonInitial = [
+            { x: this.left, y: this.top }, { x: this.left, y: this.top + this.height },
+             { x: this.left + this.width, y: this.top + this.height }, { x: this.left + this.width, y: this.top }
+        ];
 
         let g: PIXI.Graphics = <any>this.displayObject;
 

@@ -131,6 +131,7 @@ export type ClassData = {
 export type SchoolData = {
     id: number,
     name: string,
+    kuerzel: string,
     classes: ClassData[]
     usersWithoutClass: UserData[]
 }
@@ -213,7 +214,7 @@ export type CRUDClassRequest = {
 export type CRUDSchoolRequest = {
     type: "create" | "update" | "delete",
     data?: SchoolData, // for create and update
-    ids?: number[], // for delete
+    id?: number, // for delete
 }
 
 export type BulkCreateUsersRequest = {

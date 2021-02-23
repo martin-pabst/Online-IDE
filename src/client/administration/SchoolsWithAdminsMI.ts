@@ -50,6 +50,7 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
                 columns: [
                     { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
                     { field: 'name', caption: 'Bezeichnung', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
+                    { field: 'kuerzel', caption: 'Kürzel', size: '10%', sortable: true, resizable: true, editable: { type: 'text', maxlength: "10" } },
                     { field: 'numberOfClasses', caption: 'Klassen', size: '30%', sortable: true, resizable: true },
                     { field: 'numberOfUsers', caption: 'User', size: '30%', sortable: true, resizable: true },
                 ],
@@ -189,40 +190,6 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
                 });
             });
 
-
-            // w2prompt({
-            //     label: 'Neues Passwort',
-            //     value: '',
-            //     attrs: 'style="width: 200px" type="password"',
-            //     title: "Passwort für " + admin.rufname + " " + admin.familienname + " (" + admin.username + ")",
-            //     ok_text: "OK",
-            //     cancel_text: "Abbrechen",
-            //     width: 600,
-            //     height: 200
-            // })
-            //     .change(function (event) {
-
-            //     })
-            //     .ok(function (password) {
-            //         admin.password = password;
-
-            //         let request: CRUDUserRequest = {
-            //             type: "update",
-            //             data: admin,
-            //         }
-
-            //         ajax("CRUDUser", request, (response: CRUDResponse) => {
-
-            //             w2alert('Das Passwort für ' + admin.rufname + " " + admin.familienname + " (" + admin.username + ") wurde erfolgreich geändert.");
-
-            //         }, () => {
-            //             w2alert('Fehler beim Ändern des Passworts!');
-            //         });
-
-
-            //     });
-
-            // jQuery('#w2prompt').attr("type", "password");
         }
 
     }
@@ -243,7 +210,7 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
         let request: CRUDSchoolRequest = {
             type: "delete",
             data: null,
-            ids: recIds,
+            id: recIds[0],
         }
 
         ajax("CRUDSchool", request, (response: CRUDResponse) => {
@@ -282,6 +249,7 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
             data: {
                 id: -1,
                 name: "Name der Schule",
+                kuerzel: "kuerzel",
                 classes: [],
                 usersWithoutClass: []
             },
@@ -374,8 +342,9 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
             this.schoolGrid.add(this.schoolDataList);
 
             this.schoolGrid.refresh();
-        }, () => {
-            w2alert('Fehler beim Holen der Daten.');
+        }, (error) => {
+            w2alert('Fehler beim Holen der Daten: ' + error);
+            debugger;
         });
 
 

@@ -627,7 +627,8 @@ export class MainEmbedded implements MainBase {
 
                 this.compiler.compile(this.currentWorkspace.moduleStore);
 
-                let errors = this.bottomDiv?.errorManager?.showErrors(this.currentWorkspace);
+                let errors = this.
+                bottomDiv?.errorManager?.showErrors(this.currentWorkspace);
 
                 this.editor.onDidChangeCursorPosition(null); // mark occurrencies of symbol under cursor
 

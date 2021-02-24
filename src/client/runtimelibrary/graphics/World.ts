@@ -761,6 +761,15 @@ export class WorldHelper {
 
     addMouseListener(listener: RuntimeObject) {
 
+        /*
+            If a shape is registered as MouseListener of the world-object, it gets all mouse-events twice. 
+            => Deregister shape as mouseListenerShape and register it as mouse listener for the world object.
+        */
+        let index: number = this.mouseListenerShapes.findIndex((mls) => {return mls.shapeHelper.runtimeObject == listener});
+        if(index >= 0){
+            this.mouseListenerShapes.splice(index, 1);
+        }
+
         let listenerTypes = [
             { identifier: "MouseUp", signature: "(double, double, int)" },
             { identifier: "MouseDown", signature: "(double, double, int)" },

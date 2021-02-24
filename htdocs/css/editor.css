@@ -143,6 +143,16 @@ body .monaco-editor-hover .monaco-tokenized-source {
     justify-content: center;
 }
 
+#login-heading {
+    text-align: center;
+    font-size: 400%;
+    margin-top: 40px;
+}
+
+#login-footer {
+    margin-bottom: 40px;
+}
+
 #login-spinner {
     height: 60px;
 }
@@ -191,6 +201,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
 
 #login-button {
     position: absolute;
+    border-radius: 5px;
     right: 2em;
     bottom: 1em;
     height: 2em;

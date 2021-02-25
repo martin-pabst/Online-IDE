@@ -15,6 +15,20 @@
 
 }
 
+.jo_rightdiv-rightside-container {
+    position: absolute;
+    top: 4px; 
+    right: 4px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.jo_coordinates {
+    display: none;
+    margin-right: 6px;
+}
+
 #rightdiv-inner{
     position: absolute;
     top: 0;
@@ -245,11 +259,6 @@
     border: 1px solid var(--speedcontrol-display-border);
 }
 
-.jo_whole-window{
-    position: absolute;
-    right: 8px;
-    top: 4px;
-}
 
 .jo_control-container{
     position: absolute;

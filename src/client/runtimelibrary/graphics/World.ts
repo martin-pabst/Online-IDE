@@ -309,6 +309,8 @@ export class WorldHelper {
     initialWidth: number;
     initialHeight: number;
 
+    $coordinateDiv: JQuery<HTMLElement>;
+
     public scaledTextures: { [name: string]: PIXI.Texture } = {};
 
     tickerFunction: (t: number) => void;
@@ -341,6 +343,8 @@ export class WorldHelper {
 
         this.$containerOuter = jQuery('<div></div>');
         let $graphicsDiv = this.module.main.getInterpreter().printManager.getGraphicsDiv();
+        this.$coordinateDiv = this.module.main.getRightDiv().$rightDiv.find(".jo_coordinates");
+
 
         let f = () => {
             let $jo_tabs = $graphicsDiv.parents(".jo_tabs");
@@ -456,6 +460,27 @@ export class WorldHelper {
 
             });
         }
+
+        let $coordinateDiv = this.$coordinateDiv;
+
+        this.$containerInner.on("mousemove", (e) => {
+            let x = width * e.offsetX / this.$containerInner.width();
+            let y = height * e.offsetY / this.$containerInner.height();
+
+            let p = new PIXI.Point(x, y);
+            this.stage.localTransform.applyInverse(p, p);
+            x = Math.round(p.x);
+            y = Math.round(p.y);
+            $coordinateDiv.text(`(${x}/${y})`);
+        });
+
+        this.$containerInner.on("mouseenter", (e) => {
+            $coordinateDiv.show();
+        });
+
+        this.$containerInner.on("mouseleave", (e) => {
+            $coordinateDiv.hide();
+        });
 
         this.module.main.getRightDiv()?.adjustWidthToWorld();
 
@@ -647,6 +672,7 @@ export class WorldHelper {
         this.module.main.getInterpreter().printManager.getGraphicsDiv().hide();
         this.interpreter.timerExtern = false;
         this.interpreter.worldHelper = null;
+        this.$coordinateDiv.hide();
     }
 
     onMouseEvent(listenerType: string, x: number, y: number, button: number) {

@@ -10,7 +10,7 @@ import { RightDiv } from "../main/gui/RightDiv.js";
 import { MainBase } from "../main/MainBase.js";
 import { Workspace } from "../workspace/Workspace.js";
 import { JOScript } from "./EmbeddedStarter.js";
-import { makeTabs, openContextMenu } from "../tools/HtmlTools.js";
+import { makeDiv, makeTabs, openContextMenu } from "../tools/HtmlTools.js";
 import { EmbeddedSlider } from "./EmbeddedSlider.js";
 import { TilingSprite } from "pixi.js";
 import { EmbeddedFileExplorer } from "./EmbeddedFileExplorer.js";
@@ -445,6 +445,11 @@ export class MainEmbedded implements MainBase {
 
         this.rightDiv = new RightDiv(this, this.$rightDivInner);
         this.rightDiv.initGUI();
+
+        let $rightSideContainer = jQuery('<div class="jo_rightdiv-rightside-container">');
+        let $coordinates = jQuery('<div class="jo_coordinates">(0/0)</div>');
+        this.$rightDivInner.append($rightSideContainer);
+        $rightSideContainer.append($coordinates);
 
         this.debugger = new Debugger(this, this.$debuggerDiv, null);
 

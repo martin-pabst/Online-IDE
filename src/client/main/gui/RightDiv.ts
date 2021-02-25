@@ -15,7 +15,7 @@ export class RightDiv {
     $tabs: JQuery<HTMLElement>;
     $headings: JQuery<HTMLElement>;
 
-    constructor(private main: MainBase, private $rightDiv: JQuery<HTMLElement>) {
+    constructor(private main: MainBase, public $rightDiv: JQuery<HTMLElement>) {
 
         this.$tabs = $rightDiv.find('.jo_tabs');
         this.$headings = $rightDiv.find('.jo_tabheadings');

@@ -125,11 +125,13 @@ export class ClassDiagram extends Diagram {
         if (this.currentWorkspaceId != workspace.id) {
             if (this.currentWorkspaceId != null) {
                 let cbs = this.classBoxesRepository[this.currentWorkspaceId];
-                for (let cb of cbs.active) {
-                    cb.detach();
-                }
-                for (let cb of cbs.inactive) {
-                    cb.detach();
+                if(cbs != null){
+                    for (let cb of cbs.active) {
+                        cb.detach();
+                    }
+                    for (let cb of cbs.inactive) {
+                        cb.detach();
+                    }
                 }
             }
 

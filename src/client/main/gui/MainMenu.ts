@@ -151,7 +151,7 @@ export class MainMenu {
                             },
                             {
                                 identifier: "API-Dokumentation",
-                                link: "https://www.java.mathe-pabst.de/doku.php?id=api:documentation:start"
+                                link: "https://www.learnj.de/doku.php?id=api:documentation:start"
                                 // link: "api_documentation.html"
                             },
                             {
@@ -161,15 +161,15 @@ export class MainMenu {
                             { identifier: "-" },
                             {
                                 identifier: "Interaktives Java-Tutorial mit vielen Beispielen",
-                                link: "https://www.java.mathe-pabst.de/doku.php"
+                                link: "https://www.learnj.de/doku.php"
                             },
                             {
                                 identifier: "Java-Online Changelog",
-                                link: "https://www.java.mathe-pabst.de/doku.php?id=javaonline:changelog"
+                                link: "https://www.learnj.de/doku.php?id=javaonline:changelog"
                             },
                             {
                                 identifier: "Java-Online Roadmap",
-                                link: "https://www.java.mathe-pabst.de/doku.php?id=javaonline:roadmap"
+                                link: "https://www.learnj.de/doku.php?id=javaonline:roadmap"
                             },
                             { identifier: "-" },
                             {
@@ -187,6 +187,11 @@ export class MainMenu {
                                     let passwortChanger = new PasswordChanger(that.main);
                                     passwortChanger.show();
                                 }
+                            },
+                            { identifier: "-" },
+                            {
+                                identifier: "Über die Online-IDE...",
+                                link: "https://www.learnj.de/doku.php?id=javaonline:ueber"
                             }
 
                         ]

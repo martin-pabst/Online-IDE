@@ -207,6 +207,32 @@ export class GroupClass extends Klass {
 
             }, false, false, 'Gibt zurück, wie viele Elemente in der Gruppe enthalten sind.', false));
 
+        this.addMethod(new Method("empty", new Parameterlist([
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: GroupHelper = <GroupHelper>o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("empty")) return;
+
+                sh.removeAllChidren();
+
+            }, false, false, 'Entfernt alle Elemente aus der Gruppe, löscht die Elemente aber nicht.', false));
+
+        this.addMethod(new Method("destroyAllChildren", new Parameterlist([
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: GroupHelper = <GroupHelper>o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("empty")) return;
+
+                sh.destroyChildren();
+
+            }, false, false, 'Löscht alle Elemente der Gruppe, nicht aber die Gruppe selbst.', false));
+
 
         (<Klass>shapeType).addMethod(new Method("getCollidingShapes", new Parameterlist([
             { identifier: "group", type: this, declaration: null, usagePositions: null, isFinal: true },
@@ -255,7 +281,7 @@ export class GroupHelper extends ShapeHelper {
     }
 
     removeElementAt(index: number) {
-        if(index < 0 || index >= this.shapes.length){
+        if (index < 0 || index >= this.shapes.length) {
             this.worldHelper.interpreter.throwException("In der Gruppe gibt es kein Element mit Index " + index + ".");
             return;
         }
@@ -265,7 +291,7 @@ export class GroupHelper extends ShapeHelper {
     }
 
     getElement(index: number): RuntimeObject {
-        if(index < 0 || index >= this.shapes.length){
+        if (index < 0 || index >= this.shapes.length) {
             this.worldHelper.interpreter.throwException("In der Gruppe gibt es kein Element mit Index " + index + ".");
             return;
         }
@@ -318,7 +344,7 @@ export class GroupHelper extends ShapeHelper {
             return;
         }
 
-        if(this.hasCircularReference(shape)){
+        if (this.hasCircularReference(shape)) {
             return;
         }
 
@@ -329,12 +355,12 @@ export class GroupHelper extends ShapeHelper {
         }
 
         shapeHelper.belongsToGroup = this;
-        
+
         let inverse = new PIXI.Matrix().copyFrom(this.displayObject.transform.worldTransform);
         inverse.invert();
-        shapeHelper.displayObject.localTransform.prepend(inverse.prepend(this.worldHelper.stage.localTransform));     
-        shapeHelper.displayObject.transform.onChange();   
-        
+        shapeHelper.displayObject.localTransform.prepend(inverse.prepend(this.worldHelper.stage.localTransform));
+        shapeHelper.displayObject.transform.onChange();
+
         (<PIXI.Container>this.displayObject).addChild(shapeHelper.displayObject);
         shapeHelper.displayObject.updateTransform();
 
@@ -357,38 +383,58 @@ export class GroupHelper extends ShapeHelper {
         this.centerYInitial = p1.y;
     }
 
+    public removeAllChidren() {
+        let index: number = 0;
+        for (let shape of this.shapes) {
+            this.deregister(shape, index++);
+        }
+        this.shapes = [];
+    }
+
     public remove(shape: RuntimeObject) {
         let index = this.shapes.indexOf(shape);
         if (index >= 0) {
             this.shapes.splice(index, 1);
-            
-            let shapeHelper: ShapeHelper = shape.intrinsicData['Actor'];
-            
-            let transform = new PIXI.Matrix().copyFrom(shapeHelper.displayObject.transform.worldTransform);
-            
-            (<PIXI.Container>this.displayObject).removeChildAt(index);
 
-            let inverseStageTransform = new PIXI.Matrix().copyFrom(this.worldHelper.stage.localTransform);
-            inverseStageTransform.invert();
-            shapeHelper.displayObject.localTransform.identity();
-            shapeHelper.displayObject.localTransform.append(transform.prepend(inverseStageTransform));
-            shapeHelper.displayObject.transform.onChange();
-            this.worldHelper.stage.addChild(shapeHelper.displayObject);
-            shapeHelper.displayObject.updateTransform();
-            shapeHelper.belongsToGroup = null;
+            this.deregister(shape, index);
         }
     }
+
+    private deregister(shape: RuntimeObject, index: number) {
+        let shapeHelper: ShapeHelper = shape.intrinsicData['Actor'];
+
+        let transform = new PIXI.Matrix().copyFrom(shapeHelper.displayObject.transform.worldTransform);
+
+        (<PIXI.Container>this.displayObject).removeChildAt(index);
+
+        let inverseStageTransform = new PIXI.Matrix().copyFrom(this.worldHelper.stage.localTransform);
+        inverseStageTransform.invert();
+        shapeHelper.displayObject.localTransform.identity();
+        shapeHelper.displayObject.localTransform.append(transform.prepend(inverseStageTransform));
+        shapeHelper.displayObject.transform.onChange();
+        this.worldHelper.stage.addChild(shapeHelper.displayObject);
+        shapeHelper.displayObject.updateTransform();
+        shapeHelper.belongsToGroup = null;
+
+    }
+
 
     public render(): void {
     }
 
     public destroy(): void {
+        this.destroyChildren();
+        super.destroy();
+    }
+
+    public destroyChildren(): void {
         for (let shape of this.shapes.slice(0)) {
             let sh: ShapeHelper = <ShapeHelper>shape.intrinsicData["Actor"];
             sh.destroy();
         }
-        super.destroy();
+        this.shapes = [];
     }
+
 
     collidesWith(shapeHelper: ShapeHelper) {
         for (let shape of this.shapes) {
@@ -400,7 +446,7 @@ export class GroupHelper extends ShapeHelper {
         return false;
     }
 
-    setHitPolygonDirty(dirty: boolean){
+    setHitPolygonDirty(dirty: boolean) {
         for (let shape of this.shapes) {
             let sh: ShapeHelper = <ShapeHelper>shape.intrinsicData["Actor"];
             sh.setHitPolygonDirty(dirty);
@@ -470,15 +516,15 @@ export class GroupHelper extends ShapeHelper {
 
     }
 
-    hasCircularReference(shapeToAdd: RuntimeObject){
+    hasCircularReference(shapeToAdd: RuntimeObject) {
         let gh = shapeToAdd.intrinsicData["Actor"];
-        if(gh instanceof GroupHelper){
-            if(gh == this){
+        if (gh instanceof GroupHelper) {
+            if (gh == this) {
                 this.worldHelper.interpreter.throwException("Eine Group darf sich nicht selbst enthalten!");
                 return true;
             } else {
-                for(let shape of gh.shapes){
-                    if(this.hasCircularReference(shape)){
+                for (let shape of gh.shapes) {
+                    if (this.hasCircularReference(shape)) {
                         return true;
                     };
                 }

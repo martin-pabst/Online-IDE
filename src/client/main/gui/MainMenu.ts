@@ -155,6 +155,11 @@ export class MainMenu {
                                 // link: "api_documentation.html"
                             },
                             {
+                                identifier: "API-Verzeichnis",
+                                //link: "https://www.learnj.de/doku.php?id=api:documentation:start"
+                                link: "api_documentation.html"
+                            },
+                            {
                                 identifier: "Tastaturkommandos (Shortcuts)",
                                 link: "shortcuts.html"
                             },

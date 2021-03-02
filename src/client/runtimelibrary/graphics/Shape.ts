@@ -271,6 +271,11 @@ export class ShapeClass extends Klass {
 
                 if (sh.testdestroyed("collidesWith")) return;
 
+                if(sh1.isDestroyed){
+                    sh.worldHelper.interpreter.throwException("Die der Methode collidesWith als Parameter übergebene Figur ist bereits zerstört.");
+                    return;
+                }
+
                 return sh.collidesWith(sh1);
 
             }, false, false, "Gibt genau dann true zurück, wenn das Grafikobjekt und das andere Grafikobjekt kollidieren.", false));

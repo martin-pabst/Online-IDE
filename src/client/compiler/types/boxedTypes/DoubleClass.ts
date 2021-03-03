@@ -134,7 +134,7 @@ export class DoubleClass extends Klass {
         this.addMethod(new Method("isNaN", new Parameterlist([
         ]), booleanPrimitiveType,
             (parameters) => {
-                return parameters[0].value == NaN;
+                return Number.isNaN(parameters[0].value)
             }, false, false, "Gibt genau dann true zurück, falls das Objekt NaN (not a Number) ist."));
 
         this.addMethod(new Method("isInfinite", new Parameterlist([

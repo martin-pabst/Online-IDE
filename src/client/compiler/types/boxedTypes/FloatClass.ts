@@ -128,7 +128,7 @@ export class FloatClass extends Klass {
             { identifier: "f", type: floatPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), booleanPrimitiveType,
             (parameters) => {
-                return parameters[1].value == NaN;
+                return Number.isNaN(parameters[1].value)
             }, false, true, "Gibt genau dann true zurück, falls die übergebene float-Zahl NaN (not a Number) ist."));
 
         this.addMethod(new Method("isNaN", new Parameterlist([

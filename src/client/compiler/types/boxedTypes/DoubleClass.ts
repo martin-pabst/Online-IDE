@@ -128,7 +128,7 @@ export class DoubleClass extends Klass {
             { identifier: "f", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), booleanPrimitiveType,
             (parameters) => {
-                return parameters[1].value == NaN;
+                return Number.isNaN(parameters[1].value)
             }, false, true, "Gibt genau dann true zurück, falls die übergebene double-Zahl NaN (not a Number) ist."));
 
         this.addMethod(new Method("isNaN", new Parameterlist([

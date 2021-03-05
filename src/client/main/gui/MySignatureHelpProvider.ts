@@ -23,7 +23,7 @@ export class MySignatureHelpProvider implements monaco.languages.SignatureHelpPr
         context: monaco.languages.SignatureHelpContext):
         monaco.languages.ProviderResult<monaco.languages.SignatureHelpResult> {
 
-        let isConsole = (model == this.main.getBottomDiv()?.console?.editor.getModel());
+        let isConsole = (model == this.main.getBottomDiv()?.console?.editor?.getModel());
 
         if (!isConsole && model != this.main.getMonacoEditor().getModel()) {
             return;

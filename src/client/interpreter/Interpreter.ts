@@ -1310,7 +1310,8 @@ export class Interpreter {
                 break;
             case TokenType.addToArray:
                 stackTop -= node.numberOfElementsToAdd;
-                let values: Value[] = stack.splice(stackTop + 1, node.numberOfElementsToAdd);
+                // let values: Value[] = stack.splice(stackTop + 1, node.numberOfElementsToAdd);
+                let values: Value[] = stack.splice(stackTop + 1, node.numberOfElementsToAdd).map(tvo => ({type: tvo.type, value: tvo.value}));                
                 stack[stackTop].value = (<any[]>stack[stackTop].value).concat(values);
                 break;
             case TokenType.pushEnumValue:

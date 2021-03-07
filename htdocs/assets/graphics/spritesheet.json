@@ -72,6 +72,30 @@
         "y": 0.5
       }
     },
+    "Werkzeug#0": {
+      "frame": {
+        "x": 949,
+        "y": 425,
+        "w": 32,
+        "h": 32
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
     "Minesweeper#0": {
       "frame": {
         "x": 288,
@@ -2738,7 +2762,7 @@
     },
     "Boulders#0": {
       "frame": {
-        "x": 949,
+        "x": 983,
         "y": 425,
         "w": 32,
         "h": 32
@@ -2762,8 +2786,8 @@
     },
     "Boulders#1": {
       "frame": {
-        "x": 983,
-        "y": 425,
+        "x": 974,
+        "y": 758,
         "w": 32,
         "h": 32
       },
@@ -2787,7 +2811,7 @@
     "Boulders#2": {
       "frame": {
         "x": 974,
-        "y": 758,
+        "y": 819,
         "w": 32,
         "h": 32
       },
@@ -2811,30 +2835,6 @@
     "Boulders#3": {
       "frame": {
         "x": 974,
-        "y": 819,
-        "w": 32,
-        "h": 32
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 32,
-        "h": 32
-      },
-      "sourceSize": {
-        "w": 32,
-        "h": 32
-      },
-      "pivot": {
-        "x": 0.5,
-        "y": 0.5
-      }
-    },
-    "Boulders#4": {
-      "frame": {
-        "x": 974,
         "y": 853,
         "w": 32,
         "h": 32
@@ -2856,7 +2856,7 @@
         "y": 0.5
       }
     },
-    "Boulders#5": {
+    "Boulders#4": {
       "frame": {
         "x": 1078,
         "y": 927,
@@ -2880,7 +2880,7 @@
         "y": 0.5
       }
     },
-    "Boulders#6": {
+    "Boulders#5": {
       "frame": {
         "x": 1078,
         "y": 961,
@@ -2904,7 +2904,7 @@
         "y": 0.5
       }
     },
-    "Boulders#7": {
+    "Boulders#6": {
       "frame": {
         "x": 0,
         "y": 1025,
@@ -2928,7 +2928,7 @@
         "y": 0.5
       }
     },
-    "Boulders#8": {
+    "Boulders#7": {
       "frame": {
         "x": 34,
         "y": 1025,
@@ -2952,9 +2952,33 @@
         "y": 0.5
       }
     },
-    "Boulders#9": {
+    "Boulders#8": {
       "frame": {
         "x": 68,
+        "y": 1025,
+        "w": 32,
+        "h": 32
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Boulders#9": {
+      "frame": {
+        "x": 102,
         "y": 1025,
         "w": 32,
         "h": 32

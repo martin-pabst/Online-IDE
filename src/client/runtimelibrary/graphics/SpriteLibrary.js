@@ -2,6 +2,7 @@ var SpriteLibrary = [
     {filename: "ship_1.png", name: "Ship_1", index: 0, scale: 0.2},
     {filename: "ship_2.png", name: "Ship_1", index: 1, scale: 0.2},
     {filename: "ship_3.png", name: "Ship_1", index: 2, scale: 0.2},
+    {filename: "Schaufel.png", name: "Werkzeug", index: 0, scale: 1.0},
     {filename: "minesweeper/minesweeper.png", name: "Minesweeper", tilesX: 20, tilesY: 1, spacingX: 1, scale: 1.0, index: 0},
     {filename: "minesweeper/minesweeper-numbers.png", name: "Minesweeper", tilesX: 10, tilesY: 1, scale: 1.0, index: 22},
     // { filename: "Raumschiff_Johanna/SpaceshipStandard.png", name: "Ship_Johanna", index: 0, scale: 0.2, indexName: "Standard" },

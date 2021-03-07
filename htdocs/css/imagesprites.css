@@ -19,6 +19,13 @@
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
+.Werkzeug_0{
+   width: 32px;
+   height: 32px;
+   background-position: -949px -425px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
 .Minesweeper_0{
    width: 32px;
    height: 32px;
@@ -799,70 +806,70 @@
 .Boulders_0{
    width: 32px;
    height: 32px;
-   background-position: -949px -425px;
+   background-position: -983px -425px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_1{
    width: 32px;
    height: 32px;
-   background-position: -983px -425px;
+   background-position: -974px -758px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_2{
    width: 32px;
    height: 32px;
-   background-position: -974px -758px;
+   background-position: -974px -819px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_3{
    width: 32px;
    height: 32px;
-   background-position: -974px -819px;
+   background-position: -974px -853px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_4{
    width: 32px;
    height: 32px;
-   background-position: -974px -853px;
+   background-position: -1078px -927px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_5{
    width: 32px;
    height: 32px;
-   background-position: -1078px -927px;
+   background-position: -1078px -961px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_6{
    width: 32px;
    height: 32px;
-   background-position: -1078px -961px;
+   background-position: 0px -1025px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_7{
    width: 32px;
    height: 32px;
-   background-position: 0px -1025px;
+   background-position: -34px -1025px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_8{
    width: 32px;
    height: 32px;
-   background-position: -34px -1025px;
+   background-position: -68px -1025px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_9{
    width: 32px;
    height: 32px;
-   background-position: -68px -1025px;
+   background-position: -102px -1025px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 

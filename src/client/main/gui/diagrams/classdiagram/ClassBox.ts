@@ -1,6 +1,6 @@
 import { DiagramElement, Alignment } from "../DiagramElement.js";
 import { Klass, Visibility, Interface } from "../../../../compiler/types/Class.js";
-import { getDeclarationAsString } from "../../../../compiler/types/DeclarationHelper.js";
+import { getDeclarationAsString, getTypeIdentifier } from "../../../../compiler/types/DeclarationHelper.js";
 import { Diagram } from "../Diagram.js";
 import { Point } from "./Router.js";
 import { ClassDiagram } from "./ClassDiagram.js";
@@ -98,7 +98,7 @@ export class ClassBox extends DiagramElement {
         this.documentation = klass.documentation;
     }
 
-    jumpToDeclaration(element: Klass | Interface | Method | Attribute){
+    jumpToDeclaration(element: Klass | Interface | Method | Attribute) {
         this.diagram.main.jumpToDeclaration(this.klass.module, element.declaration);
     }
 
@@ -107,6 +107,8 @@ export class ClassBox extends DiagramElement {
 
         this.clear();
 
+        let parametersWithTypes = (<ClassDiagram>this.diagram).currentClassBoxes.parametersWithTypes;
+
         this.addTextLine({
             type: "text",
             text: (this.klass instanceof Interface ? "<<interface>> " : "") + this.klass.identifier,
@@ -114,7 +116,7 @@ export class ClassBox extends DiagramElement {
             alignment: Alignment.center,
             bold: true,
             italics: this.klass instanceof Interface,
-            onClick: this.isSystemClass ? undefined : () => { this.jumpToDeclaration(this.klass)}
+            onClick: this.isSystemClass ? undefined : () => { this.jumpToDeclaration(this.klass) }
         });
 
         if (this.klass instanceof Klass && this.withAttributes) {
@@ -132,7 +134,7 @@ export class ClassBox extends DiagramElement {
                     text: text,
                     tooltip: getDeclarationAsString(a),
                     alignment: Alignment.left,
-                    onClick: this.isSystemClass ? undefined : () => { this.jumpToDeclaration(a)}
+                    onClick: this.isSystemClass ? undefined : () => { this.jumpToDeclaration(a) }
                 });
             }
         }
@@ -145,16 +147,23 @@ export class ClassBox extends DiagramElement {
             this.klass.methods.filter(m => m.signature != "toJson()").forEach(m => {
                 let text: string = this.getVisibilityText(m.visibility) + m.identifier + "()";
 
+                if (parametersWithTypes) {
+                    let returnType: string = m.isConstructor ? "" :
+                        (m.returnType == null ? "void " : getTypeIdentifier(m.returnType) + " ");
+                    text = this.getVisibilityText(m.visibility) + returnType + m.identifier + "(" +
+                        m.parameterlist.parameters.map((p) => { return getTypeIdentifier(p.type) + " " + p.identifier }).join(", ") + ")";
+                }
+
                 this.addTextLine({
                     type: "text",
                     text: text,
                     tooltip: getDeclarationAsString(m),
                     alignment: Alignment.left,
                     italics: this.klass instanceof Interface,
-                    onClick: this.isSystemClass ? undefined : () => {this.jumpToDeclaration(m)}
+                    onClick: this.isSystemClass ? undefined : () => { this.jumpToDeclaration(m) }
                 });
 
-            }); 
+            });
         }
 
         this.backgroundColor = this.isSystemClass ? "#aaaaaa" : "#ffffff";
@@ -215,7 +224,7 @@ export class ClassBox extends DiagramElement {
             event.stopPropagation();
             event.stopImmediatePropagation();
 
-            if(event.button != 0) return;
+            if (event.button != 0) return;
 
             let x = event.screenX;
             let y = event.screenY;
@@ -271,13 +280,15 @@ export class ClassBox extends DiagramElement {
         let s: string = "";
 
         if (klass instanceof Klass && this.withAttributes && klass.attributes.length > 0) {
-            for (let a of klass.attributes) s += this.getVisibilityText(a.visibility) + a.identifier;
+            for (let a of klass.attributes) s += this.getVisibilityText(a.visibility) + a.type.identifier + " " + a.identifier;
         }
 
         if (this.withMethods && klass.methods.length > 0) {
             for (let m of klass.methods) {
                 if (m.isConstructor) continue;
-                s += this.getVisibilityText(m.visibility) + m.identifier + "()";
+                let rt: string = m.returnType == null ? "void" : m.returnType.identifier;
+                s += this.getVisibilityText(m.visibility) + rt + " " + m.identifier + "(" +
+                    m.parameterlist.parameters.map((p) => { return p.type.identifier + " " + p.identifier }).join(", ") + ")";
             }
         }
 

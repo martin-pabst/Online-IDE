@@ -11,13 +11,15 @@ import { TeachersWithClassesMI } from "../../../../administration/TeachersWithCl
 
 type ClassBoxes = {
     active: ClassBox[],
-    inactive: ClassBox[], 
-    displaySystemClasses: boolean
+    inactive: ClassBox[],
+    displaySystemClasses: boolean,
+    parametersWithTypes: boolean
 };
 
 export type SerializedClassDiagram = {
-    classBoxes: SerializedClassBox[]
-    displaySystemClasses: boolean
+    classBoxes: SerializedClassBox[],
+    displaySystemClasses: boolean,
+    parametersWithTypes: boolean
 }
 
 export class ClassDiagram extends Diagram {
@@ -46,19 +48,29 @@ export class ClassDiagram extends Diagram {
         this.$menuButton.on('click', (ev) => {
             ev.preventDefault();
             let displaysSystemClasses = that.currentClassBoxes.displaySystemClasses == true;
-            openContextMenu([{
-                caption: displaysSystemClasses ? "Systemklassen ausblenden" : "Systemklassen einblenden",
-                callback: () => {
-                    that.currentClassBoxes.displaySystemClasses = !displaysSystemClasses;
-                    that.drawDiagram(that.currentWorkspace, false);
-                }
-            }
+            let parametersWithTypes = that.currentClassBoxes.parametersWithTypes == true;
+            openContextMenu([
+                {
+                    caption: displaysSystemClasses ? "Systemklassen ausblenden" : "Systemklassen einblenden",
+                    callback: () => {
+                        that.currentClassBoxes.displaySystemClasses = !displaysSystemClasses;
+                        that.drawDiagram(that.currentWorkspace, false);
+                    }
+                },
+                {
+                    caption: parametersWithTypes ? "Parameter ausblenden" : "Parameter einblenden",
+                    callback: () => {
+                        that.currentClassBoxes.parametersWithTypes = !parametersWithTypes;
+                        that.currentClassBoxes.active.forEach((cb) => {cb.hashedSignature = -1});
+                        that.drawDiagram(that.currentWorkspace, false);
+                    }
+                },
             ], ev.pageX + 2, ev.pageY + 2);
             ev.stopPropagation();
         });
     }
 
-    clearAfterLogout(){
+    clearAfterLogout() {
         this.classBoxesRepository = {};
         this.arrows.forEach((arrow) => { arrow.remove(); });
         $(this.svgElement).empty();
@@ -68,7 +80,8 @@ export class ClassDiagram extends Diagram {
 
         let scd: SerializedClassDiagram = {
             classBoxes: [],
-            displaySystemClasses: this.currentClassBoxes.displaySystemClasses
+            displaySystemClasses: this.currentClassBoxes.displaySystemClasses,
+            parametersWithTypes: this.currentClassBoxes.parametersWithTypes
         }
 
         for (let workspaceId in this.classBoxesRepository) {
@@ -91,12 +104,14 @@ export class ClassDiagram extends Diagram {
                 classBoxes = {
                     active: [],
                     inactive: [],
-                    displaySystemClasses: false
+                    displaySystemClasses: false,
+                    parametersWithTypes: false
                 }
                 this.classBoxesRepository[cb.workspaceId] = classBoxes;
             }
             classBoxes.inactive.push(ClassBox.deserialize(this, cb));
             classBoxes.displaySystemClasses = serializedClassDiagram.displaySystemClasses;
+            classBoxes.parametersWithTypes = serializedClassDiagram.parametersWithTypes;
         }
     }
 
@@ -112,7 +127,8 @@ export class ClassDiagram extends Diagram {
             cb = {
                 active: [],
                 inactive: [],
-                displaySystemClasses: false
+                displaySystemClasses: false,
+                parametersWithTypes: false
             }
             this.classBoxesRepository[workspace.id] = cb;
         }
@@ -125,7 +141,7 @@ export class ClassDiagram extends Diagram {
         if (this.currentWorkspaceId != workspace.id) {
             if (this.currentWorkspaceId != null) {
                 let cbs = this.classBoxesRepository[this.currentWorkspaceId];
-                if(cbs != null){
+                if (cbs != null) {
                     for (let cb of cbs.active) {
                         cb.detach();
                     }
@@ -196,7 +212,7 @@ export class ClassDiagram extends Diagram {
             }
         }
 
-        if(this.currentClassBoxes.displaySystemClasses){
+        if (this.currentClassBoxes.displaySystemClasses) {
             for (let usc of usedSystemClasses) {
                 let cb: ClassBox = this.findAndEnableClass(usc, this.currentClassBoxes, newClassesToDraw);
                 if (cb != null) newClassBoxes.push(cb);
@@ -245,7 +261,7 @@ export class ClassDiagram extends Diagram {
         // return;
 
         let colors: string[] = ["#0075dc", "#993f00", "#005c31", "#ff5005", "#2bce48",
-         "#0000ff", "#ffa405", '#ffa8bb', '#740aff', '#990000', '#ff0000'];
+            "#0000ff", "#ffa405", '#ffa8bb', '#740aff', '#990000', '#ff0000'];
         let colorIndex = 0;
 
         let routingInput = this.drawArrows();
@@ -287,7 +303,7 @@ export class ClassDiagram extends Diagram {
                             }
                         }
                     });
-                } while(arrowsWithoutColor < arrowsWithoutColorLast);
+                } while (arrowsWithoutColor < arrowsWithoutColorLast);
 
                 ro.arrows.forEach((arrow) => {
                     if (arrow.color == null) {

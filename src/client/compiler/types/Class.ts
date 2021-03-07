@@ -230,7 +230,7 @@ export class Klass extends Type {
 
     getCompletionItems(visibilityUpTo: Visibility,
         leftBracketAlreadyThere: boolean, identifierAndBracketAfterCursor: string,
-        rangeToReplace: monaco.IRange): monaco.languages.CompletionItem[] {
+        rangeToReplace: monaco.IRange, currentMethod?: Method): monaco.languages.CompletionItem[] {
 
         let itemList: monaco.languages.CompletionItem[] = [];
 
@@ -247,7 +247,15 @@ export class Klass extends Type {
         }
 
         for (let method of this.getMethods(visibilityUpTo)) {
-            if (method.isConstructor) continue;
+            if (method.isConstructor){
+                if(currentMethod?.isConstructor && currentMethod != method && this.baseClass.methods.indexOf(method) >= 0){
+                    this.pushSuperCompletionItem(itemList, method, leftBracketAlreadyThere, rangeToReplace);
+                    continue;
+                } else {
+                    continue;
+                }
+            }
+
             itemList.push({
                 label: method.getCompletionLabel(),
                 filterText: method.identifier,
@@ -271,6 +279,27 @@ export class Klass extends Type {
             rangeToReplace));
 
         return itemList;
+    }
+
+    pushSuperCompletionItem(itemList: monaco.languages.CompletionItem[], method: Method, leftBracketAlreadyThere: boolean,
+        rangeToReplace: monaco.IRange) {
+        itemList.push({
+            label: method.getCompletionLabel().replace(method.identifier, "super"),
+            filterText: "super",
+            command: {
+                id: "editor.action.triggerParameterHints",
+                title: '123',
+                arguments: []
+            },
+            kind: monaco.languages.CompletionItemKind.Method,
+            insertText: method.getCompletionSnippet(leftBracketAlreadyThere).replace(method.identifier, "super"),
+            range: rangeToReplace,
+            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            documentation: method.documentation == null ? undefined : {
+                value: method.documentation
+            }
+        });
+
     }
 
     pushStaticInitializationPrograms(programStack: ProgramStackElement[]) {

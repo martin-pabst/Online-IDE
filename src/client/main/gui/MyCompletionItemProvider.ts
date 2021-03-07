@@ -267,12 +267,28 @@ export class MyCompletionItemProvider implements monaco.languages.CompletionItem
 
         if (classContext != null && symbolTable?.method != null) {
             completionItems = completionItems.concat(
-                classContext.getCompletionItems(Visibility.private, leftBracketAlreadyThere, identifierAndBracketAfterCursor, rangeToReplace)
-                .map(ci => {
-                    ci.sortText = "aa" + ci.label;
-                    return ci;
-                })
-                );
+                classContext.getCompletionItems(Visibility.private, leftBracketAlreadyThere, identifierAndBracketAfterCursor, rangeToReplace, symbolTable.method)
+                    .map(ci => {
+                        ci.sortText = "aa" + ci.label;
+                        return ci;
+                    })
+            );
+            completionItems.push(
+                {
+                    label: "super",
+                    filterText: "super",
+                    insertText: "super.",
+                    detail: "Aufruf einer Methode einer Basisklasse",
+                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                    kind: monaco.languages.CompletionItemKind.Snippet,
+                    range: undefined,
+                    command: {
+                        id: "editor.action.triggerSuggest",
+                        title: '123',
+                        arguments: []
+                    }    
+                }
+            )
         } else {
             // Use filename to generate completion-item for class ... ?
             let name = module.file?.name;
@@ -337,7 +353,7 @@ export class MyCompletionItemProvider implements monaco.languages.CompletionItem
             } else {
                 return Promise.resolve({
                     suggestions: type.getCompletionItems(visibilityUpTo, leftBracketAlreadyThere,
-                        identifierAndBracketAfterCursor, rangeToReplace)
+                        identifierAndBracketAfterCursor, rangeToReplace, null)
                 });
             }
         }

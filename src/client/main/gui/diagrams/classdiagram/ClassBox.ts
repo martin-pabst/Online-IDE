@@ -126,8 +126,7 @@ export class ClassBox extends DiagramElement {
             });
             for (let a of this.klass.attributes) {
 
-                let text: string = this.getVisibilityText(a.visibility) + a.identifier;
-                text += ":" + a.type.identifier;
+                let text: string = this.getVisibilityText(a.visibility) + getTypeIdentifier(a.type) + " " +  a.identifier;
 
                 this.addTextLine({
                     type: "text",

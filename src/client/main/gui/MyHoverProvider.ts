@@ -38,6 +38,10 @@ export class MyHoverProvider {
         "return": "```\nreturn Term\n```  \nbewirkt, dass die Methode verlassen wird und der Wert des Terms an die aufrufende Stelle zurückgegeben wird.",
         "break": "```\nbreak;\n```  \ninnerhalb einer Schleife bewirkt, dass die Schleife sofort verlassen und mit den Anweisungen nach der Schleife fortgefahren wird.  \n"+
         "```break``` innerhalb einer ```switch```-Anweisung bewirkt, dass der Block der ```switch```-Anweisung verlassen wird.",
+        "class": "```\nclass\n```  \nMit dem Schlüsselwort ```class``` werden Klassen definiert.",
+        "extends": "```\nextends\n```  \n```class A extends B { ... }``` bedeutet, dass die Klasse A Unterklasse der Klasse B ist.",
+        "implements": "```\nimplements\n```  \n```class A implements B { ... }``` bedeutet, dass die Klasse A das Interface B implementiert, d.h., dass sie alle Methoden besitzen muss, die in B definiert sind.",
+        "this": "```\nthis\n```  \nInnerhalb einer Methodendefinition bezeichnet das Schlüsselwor ```this``` immer dasjenige Objekt, für das die Methode gerade ausgeführt wird.",
 
     }
 

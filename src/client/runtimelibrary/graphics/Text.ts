@@ -48,7 +48,7 @@ export class TextClass extends Klass {
 
                 sh.setFontsize(fontsize);
 
-            }, false, false, 'Setzt die Schriftgröße des Textes (Einheit: Pixel)."', false));
+            }, false, false, 'Setzt die Schriftgröße des Textes (Einheit: Pixel).', false));
 
         this.addMethod(new Method("setAlignment", new Parameterlist([
             { identifier: "alignment", type: module.typeStore.getType("Alignment"), declaration: null, usagePositions: null, isFinal: true },
@@ -74,7 +74,7 @@ export class TextClass extends Klass {
 
                 sh.setText(text);
 
-            }, false, false, 'Setzt den Text."', false));
+            }, false, false, 'Setzt den Text.', false));
 
         this.addMethod(new Method("copy", new Parameterlist([
         ]), this,

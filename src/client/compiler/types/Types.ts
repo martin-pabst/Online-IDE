@@ -4,6 +4,7 @@ import { Module } from "../parser/Module.js";
 import { Program } from "../parser/Program.js";
 import { ArrayType } from "./Array.js";
 import { Visibility, TypeVariable } from "./Class.js";
+import { voidPrimitiveType } from "./PrimitiveTypes.js";
 
 export type UsagePositions = Map<Module, TextPosition[]>;
 
@@ -258,11 +259,14 @@ export class Method extends Type {
 
         snippet += this.identifier + "(";
 
+        let isVoidReturn = this.returnType == null || this.returnType == voidPrimitiveType;
+        let isVoidReturnDelta = isVoidReturn ? 1 : 0;
+
         let parameters = this.parameterlist.parameters;
         for (let i = 0; i < parameters.length; i++) {
 
             let p = parameters[i];
-            snippet += "${" + ((i + 1) % parameters.length) + ":" + p.identifier + "}";
+            snippet += "${" + ((i + 1) % (parameters.length + isVoidReturnDelta)) + ":" + p.identifier + "}";
 
             if (i < parameters.length - 1) {
                 snippet += ", ";
@@ -271,6 +275,10 @@ export class Method extends Type {
         }
 
         snippet += ")";
+
+        if(this.returnType == null || this.returnType == voidPrimitiveType){
+            snippet += ";$0";
+        }
 
         return snippet;
     }

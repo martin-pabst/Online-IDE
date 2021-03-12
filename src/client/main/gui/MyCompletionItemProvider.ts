@@ -492,7 +492,7 @@ export class MyCompletionItemProvider implements monaco.languages.CompletionItem
                 },
                 {
                     label: "print",
-                    insertText: "print($0);",
+                    insertText: "print($1);$0",
                     detail: "Ausgabe (ggf. mit Farbe \nals zweitem Parameter)",
                     command: {
                         id: "editor.action.triggerParameterHints",
@@ -505,7 +505,7 @@ export class MyCompletionItemProvider implements monaco.languages.CompletionItem
                 },
                 {
                     label: "println",
-                    insertText: "println($0);",
+                    insertText: "println($1);$0",
                     detail: "Ausgabe mit Zeilenumbruch (ggf. mit \nFarbe als zweitem Parameter)",
                     command: {
                         id: "editor.action.triggerParameterHints",

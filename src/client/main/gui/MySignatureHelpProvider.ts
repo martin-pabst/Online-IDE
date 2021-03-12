@@ -193,7 +193,7 @@ export class MySignatureHelpProvider implements monaco.languages.SignatureHelpPr
                         },
                         {
                             label: "print(text: String)",
-                            documentation: "Gibt Text farbig in der Ausgabe aus",
+                            documentation: "Gibt Text in der Ausgabe aus",
                             parameters: [
                                 { label: "text: String", documentation: "text: Text, der ausgegeben werden soll" }
                             ]

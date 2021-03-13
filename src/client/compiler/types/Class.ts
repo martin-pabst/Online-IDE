@@ -385,7 +385,9 @@ export class Klass extends Type {
         }
 
         if (operation == TokenType.keywordInstanceof) {
-            let typeLeft: Klass = <Klass>(<RuntimeObject>firstOperand.value).class;
+            let firstOpClass = firstOperand?.value?.class;
+            if(firstOpClass == null) return false;
+            let typeLeft: Klass = <Klass>firstOpClass;
             let typeRight = secondOperand.type;
             if (typeRight instanceof StaticClass) {
 
@@ -972,7 +974,7 @@ export class StaticClass extends Type {
         return method;
     }
 
-    public getAttribute(identifier: string, upToVisibility: Visibility): { attribute: Attribute, error: string, foundButInvisible: boolean } {
+    public getAttribute(identifier: string, upToVisibility: Visibility): { attribute: Attribute, error: string, foundButInvisible: boolean, staticClass: StaticClass} {
 
         let error = "";
         let notFound = false;
@@ -995,7 +997,7 @@ export class StaticClass extends Type {
             }
         }
 
-        return { attribute: attribute, error: error, foundButInvisible: !notFound };
+        return { attribute: attribute, error: error, foundButInvisible: !notFound , staticClass: this};
     }
 
     public canCastTo(type: Type): boolean {

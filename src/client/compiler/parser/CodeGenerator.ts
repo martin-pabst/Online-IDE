@@ -2261,7 +2261,8 @@ export class CodeGenerator {
                     }, {
                         type: TokenType.pushStaticAttribute,
                         position: node.position,
-                        klass: (<Klass>objectType).staticClass,
+                        // klass: (<Klass>objectType).staticClass,
+                        klass: staticAttributeWithError.staticClass,
                         attributeIdentifier: node.identifier
                     }]);
                     attribute = staticAttributeWithError.attribute;
@@ -2316,7 +2317,7 @@ export class CodeGenerator {
                             type: TokenType.pushStaticAttribute,
                             position: node.position,
                             attributeIdentifier: node.identifier,
-                            klass: objectType
+                            klass: staticAttributeWithError.staticClass
                         });
                         this.pushUsagePosition(node.position, staticAttributeWithError.attribute);
 
@@ -2593,6 +2594,11 @@ export class CodeGenerator {
             if (attribute.isStatic) {
                 let cc = this.currentSymbolTable.classContext;
                 let scc = (cc instanceof StaticClass) ? cc : cc.staticClass;
+
+                while(scc != null && scc.attributes.indexOf(attribute) == -1){
+                    scc = scc.baseClass;
+                }
+
                 this.pushStatements({
                     type: TokenType.pushStaticAttribute,
                     position: node.position,

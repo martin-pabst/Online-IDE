@@ -207,20 +207,20 @@ export class Login {
 
     }
     startAnimations() {
-        let $loginAnimationDiv = $('#jo_login_animations');
-        $loginAnimationDiv.empty();
+        // let $loginAnimationDiv = $('#jo_login_animations');
+        // $loginAnimationDiv.empty();
 
 
-        let $gifAnimation = $('<img src="assets/startpage/code_1.gif" class="jo_gif_animation">');
-        $loginAnimationDiv.append($gifAnimation);
+        // let $gifAnimation = $('<img src="assets/startpage/code_1.gif" class="jo_gif_animation">');
+        // $loginAnimationDiv.append($gifAnimation);
         
-        let left = Math.trunc(Math.random()*(screen.width - 400)) + "px";
-        let top = Math.trunc(Math.random()*(screen.height - 400)) + "px";
+        // let left = Math.trunc(Math.random()*(screen.width - 400)) + "px";
+        // let top = Math.trunc(Math.random()*(screen.height - 400)) + "px";
 
-        $gifAnimation.css({
-            "left": left,
-            "top": top
-        })
+        // $gifAnimation.css({
+        //     "left": left,
+        //     "top": top
+        // })
     }
 
 

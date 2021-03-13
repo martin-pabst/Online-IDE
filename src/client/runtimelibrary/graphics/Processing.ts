@@ -65,7 +65,7 @@ export class ProcessingClass extends Klass {
             false, Visibility.public, true, "letzte gedrückte Taste"));
 
 
-        this.addMethod(new Method("Processing", new Parameterlist([
+        this.addMethod(new Method("PApplet", new Parameterlist([
         ]), null,
             (parameters) => {
 

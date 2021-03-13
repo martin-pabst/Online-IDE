@@ -3,7 +3,7 @@ import { TextPosition, Token, TokenList, TokenType, TokenTypeReadable } from "..
 import { Visibility, Klass } from "../types/Class.js";
 import { ArrayInitializationNode, ASTNode, AttributeDeclarationNode, MethodDeclarationNode, NewArrayNode, ParameterNode, TermNode, TypeNode, EnumValueNode, SwitchNode, SwitchCaseNode, ConstantNode, BracketsNode, ScopeNode, TypeParameterNode, LocalVariableDeclarationNode } from "./AST.js";
 import { Module } from "./Module.js";
-import { stringPrimitiveType, intPrimitiveType, charPrimitiveType, TokenTypeToDataTypeMap } from "../types/PrimitiveTypes.js";
+import { stringPrimitiveType, intPrimitiveType, charPrimitiveType, TokenTypeToDataTypeMap, voidPrimitiveType } from "../types/PrimitiveTypes.js";
 import { Enum } from "../types/Enum.js";
 import { PrimitiveType } from "../types/Types.js";
 
@@ -1827,6 +1827,15 @@ export class Parser {
             }
 
             let type = this.parseType();
+
+            if(isConstructor) {
+                type = {
+                    identifier: "void",
+                    arrayDimension: 0,
+                    position: type.position,
+                    type: TokenType.type
+                }
+            }
 
             if (isConstructor || this.expect(TokenType.identifier, false)) {
 

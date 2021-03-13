@@ -6,7 +6,7 @@ import { Module } from "../parser/Module.js";
 import { Program } from "../parser/Program.js";
 import { SymbolTable } from "../parser/SymbolTable.js";
 import { ArrayType } from "./Array.js";
-import { nullType, stringPrimitiveType } from "./PrimitiveTypes.js";
+import { nullType, stringPrimitiveType, voidPrimitiveType } from "./PrimitiveTypes.js";
 import { Attribute, Method, Parameterlist, PrimitiveType, Type, Value } from "./Types.js";
 
 
@@ -340,6 +340,9 @@ export class Klass extends Type {
     }
 
     public addMethod(method: Method) {
+        if(method.isConstructor){
+            method.returnType = null;
+        }
         if (method.isStatic) {
             this.staticClass.addMethod(method);
         } else {

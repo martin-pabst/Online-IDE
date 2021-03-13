@@ -78,6 +78,8 @@ export class ClassDiagram extends Diagram {
 
     serialize(): SerializedClassDiagram {
 
+        if(this.currentClassBoxes == null) return;
+
         let scd: SerializedClassDiagram = {
             classBoxes: [],
             displaySystemClasses: this.currentClassBoxes.displaySystemClasses,

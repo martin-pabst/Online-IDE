@@ -1313,7 +1313,7 @@ function findSuitableMethods(methodList: Method[], identifier: string, parameter
             if(parameterTypes.length == 0){
                 error = searchConstructor ? "Es gibt keinen parameterlosen Konstruktor der Klasse " + classIdentifier : "Die vorhandenen Methoden mit dem Bezeichner " + identifier + " haben alle mindestens einen Parameter. Hier wird aber kein Parameterwert übergeben.";
             } else {
-                let typeString = parameterTypes.map(type => type.identifier).join(", ");
+                let typeString = parameterTypes.map(type => type?.identifier).join(", ");
                 error = searchConstructor ? `Die Parametertypen (${typeString}) passen zu keinem Konstruktor der Klasse ${classIdentifier}` : `Die Parametertypen (${typeString}) passen zu keiner der vorhandenen Methoden mit dem Bezeichner ${identifier}.`;
             }
         } else {

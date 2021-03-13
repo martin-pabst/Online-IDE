@@ -82,7 +82,7 @@ export class ColorClass extends Klass {
                 return Math.floor(Math.random() * 0xffffff);
 
             }, false, true, 'Gibt eine zufällige Farbe (ohne Transparenz) zurück.'
-            , true));
+            , false));
 
         this.addMethod(new Method("randomColor", new Parameterlist([
             { identifier: "minimumRGBValue", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -100,7 +100,7 @@ export class ColorClass extends Klass {
                 return 0x10000 * r + 0x100 * g + b;
 
             }, false, true, 'Gibt eine zufällige Farbe (ohne Transparenz) zurück. Min ist der Mindestwert für den Rot-, Grün- und Blauanteil, wobei jeder der Anteile und daher auch min zwischen 0 und 255 (jeweils einschließlich) liegen muss.'
-            , true));
+            , false));
 
         this.addMethod(new Method("randomColor", new Parameterlist([
             { identifier: "minimumRGBValue", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -128,7 +128,7 @@ export class ColorClass extends Klass {
                 return 0x10000 * r + 0x100 * g + b;
 
             }, false, true, 'Gibt eine zufällige Farbe (ohne Transparenz) zurück. Min ist der Mindestwert für den Rot-, Grün- und Blauanteil, max der Höchstwert, wobei jeder der Anteile und daher auch min zwischen 0 und 255 (jeweils einschließlich) liegen muss.'
-            , true));
+            , false));
 
         this.addMethod(new Method("toString", new Parameterlist([
         ]), stringPrimitiveType,

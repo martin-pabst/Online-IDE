@@ -5,7 +5,7 @@ import { ArrayInitializationNode, ASTNode, AttributeDeclarationNode, MethodDecla
 import { Module } from "./Module.js";
 import { stringPrimitiveType, intPrimitiveType, charPrimitiveType, TokenTypeToDataTypeMap, voidPrimitiveType } from "../types/PrimitiveTypes.js";
 import { Enum } from "../types/Enum.js";
-import { PrimitiveType } from "../types/Types.js";
+import { PrimitiveType, Type } from "../types/Types.js";
 
 type ASTNodes = ASTNode[];
 
@@ -951,6 +951,9 @@ export class Parser {
                         constantFolding = true;
                         let result = typeLeft.compute(operator, { type: typeLeft, value: pcLeft.constant },
                             { type: typeRight, value: pcRight.constant });
+
+                        this.considerIntDivisionWarning(operator, typeLeft, pcLeft.constant, typeRight, pcRight.constant, position);
+
                         pcLeft.constantType = (<PrimitiveType>resultType).toTokenType();
                         pcLeft.constant = result;
                         pcLeft.position.length = pcRight.position.column + pcRight.position.length - pcLeft.position.column;
@@ -973,6 +976,22 @@ export class Parser {
 
         return left;
 
+    }
+
+    considerIntDivisionWarning(operator: TokenType, typeLeft: Type, leftConstant: any, typeRight: Type, rightConstant: any, position: TextPosition) {
+    
+        if(operator == TokenType.division){
+            if(this.isIntegerType(typeLeft) && this.isIntegerType(typeRight)){
+                if(rightConstant != 0 && leftConstant/rightConstant != Math.floor(leftConstant/rightConstant)){
+                    this.pushError("Da " + leftConstant + " und " + rightConstant + " ganzzahlige Werte sind, wird diese Division als Ganzzahldivision ausgeführt und ergibt den Wert " + Math.floor(leftConstant/rightConstant) + ". Falls das nicht gewünscht ist, hänge '.0' an einen der Operanden.", "info", position);
+                }
+            }
+        }
+    
+    }
+
+    isIntegerType(type: Type): boolean {
+        return type == intPrimitiveType;
     }
 
     isConstant(node: TermNode) {

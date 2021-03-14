@@ -254,6 +254,32 @@ export class SpriteClass extends Klass {
             }, false, false, 'Erstellt eine Kopie des Sprite-Objekts und git sie zurück.', false));
 
 
+        this.addMethod(new Method("getWidth", new Parameterlist([
+        ]), doublePrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: SpriteHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("getWidth")) return;
+
+                return sh.getWidth();
+
+            }, false, false, "Gibt die Breite zurück.", false));
+
+        this.addMethod(new Method("getHeight", new Parameterlist([
+        ]), doublePrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: SpriteHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("getHeight")) return;
+
+                return sh.getHeight();
+
+            }, false, false, "Gibt die Höhe zurück.", false));
+
     }
 
 }
@@ -289,6 +315,16 @@ export class SpriteHelper extends ShapeHelper {
 
         this.addToDefaultGroup();
 
+    }
+
+    getWidth(): number {
+        let sprite = <PIXI.Sprite>this.displayObject;
+        return sprite.width * this.scaleFactor;
+    }
+
+    getHeight(): number {
+        let sprite = <PIXI.Sprite>this.displayObject;
+        return sprite.height * this.scaleFactor;
     }
 
     getCopy(klass: Klass): RuntimeObject {

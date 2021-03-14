@@ -77,7 +77,7 @@ export class RectangleClass extends Klass {
 
                 if (sh.testdestroyed("getWidth")) return;
 
-                return sh.width * sh.displayObject.scale.x;
+                return sh.width * sh.scaleFactor;
 
             }, false, false, "Gibt die Breite zurück.", false));
 
@@ -90,7 +90,7 @@ export class RectangleClass extends Klass {
 
                 if (sh.testdestroyed("getHeight")) return;
 
-                return sh.height * sh.displayObject.scale.y;
+                return sh.height * sh.scaleFactor;
 
             }, false, false, "Gibt die Höhe zurück.", false));
 

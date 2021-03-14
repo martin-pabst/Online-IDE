@@ -1008,7 +1008,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
 .jo_menulink {
     display: inline-block;
     text-decoration: none;
-    color: var(--fontColorNormal);
+    color: var(--fontColorNormal) !important;
     width: 100%;
     box-sizing: border-box;
 }
@@ -3442,6 +3442,7 @@ svgns|path.dropdown-triangle:active {
     border-radius: 3px;
     border: 1px solid gray;
     box-shadow: 5px 5px 20px 1px #9e9e9e;
+    outline: none; /* prevent chrome from setting border-color: white when div has focus */
 }
 
 .joe_javaOnlineDiv  li {

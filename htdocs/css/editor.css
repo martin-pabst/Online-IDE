@@ -1008,7 +1008,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
 .jo_menulink {
     display: inline-block;
     text-decoration: none;
-    color: var(--fontColorNormal);
+    color: var(--fontColorNormal) !important;
     width: 100%;
     box-sizing: border-box;
 }

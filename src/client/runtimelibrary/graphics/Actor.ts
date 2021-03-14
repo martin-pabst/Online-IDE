@@ -113,7 +113,13 @@ export class Actor extends Klass {
                 let o: RuntimeObject = parameters[0].value;
                 let sh: ActorHelper = o.intrinsicData["Actor"];
 
-                return sh.worldHelper.world;
+                let interpreter = module.main.getInterpreter();
+                let worldHelper = interpreter.worldHelper;
+                if (worldHelper == null) {
+                    let w: RuntimeObject = new RuntimeObject(<Klass>interpreter.moduleStore.getType("World").type);
+                    worldHelper = new WorldHelper(800, 600, interpreter.moduleStore.getModule("Base Module"), w);
+                }        
+                return worldHelper.world;
 
             }, false, false, "Gibt das Welt-Objekt zurück.", false));
 

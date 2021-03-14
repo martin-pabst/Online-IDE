@@ -495,6 +495,8 @@ export abstract class ShapeHelper extends ActorHelper {
 
     trackMouseMove: boolean = false;
 
+    scaleFactor: number = 1.0;
+
     copyFrom(shapeHelper: ShapeHelper) {
 
         this.centerXInitial = shapeHelper.centerXInitial;
@@ -718,6 +720,8 @@ export abstract class ShapeHelper extends ActorHelper {
         this.displayObject.transform.onChange();
 
         this.setHitPolygonDirty(true);
+
+        this.scaleFactor *= factor;
 
     }
 

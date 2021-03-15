@@ -355,9 +355,11 @@ export class Interpreter {
             }
 
             if (klass instanceof Enum) {
-                let staticValueMap = klass.staticClass.classObject.attributeValues.get(klass.identifier);
+                // let staticValueMap = klass.staticClass.classObject.attributeValues.get(klass.identifier);
+                let staticValueList = klass.staticClass.classObject.attributes;
                 for (let enumInfo of klass.enumInfoList) {
-                    staticValueMap.get(enumInfo.identifier).value = enumInfo.object;
+                    // staticValueMap.get(enumInfo.identifier).value = enumInfo.object;
+                    staticValueList[enumInfo.ordinal].value = enumInfo.object;
                 }
             }
         }
@@ -396,6 +398,7 @@ export class Interpreter {
 
                 for (let enumInfo of enumClass.enumInfoList) {
                     enumInfo.object = new EnumRuntimeObject(enumClass, enumInfo);
+                    enumInfo.object.initializeAttributeValues();
 
                     valueList.push({
                         type: enumClass,
@@ -832,7 +835,7 @@ export class Interpreter {
             case TokenType.pushAttribute:
                 let object1 = node.useThisObject ? stack[stackframeBegin].value : stack.pop().value;
                 if (object1 == null) return "Zugriff auf ein Attribut (" + node.attributeIdentifier + ") des null-Objekts";
-                let value1 = (<RuntimeObject>object1).getValue(node.attributeIdentifier);
+                let value1 = (<RuntimeObject>object1).getValue(node.attributeIndex);
                 if (value1?.updateValue != null) {
                     value1.updateValue(value1);
                 }
@@ -915,7 +918,7 @@ export class Interpreter {
                 }
                 break;
             case TokenType.pushStaticAttribute:
-                value = node.klass.classObject.getValue(node.attributeIdentifier);
+                value = node.klass.classObject.getValue(node.attributeIndex);
                 if (value.updateValue != null) {
                     value.updateValue(value);
                 }

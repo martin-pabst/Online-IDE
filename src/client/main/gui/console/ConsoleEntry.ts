@@ -106,7 +106,7 @@ export class ConsoleEntry {
 
             for (let a of (<Klass>this.value.type).getAttributes(Visibility.private)) {
                 let ro = <RuntimeObject>this.value.value;
-                let de = new ConsoleEntry(null, ro.getValue(a.identifier), a.identifier, this, false);
+                let de = new ConsoleEntry(null, ro.getValue(a.index), a.identifier, this, false);
                 de.render();
                 this.$consoleEntry.find('.jo_ceChildContainer').append(de.$consoleEntry);
             }
@@ -129,7 +129,7 @@ export class ConsoleEntry {
             let $childContainer = this.$consoleEntry.find('.jo_ceChildContainer');
             for (let a of type.getAttributes(Visibility.private)) {
                 let ro = type.classObject;
-                let de = new ConsoleEntry(null, ro.getValue(a.identifier), a.identifier, this, false);
+                let de = new ConsoleEntry(null, ro.getValue(a.index), a.identifier, this, false);
                 de.render();
                 $childContainer.append(de.$consoleEntry);
             }
@@ -143,7 +143,7 @@ export class ConsoleEntry {
                 let ro: RuntimeObject = this.value.value;
 
                 for (let a of (<Klass>ro.class).getAttributes(Visibility.private)) {
-                    let de = new ConsoleEntry(null, ro.getValue(a.identifier), a.identifier, this, false);
+                    let de = new ConsoleEntry(null, ro.getValue(a.index), a.identifier, this, false);
                     de.render();
                     $childContainer.append(de.$consoleEntry);
                 }

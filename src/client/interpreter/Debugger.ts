@@ -88,6 +88,8 @@ export class Debugger {
 
         let st = symbolTable;
 
+        if(symbolTable == null) return;
+
         if (st.classContext != null) {
 
             let object = stack[stackframe];

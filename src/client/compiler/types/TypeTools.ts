@@ -63,25 +63,22 @@ export class JsonTool {
         let klass: Klass = <Klass>rto.class;
 
         // Don't serialize system classes unless they are explicitely serializable
-        if(klass.module.isSystemModule && klass.getMethodBySignature("String toJson()") == null){
-            return null; 
+        if (klass.module.isSystemModule && klass.getMethodBySignature("String toJson()") == null) {
+            return null;
         }
 
         let serializedObject: SerializedObject = { "!k": klass.identifier, "!i": index };
         while (klass != null) {
-            let attributeValues = rto.attributeValues.get(klass.identifier);
-            if (attributeValues != null) {
-                let first: boolean = true;
-                let serializedAttributes: any;
-                for (let attribute of klass.attributes) {
-                    if (!attribute.isStatic && !attribute.isTransient) {
-                        if (first) {
-                            first = false;
-                            serializedAttributes = {};
-                            serializedObject[klass.identifier] = serializedAttributes;
-                        }
-                        serializedAttributes[attribute.identifier] = this.toJsonObj(attributeValues.get(attribute.identifier));
+            let first: boolean = true;
+            let serializedAttributes: any;
+            for (let attribute of klass.attributes) {
+                if (!attribute.isStatic && !attribute.isTransient) {
+                    if (first) {
+                        first = false;
+                        serializedAttributes = {};
+                        serializedObject[klass.identifier] = serializedAttributes;
                     }
+                    serializedAttributes[attribute.identifier] = this.toJsonObj(rto.attributes[attribute.index]);
                 }
             }
 
@@ -98,9 +95,9 @@ export class JsonTool {
         let obj: any = JSON.parse(jsonString);
         let ret = this.fromJsonObj(obj, type, moduleStore, interpreter);
 
-        for(let vtr of this.valuesToResolve){
+        for (let vtr of this.valuesToResolve) {
             let value = this.indexToObjectMap[vtr.i];
-            if(value != null){
+            if (value != null) {
                 vtr.v.type = value.type;
                 vtr.v.value = value.value;
             }
@@ -139,7 +136,7 @@ export class JsonTool {
 
     }
 
-    objectFromJsonObj(serializedObject: SerializedObject, type: Klass | Interface, moduleStore: ModuleStore, 
+    objectFromJsonObj(serializedObject: SerializedObject, type: Klass | Interface, moduleStore: ModuleStore,
         interpreter: Interpreter): Value {
 
         let identifier: string = serializedObject["!k"];
@@ -150,14 +147,14 @@ export class JsonTool {
             let klass = klass1;
 
             let rto: RuntimeObject = interpreter.instantiateObjectImmediately(klass);
-            
+
             while (klass != null) {
-                let attributeValues = rto.attributeValues.get(klass.identifier);
+                let attributes = rto.attributes;
                 let serializedAttributes = serializedObject[klass.identifier];
-                if (attributeValues != null && serializedObject != null) {
+                if (attributes != null && serializedObject != null) {
                     for (let attribute of klass.attributes) {
                         if (!attribute.isStatic && !attribute.isTransient) {
-                            attributeValues.set(attribute.identifier, this.fromJsonObj(serializedAttributes[attribute.identifier], attribute.type, moduleStore, interpreter));
+                            attributes[attribute.index] = this.fromJsonObj(serializedAttributes[attribute.identifier], attribute.type, moduleStore, interpreter);
                         }
                     }
                 }
@@ -165,9 +162,9 @@ export class JsonTool {
                 klass = klass.baseClass;
             }
 
-            let value: Value = {type: klass1, value: rto};
+            let value: Value = { type: klass1, value: rto };
             this.indexToObjectMap[index] = value;
-            return value; 
+            return value;
 
         } else {
             let index = serializedObject["!i"];

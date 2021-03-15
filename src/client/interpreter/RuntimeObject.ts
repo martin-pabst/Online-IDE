@@ -11,7 +11,8 @@ export class RuntimeObject {
 
     // Attributes of class and base-classes
     // Map class-identifier to Map <attribute-identifier, attribute-value>
-    attributeValues: Map<string, Map<string, Value>> = new Map();
+    // attributeValues: Map<string, Map<string, Value>> = new Map();
+    attributes: Value[];
 
     constructor(klass: Klass | StaticClass ) {
 
@@ -36,43 +37,24 @@ export class RuntimeObject {
 
     }
 
-    getValue(identifier: string):Value{
+    getValue(attributeIndex: number):Value{
 
-        let klass = this.class;
-        
-        while(klass != null){
-            let av = this.attributeValues.get(klass.identifier).get(identifier);
-            if(av != null) 
-            {
-                if(av.updateValue != null){
-                    av.updateValue(av);
-                }
-                return av;
-            }
-
-            // let attribute = klass.attributeMap.get(identifier);
-            // if(attribute != null && attribute.updateValue != null){
-            //     return attribute.updateValue({type: this.class, value: this});
-            // }
-
-            klass = klass.baseClass;
+        let av: Value = this.attributes[attributeIndex];
+        if(av?.updateValue != null){
+            av.updateValue(av);
         }
+        return av;
 
-        return null;
     }
 
     initializeAttributeValues(){
 
-        this.attributeValues = new Map();
+        this.attributes = Array(this.class.numberOfAttributesIncludingBaseClass).fill(null);
 
         let klass = this.class;
         while(klass != null){
-            
-            let map:Map<string, Value> = new Map();
-            this.attributeValues.set(klass.identifier, map);
 
             for(let att of klass.attributes){
-                
                 
                 let value:any = null;
                 if(att.type instanceof PrimitiveType){
@@ -89,7 +71,7 @@ export class RuntimeObject {
                     v.object = this;
                 } 
                 
-                map.set(att.identifier, v);
+                this.attributes[att.index] = v;
 
             }
 

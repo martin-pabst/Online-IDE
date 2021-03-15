@@ -74,7 +74,7 @@ export class ListDiagram extends ObjectDiagramVariant {
             while (k != null && !(k instanceof ObjectClass)) {
 
                 for (let a of k.attributes) {
-                    let value = rto.attributeValues[k.identifier][a.identifier];
+                    let value = rto.attributes[a.index];
                     if (!(value.type instanceof Klass)) continue;
                     if (selfReferenceType != null && selfReferenceType == a.type) {
                         attributesWithSelfReference.push(a.identifier);

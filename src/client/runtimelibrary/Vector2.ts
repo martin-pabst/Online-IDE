@@ -12,6 +12,18 @@ export class Vector2Class extends Klass {
 
         this.setBaseClass(<Klass>module.typeStore.getType("Object"));
 
+        this.addAttribute(new Attribute("x", doublePrimitiveType,
+            null, false, Visibility.public, false, "x-Komponente des Vektors"));
+
+        this.addAttribute(new Attribute("y", doublePrimitiveType,
+            null, false, Visibility.public, false, "y-Komponente des Vektors"));
+
+        this.setupAttributeIndicesRecursive();
+
+        let xIndex = this.attributeMap.get("x").index;
+        let yIndex = this.attributeMap.get("x").index;
+        
+
         this.addMethod(new Method("Vector2", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true, isEllipsis: false },
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true, isEllipsis: false },
@@ -22,10 +34,8 @@ export class Vector2Class extends Klass {
                 let x: number = parameters[1].value;
                 let y: number = parameters[2].value;
 
-                let valueMap: Map<string, Value> = new Map();
-                valueMap.set("x", {type: doublePrimitiveType, value: x});
-                valueMap.set("y", {type: doublePrimitiveType, value: y});
-                o.attributeValues.set("Vector2", valueMap);
+                o.attributes[xIndex] = { type: doublePrimitiveType, value: x };
+                o.attributes[yIndex] = { type: doublePrimitiveType, value: y };
 
             }, false, false, 'Instanziert einen neuen zweidimensionalen Vektor mit den Komponenten x und y.', true));
 
@@ -39,12 +49,10 @@ export class Vector2Class extends Klass {
                 let r: number = parameters[1].value;
                 let alphaDeg: number = parameters[2].value;
 
-                alphaDeg *= Math.PI/180.0;
+                alphaDeg *= Math.PI / 180.0;
 
-                let valueMap: Map<string, Value> = new Map();
-                valueMap.set("x", {type: doublePrimitiveType, value: Math.cos(alphaDeg) * r});
-                valueMap.set("y", {type: doublePrimitiveType, value: Math.sin(alphaDeg) * r});
-                o.attributeValues.set("Vector2", valueMap);
+                o.attributes[xIndex] = { type: doublePrimitiveType, value: Math.cos(alphaDeg) * r };
+                o.attributes[yIndex] = { type: doublePrimitiveType, value: Math.sin(alphaDeg) * r };
 
                 return o;
 
@@ -56,9 +64,8 @@ export class Vector2Class extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
 
-                let valueMap: Map<string, Value> = o.attributeValues.get("Vector2");
-                let x: number = valueMap.get("x").value;
-                let y: number = valueMap.get("y").value;
+                let x: number = o.attributes[xIndex].value;
+                let y: number = o.attributes[yIndex].value;
 
                 return `(${x}/${y})`;
 
@@ -70,11 +77,10 @@ export class Vector2Class extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
 
-                let valueMap: Map<string, Value> = o.attributeValues.get("Vector2");
-                let x: number = valueMap.get("x").value;
-                let y: number = valueMap.get("y").value;
+                let x: number = o.attributes[xIndex].value;
+                let y: number = o.attributes[yIndex].value;
 
-                let angle = Math.atan2(y, x)/Math.PI*180;
+                let angle = Math.atan2(y, x) / Math.PI * 180;
 
                 return angle >= 0 ? angle : 360 + angle;
 
@@ -86,9 +92,8 @@ export class Vector2Class extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
 
-                let valueMap: Map<string, Value> = o.attributeValues.get("Vector2");
-                let x: number = valueMap.get("x").value;
-                let y: number = valueMap.get("y").value;
+                let x: number = o.attributes[xIndex].value;
+                let y: number = o.attributes[yIndex].value;
 
                 let angle = Math.atan2(y, x);
 
@@ -102,11 +107,10 @@ export class Vector2Class extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
 
-                let valueMap: Map<string, Value> = o.attributeValues.get("Vector2");
-                let x: number = valueMap.get("x").value;
-                let y: number = valueMap.get("y").value;
+                let x: number = o.attributes[xIndex].value;
+                let y: number = o.attributes[yIndex].value;
 
-                return Math.sqrt(x*x+y*y);
+                return Math.sqrt(x * x + y * y);
 
             }, false, false, 'Gibt die Länge des Vectors zurück.', false));
 
@@ -116,14 +120,13 @@ export class Vector2Class extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
 
-                let valueMap: Map<string, Value> = o.attributeValues.get("Vector2");
-                let x: number = valueMap.get("x").value;
-                let y: number = valueMap.get("y").value;
+                let x: number = o.attributes[xIndex].value;
+                let y: number = o.attributes[yIndex].value;
 
                 let o1: RuntimeObject = new RuntimeObject(this);
-                let length: number = Math.sqrt(x*x + y*y);
+                let length: number = Math.sqrt(x * x + y * y);
 
-                if(Math.abs(length) > 0.00000000001){
+                if (Math.abs(length) > 0.00000000001) {
                     x /= length;
                     y /= length;
                 } else {
@@ -131,10 +134,8 @@ export class Vector2Class extends Klass {
                     y = 0;
                 }
 
-                let valueMap1: Map<string, Value> = new Map();
-                valueMap1.set("x", {type: doublePrimitiveType, value: x});
-                valueMap1.set("y", {type: doublePrimitiveType, value: y});
-                o1.attributeValues.set("Vector2", valueMap1);
+                o1.attributes[xIndex] = { type: doublePrimitiveType, value: x };
+                o1.attributes[yIndex] = { type: doublePrimitiveType, value: y };
 
                 return o1;
 
@@ -147,17 +148,16 @@ export class Vector2Class extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
 
-                let valueMap: Map<string, Value> = o.attributeValues.get("Vector2");
-                let x: number = valueMap.get("x").value;
-                let y: number = valueMap.get("y").value;
+                let x: number = o.attributes[xIndex].value;
+                let y: number = o.attributes[yIndex].value;
 
                 let length: number = parameters[1].value;
 
-                let l = Math.sqrt(x*x + y*y);
-                if(l > 0){
+                let l = Math.sqrt(x * x + y * y);
+                if (l > 0) {
 
-                    valueMap.get("x").value = x/l*length;
-                    valueMap.get("y").value = y/l*length;
+                    o.attributes[xIndex].value = x / l * length;
+                    o.attributes[yIndex].value = y / l * length;
 
                 }
 
@@ -169,21 +169,18 @@ export class Vector2Class extends Klass {
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
-
-                let valueMap: Map<string, Value> = o.attributeValues.get("Vector2");
-                let x: number = valueMap.get("x").value;
-                let y: number = valueMap.get("y").value;
-
                 let o1: RuntimeObject = parameters[1].value;
-                let valueMap1: Map<string, Value> = o1.attributeValues.get("Vector2");
-                let x1: number = valueMap1.get("x").value;
-                let y1: number = valueMap1.get("y").value;
+
+                let x: number = o.attributes[xIndex].value;
+                let y: number = o.attributes[yIndex].value;
+
+                let x1: number = o1.attributes[xIndex].value;
+                let y1: number = o1.attributes[yIndex].value;
 
                 let oRet: RuntimeObject = new RuntimeObject(this);
-                let valueMapRet: Map<string, Value> = new Map();
-                valueMapRet.set("x", {type: doublePrimitiveType, value: x + x1});
-                valueMapRet.set("y", {type: doublePrimitiveType, value: y + y1});
-                oRet.attributeValues.set("Vector2", valueMapRet);
+
+                oRet.attributes[xIndex] = { type: doublePrimitiveType, value: x + x1 };
+                oRet.attributes[yIndex] = { type: doublePrimitiveType, value: y + y1 };
 
                 return oRet;
 
@@ -195,21 +192,18 @@ export class Vector2Class extends Klass {
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
-
-                let valueMap: Map<string, Value> = o.attributeValues.get("Vector2");
-                let x: number = valueMap.get("x").value;
-                let y: number = valueMap.get("y").value;
-
                 let o1: RuntimeObject = parameters[1].value;
-                let valueMap1: Map<string, Value> = o1.attributeValues.get("Vector2");
-                let x1: number = valueMap1.get("x").value;
-                let y1: number = valueMap1.get("y").value;
+
+                let x: number = o.attributes[xIndex].value;
+                let y: number = o.attributes[yIndex].value;
+
+                let x1: number = o1.attributes[xIndex].value;
+                let y1: number = o1.attributes[yIndex].value;
 
                 let oRet: RuntimeObject = new RuntimeObject(this);
-                let valueMapRet: Map<string, Value> = new Map();
-                valueMapRet.set("x", {type: doublePrimitiveType, value: x - x1});
-                valueMapRet.set("y", {type: doublePrimitiveType, value: y - y1});
-                oRet.attributeValues.set("Vector2", valueMapRet);
+
+                oRet.attributes[xIndex] = { type: doublePrimitiveType, value: x - x1 };
+                oRet.attributes[yIndex] = { type: doublePrimitiveType, value: y - y1 };
 
                 return oRet;
 
@@ -221,22 +215,20 @@ export class Vector2Class extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[1].value;
+                let o: RuntimeObject = parameters[0].value;
+                let o1: RuntimeObject = parameters[1].value;
 
-                let valueMap: Map<string, Value> = o.attributeValues.get("Vector2");
-                let x: number = valueMap.get("x").value;
-                let y: number = valueMap.get("y").value;
+                let x: number = o.attributes[xIndex].value;
+                let y: number = o.attributes[yIndex].value;
 
-                let o1: RuntimeObject = parameters[2].value;
-                let valueMap1: Map<string, Value> = o1.attributeValues.get("Vector2");
-                let x1: number = valueMap1.get("x").value;
-                let y1: number = valueMap1.get("y").value;
+                let x1: number = o1.attributes[xIndex].value;
+                let y1: number = o1.attributes[yIndex].value;
 
-                return x*x1 + y*y1;
+                return x * x1 + y * y1;
 
             }, false, true, 'Gibt das Skalarprodukt der beiden Vektoren zurück.', false));
 
-        
+
         this.addMethod(new Method("scaledBy", new Parameterlist([
             { identifier: "scalar", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true, isEllipsis: false },
         ]), this,
@@ -244,17 +236,14 @@ export class Vector2Class extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
 
-                let valueMap: Map<string, Value> = o.attributeValues.get("Vector2");
-                let x: number = valueMap.get("x").value;
-                let y: number = valueMap.get("y").value;
+                let x: number = o.attributes[xIndex].value;
+                let y: number = o.attributes[yIndex].value;
 
                 let s: number = parameters[1].value;
 
                 let oRet: RuntimeObject = new RuntimeObject(this);
-                let valueMapRet: Map<string, Value> = new Map();
-                valueMapRet.set("x", {type: doublePrimitiveType, value: x*s});
-                valueMapRet.set("y", {type: doublePrimitiveType, value: y*s});
-                oRet.attributeValues.set("Vector2", valueMapRet);
+                oRet.attributes[xIndex] = { type: doublePrimitiveType, value: x * s };
+                oRet.attributes[yIndex] = { type: doublePrimitiveType, value: y * s };
 
                 return oRet;
 
@@ -267,48 +256,38 @@ export class Vector2Class extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
 
-                let valueMap: Map<string, Value> = o.attributeValues.get("Vector2");
-                let x: number = valueMap.get("x").value;
-                let y: number = valueMap.get("y").value;
+                let x: number = o.attributes[xIndex].value;
+                let y: number = o.attributes[yIndex].value;
 
-                let angle: number = -parameters[1].value*Math.PI/180;
+                let angle: number = -parameters[1].value * Math.PI / 180;
                 let sin: number = Math.sin(angle);
                 let cos: number = Math.cos(angle);
 
                 let oRet: RuntimeObject = new RuntimeObject(this);
-                let valueMapRet: Map<string, Value> = new Map();
-                valueMapRet.set("x", {type: doublePrimitiveType, value: x*cos - y*sin});
-                valueMapRet.set("y", {type: doublePrimitiveType, value: x*sin + y*cos});
-                oRet.attributeValues.set("Vector2", valueMapRet);
+                oRet.attributes[xIndex] = { type: doublePrimitiveType, value: x * cos - y * sin };
+                oRet.attributes[yIndex] = { type: doublePrimitiveType, value: x * sin + y * cos };
 
                 return oRet;
 
             }, false, false, 'Gibt den um den übergebenen Winkel (in Grad) rotierten Vektor zurück. Positiver Winkel => Rotation GEGEN DEN Uhrzeigersinn. WICHTIG: Diese Methode ändert das Objekt nicht, für das sie aufgerufen wurde!', false));
 
-                    
-            this.addMethod(new Method("distance", new Parameterlist([
-                { identifier: "x1", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-                { identifier: "y1", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-                { identifier: "x2", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-                { identifier: "y2", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true }
-            ]), doublePrimitiveType,
-                (parameters) => {
-                    let x1: number = <number>parameters[1].value;
-                    let y1: number = <number>parameters[2].value;
-                    let x2: number = <number>parameters[3].value;
-                    let y2: number = <number>parameters[4].value;
-                    let dx = x2 - x1;
-                    let dy = y2 - y1;
-                    return Math.sqrt(dx*dx+dy*dy);
-                }, false, true, "Berechnet den Abstand der Punkte (x1/y1) und (x2/y2)."));
 
+        this.addMethod(new Method("distance", new Parameterlist([
+            { identifier: "x1", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "y1", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "x2", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "y2", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+        ]), doublePrimitiveType,
+            (parameters) => {
+                let x1: number = <number>parameters[1].value;
+                let y1: number = <number>parameters[2].value;
+                let x2: number = <number>parameters[3].value;
+                let y2: number = <number>parameters[4].value;
+                let dx = x2 - x1;
+                let dy = y2 - y1;
+                return Math.sqrt(dx * dx + dy * dy);
+            }, false, true, "Berechnet den Abstand der Punkte (x1/y1) und (x2/y2)."));
 
-
-        this.addAttribute(new Attribute("x", doublePrimitiveType,
-            null, false, Visibility.public, false, "x-Komponente des Vektors"));
-
-        this.addAttribute(new Attribute("y", doublePrimitiveType,
-            null, false, Visibility.public, false, "y-Komponente des Vektors"));
 
     }
 

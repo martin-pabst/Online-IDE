@@ -102,7 +102,7 @@ export class DebuggerElement {
                 this.renderListElements(listHelper);
             } else {
                 for (let a of (<Klass>this.value.type).getAttributes(Visibility.private)) {
-                    let de = new DebuggerElement(null, this, a.identifier, ro.getValue(a.identifier), a.type, null);
+                    let de = new DebuggerElement(null, this, a.identifier, ro.getValue(a.index), a.type, null);
                     de.render();
                     this.$debuggerElement.find('.jo_deChildContainer').append(de.$debuggerElement);
                 }
@@ -126,7 +126,7 @@ export class DebuggerElement {
 
             for (let a of this.type.getAttributes(Visibility.private)) {
                 let ro = this.type.classObject;
-                let de = new DebuggerElement(null, this, a.identifier, ro.getValue(a.identifier), a.type, null);
+                let de = new DebuggerElement(null, this, a.identifier, ro.getValue(a.index), a.type, null);
                 de.render();
                 this.$debuggerElement.find('.jo_deChildContainer').append(de.$debuggerElement);
             }
@@ -137,7 +137,7 @@ export class DebuggerElement {
                 let ro: RuntimeObject = this.value.value;
 
                 for (let a of (<Klass>ro.class).getAttributes(Visibility.private)) {
-                    let de = new DebuggerElement(null, this, a.identifier, ro.getValue(a.identifier), a.type, null);
+                    let de = new DebuggerElement(null, this, a.identifier, ro.getValue(a.index), a.type, null);
                     de.render();
                     this.$debuggerElement.find('.jo_deChildContainer').append(de.$debuggerElement);
                 }

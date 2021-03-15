@@ -202,7 +202,7 @@ export class ProgramPrinter {
                 s1 += "v: " + node.identifier;    
             break;
             case TokenType.pushAttribute:
-                s1 += "Identifier: " + node.attributeIdentifier + ", use THIS-Object: " + node.useThisObject
+                s1 += "Index: " + node.attributeIndex + ", use THIS-Object: " + node.useThisObject
                 break;
             case TokenType.assignment:
             case TokenType.plusAssignment:
@@ -280,7 +280,7 @@ export class ProgramPrinter {
                 break;
             case TokenType.pushStaticAttribute:
                 if(node.klass != null)
-                s1 += "class: " + node.klass.identifier + ", attribute: " + node.attributeIdentifier;
+                s1 += "class: " + node.klass.identifier + ", attributeIndex: " + node.attributeIndex;
                 break;
             case TokenType.newObject: 
                 s1 += "class: " + node.class.identifier;

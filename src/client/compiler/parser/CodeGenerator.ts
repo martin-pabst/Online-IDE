@@ -625,13 +625,14 @@ export class CodeGenerator {
         if (attribute.isStatic) {
             this.pushStatements({
                 type: TokenType.pushStaticAttribute,
-                attributeIdentifier: attribute.identifier,
+                attributeIndex: attribute.resolvedType.index,
                 position: attribute.initialization.position,
                 klass: <StaticClass>(this.currentSymbolTable.classContext)
             });
         } else {
             this.pushStatements({
                 type: TokenType.pushAttribute,
+                attributeIndex: attribute.resolvedType.index,
                 attributeIdentifier: attribute.identifier,
                 position: attribute.initialization.position,
                 useThisObject: true
@@ -2228,7 +2229,8 @@ export class CodeGenerator {
 
             let attributeWithError = objectType.getAttribute(node.identifier, visibilityUpTo);
 
-            let staticAttributeWithError = null;
+            let staticAttributeWithError: { attribute: Attribute, error: string, foundButInvisible: boolean, staticClass: StaticClass} 
+               = null;
             if (attributeWithError.attribute == null) {
                 staticAttributeWithError = objectType.staticClass.getAttribute(node.identifier, visibilityUpTo);
             }
@@ -2249,7 +2251,8 @@ export class CodeGenerator {
                     this.pushStatements({
                         type: TokenType.pushAttribute,
                         position: node.position,
-                        attributeIdentifier: node.identifier,
+                        attributeIndex: attributeWithError.attribute.index,
+                        attributeIdentifier: attributeWithError.attribute.identifier,
                         useThisObject: false
                     });
                     attribute = attributeWithError.attribute;
@@ -2263,7 +2266,7 @@ export class CodeGenerator {
                         position: node.position,
                         // klass: (<Klass>objectType).staticClass,
                         klass: staticAttributeWithError.staticClass,
-                        attributeIdentifier: node.identifier
+                        attributeIndex: staticAttributeWithError.attribute.index
                     }]);
                     attribute = staticAttributeWithError.attribute;
                 }
@@ -2316,7 +2319,7 @@ export class CodeGenerator {
                         this.pushStatements({
                             type: TokenType.pushStaticAttribute,
                             position: node.position,
-                            attributeIdentifier: node.identifier,
+                            attributeIndex: staticAttributeWithError.attribute.index,
                             klass: staticAttributeWithError.staticClass
                         });
                         this.pushUsagePosition(node.position, staticAttributeWithError.attribute);
@@ -2603,12 +2606,13 @@ export class CodeGenerator {
                     type: TokenType.pushStaticAttribute,
                     position: node.position,
                     klass: scc,
-                    attributeIdentifier: attribute.identifier
+                    attributeIndex: attribute.index
                 });
             } else {
                 this.pushStatements({
                     type: TokenType.pushAttribute,
                     position: node.position,
+                    attributeIndex: attribute.index,
                     attributeIdentifier: attribute.identifier,
                     useThisObject: true
                 });

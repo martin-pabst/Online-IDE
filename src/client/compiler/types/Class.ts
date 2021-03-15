@@ -90,6 +90,22 @@ export class Klass extends Type {
 
     }
 
+    setupAttributeIndicesRecursive() {
+        if(this.baseClass != null && this.baseClass.numberOfAttributesIncludingBaseClass == null){
+            this.baseClass.setupAttributeIndicesRecursive();
+        }
+        let numberOfAttributesInBaseClasses = this.baseClass == null ? 0 : this.baseClass.numberOfAttributesIncludingBaseClass;
+
+        for(let a of this.attributes){
+            a.index = numberOfAttributesInBaseClasses++;
+            // console.log(this.identifier + "." + a.identifier+ ": " + a.index);
+        }
+
+        this.numberOfAttributesIncludingBaseClass = numberOfAttributesInBaseClasses;
+
+    }
+
+
     getNonGenericClass(): Klass {
         let k: Klass = this;
         while (k.isGenericVariantFrom != null) k = k.isGenericVariantFrom;
@@ -729,7 +745,7 @@ export class Klass extends Type {
         for (let i = 0; i < attributes.length; i++) {
 
             let attribute = attributes[i];
-            let v = object.getValue(attribute.identifier);
+            let v = object.getValue(attribute.index);
             if (attribute.type instanceof PrimitiveType) {
                 s += attribute.identifier + ":&nbsp;" + attribute.type.debugOutput(v, maxLength / 2);
             } else {
@@ -773,6 +789,7 @@ export class StaticClass extends Type {
 
     public attributes: Attribute[] = [];
     public attributeMap: Map<string, Attribute> = new Map();
+    public numberOfAttributesIncludingBaseClass: number = null;
 
     constructor(klass: Klass) {
         super();
@@ -794,6 +811,22 @@ export class StaticClass extends Type {
         this.attributeInitializationProgram.labelManager = new LabelManager(this.attributeInitializationProgram);
 
     }
+
+    setupAttributeIndicesRecursive() {
+        if(this.baseClass != null && this.baseClass.numberOfAttributesIncludingBaseClass == null){
+            this.baseClass.setupAttributeIndicesRecursive();
+        }
+        let numberOfAttributesInBaseClasses = this.baseClass == null ? 0 : this.baseClass.numberOfAttributesIncludingBaseClass;
+
+        for(let a of this.attributes){
+            a.index = numberOfAttributesInBaseClasses++;
+            // console.log(this.identifier + "." + a.identifier+ ": " + a.index);
+        }
+
+        this.numberOfAttributesIncludingBaseClass = numberOfAttributesInBaseClasses;
+
+    }
+
 
     clearUsagePositions() {
         super.clearUsagePositions();
@@ -817,7 +850,7 @@ export class StaticClass extends Type {
         for (let i = 0; i < attributes.length; i++) {
 
             let attribute = attributes[i];
-            s += attribute.identifier + ": " + object == null ? '---' : attribute.type.debugOutput(object.getValue(attribute.identifier), maxLength / 2);
+            s += attribute.identifier + ": " + object == null ? '---' : attribute.type.debugOutput(object.getValue(attribute.index), maxLength / 2);
             if (i < attributes.length - 1) {
                 s += ", ";
             }

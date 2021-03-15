@@ -80,25 +80,18 @@ export class TypeResolver {
     
     setupAttributeIndices() {
         for(let cl of this.classes){
-            this.setupAttributeIndicesRecursive(cl.resolvedType);
+            cl.resolvedType.setupAttributeIndicesRecursive();
+            if(cl.resolvedType.staticClass != null){
+                cl.resolvedType.staticClass.setupAttributeIndicesRecursive();
+            }
+        }
+        for(let cl of this.enums){
+            cl.resolvedType.setupAttributeIndicesRecursive();
+            if(cl.resolvedType.staticClass != null){
+                cl.resolvedType.staticClass.setupAttributeIndicesRecursive();
+            }
         }
     }
-
-    setupAttributeIndicesRecursive(resolvedType: Klass) {
-        if(resolvedType.baseClass != null && resolvedType.baseClass.numberOfAttributesIncludingBaseClass == null){
-            this.setupAttributeIndicesRecursive(resolvedType.baseClass);
-        }
-        let numberOfAttributesInBaseClasses = resolvedType.baseClass == null ? 0 : resolvedType.baseClass.numberOfAttributesIncludingBaseClass;
-
-        for(let a of resolvedType.attributes){
-            a.index = numberOfAttributesInBaseClasses++;
-            // console.log(resolvedType.identifier + "." + a.identifier+ ": " + a.index);
-        }
-
-        resolvedType.numberOfAttributesIncludingBaseClass = numberOfAttributesInBaseClasses;
-
-    }
-
 
 
     checkGenericTypesAgainsTypeGuards() {

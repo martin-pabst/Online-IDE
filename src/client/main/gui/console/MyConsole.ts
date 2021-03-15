@@ -350,6 +350,9 @@ export class MyConsole {
 
     writeConsoleEntry(command: string|JQuery<HTMLElement>, stackTop: Value, color: string = null) {
 
+        if(this.$consoleTab == null){
+            return;
+        }
         let consoleTop = this.$consoleTab.find('.jo_console-top');
 
         let commandEntry = new ConsoleEntry(command, null, null, null, stackTop == null, color);

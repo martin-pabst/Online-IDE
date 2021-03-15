@@ -48,6 +48,7 @@ export class ColorClass extends Klass {
         }
 
         this.setupAttributeIndicesRecursive();
+        this.staticClass.setupAttributeIndicesRecursive();
 
         this.staticClass.classObject = new RuntimeObject(this.staticClass);
         this.staticClass.classObject.initializeAttributeValues();

@@ -175,7 +175,8 @@ export type PushStaticAttributeStatement = {
     breakpoint?: Breakpoint
     stepFinished?: boolean,
     klass: StaticClass,
-    attributeIndex: number
+    attributeIndex: number,
+    attributeIdentifier: string
 }
 
 export type PushStaticAttributeIntrinsicStatement = {

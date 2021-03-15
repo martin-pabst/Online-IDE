@@ -29,6 +29,8 @@ export class KeyClass extends Klass {
         this.addAttribute(new Attribute("Einf", stringPrimitiveType, (value) => { value.value = "Insert" }, true, Visibility.public, true, ""));
         this.addAttribute(new Attribute("Ende", stringPrimitiveType, (value) => { value.value = "End" }, true, Visibility.public, true, ""));
 
+        this.staticClass.setupAttributeIndicesRecursive();
+
         this.staticClass.classObject = new RuntimeObject(this.staticClass);
         this.staticClass.classObject.initializeAttributeValues();
 

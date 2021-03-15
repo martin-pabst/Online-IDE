@@ -47,6 +47,8 @@ export class ColorClass extends Klass {
                 "Die Farbe " + colorName + " (" + ColorHelper.intColorToHexRGB(intColor) + " oder " + ColorHelper.intColorToRGB(intColor)));
         }
 
+        this.setupAttributeIndicesRecursive();
+
         this.staticClass.classObject = new RuntimeObject(this.staticClass);
         this.staticClass.classObject.initializeAttributeValues();
 

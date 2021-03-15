@@ -653,6 +653,9 @@ export class ProcessingClass extends Klass {
         this.addProcessingMethod('redraw', [], [],
             'Führt draw() genau ein Mal aus. Macht ggf. Sinn, wenn die Render-Loop zuvor mit noLoop() gestoppt wurde.');
 
+
+        this.setupAttributeIndicesRecursive();
+
     }
 
     addProcessingMethod(identifier: string, parameterNames: string[], parameterTypes: Type[] | Type, comment: string, returnType?: Type) {
@@ -795,114 +798,114 @@ export class ProcessingHelper {
     }
 
     main() {
-            this.interpreter.timerExtern = true;
-            this.setupProcessing(this.$containerInner);
-        }
+        this.interpreter.timerExtern = true;
+        this.setupProcessing(this.$containerInner);
+    }
 
     setupProcessing($div: JQuery<HTMLElement>) {
 
-            let that = this;
-            let drawMethodPending: boolean = true;
-            this.$div = $div;
+        let that = this;
+        let drawMethodPending: boolean = true;
+        this.$div = $div;
 
-            let sketch = (p5: p5) => {
+        let sketch = (p5: p5) => {
 
-                p5.setup = function () {
-                    that.renderer = p5.P2D;
+            p5.setup = function () {
+                that.renderer = p5.P2D;
 
-                    let afterFinishingBoth = () => {
-                        // p5.createCanvas(that.width, that.height, that.renderer);
-                        drawMethodPending = false
-                        // $div.find('canvas').css({
-                        //     'width': '',
-                        //     'height': ''
-                        // })            
+                let afterFinishingBoth = () => {
+                    // p5.createCanvas(that.width, that.height, that.renderer);
+                    drawMethodPending = false
+                    // $div.find('canvas').css({
+                    //     'width': '',
+                    //     'height': ''
+                    // })            
+                }
+
+                let i = 2;
+
+                that.runMethod('setup', () => {
+                    if (--i == 0) afterFinishingBoth();
+                });
+
+                that.runMethod('settings', () => {
+                    if (--i == 0) afterFinishingBoth();
+                });
+
+
+            };
+
+            p5.preload = function () {
+                that.runMethod('preload');
+            };
+
+            p5.draw = function () {
+                if (that.interpreter.state == InterpreterState.running && !that.loopStopped) {
+                    if (!drawMethodPending) {
+                        drawMethodPending = true;
+                        that.runMethod("draw", () => {
+                            drawMethodPending = false;
+                        });
                     }
+                }
+                that.tick();
+                // p5.background(50);
+                // p5.rect(p5.width / 2, p5.height / 2, 50, 50);
 
-                    let i = 2;
+            };
 
-                    that.runMethod('setup', () => {
-                        if (--i == 0) afterFinishingBoth();
-                    });
+            p5.mousePressed = function () {
+                that.runMethod('mousePressed');
+            };
 
-                    that.runMethod('settings', () => {
-                        if (--i == 0) afterFinishingBoth();
-                    });
+            p5.mouseReleased = function () {
+                that.runMethod('mouseReleased');
+            };
 
+            p5.mouseClicked = function () {
+                that.runMethod('mouseClicked');
+            };
 
-                };
+            p5.mouseDragged = function () {
+                that.runMethod('mouseDragged');
+            };
 
-                p5.preload = function () {
-                    that.runMethod('preload');
-                };
+            p5.mouseEntered = function () {
+                that.runMethod('mouseEntered');
+            };
 
-                p5.draw = function () {
-                    if (that.interpreter.state == InterpreterState.running && !that.loopStopped) {
-                        if (!drawMethodPending) {
-                            drawMethodPending = true;
-                            that.runMethod("draw", () => {
-                                drawMethodPending = false;
-                            });
-                        }
-                    }
-                    that.tick();
-                    // p5.background(50);
-                    // p5.rect(p5.width / 2, p5.height / 2, 50, 50);
+            p5.mouseExited = function () {
+                that.runMethod('mouseExited');
+            };
 
-                };
+            p5.mouseMoved = function () {
+                that.runMethod('mouseMoved');
+            };
 
-                p5.mousePressed = function () {
-                    that.runMethod('mousePressed');
-                };
+            p5.keyPressed = function () {
+                that.runMethod('keyPressed');
+            };
 
-                p5.mouseReleased = function () {
-                    that.runMethod('mouseReleased');
-                };
-
-                p5.mouseClicked = function () {
-                    that.runMethod('mouseClicked');
-                };
-
-                p5.mouseDragged = function () {
-                    that.runMethod('mouseDragged');
-                };
-
-                p5.mouseEntered = function () {
-                    that.runMethod('mouseEntered');
-                };
-
-                p5.mouseExited = function () {
-                    that.runMethod('mouseExited');
-                };
-
-                p5.mouseMoved = function () {
-                    that.runMethod('mouseMoved');
-                };
-
-                p5.keyPressed = function () {
-                    that.runMethod('keyPressed');
-                };
-
-                p5.keyReleased = function () {
-                    that.runMethod('keyReleased');
-                };
+            p5.keyReleased = function () {
+                that.runMethod('keyReleased');
+            };
 
 
-            }
+        }
 
         //@ts-ignore
         this.p5o = new p5(sketch, $div[0]);
-            $div.find('canvas').css({
-                'width': '',
-                'height': ''
-            })
+        $div.find('canvas').css({
+            'width': '',
+            'height': ''
+        })
 
-        }
+    }
 
 
     tick() {
 
-            if(this.interpreter.state == InterpreterState.running) {
+        if (this.interpreter.state == InterpreterState.running) {
             this.interpreter.timerFunction(33.33, true, 0.5);
             this.interpreter.timerStopped = false;
             this.interpreter.timerFunction(33.33, false, 0.08);

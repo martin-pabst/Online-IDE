@@ -23,6 +23,9 @@ export class SystemClass extends Klass {
         this.addAttribute(new Attribute("out", module.typeStore.getType("PrintStream"),
             (value) => { value.value = this.printStream }, true, Visibility.public, true, "PrintStream-Objekt, mit dem Text ausgegeben werden kann."));
 
+        this.staticClass.setupAttributeIndicesRecursive();
+
+
         this.staticClass.classObject = new RuntimeObject(this.staticClass);
         this.staticClass.classObject.initializeAttributeValues();
 
@@ -80,10 +83,10 @@ export class SystemClass extends Klass {
 
         this.addMethod(new Method("currentTimeMillis", new Parameterlist([
         ]), intPrimitiveType,
-        (parameters) => {
-            return Date.now() + this.deltaTimeMillis;
-        }    
-        , false, true, "Gibt die Anzahl der Millisekunden, die seit dem 01.01.1970 00:00:00 UTC vergangen sind, zurück."));
+            (parameters) => {
+                return Date.now() + this.deltaTimeMillis;
+            }
+            , false, true, "Gibt die Anzahl der Millisekunden, die seit dem 01.01.1970 00:00:00 UTC vergangen sind, zurück."));
 
     }
 

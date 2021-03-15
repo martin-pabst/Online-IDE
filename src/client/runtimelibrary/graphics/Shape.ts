@@ -69,6 +69,7 @@ export class ShapeClass extends Klass {
 
             }, false, Visibility.protected, true, "Y-Koordinate des Diagonalenschnittpunkts der BoundingBox des Objekts"));
 
+            this.setupAttributeIndicesRecursive();
 
         // this.addAttribute(new Attribute("transformation", matrixType,
         //     (value) => {

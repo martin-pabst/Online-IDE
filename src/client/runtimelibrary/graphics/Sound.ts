@@ -17,6 +17,8 @@ export class SoundKlass extends Klass {
             this.addAttribute(new Attribute(sound.name, stringPrimitiveType, (value) => { value.value = sound.name }, true, Visibility.public, true, sound.description));
         }
 
+        this.staticClass.setupAttributeIndicesRecursive();
+
         this.staticClass.classObject = new RuntimeObject(this.staticClass);
         this.staticClass.classObject.initializeAttributeValues();
 

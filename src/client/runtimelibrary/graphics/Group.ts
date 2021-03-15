@@ -39,6 +39,8 @@ export class CollisionPairClass extends Klass {
 
             }, false, Visibility.public, true, "Zweites an der Kollision beteiligtes Shape"));
 
+            this.setupAttributeIndicesRecursive();
+
     }
 }
 

@@ -604,6 +604,7 @@ export class TypeResolver {
                 }
 
                 let attribute: Attribute = new Attribute(att.identifier, type, null, att.isStatic, att.visibility, att.isFinal);
+                att.resolvedType = attribute;
                 if(att.commentBefore != null) attribute.documentation = "" + att.commentBefore.value;
                 attribute.annotation = att.annotation;
                 attribute.isTransient = att.isTransient;

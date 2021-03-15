@@ -15,6 +15,8 @@ export class MathClass extends Klass {
         this.addAttribute(new Attribute("PI", doublePrimitiveType, (value) => { value.value = Math.PI }, true, Visibility.public, true, "Die Kreiszahl Pi (3.1415...)"));
         this.addAttribute(new Attribute("E", doublePrimitiveType, (value) => { value.value = Math.E }, true, Visibility.public, true, "Die Eulersche Zahl e"));
 
+        this.staticClass.setupAttributeIndicesRecursive();
+
         this.staticClass.classObject = new RuntimeObject(this.staticClass);
         this.staticClass.classObject.initializeAttributeValues();
 

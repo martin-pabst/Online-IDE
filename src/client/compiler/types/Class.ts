@@ -64,6 +64,7 @@ export class Klass extends Type {
 
     public attributes: Attribute[] = [];
     public attributeMap: Map<string, Attribute> = new Map();
+    public numberOfAttributesIncludingBaseClass: number = null;
 
     public symbolTable: SymbolTable;
 

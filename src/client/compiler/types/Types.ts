@@ -98,6 +98,9 @@ export class Attribute {
     onlyFirstPass: boolean = false;
 
     identifier: string;
+
+    index: number;
+
     type: Type;
     isStatic: boolean;
     isFinal: boolean;

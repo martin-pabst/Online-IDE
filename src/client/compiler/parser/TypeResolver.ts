@@ -74,6 +74,29 @@ export class TypeResolver {
 
         this.checkGenericTypesAgainsTypeGuards();
 
+        this.setupAttributeIndices();
+
+    }
+    
+    setupAttributeIndices() {
+        for(let cl of this.classes){
+            this.setupAttributeIndicesRecursive(cl.resolvedType);
+        }
+    }
+
+    setupAttributeIndicesRecursive(resolvedType: Klass) {
+        if(resolvedType.baseClass != null && resolvedType.baseClass.numberOfAttributesIncludingBaseClass == null){
+            this.setupAttributeIndicesRecursive(resolvedType.baseClass);
+        }
+        let numberOfAttributesInBaseClasses = resolvedType.baseClass == null ? 0 : resolvedType.baseClass.numberOfAttributesIncludingBaseClass;
+
+        for(let a of resolvedType.attributes){
+            a.index = numberOfAttributesInBaseClasses++;
+            // console.log(resolvedType.identifier + "." + a.identifier+ ": " + a.index);
+        }
+
+        resolvedType.numberOfAttributesIncludingBaseClass = numberOfAttributesInBaseClasses;
+
     }
 
 

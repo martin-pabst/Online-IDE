@@ -333,7 +333,6 @@ export class AccordionPanel {
                 }
     
                 ae.$htmlFirstLine.addClass('jo_active');
-                ae.$htmlFirstLine[0].scrollIntoView();
             }
 
         }

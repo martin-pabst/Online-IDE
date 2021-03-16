@@ -586,8 +586,8 @@ export class TypeResolver {
         for (let cn of classesOrEnums) {
             for (let mn of cn.methods) {
                 let m: Method = this.setupMethod(mn, cn.resolvedType.module, cn.resolvedType);
-                if(mn.commentBefore != null) m.documentation = "" + mn.commentBefore.value;
                 if (m != null) {
+                    if(mn.commentBefore != null) m.documentation = "" + mn.commentBefore.value;
                     cn.resolvedType.addMethod(m);
                 }
             }

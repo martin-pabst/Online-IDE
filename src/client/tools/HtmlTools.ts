@@ -33,29 +33,24 @@ export function makeEditable(elementWithText: JQuery<HTMLElement>,
     }, 300);
 
     $input.on("keydown.me", (ev) => {
-        if (ev.key == "Enter") {
+        if (ev.key == "Enter" || ev.key == "Escape") {
             $input.off("keydown.me");
-            $input.off("focuslost.me");
+            $input.off("focusout.me");
             $input.remove();
             elementToReplace.show();
             let newValue = escapeHtml(<string>$input.val());
             renameDoneCallback(newValue);
             return;
         }
-        if (ev.key == "Escape") {
-            $input.off("keydown.me");
-            $input.off("focuslost.me");
-            $input.remove();
-            elementToReplace.show();
-        }
     });
 
     $input.on("focusout.me", (ev) => {
         $input.off("keydown.me");
-        let newValue = <string>$input.val();
-        renameDoneCallback(newValue);
-        elementToReplace.show()
+        $input.off("focusout.me");
         $input.remove();
+        elementToReplace.show();
+        let newValue = escapeHtml(<string>$input.val());
+        renameDoneCallback(newValue);
         return;
     });
 

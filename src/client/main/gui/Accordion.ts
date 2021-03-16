@@ -28,6 +28,8 @@ export class AccordionPanel {
 
     private fixed: boolean;
 
+    dontSortElements: boolean = false;
+
     newElementCallback: (ae: AccordionElement, callbackIfSuccessful: (externalElement: any) => void) => void;
     renameCallback: (externalElement: any, newName: string) => string;
     deleteCallback: (externalElement: any, callbackIfSuccessful: () => void) => void;
@@ -170,6 +172,7 @@ export class AccordionPanel {
     }
 
     sortElements(){
+        if(this.dontSortElements) return;
         this.elements.sort((a, b) => {
             let aName = a.sortName ? a.sortName : a.name;
             let bName = b.sortName ? b.sortName : b.name;
@@ -303,12 +306,15 @@ export class AccordionPanel {
         let $div = element.$htmlFirstLine.find('.jo_filename');
         let pointPos = element.name.indexOf('.');
         let selection = pointPos == null ? null : { start: 0, end: pointPos };
+        this.dontSortElements = true;
         makeEditable($div, $div, (newText: string) => {
             if (element.externalElement != null) newText = that.renameCallback(element.externalElement, newText);
             element.name = newText;
             $div.html(element.name);
             if (callback != null) callback();
             that.sortElements();
+            $div[0].scrollIntoView();
+            this.dontSortElements = false;
         }, selection);
     }
 
@@ -327,6 +333,7 @@ export class AccordionPanel {
                 }
     
                 ae.$htmlFirstLine.addClass('jo_active');
+                ae.$htmlFirstLine[0].scrollIntoView();
             }
 
         }

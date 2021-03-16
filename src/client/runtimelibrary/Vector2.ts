@@ -21,7 +21,7 @@ export class Vector2Class extends Klass {
         this.setupAttributeIndicesRecursive();
 
         let xIndex = this.attributeMap.get("x").index;
-        let yIndex = this.attributeMap.get("x").index;
+        let yIndex = this.attributeMap.get("y").index;
         
 
         this.addMethod(new Method("Vector2", new Parameterlist([

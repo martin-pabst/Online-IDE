@@ -16,7 +16,6 @@ export class BooleanClass extends Klass {
         this.addAttribute(new Attribute("FALSE", this, (value) => { value.value = false }, true, Visibility.public, true, "das Boolean-Objekt, das FALSE repräsentiert"));
 
         this.staticClass.classObject = new RuntimeObject(this.staticClass);
-        this.staticClass.classObject.initializeAttributeValues();
 
     }
 

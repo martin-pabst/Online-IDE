@@ -18,7 +18,6 @@ export class MathClass extends Klass {
         this.staticClass.setupAttributeIndicesRecursive();
 
         this.staticClass.classObject = new RuntimeObject(this.staticClass);
-        this.staticClass.classObject.initializeAttributeValues();
 
         this.addMethod(new Method("round", new Parameterlist([
             { identifier: "Wert", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true }

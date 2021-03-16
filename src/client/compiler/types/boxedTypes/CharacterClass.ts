@@ -13,7 +13,6 @@ export class CharacterClass extends Klass {
         this.baseClass = baseClass;
 
         this.staticClass.classObject = new RuntimeObject(this.staticClass);
-        this.staticClass.classObject.initializeAttributeValues();
 
     }
 

@@ -350,7 +350,6 @@ export class Interpreter {
         for (let klass of m.typeStore.typeList) {
             if (klass instanceof Klass) {
                 klass.staticClass.classObject = new RuntimeObject(klass.staticClass);
-                klass.staticClass.classObject.initializeAttributeValues();
                 klass.pushStaticInitializationPrograms(this.programStack);
             }
 
@@ -398,7 +397,6 @@ export class Interpreter {
 
                 for (let enumInfo of enumClass.enumInfoList) {
                     enumInfo.object = new EnumRuntimeObject(enumClass, enumInfo);
-                    enumInfo.object.initializeAttributeValues();
 
                     valueList.push({
                         type: enumClass,
@@ -1098,7 +1096,6 @@ export class Interpreter {
                 break;
             case TokenType.newObject:
                 let object = new RuntimeObject(node.class);
-                object.initializeAttributeValues();
 
                 value = {
                     value: object,
@@ -1709,7 +1706,6 @@ export class Interpreter {
 
     instantiateObjectImmediately(klass: Klass): RuntimeObject {
         let object = new RuntimeObject(klass);
-        object.initializeAttributeValues();
 
         let value = {
             value: object,

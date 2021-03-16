@@ -32,7 +32,6 @@ export class KeyClass extends Klass {
         this.staticClass.setupAttributeIndicesRecursive();
 
         this.staticClass.classObject = new RuntimeObject(this.staticClass);
-        this.staticClass.classObject.initializeAttributeValues();
 
 
     }

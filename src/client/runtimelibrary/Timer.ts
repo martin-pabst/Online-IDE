@@ -42,7 +42,6 @@ export class TimerClass extends Klass {
         this.setBaseClass(<Klass>module.typeStore.getType("Object"));
 
         this.staticClass.classObject = new RuntimeObject(this.staticClass);
-        this.staticClass.classObject.initializeAttributeValues();
 
         this.addMethod(new Method("repeat", new Parameterlist([
             {

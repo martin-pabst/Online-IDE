@@ -19,7 +19,6 @@ export class DoubleClass extends Klass {
         this.addAttribute(new Attribute("POSITIVE_INFINITY", doublePrimitiveType, (value) => { value.value = Number.POSITIVE_INFINITY }, true, Visibility.public, true, "Der \"positive infinity\"-Wert vom Typ double"));
 
         this.staticClass.classObject = new RuntimeObject(this.staticClass);
-        this.staticClass.classObject.initializeAttributeValues();
 
     }
 

@@ -18,22 +18,7 @@ export class RuntimeObject {
 
         this.class = klass;
 
-        // while (klass != null) {
-        //     let map: Map<string, Value> = new Map();
-        //     this.attributeValues.set(klass.identifier, map);
-        //     for (let attribute of klass.attributes) {
-        //         let value: Value = {
-        //             type: attribute.type,
-        //             value: null
-        //         };
-
-        //         if (attribute.type instanceof PrimitiveType) {
-        //             value.value = attribute.type.initialValue;
-        //         }
-        //         map.set(attribute.identifier, value);
-        //     }
-        //     klass = klass.baseClass;
-        // }
+        this.initializeAttributeValues();
 
     }
 
@@ -47,7 +32,7 @@ export class RuntimeObject {
 
     }
 
-    initializeAttributeValues(){
+    private initializeAttributeValues(){
 
         this.attributes = Array(this.class.numberOfAttributesIncludingBaseClass).fill(null);
 

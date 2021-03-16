@@ -19,7 +19,6 @@ export class FloatClass extends Klass {
         this.addAttribute(new Attribute("POSITIVE_INFINITY", floatPrimitiveType, (value) => { value.value = Number.POSITIVE_INFINITY }, true, Visibility.public, true, "Der \"positive infinity\"-Wert vom Typ float"));
 
         this.staticClass.classObject = new RuntimeObject(this.staticClass);
-        this.staticClass.classObject.initializeAttributeValues();
 
     }
 

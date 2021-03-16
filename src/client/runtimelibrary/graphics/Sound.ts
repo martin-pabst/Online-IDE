@@ -20,7 +20,6 @@ export class SoundKlass extends Klass {
         this.staticClass.setupAttributeIndicesRecursive();
 
         this.staticClass.classObject = new RuntimeObject(this.staticClass);
-        this.staticClass.classObject.initializeAttributeValues();
 
         this.addMethod(new Method("playSound", new Parameterlist([
             { identifier: "sound", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }

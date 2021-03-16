@@ -27,7 +27,6 @@ export class SystemClass extends Klass {
 
 
         this.staticClass.classObject = new RuntimeObject(this.staticClass);
-        this.staticClass.classObject.initializeAttributeValues();
 
         // this.addMethod(new Method("clearScreen", new Parameterlist([
         // ]), null,

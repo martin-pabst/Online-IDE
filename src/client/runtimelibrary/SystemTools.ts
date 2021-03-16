@@ -15,7 +15,6 @@ export class SystemToolsClass extends Klass {
         this.setBaseClass(<Klass>module.typeStore.getType("Object"));
 
         this.staticClass.classObject = new RuntimeObject(this.staticClass);
-        this.staticClass.classObject.initializeAttributeValues();
 
         this.addMethod(new Method("clearScreen", new Parameterlist([
         ]), null,

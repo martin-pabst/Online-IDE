@@ -51,7 +51,6 @@ export class ColorClass extends Klass {
         this.staticClass.setupAttributeIndicesRecursive();
 
         this.staticClass.classObject = new RuntimeObject(this.staticClass);
-        this.staticClass.classObject.initializeAttributeValues();
 
         this.addMethod(new Method("Color", new Parameterlist([
             { identifier: "red", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },

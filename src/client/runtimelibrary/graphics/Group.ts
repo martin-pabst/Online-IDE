@@ -97,6 +97,8 @@ export class GroupClass extends Klass {
                 let shapes: Value[] = parameters[1].value;
                 let sh: GroupHelper = <GroupHelper>o.intrinsicData["Actor"];
 
+                if (sh.testdestroyed("add")) return;
+
                 for (let s of shapes) {
                     sh.add(s.value);
                 }
@@ -112,6 +114,8 @@ export class GroupClass extends Klass {
                 let o: RuntimeObject = parameters[0].value;
                 let index: number = parameters[1].value;
                 let sh: GroupHelper = <GroupHelper>o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("get")) return;
 
                 return sh.getElement(index);
 
@@ -140,6 +144,8 @@ export class GroupClass extends Klass {
                 let o: RuntimeObject = parameters[0].value;
                 let shape: RuntimeObject = parameters[1].value;
                 let sh: GroupHelper = <GroupHelper>o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("remove")) return;
 
                 sh.remove(shape);
 
@@ -497,7 +503,6 @@ export class GroupHelper extends ShapeHelper {
                     if (!maxOneCollisionPerShape || alreadyCollidedHelpers2.get(shapeHelper2) == null) {
                         alreadyCollidedHelpers2.set(shapeHelper2, true);
                         let rto: RuntimeObject = new RuntimeObject(<Klass>collisionPairType);
-                        rto.initializeAttributeValues();
 
                         rto.intrinsicData["ShapeA"] = shapeHelper1.runtimeObject;
                         rto.intrinsicData["ShapeB"] = shapeHelper2.runtimeObject;

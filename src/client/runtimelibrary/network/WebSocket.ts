@@ -289,7 +289,6 @@ export class WebSocketHelper {
         switch (response.command) {
             case 1: // new Client
                 let clientRuntimeObject = new RuntimeObject(this.webSocketClientType);
-                clientRuntimeObject.initializeAttributeValues();
                 let wch: WebSocketClientHelper = new WebSocketClientHelper(clientRuntimeObject, this, response.user_id,
                     response.rufname, response.familienname, response.username, response.nickname);
                 clientRuntimeObject.intrinsicData["Helper"] = wch;

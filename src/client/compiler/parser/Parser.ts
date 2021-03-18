@@ -1541,12 +1541,26 @@ export class Parser {
          * e.g. int, int[][], Integer, ArrayList<Integer> ,HashMap<Integer, ArrayList<String>>[][]
          */
 
+
+        if(this.tt != TokenType.identifier){
+            this.pushError("Erwartet wird ein Datentyp. Dieser muss mit einem Bezeichner beginnen. Gefunden wurde: " + this.cct.value, "error", this.getCurrentPosition());
+                this.nextToken();
+            return {
+                type: TokenType.type,
+                position: this.getCurrentPosition(),
+                arrayDimension: 0,
+                identifier: "int",
+                genericParameterTypes: []
+            };
+        }
+
         let identifier = <string>this.cct.value;
         let position = this.getCurrentPosition();
         this.nextToken();
 
         let genericParameterTypes: TypeNode[] = null;
 
+        //@ts-ignore
         if (this.tt == TokenType.lower) {
 
             genericParameterTypes = [];
@@ -1569,6 +1583,7 @@ export class Parser {
         }
 
         let arrayDimension = 0;
+        //@ts-ignore
         while (this.tt == TokenType.leftRightSquareBracket) {
             arrayDimension++;
             position.length += 2;

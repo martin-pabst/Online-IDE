@@ -1542,7 +1542,7 @@ export class Parser {
          */
 
 
-        if(this.tt != TokenType.identifier){
+        if(this.tt != TokenType.identifier && this.tt != TokenType.keywordVoid){
             this.pushError("Erwartet wird ein Datentyp. Dieser muss mit einem Bezeichner beginnen. Gefunden wurde: " + this.cct.value, "error", this.getCurrentPosition());
                 this.nextToken();
             return {

@@ -1,3 +1,4 @@
+import { InterpreterState } from "../../interpreter/Interpreter.js";
 import { SoundTools } from "../../tools/SoundTools.js";
 import { Main } from "../Main.js";
 import { MainBase } from "../MainBase.js";
@@ -34,8 +35,19 @@ export class ActionManager {
 
         let that = this;
         $element.on("keydown", function (event: JQuery.KeyDownEvent) { 
-            if(event != null)
-            that.executeKeyDownEvent(event); 
+            if(event != null){
+                that.executeKeyDownEvent(event); 
+
+                /*
+                 * Event is bubbling down to body element
+                 * when pressing space bar in embedded mode while program runs.
+                 * This leads to scrolling page down. To prevent this:
+                 */
+                if(event.key == " " && that.main.isEmbedded() && 
+                   that.main.getInterpreter().state == InterpreterState.running && !that.main.getMonacoEditor().hasTextFocus()){
+                    event.preventDefault();
+                }
+            }
         });
 
     }

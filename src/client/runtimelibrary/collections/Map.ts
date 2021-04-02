@@ -65,7 +65,7 @@ export class MapClass extends Interface {
 
         this.addMethod(new Method("put", new Parameterlist([
             { identifier: "key", type: typeK, declaration: null, usagePositions: null, isFinal: true },
-            { identifier: "value", type: typeK, declaration: null, usagePositions: null, isFinal: true }
+            { identifier: "value", type: typeV, declaration: null, usagePositions: null, isFinal: true }
         ]), typeV,
             null,  // no implementation!
             true, false, "Speichert das key-value pair in der Map. Falls zum key vorher schon ein Value gespeichert war, wird dieser zurückgegeben. In der Map wird er dann durch den neuen Value überschrieben. Falls es zum key noch keinen value in der Map gab, wird null zurückgegeben."));

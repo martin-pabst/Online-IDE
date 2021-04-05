@@ -75,7 +75,8 @@ export class Login {
 
             let loginRequest: LoginRequest = {
                 username: <string>jQuery('#login-username').val(),
-                password: <string>jQuery('#login-password').val()
+                password: <string>jQuery('#login-password').val(),
+                language: 0
             }
 
             ajax('login', loginRequest, (response: LoginResponse) => {

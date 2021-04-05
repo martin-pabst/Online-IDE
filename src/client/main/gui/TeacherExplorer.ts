@@ -47,7 +47,8 @@ export class TeacherExplorer {
 
                 let request: GetWorkspacesRequest = {
                     ws_userId: ae.id,
-                    userId: this.main.user.id
+                    userId: this.main.user.id,
+                    language: 0
                 }
 
                 ajax("getWorkspaces", request, (response: GetWorkspacesResponse) => {

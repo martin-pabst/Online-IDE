@@ -44,7 +44,11 @@ export class Workspace {
             files: [],
             version: this.version,
             repository_id: this.repository_id,
-            has_write_permission_to_repository: this.has_write_permission_to_repository
+            has_write_permission_to_repository: this.has_write_permission_to_repository,
+            language: 0,
+            sql_baseDatabase: "",
+            sql_history: "",
+            sql_manipulateDatabaseStatements: ""
         }
 
         if(withFiles){

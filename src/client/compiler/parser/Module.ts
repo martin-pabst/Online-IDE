@@ -256,7 +256,8 @@ export class Module {
             repository_file_version: file.repository_file_version,
             identical_to_repository_version: file.identical_to_repository_version,
             workspace_id: workspace.id,
-            forceUpdate: false
+            forceUpdate: false,
+            file_type: 0
         }
 
         return fd;

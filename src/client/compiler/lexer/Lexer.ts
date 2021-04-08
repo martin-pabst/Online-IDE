@@ -640,6 +640,8 @@ export class Lexer {
         let line = this.line;
         let column = this.column - 1;
         let posStart = this.pos;
+        
+        this.next(); // consume @
         let char = this.currentChar;
 
         while (specialCharList[char] == null && !this.isSpace(char) && !(char == endChar)) {

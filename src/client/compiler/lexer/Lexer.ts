@@ -337,6 +337,7 @@ export class Lexer {
                     return;
                 case TokenType.at:
                     this.lexAnnotation();
+                    this.next();
                     return;
             }
 

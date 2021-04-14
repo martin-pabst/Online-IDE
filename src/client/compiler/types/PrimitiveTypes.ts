@@ -89,6 +89,13 @@ export class IntPrimitiveType extends PrimitiveType {
             [TokenType.greaterOrEqual]: { "int": booleanPrimitiveType, "float": booleanPrimitiveType, "double": booleanPrimitiveType ,"Integer": booleanPrimitiveType, "Float": booleanPrimitiveType, "Double": booleanPrimitiveType },
             [TokenType.equal]: { "int": booleanPrimitiveType, "float": booleanPrimitiveType, "double": booleanPrimitiveType ,"Integer": booleanPrimitiveType, "Float": booleanPrimitiveType, "Double": booleanPrimitiveType },
             [TokenType.notEqual]: { "int": booleanPrimitiveType, "float": booleanPrimitiveType, "double": booleanPrimitiveType ,"Integer": booleanPrimitiveType, "Float": booleanPrimitiveType, "Double": booleanPrimitiveType },
+            // binary ops
+            [TokenType.OR]: { "int": intPrimitiveType, "Integer": intPrimitiveType},
+            [TokenType.XOR]: { "int": intPrimitiveType, "Integer": intPrimitiveType},
+            [TokenType.AND]: { "int": intPrimitiveType, "Integer": intPrimitiveType},
+            [TokenType.shiftLeft]: { "int": intPrimitiveType, "Integer": intPrimitiveType},
+            [TokenType.shiftRight]: { "int": intPrimitiveType, "Integer": intPrimitiveType},
+            [TokenType.shiftRightUnsigned]: { "int": intPrimitiveType, "Integer": intPrimitiveType}
         };
 
         // this.canCastTolist = [floatPrimitiveType, doublePrimitiveType, stringPrimitiveType, charPrimitiveType];
@@ -192,7 +199,24 @@ export class IntPrimitiveType extends PrimitiveType {
 
             case TokenType.notEqual:
                 return value != <number>(secondOperand.value);
+            
+            case TokenType.OR:
+                return value | <number>(secondOperand.value);
+            
+            case TokenType.XOR:
+                return value ^ <number>(secondOperand.value);
+            
+            case TokenType.AND:
+                return value & <number>(secondOperand.value);
 
+            case TokenType.shiftLeft:
+                return value << <number>(secondOperand.value);
+            
+            case TokenType.shiftRight:
+                return value >> <number>(secondOperand.value);
+            
+            case TokenType.shiftRightUnsigned:
+                return value >>> <number>(secondOperand.value);
         }
 
 

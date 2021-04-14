@@ -11,12 +11,14 @@ type ASTNodes = ASTNode[];
 
 export class Parser {
 
-    static assignmentOperators = [TokenType.assignment, TokenType.plusAssignment, TokenType.minusAssignment, TokenType.multiplicationAssignment, TokenType.divisionAssignment, TokenType.moduloAssignment];
+    static assignmentOperators = [TokenType.assignment, TokenType.plusAssignment, TokenType.minusAssignment, TokenType.multiplicationAssignment, TokenType.divisionAssignment, TokenType.moduloAssignment, TokenType.ANDAssigment, TokenType.XORAssigment, TokenType.ORAssigment, TokenType.shiftLeftAssigment, TokenType.shiftRightAssigment, TokenType.shiftRightUnsignedAssigment];
 
     static operatorPrecedence: TokenType[][] = [Parser.assignmentOperators,
     [TokenType.ternaryOperator], [TokenType.colon],
-    [TokenType.or], [TokenType.and],
-    [TokenType.keywordInstanceof, TokenType.lower, TokenType.lowerOrEqual, TokenType.greater, TokenType.greaterOrEqual, TokenType.equal, TokenType.notEqual],
+    [TokenType.or], [TokenType.and], [TokenType.OR], [TokenType.XOR], [TokenType.AND],
+    [TokenType.equal, TokenType.notEqual],
+    [TokenType.keywordInstanceof, TokenType.lower, TokenType.lowerOrEqual, TokenType.greater, TokenType.greaterOrEqual],
+    [TokenType.shiftLeft, TokenType.shiftRight, TokenType.shiftRightUnsigned],
     [TokenType.plus, TokenType.minus], [TokenType.multiplication, TokenType.division, TokenType.modulo]
     ];
 
@@ -1037,6 +1039,7 @@ export class Parser {
     }
 
     // -, not, this, super, a.b.c[][].d, a.b(), b() (== this.b()), super.b(), super()
+    // FIXME: @RALF add tilde support
     parseUnary(): TermNode {
 
         let term: TermNode;
@@ -2084,12 +2087,12 @@ export class Parser {
             this.nextToken(); // skip extends
             sextends = this.parseType();
         }
-
+        /*
         while (this.comesToken(TokenType.ampersand)) {
             this.nextToken(); // Skip ampersand
             simplements.push(this.parseType());
         }
-
+        */
         return {
             extends: sextends, implements: simplements
         }

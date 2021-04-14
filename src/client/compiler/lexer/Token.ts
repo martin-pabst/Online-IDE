@@ -67,20 +67,30 @@ export enum TokenType {
     lower, greater, lowerOrEqual, greaterOrEqual, 
     equal, // ==
     notEqual, // !=
+    and, or, not,  // &&, ||, !
     assignment, // =
     plusAssignment, // +=
     minusAssignment, // -=
     multiplicationAssignment, // *=
     divisionAssignment, // /=
     moduloAssignment, // /%=
-    and, or,   // &&, ||, !
-    ampersand, // &
+    ANDAssigment,
+    XORAssigment,
+    ORAssigment,
+    shiftLeftAssigment,
+    shiftRightAssigment,
+    shiftRightUnsignedAssigment,
+    OR, // |
+    XOR, // ^
+    AND, // &
+    tilde, // ~
+    shiftRightUnsigned, // >>>
+    shiftRight, // >>
+    shiftLeft, // <<
     ternaryOperator,
     colon, //:
     ellipsis, // ...
 
-    not,
-    
     // semicolon
     semicolon, // ;
 
@@ -258,11 +268,25 @@ export var TokenTypeReadable: {[tt: number]: string} = {
     [TokenType.multiplicationAssignment]: "*=", // *=
     [TokenType.divisionAssignment]: "/=", // /=
     [TokenType.moduloAssignment]: "%=",
-    [TokenType.ampersand]: "&", 
     [TokenType.and]: "&&", 
     [TokenType.or]: "||", 
     [TokenType.not]: "!", 
-    [TokenType.ternaryOperator]: "?", 
+    [TokenType.ternaryOperator]: "?",
+
+    // bitwise operators
+    [TokenType.ANDAssigment]: "&=",
+    [TokenType.XORAssigment]: "^=",
+    [TokenType.ORAssigment]: "|=",
+    [TokenType.shiftLeftAssigment]: "<<=",
+    [TokenType.shiftRightAssigment]: ">>=",
+    [TokenType.shiftRightUnsignedAssigment]: ">>>=",
+    [TokenType.AND]: "&", 
+    [TokenType.OR]: "|",
+    [TokenType.XOR]: "^",
+    [TokenType.tilde]: "~",
+    [TokenType.shiftLeft]: "<<",
+    [TokenType.shiftRight]: ">>",
+    [TokenType.shiftRightUnsigned]: ">>>",
     
     // semicolon
     [TokenType.semicolon]: ";", // ;
@@ -319,8 +343,10 @@ export var specialCharList: {[keyword: string]:TokenType} = {
     "<": TokenType.lower,
     ">": TokenType.greater,
     "=": TokenType.assignment,
-    "&": TokenType.and,
-    "|": TokenType.or,
+    "&": TokenType.AND,
+    "|": TokenType.OR,
+    "^": TokenType.XOR,
+    "~": TokenType.tilde,
     "!": TokenType.not,
     "?": TokenType.ternaryOperator,
     

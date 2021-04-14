@@ -159,26 +159,46 @@ export class Lexer {
                 case TokenType.rightCurlyBracket:
                     this.checkClosingBracket(specialCharToken);
                     break;
-                case TokenType.and:
+                case TokenType.AND:
                     if (this.nextChar == "&") {
                         this.pushToken(TokenType.and, "&&");
                         this.next();
                         this.next();
                         return;
-                    } else {
-                        this.pushToken(TokenType.ampersand, "&");
+                    } else if (this.nextChar == "=") {
+                        this.pushToken(TokenType.ANDAssigment, "&=");
+                        this.next();
+                        this.next();
+                        return;
+                    } else{
+                        this.pushToken(TokenType.AND, "&");
                         this.next();
                         return;
                     }
-                case TokenType.or:
+                case TokenType.OR:
                     if (this.nextChar == "|") {
                         this.pushToken(TokenType.or, "||");
                         this.next();
                         this.next();
                         return;
+                    } else if (this.nextChar == "="){
+                        this.pushToken(TokenType.ORAssigment, "|=");
+                        this.next();
+                        this.next();
+                        return;
                     } else {
-                        this.pushError("| gefunden. Gemeint ist wohl || (Oder-Operator)?", 1);
-                        this.pushToken(TokenType.or, "||");
+                        this.pushToken(TokenType.OR, "|");
+                        this.next();
+                        return;
+                    }
+                case TokenType.XOR:
+                    if (this.nextChar == "="){
+                        this.pushToken(TokenType.XORAssigment, "^=");
+                        this.next();
+                        this.next();
+                        return;
+                    } else {
+                        this.pushToken(TokenType.XOR, "^");
                         this.next();
                         return;
                     }
@@ -248,7 +268,10 @@ export class Lexer {
                         return;
                     }
                 case TokenType.lower:
-                    if (this.nextChar == '=') {
+                    if (this.nextChar == '<') {
+                        this.lexShiftLeft();
+                        return;
+                    } else if (this.nextChar == '=') {
                         this.pushToken(TokenType.lowerOrEqual, '<=');
                         this.next();
                         this.next();
@@ -259,7 +282,10 @@ export class Lexer {
                         return;
                     }
                 case TokenType.greater:
-                    if (this.nextChar == '=') {
+                    if (this.nextChar == '>') {
+                        this.lexShiftRight();
+                        return;
+                    } else if (this.nextChar == '=') {
                         this.pushToken(TokenType.greaterOrEqual, '>=');
                         this.next();
                         this.next();
@@ -705,6 +731,49 @@ export class Lexer {
         return char == " " || char == "\n";
     }
 
+    lexShiftRight(){
+        this.next(); // Consume first > of >>
+        
+        if(this.nextChar == ">"){
+            this.lexShiftRightUnsigned();
+        } else if(this.nextChar == "="){
+            this.pushToken(TokenType.shiftRightAssigment, ">>=")
+            this.next(); // Consume second >
+            this.next(); // Consume =
+        } else {
+            this.pushToken(TokenType.shiftRight, ">>");
+            this.next(); // Consume second >
+        }
+        return;
+    }
+    
+    lexShiftRightUnsigned(){
+        this.next(); // Consume second > of >>>
+        
+        if(this.nextChar == "="){
+            this.pushToken(TokenType.shiftRightUnsignedAssigment, ">>>=")
+            this.next(); // Consume second >
+            this.next(); // Consume =
+        } else {
+            this.pushToken(TokenType.shiftRightUnsigned, ">>>");
+            this.next(); // Consume next
+        }
+        return;
+    }
+
+    lexShiftLeft(){
+        this.next(); // Consume first < of <<
+
+        if(this.nextChar == '='){
+            this.pushToken(TokenType.shiftLeftAssigment, "<<=")
+            this.next(); // Consume second <
+            this.next(); // Consume =
+        } else{
+            this.pushToken(TokenType.shiftLeft, "<<")
+            this.next(); // Consume second <
+        }
+        return;
+    }
 
 }
 

@@ -22,6 +22,25 @@ export class LocalDateTimeClass extends Klass {
 
         // this.staticClass.classObject = new RuntimeObject(this.staticClass);
         // this.staticClass.classObject.initializeAttributeValues();
+        
+        this.addMethod(new Method("LocalDateTime", new Parameterlist([]), null,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+
+                var today = new Date();
+
+                let intrinsicData: LocalDateTimeIntrinsicData = {
+                    date: today
+                };
+
+                o.intrinsicData["ldt"] = intrinsicData;
+
+                return;
+
+            }, false, false, 'Holt den aktuellen Zeitpunkt von der Systemuhr des Rechners und gibt ihn als LocalDateTime-Objekt zurück.'
+            , true));
+
 
         this.addMethod(new Method("now", new Parameterlist([]), this,
             (parameters) => {
@@ -34,7 +53,7 @@ export class LocalDateTimeClass extends Klass {
                     date: today
                 };
 
-                o.intrinsicData = intrinsicData;
+                o.intrinsicData["ldt"] = intrinsicData;
 
                 return o;
 
@@ -66,7 +85,7 @@ export class LocalDateTimeClass extends Klass {
                     date: date
                 };
 
-                o.intrinsicData = intrinsicData;
+                o.intrinsicData["ldt"]= intrinsicData;
 
                 return o;
 
@@ -98,7 +117,7 @@ export class LocalDateTimeClass extends Klass {
                     date: date
                 };
 
-                o.intrinsicData = intrinsicData;
+                o.intrinsicData["ldt"] = intrinsicData;
 
                 return o;
 
@@ -112,7 +131,7 @@ export class LocalDateTimeClass extends Klass {
                 let o: RuntimeObject = parameters[0].value;
                 let days: number = Math.trunc(parameters[1].value);
 
-                let oldDate: Date = (<LocalDateTimeIntrinsicData>(o.intrinsicData)).date;
+                let oldDate: Date = (<LocalDateTimeIntrinsicData>(o.intrinsicData["ldt"])).date;
                 let newDate: Date = new Date(oldDate.getTime() + days*24*3600*1000);
 
                 let o1: RuntimeObject = new RuntimeObject(this);
@@ -121,7 +140,7 @@ export class LocalDateTimeClass extends Klass {
                     date: newDate
                 };
 
-                o1.intrinsicData = intrinsicData;
+                o1.intrinsicData["ldt"] = intrinsicData;
 
                 return o1;
 
@@ -134,7 +153,7 @@ export class LocalDateTimeClass extends Klass {
                 let o: RuntimeObject = parameters[0].value;
                 let days: number = Math.trunc(parameters[1].value);
 
-                let oldDate: Date = (<LocalDateTimeIntrinsicData>(o.intrinsicData)).date;
+                let oldDate: Date = (<LocalDateTimeIntrinsicData>(o.intrinsicData["ldt"])).date;
                 let newDate: Date = new Date(oldDate.getTime() - days*24*3600*1000);
 
                 let o1: RuntimeObject = new RuntimeObject(this);
@@ -143,7 +162,7 @@ export class LocalDateTimeClass extends Klass {
                     date: newDate
                 };
 
-                o1.intrinsicData = intrinsicData;
+                o1.intrinsicData["ldt"] = intrinsicData;
 
                 return o1;
 
@@ -156,8 +175,8 @@ export class LocalDateTimeClass extends Klass {
                 let o: RuntimeObject = parameters[0].value;
                 let o1: RuntimeObject = parameters[1].value;
 
-                let oldMs: number = (<LocalDateTimeIntrinsicData>(o.intrinsicData)).date.getTime();
-                let newMs: number = (<LocalDateTimeIntrinsicData>(o1.intrinsicData)).date.getTime();
+                let oldMs: number = (<LocalDateTimeIntrinsicData>(o.intrinsicData["ldt"])).date.getTime();
+                let newMs: number = (<LocalDateTimeIntrinsicData>(o1.intrinsicData["ldt"])).date.getTime();
 
                 return Math.sign(oldMs - newMs);
 
@@ -170,8 +189,8 @@ export class LocalDateTimeClass extends Klass {
                 let o: RuntimeObject = parameters[0].value;
                 let o1: RuntimeObject = parameters[1].value;
 
-                let oldMs: number = (<LocalDateTimeIntrinsicData>(o.intrinsicData)).date.getTime();
-                let newMs: number = (<LocalDateTimeIntrinsicData>(o1.intrinsicData)).date.getTime();
+                let oldMs: number = (<LocalDateTimeIntrinsicData>(o.intrinsicData["ldt"])).date.getTime();
+                let newMs: number = (<LocalDateTimeIntrinsicData>(o1.intrinsicData["ldt"])).date.getTime();
 
                 return (oldMs - newMs)/(24*3600);
 
@@ -182,7 +201,7 @@ export class LocalDateTimeClass extends Klass {
             (parameters) => {
                 let o: RuntimeObject = parameters[0].value;
 
-                return (<LocalDateTimeIntrinsicData>(o.intrinsicData)).date.getFullYear();
+                return (<LocalDateTimeIntrinsicData>(o.intrinsicData["ldt"])).date.getFullYear();
 
             }, false, false, 'Gibt das Jahr zurück.', false));
 
@@ -191,7 +210,7 @@ export class LocalDateTimeClass extends Klass {
             (parameters) => {
                 let o: RuntimeObject = parameters[0].value;
 
-                return (<LocalDateTimeIntrinsicData>(o.intrinsicData)).date.getMonth() + 1;
+                return (<LocalDateTimeIntrinsicData>(o.intrinsicData["ldt"])).date.getMonth() + 1;
 
             }, false, false, 'Gibt den Monat als Zahl zurück (Januar == 1, Februar == 2, ..., Dezember == 12).', false));
 
@@ -200,7 +219,7 @@ export class LocalDateTimeClass extends Klass {
             (parameters) => {
                 let o: RuntimeObject = parameters[0].value;
 
-                return (<LocalDateTimeIntrinsicData>(o.intrinsicData)).date.getDate();
+                return (<LocalDateTimeIntrinsicData>(o.intrinsicData["ldt"])).date.getDate();
 
             }, false, false, 'Gibt den Tag innerhalb des Monats zurück (Zahl von 1 bis 31).', false));
 
@@ -209,7 +228,7 @@ export class LocalDateTimeClass extends Klass {
             (parameters) => {
                 let o: RuntimeObject = parameters[0].value;
 
-                return (<LocalDateTimeIntrinsicData>(o.intrinsicData)).date.getHours();
+                return (<LocalDateTimeIntrinsicData>(o.intrinsicData["ldt"])).date.getHours();
 
             }, false, false, 'Gibt die Stunde innerhalb des Tages zurück.', false));
 
@@ -218,7 +237,7 @@ export class LocalDateTimeClass extends Klass {
             (parameters) => {
                 let o: RuntimeObject = parameters[0].value;
 
-                return (<LocalDateTimeIntrinsicData>(o.intrinsicData)).date.getMinutes();
+                return (<LocalDateTimeIntrinsicData>(o.intrinsicData["ldt"])).date.getMinutes();
 
             }, false, false, 'Gibt die Minute zurück.', false));
 
@@ -227,7 +246,7 @@ export class LocalDateTimeClass extends Klass {
             (parameters) => {
                 let o: RuntimeObject = parameters[0].value;
 
-                return (<LocalDateTimeIntrinsicData>(o.intrinsicData)).date.getSeconds();
+                return (<LocalDateTimeIntrinsicData>(o.intrinsicData["ldt"])).date.getSeconds();
 
             }, false, false, 'Gibt die Sekunde zurück.', false));
 
@@ -236,7 +255,7 @@ export class LocalDateTimeClass extends Klass {
             (parameters) => {
                 let o: RuntimeObject = parameters[0].value;
 
-                let date = (<LocalDateTimeIntrinsicData>(o.intrinsicData)).date;
+                let date = (<LocalDateTimeIntrinsicData>(o.intrinsicData["ldt"])).date;
 
                 let td = (value: number) => {
                     if(value < 10) return "0" + value;
@@ -252,7 +271,7 @@ export class LocalDateTimeClass extends Klass {
             (parameters) => {
                 let o: RuntimeObject = parameters[0].value;
 
-                let dow = (<LocalDateTimeIntrinsicData>(o.intrinsicData)).date.getDay();
+                let dow = (<LocalDateTimeIntrinsicData>(o.intrinsicData["ldt"])).date.getDay();
                 return dayOfWeekType.enumInfoList[dow - 1].object;
 
             }, false, false, 'Gibt die den Wochentag zurück. Falls Du ihn als Zahl (0 == Montag, ...) benötigst, nutze getDayOfWeek().toOrdinal(). ', false));
@@ -262,7 +281,7 @@ export class LocalDateTimeClass extends Klass {
             (parameters) => {
                 let o: RuntimeObject = parameters[0].value;
 
-                let monthIndex = (<LocalDateTimeIntrinsicData>(o.intrinsicData)).date.getMonth();
+                let monthIndex = (<LocalDateTimeIntrinsicData>(o.intrinsicData["ldt"])).date.getMonth();
                 return MonthType.enumInfoList[monthIndex].object;
 
             }, false, false, 'Gibt die den Monat zurück. Falls Du ihn als Zahl (1 == Januar, ...) benötigst, nutze getMonthValue()', false));

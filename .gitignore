@@ -1,5 +1,6 @@
 /node_modules
 /htdocs/js
+/htdocs/sql
 # /htdocs/js.webpack
 /*.7z
 /*.zip

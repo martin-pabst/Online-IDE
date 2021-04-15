@@ -6,7 +6,7 @@ import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { ArrayType } from "../../compiler/types/Array.js";
 import { ActorHelper } from "./Actor.js";
 import { WorldHelper, MouseListenerShapeData } from "./World.js";
-import { Punkt, polygonEnthältPunkt, polygonBerührtPolygon } from "../../tools/MatheTools.js";
+import { Punkt, polygonEnthältPunkt, polygonBerührtPolygon, polygonBerührtPolygonExakt } from "../../tools/MatheTools.js";
 import { ColorHelper } from "./ColorHelper.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { GroupHelper, GroupClass } from "./Group.js";
@@ -628,7 +628,8 @@ export abstract class ShapeHelper extends ActorHelper {
         if (this.hitPolygonDirty) this.transformHitPolygon();
         if (shapeHelper.hitPolygonDirty) shapeHelper.transformHitPolygon();
 
-        return polygonBerührtPolygon(this.hitPolygonTransformed, shapeHelper.hitPolygonTransformed);
+        // return polygonBerührtPolygon(this.hitPolygonTransformed, shapeHelper.hitPolygonTransformed);
+        return polygonBerührtPolygonExakt(this.hitPolygonTransformed, shapeHelper.hitPolygonTransformed, true, true);
 
     }
 

@@ -102,7 +102,8 @@ export class NetworkManager {
             workspacesWithoutFiles: wdList,
             files: fdList, 
             owner_id: this.main.workspacesOwnerId,
-            userId: this.main.user.id
+            userId: this.main.user.id,
+            language: 0
         }
 
         let that = this;
@@ -169,7 +170,8 @@ export class NetworkManager {
     sendDuplicateWorkspace(ws: Workspace, callback: (error: string, workspaceData?: WorkspaceData) => void) {
 
         let request: DuplicateWorkspaceRequest = {
-            workspace_id: ws.id
+            workspace_id: ws.id,
+            language: 0
         }
 
         ajax("duplicateWorkspace", request, (response: DuplicateWorkspaceResponse) => {
@@ -185,7 +187,8 @@ export class NetworkManager {
             let request: DistributeWorkspaceRequest = {
                 workspace_id: ws.id,
                 class_id: klasse?.id,
-                student_ids: student_ids
+                student_ids: student_ids,
+                language: 0
             }
     
             ajax("distributeWorkspace", request, (response: DistributeWorkspaceResponse) => {

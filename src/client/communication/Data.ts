@@ -44,7 +44,8 @@ export type FileData = {
     forceUpdate: boolean,
     is_copy_of_id?: number,
     repository_file_version?: number,
-    identical_to_repository_version: boolean
+    identical_to_repository_version: boolean,
+    file_type: number // 0 == Java, 11 == SQL
 }
 
 export type WorkspaceData = {
@@ -57,8 +58,12 @@ export type WorkspaceData = {
 
     version: number,
     repository_id: number,    // id of repository-workspace
-    has_write_permission_to_repository: boolean // true if owner of this working copy has write permission to repository workspace
+    has_write_permission_to_repository: boolean, // true if owner of this working copy has write permission to repository workspace
 
+    language: number,
+    sql_baseDatabase: string,
+    sql_manipulateDatabaseStatements: string,
+    sql_history: string
 }
 
 export type Workspaces = {
@@ -143,7 +148,8 @@ export type TeacherData = {
 
 export type LoginRequest = {
     username: string,
-    password: string
+    password: string,
+    language: number
 }
 
 export type LoginResponse = {
@@ -166,6 +172,7 @@ export type SendUpdatesRequest = {
     files: FileData[],
     owner_id: number,
     userId: number,
+    language: number
 }
 
 export type SendUpdatesResponse = {
@@ -232,6 +239,7 @@ export type BulkCreateUsersResponse = {
 export type GetWorkspacesRequest = {
     ws_userId: number,
     userId: number,
+    language: number
 }
 
 export type GetWorkspacesResponse = {
@@ -255,6 +263,7 @@ export type ChangeClassOfStudentsResponse = {
  */
 export type DuplicateWorkspaceRequest = {
     workspace_id: number, // Workspace to copy
+    language: number
 }
 
 export type DuplicateWorkspaceResponse = {
@@ -286,6 +295,7 @@ export type DeleteRepositoryResponse = { success: boolean, message?: string };
  */
 export type DistributeWorkspaceRequest = {
     workspace_id: number, // Workspace to copy
+    language: number, // 0 == Java, 1 == SQL
     class_id: number,
     student_ids: number[]
 }

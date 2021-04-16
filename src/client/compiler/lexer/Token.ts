@@ -73,13 +73,28 @@ export enum TokenType {
     multiplicationAssignment, // *=
     divisionAssignment, // /=
     moduloAssignment, // /%=
-    and, or,   // &&, ||, !
+    and, or,   // &&, ||
     ampersand, // &
+
+    ANDAssigment,
+    XORAssigment,
+    ORAssigment,
+    shiftLeftAssigment,
+    shiftRightAssigment,
+    shiftRightUnsignedAssigment,
+    OR, // |
+    XOR, // ^
+    // AND, // & see TokenType.ampersand above
+    tilde, // ~
+    shiftRightUnsigned, // >>>
+    shiftRight, // >>
+    shiftLeft, // <<
+
     ternaryOperator,
     colon, //:
     ellipsis, // ...
 
-    not,
+    not,    // !
     
     // semicolon
     semicolon, // ;
@@ -262,6 +277,22 @@ export var TokenTypeReadable: {[tt: number]: string} = {
     [TokenType.and]: "&&", 
     [TokenType.or]: "||", 
     [TokenType.not]: "!", 
+
+    [TokenType.ANDAssigment]: "&=",
+    [TokenType.XORAssigment]: "^=",
+    [TokenType.ORAssigment]: "|=",
+    [TokenType.shiftLeftAssigment]: "<<=",
+    [TokenType.shiftRightAssigment]: ">>=",
+    [TokenType.shiftRightUnsignedAssigment]: ">>>=",
+    // [TokenType.AND]: "&", 
+    [TokenType.OR]: "|",
+    [TokenType.XOR]: "^",
+    [TokenType.tilde]: "~",
+    [TokenType.shiftLeft]: "<<",
+    [TokenType.shiftRight]: ">>",
+    [TokenType.shiftRightUnsigned]: ">>>",
+
+
     [TokenType.ternaryOperator]: "?", 
     
     // semicolon
@@ -323,6 +354,9 @@ export var specialCharList: {[keyword: string]:TokenType} = {
     "|": TokenType.or,
     "!": TokenType.not,
     "?": TokenType.ternaryOperator,
+
+    "^": TokenType.XOR,
+    "~": TokenType.tilde,
     
     ';': TokenType.semicolon, // ;
     ':': TokenType.colon, // ;

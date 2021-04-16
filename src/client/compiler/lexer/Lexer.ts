@@ -165,6 +165,11 @@ export class Lexer {
                         this.next();
                         this.next();
                         return;
+                    } else if (this.nextChar == "=") {
+                        this.pushToken(TokenType.ANDAssigment, "&=");
+                        this.next();
+                        this.next();
+                        return;
                     } else {
                         this.pushToken(TokenType.ampersand, "&");
                         this.next();
@@ -176,9 +181,24 @@ export class Lexer {
                         this.next();
                         this.next();
                         return;
+                    } else if (this.nextChar == "=") {
+                        this.pushToken(TokenType.ORAssigment, "&=");
+                        this.next();
+                        this.next();
+                        return;
                     } else {
-                        this.pushError("| gefunden. Gemeint ist wohl || (Oder-Operator)?", 1);
-                        this.pushToken(TokenType.or, "||");
+                        this.pushToken(TokenType.OR, "|");
+                        this.next();
+                        return;
+                    }
+                case TokenType.XOR:
+                    if (this.nextChar == "=") {
+                        this.pushToken(TokenType.XORAssigment, "^=");
+                        this.next();
+                        this.next();
+                        return;
+                    } else {
+                        this.pushToken(TokenType.XOR, "^");
                         this.next();
                         return;
                     }
@@ -253,6 +273,9 @@ export class Lexer {
                         this.next();
                         this.next();
                         return;
+                    } else if (this.nextChar == '<') {
+                        this.lexShiftLeft();
+                        return;
                     } else {
                         this.pushToken(TokenType.lower, '<');
                         this.next();
@@ -263,6 +286,9 @@ export class Lexer {
                         this.pushToken(TokenType.greaterOrEqual, '>=');
                         this.next();
                         this.next();
+                        return;
+                    } else if (this.nextChar == '>') {
+                        this.lexShiftRight();
                         return;
                     } else {
                         this.pushToken(TokenType.greater, '>');
@@ -357,6 +383,51 @@ export class Lexer {
 
     }
 
+    lexShiftRight(){
+        this.next(); // Consume first > of >>
+
+        if(this.nextChar == ">"){
+            this.lexShiftRightUnsigned();
+        } else if(this.nextChar == "="){
+            this.pushToken(TokenType.shiftRightAssigment, ">>=")
+            this.next(); // Consume second >
+            this.next(); // Consume =
+        } else {
+            this.pushToken(TokenType.shiftRight, ">>");
+            this.next(); // Consume second >
+        }
+        return;
+    }
+
+    lexShiftRightUnsigned(){
+        this.next(); // Consume second > of >>>
+
+        if(this.nextChar == "="){
+            this.pushToken(TokenType.shiftRightUnsignedAssigment, ">>>=")
+            this.next(); // Consume second >
+            this.next(); // Consume =
+        } else {
+            this.pushToken(TokenType.shiftRightUnsigned, ">>>");
+            this.next(); // Consume next
+        }
+        return;
+    }
+
+    lexShiftLeft(){
+        this.next(); // Consume first < of <<
+
+        if(this.nextChar == '='){
+            this.pushToken(TokenType.shiftLeftAssigment, "<<=")
+            this.next(); // Consume second <
+            this.next(); // Consume =
+        } else{
+            this.pushToken(TokenType.shiftLeft, "<<")
+            this.next(); // Consume second <
+        }
+        return;
+    }
+
+
     pushToken(tt: TokenType, text: string | number | boolean, line: number = this.line, column: number = this.column, length: number = ("" + text).length) {
         let t: Token = {
             tt: tt,
@@ -392,11 +463,11 @@ export class Lexer {
     isDigit(a: string, base: number) {
         var charCode = a.charCodeAt(0);
 
-        if(base == 10) return (charCode >= 48 && charCode <= 57); // 0 - 9
-        if(base == 2) return (charCode >= 48 && charCode <= 49); // 0, 1
-        if(base == 8) return (charCode >= 48 && charCode <= 55); // 0 - 7
-        if(base == 16) return (charCode >= 48 && charCode <= 57 ) || (charCode >= 97 && charCode <= 102) ||
-         (charCode >= 65 && charCode <= 70); // 0 - 9 || a - f || A - F
+        if (base == 10) return (charCode >= 48 && charCode <= 57); // 0 - 9
+        if (base == 2) return (charCode >= 48 && charCode <= 49); // 0, 1
+        if (base == 8) return (charCode >= 48 && charCode <= 55); // 0 - 7
+        if (base == 16) return (charCode >= 48 && charCode <= 57) || (charCode >= 97 && charCode <= 102) ||
+            (charCode >= 65 && charCode <= 70); // 0 - 9 || a - f || A - F
     }
 
     lexSpace() {
@@ -506,10 +577,10 @@ export class Lexer {
                 this.column = 0;
                 lastCharWasNewline = true;
                 text += char;
-            } else if(!(lastCharWasNewline && char == " ")){
+            } else if (!(lastCharWasNewline && char == " ")) {
                 text += char;
                 lastCharWasNewline = false;
-            } 
+            }
 
             this.next();
         }
@@ -549,7 +620,7 @@ export class Lexer {
         let column = this.column;
 
         let sign: number = 1;
-        if(this.currentChar == '-'){
+        if (this.currentChar == '-') {
             sign = -1;
             this.next();
         }
@@ -606,7 +677,7 @@ export class Lexer {
             let posExponentStart: number = this.pos;
 
             //@ts-ignore
-            if(this.currentChar == '-'){
+            if (this.currentChar == '-') {
                 this.next();
             }
 
@@ -620,27 +691,27 @@ export class Lexer {
             exponent = Number.parseInt(exponentString);
         }
 
-        if(this.currentChar == 'd' || this.currentChar == 'f'){
+        if (this.currentChar == 'd' || this.currentChar == 'f') {
             tt == TokenType.floatingPointConstant;
             this.next();
-            if(radix != 10){
+            if (radix != 10) {
                 this.pushError("Eine float/double-Konstante darf nicht mit 0, 0b oder 0x beginnen.", this.pos - posStart, "error", this.line, this.column - (this.pos - posStart));
             }
         }
 
         let value: number = (tt == TokenType.integerConstant) ? Number.parseInt(base, radix) : Number.parseFloat(base);
         value *= sign;
-        if(exponent != 0) value *= Math.pow(10, exponent);       
-        
+        if (exponent != 0) value *= Math.pow(10, exponent);
+
         this.pushToken(tt, value, line, column);
 
     }
 
-    lexAnnotation(){
+    lexAnnotation() {
         let line = this.line;
         let column = this.column - 1;
         let posStart = this.pos;
-        
+
         this.next(); // consume @
         let char = this.currentChar;
 
@@ -652,7 +723,7 @@ export class Lexer {
         let posEnd = this.pos;
 
         let text = this.input.substring(posStart, posEnd);
-        this.pushToken(TokenType.at,text, line, column, text.length + 1);        
+        this.pushToken(TokenType.at, text, line, column, text.length + 1);
     }
 
     lexIdentifierOrKeyword() {

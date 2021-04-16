@@ -11,12 +11,22 @@ type ASTNodes = ASTNode[];
 
 export class Parser {
 
-    static assignmentOperators = [TokenType.assignment, TokenType.plusAssignment, TokenType.minusAssignment, TokenType.multiplicationAssignment, TokenType.divisionAssignment, TokenType.moduloAssignment];
+    static assignmentOperators = [TokenType.assignment, TokenType.plusAssignment, TokenType.minusAssignment, 
+        TokenType.multiplicationAssignment, TokenType.divisionAssignment, TokenType.moduloAssignment, 
+        TokenType.ANDAssigment, TokenType.XORAssigment, TokenType.ORAssigment, 
+        TokenType.shiftLeftAssigment, TokenType.shiftRightAssigment, TokenType.shiftRightUnsignedAssigment];
 
     static operatorPrecedence: TokenType[][] = [Parser.assignmentOperators,
     [TokenType.ternaryOperator], [TokenType.colon],
-    [TokenType.or], [TokenType.and],
-    [TokenType.keywordInstanceof, TokenType.lower, TokenType.lowerOrEqual, TokenType.greater, TokenType.greaterOrEqual, TokenType.equal, TokenType.notEqual],
+
+    [TokenType.or], [TokenType.and], [TokenType.OR], [TokenType.XOR], [TokenType.ampersand],
+    [TokenType.equal, TokenType.notEqual],
+    [TokenType.keywordInstanceof, TokenType.lower, TokenType.lowerOrEqual, TokenType.greater, TokenType.greaterOrEqual],
+    [TokenType.shiftLeft, TokenType.shiftRight, TokenType.shiftRightUnsigned],
+
+    // [TokenType.or], [TokenType.and],
+    // [TokenType.keywordInstanceof, TokenType.lower, TokenType.lowerOrEqual, TokenType.greater, TokenType.greaterOrEqual, TokenType.equal, TokenType.notEqual],
+    
     [TokenType.plus, TokenType.minus], [TokenType.multiplication, TokenType.division, TokenType.modulo]
     ];
 
@@ -1047,6 +1057,7 @@ export class Parser {
                 return this.parseDotOrArrayChains(this.bracketOrCasting());
             case TokenType.minus:
             case TokenType.not:
+            case TokenType.tilde:
                 position = position;
                 let tt1 = this.tt;
                 this.nextToken();

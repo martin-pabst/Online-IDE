@@ -21,9 +21,11 @@ export class MyHoverProvider {
         "switch": "```\nswitch(Selektor){ case Wert_1: Anweisungen_1; break; case Wert_2: Anweisungen_2; break; default: Default-Anweisungen } \n```  \nwertet den Selektor-Term aus und führt abhängig vom Termwert Anweisungen_1, Anweisungen_2, ... aus. Entspricht der Termwert keinem der Werte Wert_1, Wert_2, ..., so werden die Default-Anweisungen ausgeführt.",
         "%": "```\na % b\n```  \n (sprich: 'a modulo b') berechnet den **Rest** der ganzzahligen Division a/b.",
         "|": "```\na | b\n```  \n (sprich: 'a or b') berechnet die **bitweise oder-Verknüpfung** der Werte a und b.",
-        "&": "```\na | b\n```  \n (sprich: 'a und b') berechnet die **bitweise und-Verknüpfung** der Werte a und b.",
+        "&": "```\na & b\n```  \n (sprich: 'a und b') berechnet die **bitweise und-Verknüpfung** der Werte a und b.",
+        "^": "```\na ^ b\n```  \n (sprich: 'a xor b') berechnet die **bitweise exklusiv-oder-Verknüpfung** der Werte a und b.",
         ">>": "```\na >> b\n```  \n (sprich: 'a right shift b') berechnet den Wert, der entsteht, wenn man den Wert von a **bitweise um b Stellen nach rechts verschiebt**. Dieser Wert ist identisch mit dem nach unten abgerundeten Wert von a/(2 hoch b).",
-        
+        "<<": "```\na >> b\n```  \n (sprich: 'a left shift b') berechnet den Wert, der entsteht, wenn man den Wert von a **bitweise um b Stellen nach links verschiebt**. Dieser Wert ist identisch mit dem nach unten abgerundeten Wert von a*(2 hoch b).",
+        "~": "```\n~a\n```  \n (sprich: 'nicht a') berechnet den Wert, der entsteht, wenn man **alle Bits von a umkehrt**.",
         "==": "```\na == b\n```  \nergibt genau dann ```true```, wenn ```a``` und ```b``` gleich sind.  \nSind a und b **Objekte**, so ergibt ```a == b``` nur dann ```true```, wenn ```a``` und ```b``` auf das **identische** Objekt zeigen.  \n```==``` nennt man **Vergleichsoperator**.",
         "<=": "```\na <= b\n```  \nergibt genau dann ```true```, wenn der Wert von ```a``` kleiner oder gleich dem Wert von ```b``` ist.",
         ">=": "```\na <= b\n```  \nergibt genau dann ```true```, wenn der Wert von ```a``` größer oder gleich dem Wert von ```b``` ist.",

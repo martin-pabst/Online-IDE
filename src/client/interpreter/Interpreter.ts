@@ -870,7 +870,31 @@ export class Interpreter {
             case TokenType.moduloAssignment:
                 value = stack.pop();
                 stack[stackTop - 1].value %= value.value;
-                break;
+                break; 
+            case TokenType.ANDAssigment:
+                value = stack.pop();
+                stack[stackTop - 1].value &= value.value;
+                break; 
+            case TokenType.ORAssigment:
+                value = stack.pop();
+                stack[stackTop - 1].value |= value.value;
+                break; 
+            case TokenType.XORAssigment:
+                value = stack.pop();
+                stack[stackTop - 1].value ^= value.value;
+                break; 
+            case TokenType.shiftLeftAssigment:
+                value = stack.pop();
+                stack[stackTop - 1].value <<= value.value;
+                break; 
+            case TokenType.shiftRightAssigment:
+                value = stack.pop();
+                stack[stackTop - 1].value >>= value.value;
+                break; 
+            case TokenType.shiftRightUnsignedAssigment:
+                value = stack.pop();
+                stack[stackTop - 1].value >>>= value.value;
+                break; 
             case TokenType.binaryOp:
                 let secondOperand = stack.pop();
                 let resultValue =

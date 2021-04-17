@@ -128,7 +128,10 @@ export type PushArrayLengthStatement = {
 // writes value on top of stack into value-object one position below
 // and takes both objects (or only one) from stack.
 export type AssignmentStatement = {
-    type: TokenType.assignment | TokenType.plusAssignment | TokenType.minusAssignment | TokenType.multiplicationAssignment | TokenType.divisionAssignment | TokenType.moduloAssignment,
+    type: TokenType.assignment | TokenType.plusAssignment | TokenType.minusAssignment | 
+     TokenType.multiplicationAssignment | TokenType.divisionAssignment | TokenType.moduloAssignment |
+     TokenType.ANDAssigment | TokenType.ORAssigment | TokenType.XORAssigment | TokenType.shiftLeftAssigment |
+     TokenType.shiftRightAssigment | TokenType.shiftRightUnsignedAssigment,
     position: TextPosition,
     breakpoint?: Breakpoint
     stepFinished?: boolean,

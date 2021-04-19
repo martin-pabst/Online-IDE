@@ -3032,7 +3032,29 @@ export class CodeGenerator {
             }
 
             if (resultType == null) {
-                this.pushError("Die Operation " + TokenTypeReadable[node.operator] + " ist für die Operanden der Typen " + leftType.type.identifier + " und " + rightType.type.identifier + " nicht definiert.", node.position);
+                let bitOperators = [TokenType.ampersand, TokenType.OR];
+                let booleanOperators = ["&& (boolescher UND-Operator)", "|| (boolescher ODER-Operator)"];
+                let betterOperators = ["& &", "||"];
+                let opIndex = bitOperators.indexOf(node.operator);
+                if(opIndex >= 0 && leftType.type == booleanPrimitiveType && rightType.type == booleanPrimitiveType){
+                    this.pushError("Die Operation " + TokenTypeReadable[node.operator] + " ist für die Operanden der Typen " + leftType.type.identifier + " und " + rightType.type.identifier + " nicht definiert. Du meintest wahrscheinlich den Operator " + booleanOperators[opIndex] + ".", node.position, "error",
+                    {
+                        title: "Operator " + betterOperators[opIndex] + " verwenden statt " + TokenTypeReadable[node.operator],
+                        editsProvider: (uri) => {
+                            return [
+                                {
+                                    resource: uri,
+                                    edit: {
+                                        range: { startLineNumber: node.position.line, startColumn: node.position.column, endLineNumber: node.position.line, endColumn: node.position.column },
+                                        text: TokenTypeReadable[node.operator]
+                                    }
+                                }
+                            ]
+                        }
+                    );
+                } else {
+                    this.pushError("Die Operation " + TokenTypeReadable[node.operator] + " ist für die Operanden der Typen " + leftType.type.identifier + " und " + rightType.type.identifier + " nicht definiert.", node.position);
+                }
                 return leftType;
             }
 

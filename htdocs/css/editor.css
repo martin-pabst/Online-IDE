@@ -23,6 +23,7 @@
     --menuitemsdivider: #616162;
     --file-hover: hsla(0, 0%, 38%, 0.125);
     --file-active: #094771;
+    --file-active-border: #007fd4;
     --file-active-hover: rgba(9, 71, 113, 0.827);
     --file-errorcount: red;
     --inplace-editor: blue;
@@ -565,6 +566,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
 
 .jo_file.jo_active {
     background-color: var(--file-active);
+    border: 1px solid var(--file-active-border);
     color: var(--fontColorLight);
 }
 

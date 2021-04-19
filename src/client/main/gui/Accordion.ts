@@ -318,7 +318,7 @@ export class AccordionPanel {
         }, selection);
     }
 
-    select(externalElement: any, invokeCallback: boolean = true) {
+    select(externalElement: any, invokeCallback: boolean = true, scrollIntoView: boolean = false) {
 
         if (externalElement == null) {
             for (let ae1 of this.elements) {
@@ -333,6 +333,9 @@ export class AccordionPanel {
                 }
     
                 ae.$htmlFirstLine.addClass('jo_active');
+                if(scrollIntoView){
+                    ae.$htmlFirstLine[0].scrollIntoView();
+                }
             }
 
         }

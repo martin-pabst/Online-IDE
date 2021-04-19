@@ -412,7 +412,7 @@ export class Main implements MainBase {
         }
 
         if (this.currentWorkspace != null) {
-            this.projectExplorer.setWorkspaceActive(this.currentWorkspace);
+            this.projectExplorer.setWorkspaceActive(this.currentWorkspace, true);
         }
 
         if (this.workspaceList.length == 0) {

@@ -505,9 +505,9 @@ export class ProjectExplorer {
         }
     }
 
-    setWorkspaceActive(w: Workspace) {
+    setWorkspaceActive(w: Workspace, scrollIntoView: boolean = false) {
 
-        this.workspaceListPanel.select(w, false);
+        this.workspaceListPanel.select(w, false, scrollIntoView);
 
         if (this.main.interpreter.state == InterpreterState.running) {
             this.main.interpreter.stop();

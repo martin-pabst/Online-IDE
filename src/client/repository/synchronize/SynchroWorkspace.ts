@@ -362,7 +362,7 @@ export class SynchroWorkspace {
 
         if (main.currentWorkspace == workspace) {
             let cem = main.getCurrentlyEditedModule();
-            main.projectExplorer.setWorkspaceActive(workspace);
+            main.projectExplorer.setWorkspaceActive(workspace, true);
 
             // if module hadn't been deleted while synchronizing:
             if(workspace.moduleStore.getModules(false).indexOf(cem) >= 0){

@@ -180,7 +180,7 @@ export class HomeworkManager {
                     ${moduleWithWorkspace.module.file.name}</span> (Abgabe: ${moduleWithWorkspace.module.file.submitted_date} )</div>`);
             that.$homeworkTabRight.append($div);
             $div.on("click", () => {
-                    that.main.projectExplorer.setWorkspaceActive(moduleWithWorkspace.workspace);
+                    that.main.projectExplorer.setWorkspaceActive(moduleWithWorkspace.workspace, true);
                     that.main.projectExplorer.setModuleActive(moduleWithWorkspace.module);
                     that.main.projectExplorer.fileListPanel.select(moduleWithWorkspace.module, false);
             });

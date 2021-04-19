@@ -3051,7 +3051,8 @@ export class CodeGenerator {
                                 }
                             ]
                         }
-                    );
+                    
+                    });
                 } else {
                     this.pushError("Die Operation " + TokenTypeReadable[node.operator] + " ist für die Operanden der Typen " + leftType.type.identifier + " und " + rightType.type.identifier + " nicht definiert.", node.position);
                 }

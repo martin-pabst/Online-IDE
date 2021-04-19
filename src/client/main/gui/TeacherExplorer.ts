@@ -97,7 +97,7 @@ export class TeacherExplorer {
         }
 
         if (main.currentWorkspace != null) {
-            main.projectExplorer.setWorkspaceActive(main.currentWorkspace);
+            main.projectExplorer.setWorkspaceActive(main.currentWorkspace, true);
         }
 
         this.studentPanel.select(null, false);

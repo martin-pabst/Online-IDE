@@ -190,6 +190,7 @@
 .jo_graphics {
     /* width: 100%; */
     z-index: 3;
+    flex-shrink: 0;
 }
 
 .jo_graphics>div {

@@ -63,7 +63,7 @@ export class NetworkManager {
     
     sendUpdates(callback?: ()=>void, sendIfNothingIsDirty: boolean = false){
         
-        if(this.main.user == null) return;
+        if(this.main.user == null || this.main.user.is_testuser) return;
 
         this.main.projectExplorer.writeEditorTextToFile();
 
@@ -133,6 +133,12 @@ export class NetworkManager {
     
     sendCreateWorkspace(w: Workspace, owner_id: number, callback: (error: string) => void) {
 
+        if(this.main.user.is_testuser){
+            w.id = Math.round(Math.random() * 10000000);
+            callback(null);
+            return;
+        }
+
         let wd: WorkspaceData = w.getWorkspaceData(false);
         let request: CreateOrDeleteFileOrWorkspaceRequest = {
             type: "create",
@@ -150,6 +156,13 @@ export class NetworkManager {
     }
 
     sendCreateFile(m: Module, ws: Workspace, owner_id: number, callback: (error: string) => void) {
+
+        if(this.main.user.is_testuser){
+            m.file.id = Math.round(Math.random() * 10000000);
+            callback(null);
+            return;
+        }
+
 
         let fd: FileData = m.getFileData(ws);
         let request: CreateOrDeleteFileOrWorkspaceRequest = {
@@ -169,6 +182,12 @@ export class NetworkManager {
 
     sendDuplicateWorkspace(ws: Workspace, callback: (error: string, workspaceData?: WorkspaceData) => void) {
 
+        if(this.main.user.is_testuser){
+            callback("Diese Aktion ist für den Testuser nicht möglich.", null);
+            return;
+        }
+
+
         let request: DuplicateWorkspaceRequest = {
             workspace_id: ws.id,
             language: 0
@@ -181,6 +200,12 @@ export class NetworkManager {
     }
 
     sendDistributeWorkspace(ws: Workspace, klasse: ClassData, student_ids: number[], callback: (error: string) => void) {
+
+        if(this.main.user.is_testuser){
+            callback("Diese Aktion ist für den Testuser nicht möglich.");
+            return;
+        }
+
 
         this.sendUpdates(() => {
 
@@ -201,6 +226,12 @@ export class NetworkManager {
 
 
     sendCreateRepository(ws: Workspace, publish_to: number, repoName: string, repoDescription: string, callback: (error: string, repository_id?: number) => void) {
+
+        if(this.main.user.is_testuser){
+            callback("Diese Aktion ist für den Testuser nicht möglich.");
+            return;
+        }
+
 
         this.sendUpdates(() => {
 
@@ -228,6 +259,12 @@ export class NetworkManager {
 
     sendDeleteWorkspaceOrFile(type: "workspace" | "file", id: number, callback: (error: string) => void) {
 
+        if(this.main.user.is_testuser){
+            callback(null);
+            return;
+        }
+
+
         let request: CreateOrDeleteFileOrWorkspaceRequest = {
             type: "delete",
             entity: type,
@@ -247,6 +284,11 @@ export class NetworkManager {
 
     sendUpdateUserSettings(callback: (error: string) => void){
 
+        if(this.main.user.is_testuser){
+            callback(null);
+            return;
+        }
+
         let request: UpdateUserSettingsRequest = {
             settings: this.main.user.settings,
             userId: this.main.user.id
@@ -263,7 +305,7 @@ export class NetworkManager {
     }
 
 
-    updateWorkspaces(sendUpdatesRequest: SendUpdatesRequest, sendUpdatesResponse: SendUpdatesResponse){
+    private updateWorkspaces(sendUpdatesRequest: SendUpdatesRequest, sendUpdatesResponse: SendUpdatesResponse){
 
         let idToRemoteWorkspaceDataMap: Map<number, WorkspaceData> = new Map();
 
@@ -358,7 +400,7 @@ export class NetworkManager {
         }
     }
 
-    createFile(workspace: Workspace, remoteFile: FileData) {
+    private createFile(workspace: Workspace, remoteFile: FileData) {
         let ae: any = null; //AccordionElement
         if (workspace == this.main.currentWorkspace) {
             ae = {

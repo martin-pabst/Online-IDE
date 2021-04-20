@@ -58,6 +58,14 @@ export class Login {
             }
         });
 
+
+        jQuery('#testuser-login-button').on('click', () => {
+            jQuery('#login-username').val('Testuser');
+            jQuery('#login-password').val('password');
+            jQuery('#login-button').trigger('click');
+
+        })
+
         // Avoid double login when user does doubleclick:
         let loginHappened = false;
         jQuery('#login-button').on('click', () => {
@@ -96,6 +104,8 @@ export class Login {
                     jQuery('#bitteWarten').css('display', 'flex');
 
                     let user: UserData = response.user;
+                    user.is_testuser = loginRequest.username == "Testuser" && loginRequest.password == "password";
+
                     if (user.settings == null || user.settings.helperHistory == null) {
                         user.settings = {
                             helperHistory: {
@@ -163,6 +173,11 @@ export class Login {
 
         jQuery('#buttonLogout').on('click', () => {
 
+            if(that.main.user.is_testuser){
+                that.showLoginForm();
+                return;
+            }
+
             jQuery('#bitteWartenText').html('Bitte warten, der letzte Bearbeitungsstand wird noch gespeichert ...');
             jQuery('#bitteWarten').css('display', 'flex');
 
@@ -181,24 +196,7 @@ export class Login {
                 ajax('logout', logoutRequest, () => {
                     // window.location.href = 'index.html';
 
-                    jQuery('#login').show();
-                    jQuery('#bitteWarten').css('display', 'none');
-                    jQuery('#login-message').empty();
-                    this.main.interpreter.setState(InterpreterState.not_initialized);
-                    this.main.getMonacoEditor().setModel(monaco.editor.createModel("", "myJava"));
-                    this.main.projectExplorer.fileListPanel.clear();
-                    this.main.projectExplorer.workspaceListPanel.clear();
-                    this.main.bottomDiv?.console?.clear();
-                    this.main.interpreter.printManager.clear();
-
-                    if (this.main.user.is_teacher) {
-                        this.main.teacherExplorer.removePanels();
-                        this.main.teacherExplorer = null;
-                    }
-
-                    this.main.currentWorkspace = null;
-                    this.main.user = null;
-
+                    that.showLoginForm();
 
                 });
             });
@@ -207,6 +205,30 @@ export class Login {
 
 
     }
+
+    private showLoginForm(){
+        jQuery('#login').show();
+        jQuery('#bitteWarten').css('display', 'none');
+        jQuery('#login-message').empty();
+        this.main.interpreter.setState(InterpreterState.not_initialized);
+        this.main.getMonacoEditor().setModel(monaco.editor.createModel("", "myJava"));
+        this.main.projectExplorer.fileListPanel.clear();
+        this.main.projectExplorer.fileListPanel.setCaption('');
+        this.main.projectExplorer.workspaceListPanel.clear();
+        this.main.bottomDiv?.console?.clear();
+        this.main.interpreter.printManager.clear();
+
+        if (this.main.user.is_teacher) {
+            this.main.teacherExplorer.removePanels();
+            this.main.teacherExplorer = null;
+        }
+
+        this.main.currentWorkspace = null;
+        this.main.user = null;
+
+    }
+
+
     startAnimations() {
         // let $loginAnimationDiv = $('#jo_login_animations');
         // $loginAnimationDiv.empty();

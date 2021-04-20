@@ -83,7 +83,8 @@ export type UserData = {
     rufname: string,
     currentWorkspace_id?: number,
     settings?: UserSettings,
-    password?: string
+    password?: string,
+    is_testuser?: boolean
 }
 
 export type GetUserDataRequest = {

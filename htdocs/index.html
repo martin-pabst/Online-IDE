@@ -39,7 +39,7 @@
 
     <script src="lib/pixijs/pixi.js"></script>
     <script src="lib/diffMatchPatch/diffMatchPatch.js"></script>
-    
+
 
 </head>
 
@@ -55,7 +55,7 @@
 
     <!-- Bitte-Warten-Text nach dem Logout (bis die Einstellungen gespeichert sind)-->
     <div id="bitteWarten">
-        <div>
+        <div class="jo_login_div">
             <div id="bitteWartenText"></div>
         </div>
     </div>
@@ -63,9 +63,9 @@
     <!-- Login-Seite -->
     <div id="login">
         <div id="jo_login_animations"></div>
-        <div id="login-heading">Online-IDE</div>
-        <div style="flex-grow: 1"></div>
-        <div>
+        <div id="login-heading" class="jo_login_div">Online-IDE</div>
+        <div style="flex-grow: 1" class="jo_login_div"></div>
+        <div class="jo_login_div">
             <div id="login-center">
                 <input id="login-username" type="text" placeholder="Benutzername" spellcheck="false" tabindex="1">
                 <input id="login-password" type="password" placeholder="Passwort" spellcheck="false" tabindex="2">
@@ -73,13 +73,52 @@
                 <div id="login-button" tabindex="3">Login</div>
             </div>
         </div>
-        <div id="login-spinner">
+        <div id="login-spinner" class="jo_login_div">
             <img src="assets/projectexplorer/svg-loaders/ball-triangle.svg">
         </div>
-    <div style="flex-grow: 2">
+        <div class="jo_infodiv">
+            <div class="jo_infodiv_line">
+                <div class="jo_infodiv_box">
+                    <img src="assets/graphics/film.png" class="jo_infobox_leftimage" alt="">
+                    <div>Video-Tutorials zur Online-IDE</div>
+                </div>
+                <div class="jo_infodiv_box">
+                    <img src="assets/graphics/test.png" class="jo_infobox_leftimage" alt="">
+                    <div>Login als Testuser</div>
+                </div>
+                <div class="jo_infodiv_box">
+                    <img src="assets/graphics/rocket.png" class="jo_infobox_leftimage" alt="">
+                    <div>Interesse?<br>Testlogins für Schulen</div>
+                </div>
+            </div>
+            <div class="jo_infodiv_line">
+                <div class="jo_infodiv_box">
+                    <img src="assets/graphics/learnj.png" class="jo_infobox_leftimage" alt="">
+                    <div>Interaktives Java-Tutorial</div>
+                </div>
+                <div class="jo_infodiv_box">
+                    <img src="assets/graphics/forkme_left_green_007200.png" class="jo_infobox_forkme" alt="">
+                    <div style="font-size: 16pt;">Embedded<br> Java-IDE - auch für Ihre Homepage!</div>
+                </div>
+            </div>
         </div>
-        <div id="login-footer">Falls Sie die Online-IDE an Ihrer Schule testen möchten, schreiben Sie mir bitte einfach kurz: &nbsp;
-            <a href="mailto:asv.pabst@gmail.com" style="color: lightBlue">martin.pabst@gmail.com</a>
+        <div style="flex-grow: 4" class="jo_login_div">
+        </div>
+        <div id="login-footer">
+            <div>
+                Zum schnellen Kennenlernen der IDE klicken Sie bitte hier: <button id="testuser-login-button">Login als
+                    Testuser</button>
+            </div>
+            <div>
+                <b>Bitte beachten Sie:</b> Beim Login als Testuser werden Programmänderungen nicht gespeichert.
+                Das Repository und die Lehrkraftfunktionen stehen als Testuser leider nicht
+                zur Verfügung.
+            </div>
+            <div style="margin-top: 10px">
+                Falls Sie die Online-IDE an Ihrer Schule mit voller Funktionalität (gerne auch über einen längeren Zeitraum) ausprobieren möchten, schreiben Sie mir
+                bitte einfach eine Mail: &nbsp;
+                <a href="mailto:asv.pabst@gmail.com" style="color: lightBlue">martin.pabst@gmail.com</a>
+            </div>
         </div>
     </div>
 
@@ -122,9 +161,8 @@
                     </div>
                     <div class="jo_parenthesis_warning">
                         <div class="jo_warning_light"></div>
-                            <div class="jo_pw_heading">{ }</div>
-                        <div  title="Letzten Schritt rückgängig" 
-                            class="jo_pw_undo img_undo jo_button jo_active"></div>
+                        <div class="jo_pw_heading">{ }</div>
+                        <div title="Letzten Schritt rückgängig" class="jo_pw_undo img_undo jo_button jo_active"></div>
                     </div>
                     <div id="bottomdiv-outer">
                         <div id="slider2" class="jo_slider" draggable="false"></div>
@@ -133,7 +171,8 @@
                                 <div class="jo_tabheading jo_active" data-target="jo_errorsTab">Fehler</div>
                                 <div class="jo_tabheading jo_console-tab" data-target="jo_consoleTab">Console</div>
                                 <div class="jo_tabheading" data-target="jo_pcodeTab">PCode</div>
-                                <div class="jo_tabheading jo_homeworkTabheading" data-target="jo_homeworkTab">Hausaufgaben</div>
+                                <div class="jo_tabheading jo_homeworkTabheading" data-target="jo_homeworkTab">
+                                    Hausaufgaben</div>
                                 <div class="jo_tabheading-right jo_noHeading">
                                     <img class="jo_network-busy" src="assets/projectexplorer/compile.gif">
                                     <div class="img_clear-dark jo_button jo_active jo_console-clear" alt=""
@@ -172,9 +211,9 @@
                 <div class="jo_rightdiv-rightside-container">
                     <div class="jo_coordinates">(0/0)</div>
                     <div class="img_whole-window jo_button jo_whole-window jo_active" alt="" style="margin-right: 8px;"
-                    title="Auf Fenstergröße erweitern"></div>
+                        title="Auf Fenstergröße erweitern"></div>
                 </div>
-                
+
                 <div class="jo_control-container"></div>
 
                 <div class="jo_tabheadings">
@@ -192,7 +231,8 @@
                         <div class="jo_run-input">
                             <div>
                                 <div>
-                                    <div class="jo_run-input-message" class="jo_rix">Bitte geben Sie eine Zahl ein!</div>
+                                    <div class="jo_run-input-message" class="jo_rix">Bitte geben Sie eine Zahl ein!
+                                    </div>
                                     <input class="jo_run-input-input" type="text" class="jo_rix">
                                     <div class="jo_run-input-button-outer" class="jo_rix">
                                         <div class="jo_run-input-button" class="jo_rix">OK</div>

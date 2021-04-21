@@ -164,7 +164,8 @@ body .monaco-editor-hover .monaco-tokenized-source {
 }
 
 #login-spinner>img {
-    margin-top: 40px;
+    margin-top: 20px;
+    height: 40px;
     display: none;
 }
 

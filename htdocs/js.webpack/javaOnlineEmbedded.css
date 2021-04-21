@@ -152,8 +152,11 @@ body .monaco-editor-hover .monaco-tokenized-source {
 }
 
 #login-footer {
+    font-size: 12pt;
     z-index: 10;
     margin-bottom: 40px;
+    display: block !important; 
+    margin-left: 20px;
 }
 
 #login-spinner {
@@ -169,7 +172,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
     display: none;
 }
 
-#login>div, #bitteWarten>div {
+#login>.jo_login_div, #bitteWarten>.jo_login_div {
     width: 100%;
     display: flex;
     justify-content: center;
@@ -198,7 +201,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
 }
 
 #login-center>input::placeholder {
-    color: black;
+    color: rgb(104, 130, 170);
     opacity: 0.5;
 }
 
@@ -218,6 +221,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
     color: var(--loginButtonFontColor);
     cursor: pointer;
 }
+
 
 #login-message {
     position: absolute;
@@ -572,6 +576,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
 
 .jo_file.jo_active:hover {
     background-color: var(--file-active-hover);
+    border: 1px solid var(--file-active-border);
 }
 
 .jo_file.jo_class>.jo_fileimage:before {
@@ -1026,6 +1031,94 @@ body .monaco-editor-hover .monaco-tokenized-source {
     position: absolute;
     right: 24px;
     margin-top: 2px;
+}
+
+/*
+    Info-Buttons on start page
+*/
+
+.jo_infodiv {
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.jo_infodiv_line {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.jo_infodiv_box {
+    position: relative;
+    width: 16em;
+    height: 8em;
+    padding: 6px;
+    border-radius: 5px;
+    background-color: rgb(192, 204, 228);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 10px;
+    cursor: pointer;
+}
+
+.jo_infodiv_box:hover {
+    filter:brightness(110%);
+}
+
+.jo_infodiv_box:active {
+    transform: scale(1.05);
+}
+
+.jo_infodiv_box>img.jo_infobox_leftimage {
+    width: 4em;
+}
+
+.jo_infodiv_box>img.jo_infobox_forkme {
+    position: absolute;
+    width: 100px;
+    left: 0px;
+    top: 0px;
+}
+
+.jo_infodiv_box>div {
+    font-size: 20pt;
+    flex: 1;
+    text-align: center;
+    color: darkslategrey;
+    user-select: none;
+}
+
+.jo_infodiv_line>a {
+    text-decoration: none;
+}
+
+#jo_testuser-login-button {
+    background-color: #59a15d;
+}
+
+#jo_video_button {
+    background-color: #c02424;
+}
+
+#jo_testlogins {
+    background-color: rgb(202, 202, 62);
+}
+
+#jo_learnj {
+    background-color: rgb(85, 85, 219);
+    color: white;
+}
+
+#jo_learnj>div {
+    color: white;
+}
+
+#jo_embedded_ide {
+    background-color: rgb(194, 150, 70);
 }
 :root {
     --bottomdiv-tabheading-hover: white;

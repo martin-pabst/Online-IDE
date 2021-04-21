@@ -222,10 +222,6 @@ body .monaco-editor-hover .monaco-tokenized-source {
     cursor: pointer;
 }
 
-#testuser-login-button {
-    cursor: pointer;
-    background-color: var(--loginButtonBackground);
-}
 
 #login-message {
     position: absolute;
@@ -1059,7 +1055,6 @@ body .monaco-editor-hover .monaco-tokenized-source {
     position: relative;
     width: 16em;
     height: 8em;
-    border: 1px solid gray;
     padding: 6px;
     border-radius: 5px;
     background-color: rgb(192, 204, 228);
@@ -1071,11 +1066,11 @@ body .monaco-editor-hover .monaco-tokenized-source {
 }
 
 .jo_infodiv_box:hover {
-    filter:brightness(120%);
+    filter:brightness(110%);
 }
 
 .jo_infodiv_box:active {
-    transform: scale(1.2);
+    transform: scale(1.05);
 }
 
 .jo_infodiv_box>img.jo_infobox_leftimage {
@@ -1095,4 +1090,33 @@ body .monaco-editor-hover .monaco-tokenized-source {
     text-align: center;
     color: darkslategrey;
     user-select: none;
+}
+
+.jo_infodiv_line>a {
+    text-decoration: none;
+}
+
+#jo_testuser-login-button {
+    background-color: #59a15d;
+}
+
+#jo_video_button {
+    background-color: #c02424;
+}
+
+#jo_testlogins {
+    background-color: rgb(202, 202, 62);
+}
+
+#jo_learnj {
+    background-color: rgb(85, 85, 219);
+    color: white;
+}
+
+#jo_learnj>div {
+    color: white;
+}
+
+#jo_embedded_ide {
+    background-color: rgb(194, 150, 70);
 }

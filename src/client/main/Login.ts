@@ -59,7 +59,7 @@ export class Login {
         });
 
 
-        jQuery('#testuser-login-button').on('click', () => {
+        jQuery('#jo_testuser-login-button').on('click', () => {
             jQuery('#login-username').val('Testuser');
             jQuery('#login-password').val('password');
             jQuery('#login-button').trigger('click');

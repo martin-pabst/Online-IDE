@@ -64,9 +64,10 @@
 
     <!-- Login-Seite -->
     <div id="login">
-        <div id="login-heading">Online-IDE</div>
-        <div style="flex-grow: 1"></div>
-        <div>
+        <div id="jo_login_animations"></div>
+        <div id="login-heading" class="jo_login_div">Online-IDE</div>
+        <div style="flex-grow: 1" class="jo_login_div"></div>
+        <div class="jo_login_div">
             <div id="login-center">
                 <input id="login-username" type="text" placeholder="Benutzername" spellcheck="false" tabindex="1">
                 <input id="login-password" type="password" placeholder="Passwort" spellcheck="false" tabindex="2">
@@ -74,15 +75,47 @@
                 <div id="login-button" tabindex="3">Login</div>
             </div>
         </div>
-        <div id="login-spinner">
+        <div id="login-spinner" class="jo_login_div">
             <img src="assets/projectexplorer/svg-loaders/ball-triangle.svg">
         </div>
-    <div style="flex-grow: 2">
+        <div class="jo_infodiv">
+            <div class="jo_infodiv_line">
+                <a href="https://www.learnj.de/doku.php?id=api:ide_manual:start" target="_blank">
+                    <div class="jo_infodiv_box" id="jo_video_button">
+                        <img src="assets/graphics/film.png" class="jo_infobox_leftimage" alt="">
+                        <div>Video-Tutorials zur Online-IDE</div>
+                    </div>
+                </a>
+                <div class="jo_infodiv_box" id="jo_testuser-login-button">
+                    <img src="assets/graphics/test.png" class="jo_infobox_leftimage" alt="">
+                    <div>Login als Testuser (*)</div>
+                </div>
+                <a href="https://www.learnj.de/doku.php?id=ide:testlogins:start" target="_blank">
+                    <div class="jo_infodiv_box" id="jo_testlogins">
+                        <img src="assets/graphics/rocket.png" class="jo_infobox_leftimage" alt="">
+                        <div>Interesse?<br>(Test-)logins für Schulen</div>
+                    </div>
+                </a>
+            </div>
+            <div class="jo_infodiv_line">
+                <a href="https://www.learnj.de" target="_blank">
+                    <div class="jo_infodiv_box" id="jo_learnj">
+                        <img src="assets/graphics/learnj.png" class="jo_infobox_leftimage" alt="">
+                        <div>Interaktives Java-Tutorial</div>
+                    </div>
+                </a>
+                <a href="https://github.com/martin-pabst/Online-IDE" target="_blank">
+                    <div class="jo_infodiv_box" id="jo_embedded_ide">
+                        <img src="assets/graphics/forkme_left_green_007200.png" class="jo_infobox_forkme" alt="">
+                        <div style="font-size: 16pt;">Embedded<br> Java-IDE - auch für deine Homepage!</div>
+                    </div>
+                </a>
+            </div>
         </div>
-        <div id="login-footer">Falls Sie die Online-IDE an Ihrer Schule testen möchten, schreiben Sie mir bitte einfach eine Mail: &nbsp;
-            <a href="mailto:asv.pabst@gmail.com" style="color: lightBlue">martin.pabst@gmail.com</a>
-            <br>
-            Zum schnellen Kennenlernen verwenden Sie einfach Benutzername: <span class="jo_bold">Testuser</span>, Password: <span class="jo_bold">password</span>.
+        <div style="flex-grow: 4" class="jo_login_div">
+        </div>
+        <div id="login-footer">
+            (*) Ohne Repository und Lehrkraft-Funktionen
         </div>
     </div>
 

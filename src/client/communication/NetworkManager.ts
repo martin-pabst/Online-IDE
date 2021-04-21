@@ -63,7 +63,10 @@ export class NetworkManager {
     
     sendUpdates(callback?: ()=>void, sendIfNothingIsDirty: boolean = false){
         
-        if(this.main.user == null || this.main.user.is_testuser) return;
+        if(this.main.user == null || this.main.user.is_testuser){
+            callback();
+            return;
+        } 
 
         this.main.projectExplorer.writeEditorTextToFile();
 

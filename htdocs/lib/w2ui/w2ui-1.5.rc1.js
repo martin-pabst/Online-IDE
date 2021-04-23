@@ -8193,7 +8193,7 @@ w2utils.event = {
                         '<table cellpadding="0" cellspacing="0"><tbody><tr>'+
                         '    <td>'+ this.buttons['search'].html +'</td>'+
                         '    <td>'+
-                        '        <input type="text" id="grid_'+ this.name +'_search_all" class="w2ui-search-all" tabindex="-1" '+
+                        '        <input type="text" id="grid_'+ this.name +'_search_all" class="w2ui-search-all" tabindex="-1" autocomplete="off"'+
                         '            placeholder="'+ w2utils.lang(this.last.caption) +'" value="'+ this.last.search +'"'+
                         '            onfocus="clearTimeout(w2ui[\''+ this.name +'\'].last.kbd_timer);"'+
                         '            onkeydown="if (event.keyCode == 13 &amp;&amp; w2utils.isIE) this.onchange();"'+
@@ -18410,7 +18410,7 @@ var w2prompt = function (label, title, callBack) {
                 switch (field.type) {
                     case 'pass':
                     case 'password':
-                        input = '<input name="' + field.name + '" class="w2ui-input" type = "password" ' + field.html.attr + ' tabindex="'+ (f+1) +'"/>';
+                        input = '<input name="' + field.name + '" class="w2ui-input" type = "password" autocomplete="new-password"' + field.html.attr + ' tabindex="'+ (f+1) +'"/>';
                         break;
                     case 'checkbox':
                         input = '<input name="'+ field.name +'" class="w2ui-input" type="checkbox" '+ field.html.attr +' tabindex="'+ (f+1) +'"/>';

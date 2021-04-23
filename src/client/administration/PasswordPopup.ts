@@ -18,7 +18,7 @@ export class PasswordPopup {
                     '    <div class="w2ui-field">' +
                     '        <label>Neues Passwort:</label>' +
                     '        <div>' +
-                    '           <input name="password" type="password" maxlength="100" style="width: 250px"/>' +
+                    '           <input name="password" type="password" autocomplete="new-password" maxlength="100" style="width: 250px"/>' +
                     '        </div>' +
                     '    </div>' +
                     '</div>' +
@@ -53,14 +53,7 @@ export class PasswordPopup {
             style: 'padding: 15px 0px 0px 0px',
             width: 500,
             height: 300,
-            showMax: true,
-            onToggle: function (event) {
-                $(w2ui.foo.box).hide();
-                event.onComplete = function () {
-                    $(w2ui.foo.box).show();
-                    w2ui.foo.resize();
-                }
-            },
+            showMax: false,
             onOpen: function (event) {
                 event.onComplete = function () {
                     // specifying an onOpen handler instead is equivalent to specifying an onBeforeOpen handler, which would make this code execute too early and hence not deliver.

@@ -146,9 +146,14 @@ export class MainMenu {
                     {
                         items: [
                             {
-                                identifier: "Sprite-Bilderübersicht",
-                                link: "spriteLibrary.html"
+                                identifier: "Kurze Video-Tutorials zur Bedienung dieser IDE",
+                                link: "https://www.learnj.de/doku.php?id=api:ide_manual:start"
                             },
+                            {
+                                identifier: "Interaktives Java-Tutorial mit vielen Beispielen",
+                                link: "https://www.learnj.de/doku.php"
+                            },
+                            { identifier: "-" },
                             {
                                 identifier: "API-Dokumentation",
                                 link: "https://www.learnj.de/doku.php?id=api:documentation:start"
@@ -159,15 +164,17 @@ export class MainMenu {
                                 //link: "https://www.learnj.de/doku.php?id=api:documentation:start"
                                 link: "api_documentation.html"
                             },
+                            { identifier: "-" },
+                            {
+                                identifier: "Sprite-Bilderübersicht",
+                                link: "spriteLibrary.html"
+                            },
+                            { identifier: "-" },
                             {
                                 identifier: "Tastaturkommandos (Shortcuts)",
                                 link: "shortcuts.html"
                             },
                             { identifier: "-" },
-                            {
-                                identifier: "Interaktives Java-Tutorial mit vielen Beispielen",
-                                link: "https://www.learnj.de/doku.php"
-                            },
                             {
                                 identifier: "Java-Online Changelog",
                                 link: "https://www.learnj.de/doku.php?id=javaonline:changelog"

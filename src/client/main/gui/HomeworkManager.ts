@@ -155,7 +155,7 @@ export class HomeworkManager {
             this.$homeworkTabLeft.append($div);
 
             $div.on("click", (e) => {
-                this.$homeworkTabLeft.find('.jo_homeworkDate').removeClass('active');
+                this.$homeworkTabLeft.find('.jo_homeworkDate').removeClass('jo_active');
                 $div.addClass('jo_active');
                 that.select(dwm);
             });

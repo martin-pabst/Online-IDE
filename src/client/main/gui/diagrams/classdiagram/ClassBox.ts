@@ -111,11 +111,11 @@ export class ClassBox extends DiagramElement {
 
         this.addTextLine({
             type: "text",
-            text: (this.klass instanceof Interface ? "<<interface>> " : "") + this.klass.identifier,
+            text: (this.klass instanceof Interface ? "<<interface>> " : ( this.klass.isAbstract ? "<<abstract>> " : "")) + this.klass.identifier,
             tooltip: getDeclarationAsString(this.klass, "", true),
             alignment: Alignment.center,
             bold: true,
-            italics: this.klass instanceof Interface,
+            italics: this.klass instanceof Interface || this.klass.isAbstract,
             onClick: this.isSystemClass ? undefined : () => { this.jumpToDeclaration(this.klass) }
         });
 
@@ -158,7 +158,7 @@ export class ClassBox extends DiagramElement {
                     text: text,
                     tooltip: getDeclarationAsString(m),
                     alignment: Alignment.left,
-                    italics: this.klass instanceof Interface,
+                    italics: this.klass instanceof Interface || m.isAbstract,
                     onClick: this.isSystemClass ? undefined : () => { this.jumpToDeclaration(m) }
                 });
 

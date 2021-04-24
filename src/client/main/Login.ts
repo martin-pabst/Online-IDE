@@ -61,7 +61,7 @@ export class Login {
 
         jQuery('#jo_testuser-login-button').on('click', () => {
             jQuery('#login-username').val('Testuser');
-            jQuery('#login-password').val('password');
+            jQuery('#login-password').val('');
             jQuery('#login-button').trigger('click');
 
         })
@@ -104,7 +104,7 @@ export class Login {
                     jQuery('#bitteWarten').css('display', 'flex');
 
                     let user: UserData = response.user;
-                    user.is_testuser = loginRequest.username == "Testuser" && loginRequest.password == "password";
+                    user.is_testuser = loginRequest.username == "Testuser" && loginRequest.password == "";
 
                     if (user.settings == null || user.settings.helperHistory == null) {
                         user.settings = {

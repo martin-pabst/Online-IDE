@@ -815,6 +815,8 @@ export class CodeGenerator {
     }
 
     checkIfAssignmentInstedOfEqual(nodeFrom: ASTNode, conditionType?: Type) {
+        if(nodeFrom == null) return;
+
         if (nodeFrom.type == TokenType.binaryOp && nodeFrom.operator == TokenType.assignment) {
             let pos = nodeFrom.position;
             this.pushError("= ist der Zuweisungsoperator. Du willst sicher zwei Werte vergleichen. Dazu benötigst Du den Vergleichsoperator ==.",
@@ -1689,7 +1691,7 @@ export class CodeGenerator {
 
         let conditionType = this.processNode(node.condition);
 
-        this.checkIfAssignmentInstedOfEqual(node.condition, conditionType.type);
+        this.checkIfAssignmentInstedOfEqual(node.condition, conditionType?.type);
         if (conditionType != null && conditionType.type != booleanPrimitiveType) {
             this.pushError("Der Wert des Terms in Klammern hinter 'if' muss den Datentyp boolean besitzen.", node.condition.position);
         }

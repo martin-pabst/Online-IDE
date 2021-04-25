@@ -642,6 +642,8 @@ export class Klass extends Type {
 
         let message = "";
         let missingAbstractMethods: Method[] = [];
+        let implementedMethods: Method[] = [];
+
         let implementedSignatures: string[] = [];
         let missingInterfaceMethods: Method[] = [];
 
@@ -672,19 +674,21 @@ export class Klass extends Type {
                     for (let m of klass.methods) {
                         if (m.isAbstract) {
                             abstractMethods.push(m);
+                            let isImplemented: boolean = false;
+                            for(let m1 of implementedMethods){
+                                if(m1.implements(m)){
+                                    isImplemented = true;
+                                    break;
+                                }
+                            }
+                            if(!isImplemented){
+                                missingAbstractMethods.push(m);
+                            }
                         } else {
-                            implementedSignatures.push(m.getSignatureWithReturnParameter());
+                            implementedMethods.push(m);
                         }
                     }
                     klass = klass.baseClass;
-                }
-
-                for (let m of abstractMethods) {
-
-                    if (implementedSignatures.indexOf(m.getSignatureWithReturnParameter()) < 0) {
-                        missingAbstractMethods.push(m);
-                    }
-
                 }
 
             }
@@ -698,8 +702,15 @@ export class Klass extends Type {
 
             for (let i of this.implements) {
                 for (let m of i.getMethods()) {
-                    if (implementedSignatures.indexOf(m.getSignatureWithReturnParameter()) < 0) {
-                        missingInterfaceMethods.push(m);
+                    let isImplemented: boolean = false;
+                    for(let m1 of implementedMethods){
+                        if(m1.implements(m)){
+                            isImplemented = true;
+                            break;
+                        }
+                        if(!isImplemented){
+                            missingInterfaceMethods.push(m);
+                        }
                     }
                 }
             }

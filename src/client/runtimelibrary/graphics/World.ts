@@ -284,6 +284,12 @@ export type ActorData = {
     method: Method
 }
 
+export type AktionsempfaengerData = {
+    methodIdentifier: "Ausführen()" | "Taste(char)" | "SonderTaste(int)" | "Geklickt(int, int, int)",
+    method: Method,
+    runtimeObject: RuntimeObject
+}
+
 export class WorldHelper {
 
     $containerOuter: JQuery<HTMLElement>;
@@ -296,6 +302,11 @@ export class WorldHelper {
     keyUpActors: ActorData[] = [];
     keyDownActors: ActorData[] = [];
     actorHelpersToDestroy: ActorHelper[] = [];
+
+    aktionsempfaengerList: AktionsempfaengerData[] = [];
+    gngTaktgeberEnabled: boolean = false;
+    gngTaktdauer: number = 300; 
+    gngLastTakt: number = 0;
 
     mouseListenerShapes: MouseListenerShapeData[] = [];
     mouseListeners: MouseListenerData[] = [];

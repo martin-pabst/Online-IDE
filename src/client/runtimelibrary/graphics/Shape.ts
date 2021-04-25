@@ -441,7 +441,7 @@ export class ShapeClass extends Klass {
 
                 return sh.getCopy(<Klass>o.class);
 
-            }, false, false, 'Erstellt eine Kopie des Grafikobjekts und git sie zurück.', false));
+            }, true, false, 'Erstellt eine Kopie des Grafikobjekts und git sie zurück.', false));
 
 
         this.addMethod(new Method("bringToFront", new Parameterlist([

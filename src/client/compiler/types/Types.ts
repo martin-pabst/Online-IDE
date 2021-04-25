@@ -151,6 +151,37 @@ export class Method extends Type {
 
     public signature: string;
 
+    implements(m: Method): boolean {
+        if(this.identifier != m.identifier) return false;
+        if(this.returnType == null || this.returnType.identifier == "void"){
+            if(m.returnType != null && m.returnType.identifier != "void") return false;
+        } else {
+
+            if(m.returnType instanceof PrimitiveType){
+                if(m.returnType != this.returnType) {
+                    return false;
+                }
+            } else if(!this.returnType.canCastTo(m.returnType)){
+                return false;
+            }
+        }
+
+        if(this.parameterlist.parameters.length != m.parameterlist.parameters.length) return false;
+
+        for(let i = 0; i < this.parameterlist.parameters.length; i++){
+            let myParameter = this.parameterlist.parameters[i];
+            let mParameter = m.parameterlist.parameters[i];
+
+            if(mParameter.type instanceof PrimitiveType){
+                if(mParameter.type != myParameter.type){
+                    return false;
+                }
+            } else if(!mParameter.type.canCastTo(myParameter.type)) return false;
+        }
+
+        return true;
+    }
+
     hasEllipsis(): boolean {
         if(this.parameterlist.parameters.length == 0) return false;
         return this.parameterlist.parameters[this.parameterlist.parameters.length - 1].isEllipsis;

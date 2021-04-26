@@ -644,7 +644,6 @@ export class Klass extends Type {
         let missingAbstractMethods: Method[] = [];
         let implementedMethods: Method[] = [];
 
-        let implementedSignatures: string[] = [];
         let missingInterfaceMethods: Method[] = [];
 
         let klass: Klass = this;
@@ -708,9 +707,9 @@ export class Klass extends Type {
                             isImplemented = true;
                             break;
                         }
-                        if(!isImplemented){
-                            missingInterfaceMethods.push(m);
-                        }
+                    }
+                    if(!isImplemented){
+                        missingInterfaceMethods.push(m);
                     }
                 }
             }

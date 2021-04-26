@@ -30,7 +30,7 @@ Benötigt werden
   - htdocs/js.webpack/javaOnlineEmbedded*
   - htdocs/js.webpack/javaOnline-embedded*
   - htdocs/lib/*
-  - htdocs/js/runtimelibrary/graphics/SpriteLibrary.js
+  - htdocs/js/runtimelibrary/graphics/SpriteLibrary.js (zu finden im Git-Repository unter src/client/runtimelibrary/graphics/Spritelibrary.js)
 
 Im Header der Webseite müssen die verwendeten Bibliotheken geladen werden:
 ```html

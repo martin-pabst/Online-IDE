@@ -708,9 +708,9 @@ export class Klass extends Type {
                             isImplemented = true;
                             break;
                         }
-                        if(!isImplemented){
-                            missingInterfaceMethods.push(m);
-                        }
+                    }
+                    if(!isImplemented){
+                        missingInterfaceMethods.push(m);
                     }
                 }
             }

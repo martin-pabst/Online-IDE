@@ -63,6 +63,10 @@ import { WebSocketClass } from "../../runtimelibrary/network/WebSocket.js";
 import { WebSocketClientClass } from "../../runtimelibrary/network/WebSocketClient.js";
 import { ProcessingClass } from "../../runtimelibrary/graphics/Processing.js";
 import { TurtleClass } from "../../runtimelibrary/graphics/Turtle.js";
+import { GNGZeichenfensterClass } from "../../runtimelibrary/gng/Zeichenfenster.js";
+import { GNGRechteckClass } from "../../runtimelibrary/gng/Rechteck.js";
+import { GNGBaseFigurClass } from "../../runtimelibrary/gng/GNGBaseFigur.js";
+import { GNGAktionsempfaengerInterface } from "../../runtimelibrary/gng/GNGAktionsempfaenger.js";
 
 export type File = {
     name: string,
@@ -830,6 +834,34 @@ export class BaseModule extends Module {
 
 }
 
+export class GNGModule extends Module {
+    constructor(main: MainBase, moduleStore: ModuleStore) {
+
+        super({ name: "Graphics and Games - Module", text: "", text_before_revision: null, submitted_date: null, student_edited_after_revision: false, dirty: false, saved: true, version: 1 , identical_to_repository_version: true}, main);
+
+        this.isSystemModule = true;
+        this.mainProgram = null;
+
+        this.clear();
+
+        this.typeStore.addType(new GNGAktionsempfaengerInterface(this));
+        this.typeStore.addType(new GNGZeichenfensterClass(this, moduleStore));
+        this.typeStore.addType(new GNGBaseFigurClass(this, moduleStore));
+        this.typeStore.addType(new GNGRechteckClass(this, moduleStore));
+
+    }
+
+    clearUsagePositions() {
+        for (let type of this.typeStore.typeList) {
+            type.clearUsagePositions();
+        }
+
+    }
+
+
+}
+
+
 export class ModuleStore {
 
     private modules: Module[] = [];
@@ -838,10 +870,21 @@ export class ModuleStore {
 
     dirty: boolean = false;
 
-    constructor(private main: MainBase, withBaseModule: boolean = true) {
+    constructor(private main: MainBase, withBaseModule: boolean, additionalLibraries: string[] = []) {
         if (withBaseModule) {
             this.baseModule = new BaseModule(main);
             this.putModule(this.baseModule);
+        }
+
+        for(let lib of additionalLibraries){
+            this.addLibraryModule(lib);
+        }
+    }
+
+    addLibraryModule(identifier: string){
+        switch(identifier){
+            case "gng": this.putModule(new GNGModule(this.main, this));
+            break;
         }
     }
 
@@ -861,7 +904,7 @@ export class ModuleStore {
     }
 
     copy(): ModuleStore {
-        let ms: ModuleStore = new ModuleStore(this.main);
+        let ms: ModuleStore = new ModuleStore(this.main, true);
         for (let m of this.modules) {
             if (!m.isSystemModule) {
                 ms.putModule(m.copy());

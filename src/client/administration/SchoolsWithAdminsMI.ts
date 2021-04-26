@@ -57,7 +57,8 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
                 searches: [
                     { field: 'name', label: 'Bezeichnung', type: 'text' }
                 ],
-                sortData: [{ field: 'name', direction: 'asc' }],
+                sortData: [{ field: 'name', direction: 'asc' }, {field: 'kuerzel', direction: 'asc'}, 
+                           {field: 'numberOfClasses', direction: 'asc'}, {field: 'numberOfUsers', direction: 'asc'}],
                 onSelect: (event) => { that.onSelectSchool(event) },
                 onUnselect: (event) => { that.onSelectSchool(event) },
                 onAdd: (event) => { that.onAddSchool() },

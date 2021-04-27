@@ -50,7 +50,7 @@ export class FilledShapeClass extends Klass {
                 let rto: RuntimeObject = value.object;
                 let helper: FilledShapeHelper = rto.intrinsicData["Actor"];
                 if (helper == null) {
-                    value.value = '---';
+                    value.value = Number.NaN;
                     return;
                 }
 
@@ -228,6 +228,9 @@ export class FilledShapeClass extends Klass {
                 sh.setBorderWidth(width);
 
             }, false, false, 'Setzt die Linienbreite des Randes (Einheit: Pixel)"', false));
+
+
+            this.setupAttributeIndicesRecursive();
 
     }
 

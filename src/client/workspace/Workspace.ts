@@ -31,7 +31,7 @@ export class Workspace {
     constructor(name: string, private main: MainBase, owner_id: number){
         this.name = name;
         this.owner_id = owner_id;
-        this.moduleStore = new ModuleStore(main);
+        this.moduleStore = new ModuleStore(main, true);
         this.evaluator = new Evaluator(this, main);
     }
     

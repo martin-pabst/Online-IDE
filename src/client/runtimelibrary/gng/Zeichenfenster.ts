@@ -1,4 +1,4 @@
-import { Module } from "../../compiler/parser/Module.js";
+import { Module, ModuleStore } from "../../compiler/parser/Module.js";
 import { Klass, Visibility } from "../../compiler/types/Class.js";
 import { Attribute, Method, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { doublePrimitiveType, floatPrimitiveType, intPrimitiveType, voidPrimitiveType, stringPrimitiveType, booleanPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
@@ -11,11 +11,11 @@ import { GNGSymbolArtClass } from "./SymbolArt.js";
 
 export class GNGZeichenfensterClass extends Klass {
 
-    constructor(public module: Module) {
+    constructor(public module: Module, moduleStore: ModuleStore) {
 
         super("Zeichenfenster", module, "Grafische Zeichenfläche mit Koordinatensystem")
 
-        this.setBaseClass(<Klass>module.typeStore.getType("Object"));
+        this.setBaseClass(<Klass>moduleStore.getType("Object").type);
 
         // let groupType = <GroupClass>module.typeStore.getType("Group");
         let aktionsempfaengerType = <GNGZeichenfensterClass>module.typeStore.getType("Aktionsempfaenger");

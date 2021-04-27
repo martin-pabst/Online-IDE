@@ -559,6 +559,23 @@ export abstract class ShapeHelper extends ActorHelper {
         this.hitPolygonDirty = dirty;
     }
 
+    bringOnePlaneFurtherToFront(){
+        let container: PIXI.Container = this.displayObject.parent;
+        let highestIndex = container.children.length - 1;
+        let index = container.getChildIndex(this.displayObject);
+        if( index < highestIndex){
+            container.setChildIndex(this.displayObject, index + 1);
+        }
+    }
+
+    bringOnePlaneFurtherToBack(){
+        let container: PIXI.Container = this.displayObject.parent;
+        let index = container.getChildIndex(this.displayObject);
+        if( index > 0){
+            container.setChildIndex(this.displayObject, index - 1);
+        }
+    }
+
     bringToFront() {
         let container: PIXI.Container = this.displayObject.parent;
         let highestIndex = container.children.length - 1;

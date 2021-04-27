@@ -644,7 +644,6 @@ export class Klass extends Type {
         let missingAbstractMethods: Method[] = [];
         let implementedMethods: Method[] = [];
 
-        let implementedSignatures: string[] = [];
         let missingInterfaceMethods: Method[] = [];
 
         let klass: Klass = this;

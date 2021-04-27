@@ -1,6 +1,7 @@
 export type SoundType = {
     url: string,
     name: string,
+    //@ts-ignore
     player?: Howl,
     description: string
 }
@@ -95,6 +96,7 @@ export class SoundTools {
     public static init(){
 
         for(let sound of SoundTools.sounds){
+            //@ts-ignore
             sound.player = new Howl({src: [sound.url], preload: true})
             SoundTools.soundMap.set(sound.name, sound);
         }

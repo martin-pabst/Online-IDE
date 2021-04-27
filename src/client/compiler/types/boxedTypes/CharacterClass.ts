@@ -11,6 +11,7 @@ export class CharacterClass extends Klass {
     constructor(baseClass: Klass) {
         super("Character", null, "Wrapper-Klasse, um char-Werte in Collections verenden zu können.");
         this.baseClass = baseClass;
+        this.staticClass.setupAttributeIndicesRecursive();
 
         this.staticClass.classObject = new RuntimeObject(this.staticClass);
 

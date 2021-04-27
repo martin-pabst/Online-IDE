@@ -17,6 +17,7 @@ export class FloatClass extends Klass {
         this.addAttribute(new Attribute("NaN_VALUE", floatPrimitiveType, (value) => { value.value = Number.NaN }, true, Visibility.public, true, "Der \"Not a Number\"-Wert vom Typ float"));
         this.addAttribute(new Attribute("NEGATIVE_INFINITY", floatPrimitiveType, (value) => { value.value = Number.NEGATIVE_INFINITY }, true, Visibility.public, true, "Der \"negative infinity\"-Wert vom Typ float"));
         this.addAttribute(new Attribute("POSITIVE_INFINITY", floatPrimitiveType, (value) => { value.value = Number.POSITIVE_INFINITY }, true, Visibility.public, true, "Der \"positive infinity\"-Wert vom Typ float"));
+        this.staticClass.setupAttributeIndicesRecursive();
 
         this.staticClass.classObject = new RuntimeObject(this.staticClass);
 

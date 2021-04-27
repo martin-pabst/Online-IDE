@@ -13,6 +13,7 @@ export class SystemToolsClass extends Klass {
         super("SystemTools", module, "Klasse mit statischen Methoden für Systemfunktionen, z.B. Löschen der Ausgabe, Registrieren eines Tastaturlisteners usw.");
 
         this.setBaseClass(<Klass>module.typeStore.getType("Object"));
+        this.staticClass.setupAttributeIndicesRecursive();
 
         this.staticClass.classObject = new RuntimeObject(this.staticClass);
 

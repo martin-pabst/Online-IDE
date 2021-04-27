@@ -15,6 +15,8 @@ export class IntegerClass extends Klass {
         this.addAttribute(new Attribute("MAX_VALUE", intPrimitiveType, (value) => { value.value = Number.MAX_SAFE_INTEGER }, true, Visibility.public, true, "Der größte Wert, den eine Variable vom Typ int annehmen kann"));
         this.addAttribute(new Attribute("MIN_VALUE", intPrimitiveType, (value) => { value.value = Number.MIN_SAFE_INTEGER }, true, Visibility.public, true, "Der kleinste Wert, den eine Variable vom Typ int annehmen kann"));
 
+        this.staticClass.setupAttributeIndicesRecursive();
+
         this.staticClass.classObject = new RuntimeObject(this.staticClass);
 
     }

@@ -155,8 +155,18 @@ body .monaco-editor-hover .monaco-tokenized-source {
     font-size: 12pt;
     z-index: 10;
     margin-bottom: 40px;
-    display: block !important; 
+    display: flex;
+    flex-direction: row; 
+    justify-content: space-between;
     margin-left: 20px;
+}
+
+#login-datenschutz {
+    margin-right: 20px;
+}
+
+#login-datenschutz>a {
+    color: lightblue !important;
 }
 
 #login-spinner {

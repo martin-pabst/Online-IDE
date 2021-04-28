@@ -6,12 +6,13 @@ import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { RectangleHelper } from "../graphics/Rectangle.js";
 import { FilledShapeHelper } from "../graphics/FilledShape.js";
+import { GNGFarben } from "./GNGFarben.js";
 
 export class GNGBaseFigurClass extends Klass {
 
     constructor(module: Module, moduleStore: ModuleStore) {
 
-        super("GNGBaseFigur", module, "Der graphischen Elemente in der Graphics'n Games-Bibliothek (Cornelsen-Verlag)");
+        super("GNGBaseFigur", module, "Oberklasse der graphischen Elemente in der Graphics'n Games-Bibliothek (Cornelsen-Verlag)");
 
         // this.setBaseClass(<Klass>module.typeStore.getType("FilledShape"));
 
@@ -77,7 +78,7 @@ export class GNGBaseFigurClass extends Klass {
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
                 let farbe: string = parameters[1].value;
 
-                let color: number = GNGFArben[farbe.toLocaleLowerCase()];
+                let color: number = GNGFarben[farbe.toLocaleLowerCase()];
                 if (color == null) color = 0x000000; // default: schwarz
 
                 if (sh.testdestroyed("FarbeSetzen")) return;
@@ -125,7 +126,7 @@ export class GNGBaseFigurClass extends Klass {
 
                 if (sh.testdestroyed("Entfernen")) return;
 
-                sh.destroy;
+                sh.destroy();
 
             }, false, false, "Schaltet die Sichtbarkeit der Figur ein oder aus.", false));
 

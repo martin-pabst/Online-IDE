@@ -324,6 +324,8 @@ export class WorldHelper {
 
     public scaledTextures: { [name: string]: PIXI.Texture } = {};
 
+    shapes: ShapeHelper[] = [];     // all non-group-shapes (for GNG-Library collision-Functions)
+
     tickerFunction: (t: number) => void;
 
     clearActorLists() {

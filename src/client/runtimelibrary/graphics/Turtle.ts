@@ -6,6 +6,7 @@ import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { FilledShapeHelper } from "./FilledShape.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { polygonBerührtPolygon } from "../../tools/MatheTools.js";
+import { ShapeHelper } from "./Shape.js";
 
 export class TurtleClass extends Klass {
 
@@ -79,6 +80,32 @@ export class TurtleClass extends Klass {
 
             }, false, false, 'Bewirkt, dass sich die Turtle um den angegebenen Winkel (in Grad!) dreht, d.h. ihre Blickrichtung ändert. Ein positiver Winkel bewirkt eine Drehung gegen den Uhrzeigersinn. Diese Methode wirkt sich NICHT auf die bisher gezeichneten Strecken aus. Willst Du alles bisher Gezeichnete inklusive Turtle drehen, so nutze die Methode rotate.', false));
 
+        this.addMethod(new Method("penUp", new Parameterlist([
+        ]), null,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: TurtleHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("penUp")) return;
+
+                sh.penIsDown = false;
+
+            }, false, false, 'Bewirkt, dass die Turtle beim Gehen ab jetzt nicht mehr zeichnet.', false));
+
+        this.addMethod(new Method("penDown", new Parameterlist([
+        ]), null,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: TurtleHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("penDown")) return;
+
+                sh.penIsDown = true;
+
+            }, false, false, 'Bewirkt, dass die Turtle beim Gehen ab jetzt wieder zeichnet.', false));
+
         this.addMethod(new Method("closeAndFill", new Parameterlist([
             { identifier: "closeAndFill", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), null,
@@ -107,7 +134,7 @@ export class TurtleClass extends Klass {
 
                 sh.setShowTurtle(showTurtle);
 
-            }, false, false, 'closeAndFill == true bewirkt, dass das von der Turtlezeichnung umschlossene Gebiet gefüllt wird.', false));
+            }, false, false, 'showTurtle == true bewirkt, dass am Ort der Turtle ein rotes Dreieck gezeichnet wird.', false));
 
         this.addMethod(new Method("copy", new Parameterlist([
         ]), this,
@@ -150,6 +177,10 @@ export class TurtleHelper extends FilledShapeHelper {
 
     initialHitPolygonDirty: boolean = true;
 
+    turtleSize: number = 40;
+
+    penIsDown: boolean = true;
+
     constructor(xStart: number, yStart: number, private showTurtle: boolean,
         interpreter: Interpreter, runtimeObject: RuntimeObject) {
         super(interpreter, runtimeObject);
@@ -161,7 +192,7 @@ export class TurtleHelper extends FilledShapeHelper {
             alpha: 1,
             lineWidth: 1
         });
-        this.calculateCenter;
+        this.calculateCenter();
 
         this.borderColor = 0xffffff;
 
@@ -187,13 +218,13 @@ export class TurtleHelper extends FilledShapeHelper {
 
     }
 
-    calculateCenter(){
+    calculateCenter() {
         let length = this.lineElements.length;
         let lastLineElement = this.lineElements[length - 1];
         this.xSum += lastLineElement.x;
         this.ySum += lastLineElement.y;
-        this.centerXInitial = this.xSum/length;
-        this.centerYInitial = this.ySum/length;
+        this.centerXInitial = this.xSum / length;
+        this.centerYInitial = this.ySum / length;
     }
 
     closeAndFill(closeAndFill: boolean) {
@@ -204,12 +235,14 @@ export class TurtleHelper extends FilledShapeHelper {
         }
     }
 
-    setShowTurtle(show: boolean){
+    setShowTurtle(show: boolean) {
         this.turtle.visible = show;
     }
 
     turn(angle: number) {
         this.angle -= angle / 180 * Math.PI;
+        let lastLineElement: LineElement = this.lineElements[this.lineElements.length - 1];
+        this.drawTurtle(lastLineElement.x, lastLineElement.y, this.angle);
     }
 
     rotate(angleInDegrees: number, cx?: number, cy?: number) {
@@ -238,7 +271,7 @@ export class TurtleHelper extends FilledShapeHelper {
         let newLineElement: LineElement = {
             x: lastLineElement.x + length * Math.cos(this.angle),
             y: lastLineElement.y + length * Math.sin(this.angle),
-            color: this.borderColor,
+            color: this.penIsDown ? this.borderColor : null,
             alpha: this.borderAlpha,
             lineWidth: this.borderWidth
         }
@@ -262,6 +295,24 @@ export class TurtleHelper extends FilledShapeHelper {
 
     }
 
+    moveTo(x: number, y: number) {
+        let newLineElement: LineElement = {
+            x: x,
+            y: y,
+            color: null,
+            alpha: this.borderAlpha,
+            lineWidth: this.borderWidth
+        }
+
+        this.lineElements.push(newLineElement);
+
+        this.hitPolygonDirty = true;
+        this.initialHitPolygonDirty = true;
+        this.calculateCenter();
+        this.drawTurtle(newLineElement.x, newLineElement.y, this.angle);
+    }
+
+
     drawTurtle(x: number, y: number, angle: number): void {
         this.turtle.clear();
         this.turtle.lineStyle(3, 0xff0000, 1, 0.5);
@@ -273,9 +324,9 @@ export class TurtleHelper extends FilledShapeHelper {
         let vxp = -Math.sin(angle);
         let vyp = Math.cos(angle);
 
-        let lengthForward = 20;
-        let lengthBackward = 10;
-        let lengthBackwardP = 10;
+        let lengthForward = this.turtleSize / 2;
+        let lengthBackward = this.turtleSize / 4;
+        let lengthBackwardP = this.turtleSize / 4;
 
         this.turtle.moveTo(x + vx * lengthForward, y + vy * lengthForward);
         this.turtle.lineTo(x - vx * lengthBackward + vxp * lengthBackwardP, y - vy * lengthBackward + vyp * lengthBackwardP);
@@ -329,11 +380,11 @@ export class TurtleHelper extends FilledShapeHelper {
 
     collidesWith(shapeHelper: any) {
 
-        if(shapeHelper instanceof TurtleHelper && shapeHelper.initialHitPolygonDirty){
+        if (shapeHelper instanceof TurtleHelper && shapeHelper.initialHitPolygonDirty) {
             shapeHelper.setupInitialHitPolygon();
         }
 
-        if(this.initialHitPolygonDirty){
+        if (this.initialHitPolygonDirty) {
             this.setupInitialHitPolygon();
         }
 
@@ -358,8 +409,63 @@ export class TurtleHelper extends FilledShapeHelper {
 
     }
 
-    setupInitialHitPolygon(){
-        this.hitPolygonInitial = this.lineElements.map((le) => {return {x: le.x, y: le.y}});
+    setupInitialHitPolygon() {
+        this.hitPolygonInitial = this.lineElements.map((le) => { return { x: le.x, y: le.y } });
     }
+
+    clear() {
+        this.lineElements = [];
+        this.lineElements.push({
+            x: 100,
+            y: 200,
+            color: 0,
+            alpha: 1,
+            lineWidth: 1
+        });
+        this.calculateCenter();
+
+        this.hitPolygonInitial = [];
+
+        this.angle = 0;
+        this.borderColor = 0;
+        this.turtleSize = 40;
+        this.render();
+        this.drawTurtle(100, 200, 0);
+    }
+
+    
+    touchesAtLeastOneFigure(): boolean {
+        let lastLineElement: LineElement = this.lineElements[this.lineElements.length - 1];
+        let x = lastLineElement.x;
+        let y = lastLineElement.y;
+
+        for(let sh of this.worldHelper.shapes){
+            if(sh.containsPoint(x, y) && sh != this){
+                return true;
+            }
+        }
+    }
+
+    touchesColor(farbe: number): boolean {
+        let lastLineElement: LineElement = this.lineElements[this.lineElements.length - 1];
+        let x = lastLineElement.x;
+        let y = lastLineElement.y;
+
+        for(let sh of this.worldHelper.shapes){
+            if(sh.containsPoint(x, y) && sh != this){
+                if(sh instanceof FilledShapeHelper && sh.fillColor == farbe) return true;
+                // if(sh instanceof TurtleHelper) TODO
+            }
+        }
+    }
+
+    touchesShape(shape: ShapeHelper){
+        let lastLineElement: LineElement = this.lineElements[this.lineElements.length - 1];
+        let x = lastLineElement.x;
+        let y = lastLineElement.y;
+        return shape.containsPoint(x, y);
+    }
+
+
 
 }

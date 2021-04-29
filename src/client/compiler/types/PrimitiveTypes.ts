@@ -676,7 +676,9 @@ export class StringPrimitiveType extends Klass {
         this.addMethod(new Method("equals", new Parameterlist([{ identifier: "otherString", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false }]), booleanPrimitiveType,
             (parameters) => { return <string>parameters[0].value == <string>(parameters[1].value); }, false, false, "Gibt genau dann **wahr** zurück, wenn die zwei Zeichenketten übereinstimmen (unter Berücksichtigung von Klein-/Großschreibung)."));
         this.addMethod(new Method("compareTo", new Parameterlist([{ identifier: "otherString", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false }]), intPrimitiveType,
-            (parameters) => { return (<string>(parameters[0].value)).localeCompare(<string>(parameters[1].value)); }, false, false, "Vergleicht den String mit dem übergebenen String. Gibt -1 zurück, falls ersterer im Alphabet vor letzterem steht, +1, falls umgekehrt und 0, falls beide Strings identisch sind."));
+            (parameters) => { return (<string>(parameters[0].value)).localeCompare(<string>(parameters[1].value), 'de', { caseFirst: 'upper' }); }, false, false, "Vergleicht den String mit dem übergebenen String. Gibt -1 zurück, falls ersterer im Alphabet vor letzterem steht, +1, falls umgekehrt und 0, falls beide Strings identisch sind."));
+        this.addMethod(new Method("compareToIgnoreCase", new Parameterlist([{ identifier: "otherString", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false }]), intPrimitiveType,
+            (parameters) => { return (<string>(parameters[0].value)).localeCompare(<string>(parameters[1].value), 'de', { sensitivity: "accent" }); }, false, false, "Vergleicht den String mit dem übergebenen String. Gibt -1 zurück, falls ersterer im Alphabet vor letzterem steht, +1, falls umgekehrt und 0, falls beide Strings identisch sind."));
         this.addMethod(new Method("equalsIgnoreCase", new Parameterlist([{ identifier: "otherString", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false }]), booleanPrimitiveType,
             (parameters) => { return (<string>(parameters[0].value)).toLowerCase() == (<string>(parameters[1].value).toLowerCase()); }, false, false, "Gibt genau dann **wahr** zurück, wenn die zwei Zeichenketten übereinstimmen (**ohne** Berücksichtigung von Klein-/Großschreibung)."));
         this.addMethod(new Method("endsWith", new Parameterlist([{ identifier: "suffix", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false }]), booleanPrimitiveType,
@@ -769,16 +771,20 @@ export class StringPrimitiveType extends Klass {
                 }
 
             case TokenType.lower:
-                return value < (<string>(secondOperand.value));
+                return value.localeCompare(<string>(secondOperand.value), 'de', { caseFirst: 'upper' }) < 0;
+                // return value < (<string>(secondOperand.value));
 
             case TokenType.greater:
-                return value > <string>(secondOperand.value);
+                return value.localeCompare(<string>(secondOperand.value), 'de', { caseFirst: 'upper' }) > 0;
+                // return value > <string>(secondOperand.value);
 
             case TokenType.lowerOrEqual:
-                return value <= <string>(secondOperand.value);
+                return value.localeCompare(<string>(secondOperand.value), 'de', { caseFirst: 'upper' }) <= 0;
+                // return value <= <string>(secondOperand.value);
 
             case TokenType.greaterOrEqual:
-                return value >= <string>(secondOperand.value);
+                return value.localeCompare(<string>(secondOperand.value), 'de', { caseFirst: 'upper' }) >= 0;
+                // return value >= <string>(secondOperand.value);
 
             case TokenType.equal:
                 return value == <string>(secondOperand.value);

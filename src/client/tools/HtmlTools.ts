@@ -217,3 +217,10 @@ export function getSelectedObject($selectDiv: JQuery<HTMLSelectElement>){
     return items.find(item => item.value == selectedValue)?.object;
 
 }
+
+export var mouseDetected: boolean = false;
+export function checkIfMousePresent(){
+    if (matchMedia('(pointer:fine)').matches) {
+        mouseDetected = true;
+    }
+}

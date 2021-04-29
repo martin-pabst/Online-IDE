@@ -675,11 +675,17 @@ body .monaco-editor-hover .monaco-tokenized-source {
     display: none;
 }
 
-.jo_file:hover>.jo_delete {
+.jo_file:hover>.jo_delete, .jo_file>.jo_delete_always {
     display: block;
     margin-top: 2px;
     width: 16px;
     height: 16px;
+}
+
+.jo_settings_button {
+    width: 16px;
+    height: 16px;
+    margin: 2px 2px 0 2px;
 }
 
 .jo_file>.jo_delete:hover, .jo_file>div>.jo_startButton:hover {

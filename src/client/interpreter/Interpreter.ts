@@ -22,6 +22,7 @@ import { GroupHelper } from "../runtimelibrary/graphics/Group.js";
 import { WebSocketRequestKeepAlive } from "../communication/Data.js";
 import { MainEmbedded } from "../embedded/MainEmbedded.js";
 import { ProcessingHelper } from "../runtimelibrary/graphics/Processing.js";
+import { GNGEreignisbehandlung } from "../runtimelibrary/gng/GNGEreignisbehandlung.js";
 
 export enum InterpreterState {
     not_initialized, running, paused, error, done, waitingForInput, waitingForTimersToEnd
@@ -85,6 +86,7 @@ export class Interpreter {
     showProgrampointerUptoStepsPerSecond = 15;
 
     worldHelper: WorldHelper;
+    gngEreignisbehandlung: GNGEreignisbehandlung;
     processingHelper: ProcessingHelper;
 
     keyboardTool: KeyboardTool;
@@ -637,6 +639,7 @@ export class Interpreter {
         this.printManager.clear();
         this.worldHelper?.destroyWorld();
         this.processingHelper?.destroyWorld();
+        this.gngEreignisbehandlung?.detachEvents();
     }
 
     stop(restart: boolean = false) {
@@ -646,6 +649,7 @@ export class Interpreter {
         if (this.worldHelper != null) {
             this.worldHelper.spriteAnimations = [];
         }
+        this.gngEreignisbehandlung?.detachEvents();
 
         setTimeout(() => {
             this.setState(InterpreterState.done);
@@ -870,31 +874,31 @@ export class Interpreter {
             case TokenType.moduloAssignment:
                 value = stack.pop();
                 stack[stackTop - 1].value %= value.value;
-                break; 
+                break;
             case TokenType.ANDAssigment:
                 value = stack.pop();
                 stack[stackTop - 1].value &= value.value;
-                break; 
+                break;
             case TokenType.ORAssigment:
                 value = stack.pop();
                 stack[stackTop - 1].value |= value.value;
-                break; 
+                break;
             case TokenType.XORAssigment:
                 value = stack.pop();
                 stack[stackTop - 1].value ^= value.value;
-                break; 
+                break;
             case TokenType.shiftLeftAssigment:
                 value = stack.pop();
                 stack[stackTop - 1].value <<= value.value;
-                break; 
+                break;
             case TokenType.shiftRightAssigment:
                 value = stack.pop();
                 stack[stackTop - 1].value >>= value.value;
-                break; 
+                break;
             case TokenType.shiftRightUnsignedAssigment:
                 value = stack.pop();
                 stack[stackTop - 1].value >>>= value.value;
-                break; 
+                break;
             case TokenType.binaryOp:
                 let secondOperand = stack.pop();
                 let resultValue =
@@ -1293,6 +1297,8 @@ export class Interpreter {
                 if (this.worldHelper != null) {
                     this.worldHelper.spriteAnimations = [];
                 }
+                this.gngEreignisbehandlung?.detachEvents();
+
 
                 this.main.hideProgramPointerPosition();
 
@@ -1335,7 +1341,7 @@ export class Interpreter {
             case TokenType.addToArray:
                 stackTop -= node.numberOfElementsToAdd;
                 // let values: Value[] = stack.splice(stackTop + 1, node.numberOfElementsToAdd);
-                let values: Value[] = stack.splice(stackTop + 1, node.numberOfElementsToAdd).map(tvo => ({type: tvo.type, value: tvo.value}));                
+                let values: Value[] = stack.splice(stackTop + 1, node.numberOfElementsToAdd).map(tvo => ({ type: tvo.type, value: tvo.value }));
                 stack[stackTop].value = (<any[]>stack[stackTop].value).concat(values);
                 break;
             case TokenType.pushEnumValue:
@@ -1495,6 +1501,7 @@ export class Interpreter {
             if (this.worldHelper != null) {
                 this.worldHelper.clearActorLists();
             }
+            this.gngEreignisbehandlung?.detachEvents();
         }
 
         if (this.runningStates.indexOf(oldState) >= 0 && this.runningStates.indexOf(state) < 0) {

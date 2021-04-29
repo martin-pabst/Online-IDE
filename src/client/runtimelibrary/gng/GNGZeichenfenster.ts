@@ -8,6 +8,7 @@ import { InterpreterState, Interpreter } from "../../interpreter/Interpreter.js"
 import { ShapeHelper } from "../graphics/Shape.js";
 import { WorldHelper } from "../graphics/World.js";
 import { GNGSymbolArtClass } from "./GNGSymbolArt.js";
+import { GNGEreignisbehandlung } from "./GNGEreignisbehandlung.js";
 
 export class GNGZeichenfensterClass extends Klass {
 
@@ -19,7 +20,9 @@ export class GNGZeichenfensterClass extends Klass {
 
         // let groupType = <GroupClass>module.typeStore.getType("Group");
         let aktionsempfaengerType = <GNGZeichenfensterClass>module.typeStore.getType("Aktionsempfaenger");
-        let symbolArtType = <GNGSymbolArtClass>module.typeStore.getType("SymbolArt");
+        // let symbolArtType = <GNGSymbolArtClass>module.typeStore.getType("SymbolArt");
+        let ereignisbehandlungClass: GNGEreignisbehandlung = <GNGEreignisbehandlung>moduleStore.getType("Ereignisbehandlung").type;
+
 
         // this.addAttribute(new Attribute("PI", doublePrimitiveType, (object) => { return Math.PI }, true, Visibility.public, true, "Die Kreiszahl Pi (3.1415...)"));
 
@@ -43,24 +46,9 @@ export class GNGZeichenfensterClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let wh = this.getWorldHelper();
                 let aktionsempfaenger: RuntimeObject = parameters[1].value;
-                let klass = <Klass>aktionsempfaenger.class;
 
-                let methodList = ["Ausführen()", "Taste(char)", "SonderTaste(int)", "Geklickt(int, int, int)"];
-
-                for (let ms of methodList) {
-                    let method: Method = klass.getMethodBySignature(ms);
-
-                    // if (method?.program != null || method?.invoke != null) {
-                    //     wh.aktionsempfaengerList.push({
-                    //         //@ts-ignore
-                    //         methodIdentifier: ms,
-                    //         method: method,
-                    //         runtimeObject: aktionsempfaenger
-                    //     });
-                    // }
-                }
+                ereignisbehandlungClass.registerEvents(aktionsempfaenger);
 
             }, false, true, 'Trägt einen neuen Aktionsempfänger ein.', false));
 
@@ -69,24 +57,23 @@ export class GNGZeichenfensterClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let wh = this.getWorldHelper();
                 let aktionsempfaenger: RuntimeObject = parameters[1].value;
 
-                // wh.aktionsempfaengerList = wh.aktionsempfaengerList.filter(ae => ae.runtimeObject != aktionsempfaenger);
+                ereignisbehandlungClass.unregisterEvents(aktionsempfaenger);
 
             }, false, true, 'Löscht einen Aktionsempfänger aus der Liste.', false));
 
         this.addMethod(new Method("TaktgeberStarten", new Parameterlist([]), voidPrimitiveType,
             (parameters) => {
 
-                this.getWorldHelper().gngTaktgeberEnabled = true;
+                ereignisbehandlungClass.startTimer();
 
             }, false, true, 'Startet den Taktgeber', false));
 
         this.addMethod(new Method("TaktgeberStoppen", new Parameterlist([]), voidPrimitiveType,
             (parameters) => {
 
-                this.getWorldHelper().gngTaktgeberEnabled = false;
+               ereignisbehandlungClass.stopTimer();
 
             }, false, true, 'Stoppt den Taktgeber', false));
 
@@ -95,9 +82,8 @@ export class GNGZeichenfensterClass extends Klass {
         ]), voidPrimitiveType,
             (parameters) => {
 
-                let wh = this.getWorldHelper();
                 let dauer: number = parameters[1].value;
-                wh.gngTaktdauer = dauer;
+                ereignisbehandlungClass.taktdauer = dauer;
 
             }, false, true, 'Setzt die Taktdauer des Zeitgebers in Millisekunden', false));
 

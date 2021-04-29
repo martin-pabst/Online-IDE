@@ -64,7 +64,7 @@ export class NetworkManager {
     sendUpdates(callback?: ()=>void, sendIfNothingIsDirty: boolean = false){
         
         if(this.main.user == null || this.main.user.is_testuser){
-            callback();
+            if(callback != null) callback();
             return;
         } 
 

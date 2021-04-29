@@ -192,15 +192,17 @@ export abstract class DiagramElement {
                     "text-anchor": line.alignment == Alignment.left ? "start" : line.alignment == Alignment.center ? "middle" : "end",
                     "cursor": line.onClick == null ? "" : "pointer"
                 } );
-                line.$element.css("transform", "translate(0cm," + textPosYCm + "cm)");
-                if(line.onClick != null){
-                    line.$element.addClass("clickable");
-                    line.$element.on("mousedown", (event) => {
-                        //@ts-ignore
-                        line.onClick();
-                        event.stopPropagation();
-                    })
-                }
+
+                line.$element.css("transform", "translate(0cm,0cm)");
+                // line.$element.css("transform", "translate(0cm," + textPosYCm + "cm)");
+                // if(line.onClick != null){
+                //     line.$element.addClass("clickable");
+                //     line.$element.on("mousedown", (event) => {
+                //         //@ts-ignore
+                //         line.onClick();
+                //         event.stopPropagation();
+                //     })
+                // }
                 let metrics = this.getTextMetrics(line.$element);
                 line.textHeightCm = metrics.height;
                 line.textWidthCm = metrics.width;
@@ -243,7 +245,26 @@ export abstract class DiagramElement {
                     case Alignment.left: x = textLeft; break;
                     case Alignment.right: x = textRight; break;
                 }
+
+                // Unfortunately we have to wrap Text-Elements in <g> due to a bug in safari,
+                // see 
+                //@ts-ignore
+                let $g = this.createElement("g", $group[0]);
+                $g.append(line.$element);
+                //@ts-ignore
+                line.$element = $g;
+
                 line.$element.css("transform", "translate(" + x + "cm,"+line.yCm + "cm)");
+
+                if(line.onClick != null){
+                    line.$element.addClass("clickable");
+                    line.$element.on("mousedown", (event) => {
+                        //@ts-ignore
+                        line.onClick();
+                        event.stopPropagation();
+                    })
+                }
+
 
             } else {
                 line.$element = <JQuery<SVGLineElement>>this.createElement("line", $group[0], {

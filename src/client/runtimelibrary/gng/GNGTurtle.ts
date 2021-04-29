@@ -376,23 +376,23 @@ export class GNGTurtleClass extends Klass {
 
 
 
-            this.addMethod(new Method("Ausführen", new Parameterlist([]), voidPrimitiveType,
+        this.addMethod(new Method("AktionAusführen", new Parameterlist([]), voidPrimitiveType,
             null,  // no implementation!
             false, false, "Diese Methode wird vom Taktgeber aufgerufen."));
 
-        this.addMethod(new Method("Taste", new Parameterlist([
+        this.addMethod(new Method("TasteGedrückt", new Parameterlist([
             { identifier: "taste", type: charPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), voidPrimitiveType,
             null,  // no implementation!
             false, false, "Wird aufgerufen, wenn eine Taste gedrückt wird."));
 
-        this.addMethod(new Method("SonderTaste", new Parameterlist([
+        this.addMethod(new Method("SonderTasteGedrückt", new Parameterlist([
             { identifier: "taste", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), voidPrimitiveType,
             null,  // no implementation!
             false, false, "Wird aufgerufen, wenn eine Sondertaste gedrückt wird."));
 
-        this.addMethod(new Method("Gecklickt", new Parameterlist([
+        this.addMethod(new Method("MausGecklickt", new Parameterlist([
             { identifier: "x", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "anzahl", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },

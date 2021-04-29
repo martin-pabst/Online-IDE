@@ -58,12 +58,14 @@ export class EmbeddedSlider {
 
         this.$container.append(this.$sliderDiv);
 
-        this.$sliderDiv.on("mousedown", (md: JQuery.MouseDownEvent) => {
+        let mousePointer = window.PointerEvent ? "pointer" : "mouse";
+
+        this.$sliderDiv.on(mousePointer + "down", (md: JQuery.MouseDownEvent) => {
 
             let x = md.clientX;
             let y = md.clientY;
 
-            jQuery(document).on("mousemove.slider", (mm: JQuery.MouseMoveEvent) => {
+            jQuery(document).on(mousePointer + "move.slider", (mm: JQuery.MouseMoveEvent) => {
                 let dx = mm.clientX - x;
                 let dy = mm.clientY - y;
 
@@ -74,9 +76,9 @@ export class EmbeddedSlider {
 
             });
 
-            jQuery(document).on("mouseup.slider", () => {
-                jQuery(document).off("mousemove.slider");
-                jQuery(document).off("mouseup.slider");
+            jQuery(document).on(mousePointer + "up.slider", () => {
+                jQuery(document).off(mousePointer + "move.slider");
+                jQuery(document).off(mousePointer + "up.slider");
             });
 
 

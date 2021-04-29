@@ -30,6 +30,7 @@ import { RepositorySettingsManager } from "../repository/update/RepositorySettin
 import { RepositoryCheckoutManager } from "../repository/update/RepositoryCheckoutManager.js";
 import { WindowStateManager } from "./gui/WindowStateManager.js";
 import { TextPositionWithModule } from "../compiler/types/Types.js";
+import { checkIfMousePresent } from "../tools/HtmlTools.js";
 
 export class Main implements MainBase {
 
@@ -144,6 +145,8 @@ export class Main implements MainBase {
     viewModeController: ViewModeController;
 
     initGUI() {
+
+        checkIfMousePresent();
 
         this.login = new Login(this);
         this.login.initGUI();

@@ -1,4 +1,4 @@
-import { openContextMenu, makeEditable, ContextMenuItem } from "../../tools/HtmlTools.js";
+import { openContextMenu, makeEditable, ContextMenuItem, mouseDetected } from "../../tools/HtmlTools.js";
 import { Helper } from "./Helper.js";
 import { escapeHtml } from "../../tools/StringTools.js";
 
@@ -203,7 +203,8 @@ export class AccordionPanel {
            <div class="jo_additionalButtonHomework"></div>
            <div class="jo_additionalButtonStart"></div>
            <div class="jo_additionalButtonRepository"></div>
-           ${this.withDeleteButton ? '<div class="jo_delete img_delete jo_button jo_active"></div>' : ""}
+           ${this.withDeleteButton ? '<div class="jo_delete img_delete jo_button jo_active' + (false ? " jo_delete_always" : "") +'"></div>' : ""}
+           ${!mouseDetected ? '<div class="jo_settings_button img_ellipsis-dark jo_button jo_active"></div>' : ""}
         </div>`);
 
         if (this.addElementActionCallback != null) {
@@ -226,7 +227,7 @@ export class AccordionPanel {
             }
         });
 
-        element.$htmlFirstLine[0].addEventListener("contextmenu", function (event) {
+        let contextmenuHandler =  function (event) {
 
             let contextMenuItems: ContextMenuItem[] = [];
             if (that.renameCallback != null) {
@@ -264,7 +265,15 @@ export class AccordionPanel {
                 event.preventDefault();
                 openContextMenu(contextMenuItems, event.pageX, event.pageY);
             }
-        }, false);
+        };
+
+        element.$htmlFirstLine[0].addEventListener("contextmenu", contextmenuHandler, false);
+
+        if(!mouseDetected){
+            element.$htmlFirstLine.find('.jo_settings_button').on('click', (e) => {
+                contextmenuHandler(e);
+            });
+        }
 
         if (that.withDeleteButton) {
             element.$htmlFirstLine.find('.jo_delete').on('mousedown', (ev) => {

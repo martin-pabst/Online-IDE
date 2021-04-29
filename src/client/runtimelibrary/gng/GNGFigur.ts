@@ -12,6 +12,7 @@ import { GNGFarben } from "./GNGFarben.js";
 import { PolygonHelper } from "../graphics/Polygon.js";
 import { CircleHelper } from "../graphics/Circle.js";
 import { EllipseHelper } from "../graphics/Ellipse.js";
+import { GNGEreignisbehandlung } from "./GNGEreignisbehandlung.js";
 
 type GNGPoint = {
     x: number,
@@ -30,6 +31,7 @@ export class GNGFigurClass extends Klass {
         let circleClass: Klass = <Klass>moduleStore.getType("Circle").type;
         let ellipseClass: Klass = <Klass>moduleStore.getType("Ellipse").type;
         let rectangleClass: Klass = <Klass>moduleStore.getType("Rectangle").type;
+        let ereignisbehandlungClass: GNGEreignisbehandlung = <GNGEreignisbehandlung>moduleStore.getType("Ereignisbehandlung").type;
 
         // this.addAttribute(new Attribute("PI", doublePrimitiveType, (object) => { return Math.PI }, true, Visibility.public, true, "Die Kreiszahl Pi (3.1415...)"));
 
@@ -53,28 +55,7 @@ export class GNGFigurClass extends Klass {
                 this.drawInitialTriangle(rh, polygonClass, circleClass, interpreter, center);
                 o.intrinsicData["isInitialTriangle"] = true;
 
-                /**
-                 * If current object is of Figur-child-class and has methods Ausführen(), Taste(char), Sondertaste(char) or Geklickt (int, int, int)
-                 * then wire them up:
-                 */
-                let wh = rh.worldHelper;
-                let klass = <Klass>o.class;   // This might be a child class of GTurtle!
-
-                let methodList = ["Taste(char)", "SonderTaste(int)", "Geklickt(int, int, int)"];
-                // let methodList = ["Ausführen()", "Taste(char)", "SonderTaste(int)", "Geklickt(int, int, int)"];
-
-                for (let ms of methodList) {
-                    let method: Method = klass.getMethodBySignature(ms);
-
-                    if (method?.program != null || method?.invoke != null) {
-                        wh.aktionsempfaengerMap[ms].push({
-                            //@ts-ignore
-                            methodIdentifier: ms,
-                            method: method,
-                            runtimeObject: o
-                        });
-                    }
-                }
+                ereignisbehandlungClass.registerEvents(o);
 
 
             }, false, false, 'Instanziert ein neues Figur-Objekt.', true));
@@ -519,23 +500,23 @@ export class GNGFigurClass extends Klass {
             }, false, false, 'Erzeugt ein neues, elliptisches Element einer eigenen Darstellung der Figur.', false));
 
 
-        this.addMethod(new Method("Ausführen", new Parameterlist([]), voidPrimitiveType,
+        this.addMethod(new Method("AktionAusführen", new Parameterlist([]), voidPrimitiveType,
             null,  // no implementation!
             false, false, "Diese Methode wird vom Taktgeber aufgerufen."));
 
-        this.addMethod(new Method("Taste", new Parameterlist([
+        this.addMethod(new Method("TasteGedrückt", new Parameterlist([
             { identifier: "taste", type: charPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), voidPrimitiveType,
             null,  // no implementation!
             false, false, "Wird aufgerufen, wenn eine Taste gedrückt wird."));
 
-        this.addMethod(new Method("SonderTaste", new Parameterlist([
+        this.addMethod(new Method("SonderTasteGedrückt", new Parameterlist([
             { identifier: "taste", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), voidPrimitiveType,
             null,  // no implementation!
             false, false, "Wird aufgerufen, wenn eine Sondertaste gedrückt wird."));
 
-        this.addMethod(new Method("Gecklickt", new Parameterlist([
+        this.addMethod(new Method("MausGecklickt", new Parameterlist([
             { identifier: "x", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "anzahl", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },

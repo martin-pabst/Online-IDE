@@ -16,6 +16,10 @@ svgns|text.clickable:hover {
     fill:#4020ff !important;
 }
 
+svgns|g.clickable:hover>text {
+    fill:#4020ff !important;
+}
+
 svgns|rect.dragging {
     fill: #eceba1 !important
 }

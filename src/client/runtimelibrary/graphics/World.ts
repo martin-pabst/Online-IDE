@@ -284,12 +284,6 @@ export type ActorData = {
     method: Method
 }
 
-export type AktionsempfaengerData = {
-    methodIdentifier: "Ausführen()" | "Taste(char)" | "SonderTaste(int)" | "Geklickt(int, int, int)",
-    method: Method,
-    runtimeObject: RuntimeObject
-}
-
 export class WorldHelper {
 
     $containerOuter: JQuery<HTMLElement>;
@@ -319,15 +313,6 @@ export class WorldHelper {
 
     public scaledTextures: { [name: string]: PIXI.Texture } = {};
 
-    // For gng library (Cornelsen-Verlag):
-    aktionsempfaengerMap: {[aktion: string]: AktionsempfaengerData[]} = {
-        "Taste(char)": [],
-        "SonderTaste(int)": [],
-        "Geklickt(int, int, int)": []
-    };
-    gngTaktgeberEnabled: boolean = false;
-    gngTaktdauer: number = 300; 
-    gngRemainingTime: number = 0;
 
     shapes: ShapeHelper[] = [];     // all non-group-shapes (for GNG-Library collision-Functions)
 
@@ -477,11 +462,9 @@ export class WorldHelper {
                 }
 
                 if(listenerType == "mousedown"){
-                    let aeList = this.aktionsempfaengerMap["Geklickt(int, int, int)"];
-                    if(aeList.length > 0){
-                        for(let ae of aeList){
-                            this.gngInvokeMouseListener(ae, x, y);
-                        }                        
+                    let gngEreignisbehandlung = this.interpreter.gngEreignisbehandlung;
+                    if(gngEreignisbehandlung != null){
+                        gngEreignisbehandlung.handleMouseClickedEvent(x, y);
                     }
                 }
 
@@ -892,41 +875,6 @@ export class WorldHelper {
             this.interpreter.runTimer(method, stackElements, callback, false);
         } else if (invoke != null) {
             invoke([]);
-        }
-
-    }
-
-    gngInvokeMouseListener(ae: AktionsempfaengerData, x: number, y: number, callback?: () => void) {
-
-        let method = ae.method;
-        let program = method.program;
-        let invoke = method.invoke;
-
-        let rto = ae.runtimeObject;
-
-        let stackElements: Value[] = [
-            {
-                type: rto.class,
-                value: rto
-            },
-            {
-                type: intPrimitiveType,
-                value: Math.round(x)
-            },
-            {
-                type: intPrimitiveType,
-                value: Math.round(y)
-            },
-            {
-                type: intPrimitiveType,
-                value: 1  // Anzahl
-            }
-        ];
-
-        if (program != null) {
-            this.interpreter.runTimer(method, stackElements, callback, false);
-        } else if (invoke != null) {
-            invoke(stackElements);
         }
 
     }

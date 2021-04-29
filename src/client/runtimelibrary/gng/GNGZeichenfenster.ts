@@ -52,14 +52,14 @@ export class GNGZeichenfensterClass extends Klass {
                 for (let ms of methodList) {
                     let method: Method = klass.getMethodBySignature(ms);
 
-                    if (method?.program != null || method?.invoke != null) {
-                        wh.aktionsempfaengerList.push({
-                            //@ts-ignore
-                            methodIdentifier: ms,
-                            method: method,
-                            runtimeObject: aktionsempfaenger
-                        });
-                    }
+                    // if (method?.program != null || method?.invoke != null) {
+                    //     wh.aktionsempfaengerList.push({
+                    //         //@ts-ignore
+                    //         methodIdentifier: ms,
+                    //         method: method,
+                    //         runtimeObject: aktionsempfaenger
+                    //     });
+                    // }
                 }
 
             }, false, true, 'Trägt einen neuen Aktionsempfänger ein.', false));
@@ -72,7 +72,7 @@ export class GNGZeichenfensterClass extends Klass {
                 let wh = this.getWorldHelper();
                 let aktionsempfaenger: RuntimeObject = parameters[1].value;
 
-                wh.aktionsempfaengerList = wh.aktionsempfaengerList.filter(ae => ae.runtimeObject != aktionsempfaenger);
+                // wh.aktionsempfaengerList = wh.aktionsempfaengerList.filter(ae => ae.runtimeObject != aktionsempfaenger);
 
             }, false, true, 'Löscht einen Aktionsempfänger aus der Liste.', false));
 

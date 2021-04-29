@@ -60,13 +60,14 @@ export class GNGFigurClass extends Klass {
                 let wh = rh.worldHelper;
                 let klass = <Klass>o.class;   // This might be a child class of GTurtle!
 
-                let methodList = ["Ausführen()", "Taste(char)", "SonderTaste(int)", "Geklickt(int, int, int)"];
+                let methodList = ["Taste(char)", "SonderTaste(int)", "Geklickt(int, int, int)"];
+                // let methodList = ["Ausführen()", "Taste(char)", "SonderTaste(int)", "Geklickt(int, int, int)"];
 
                 for (let ms of methodList) {
                     let method: Method = klass.getMethodBySignature(ms);
 
                     if (method?.program != null || method?.invoke != null) {
-                        wh.aktionsempfaengerList.push({
+                        wh.aktionsempfaengerMap[ms].push({
                             //@ts-ignore
                             methodIdentifier: ms,
                             method: method,

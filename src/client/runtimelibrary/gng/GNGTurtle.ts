@@ -44,14 +44,14 @@ export class GNGTurtleClass extends Klass {
                 for (let ms of methodList) {
                     let method: Method = klass.getMethodBySignature(ms);
 
-                    if (method?.program != null || method?.invoke != null) {
-                        wh.aktionsempfaengerList.push({
-                            //@ts-ignore
-                            methodIdentifier: ms,
-                            method: method,
-                            runtimeObject: o
-                        });
-                    }
+                    // if (method?.program != null || method?.invoke != null) {
+                    //     wh.aktionsempfaengerList.push({
+                    //         //@ts-ignore
+                    //         methodIdentifier: ms,
+                    //         method: method,
+                    //         runtimeObject: o
+                    //     });
+                    // }
                 }
 
 

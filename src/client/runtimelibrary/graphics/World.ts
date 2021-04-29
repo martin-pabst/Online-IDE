@@ -303,11 +303,6 @@ export class WorldHelper {
     keyDownActors: ActorData[] = [];
     actorHelpersToDestroy: ActorHelper[] = [];
 
-    aktionsempfaengerList: AktionsempfaengerData[] = [];
-    gngTaktgeberEnabled: boolean = false;
-    gngTaktdauer: number = 300; 
-    gngLastTakt: number = 0;
-
     mouseListenerShapes: MouseListenerShapeData[] = [];
     mouseListeners: MouseListenerData[] = [];
 
@@ -323,6 +318,16 @@ export class WorldHelper {
     $coordinateDiv: JQuery<HTMLElement>;
 
     public scaledTextures: { [name: string]: PIXI.Texture } = {};
+
+    // For gng library (Cornelsen-Verlag):
+    aktionsempfaengerMap: {[aktion: string]: AktionsempfaengerData[]} = {
+        "Taste(char)": [],
+        "SonderTaste(int)": [],
+        "Geklickt(int, int, int)": []
+    };
+    gngTaktgeberEnabled: boolean = false;
+    gngTaktdauer: number = 300; 
+    gngRemainingTime: number = 0;
 
     shapes: ShapeHelper[] = [];     // all non-group-shapes (for GNG-Library collision-Functions)
 
@@ -468,6 +473,15 @@ export class WorldHelper {
                 for (let listener of this.mouseListeners) {
                     if (listener.types[listenerType] != null) {
                         this.invokeMouseListener(listener, listenerType, x, y, e.button);
+                    }
+                }
+
+                if(listenerType == "mousedown"){
+                    let aeList = this.aktionsempfaengerMap["Geklickt(int, int, int)"];
+                    if(aeList.length > 0){
+                        for(let ae of aeList){
+                            this.gngInvokeMouseListener(ae, x, y);
+                        }                        
                     }
                 }
 
@@ -878,6 +892,41 @@ export class WorldHelper {
             this.interpreter.runTimer(method, stackElements, callback, false);
         } else if (invoke != null) {
             invoke([]);
+        }
+
+    }
+
+    gngInvokeMouseListener(ae: AktionsempfaengerData, x: number, y: number, callback?: () => void) {
+
+        let method = ae.method;
+        let program = method.program;
+        let invoke = method.invoke;
+
+        let rto = ae.runtimeObject;
+
+        let stackElements: Value[] = [
+            {
+                type: rto.class,
+                value: rto
+            },
+            {
+                type: intPrimitiveType,
+                value: Math.round(x)
+            },
+            {
+                type: intPrimitiveType,
+                value: Math.round(y)
+            },
+            {
+                type: intPrimitiveType,
+                value: 1  // Anzahl
+            }
+        ];
+
+        if (program != null) {
+            this.interpreter.runTimer(method, stackElements, callback, false);
+        } else if (invoke != null) {
+            invoke(stackElements);
         }
 
     }

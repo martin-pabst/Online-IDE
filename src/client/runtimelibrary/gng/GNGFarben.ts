@@ -1,4 +1,4 @@
-var GNGFArben: {[identifier: string]: number} = {
+export var GNGFarben: {[identifier: string]: number} = {
     "weiß": 0xffffff,
     "weiss": 0xffffff,
     "rot": 0xff0000,

@@ -2457,12 +2457,25 @@ export class CodeGenerator {
 
         this.pushUsagePosition(node.position, method);
 
+        let stackframeDelta = 0;
+        if (method.hasEllipsis()) {
+            let ellipsisParameterCount = parameterTypes.length - method.getParameterCount() + 1; // last parameter and subsequent ones
+            stackframeDelta = - (ellipsisParameterCount - 1);
+            this.pushStatements({
+                type: TokenType.makeEllipsisArray,
+                position: node.operands[method.getParameterCount() - 1].position,
+                parameterCount: ellipsisParameterCount,
+                stepFinished: false,
+                arrayType: method.getParameter(method.getParameterCount() - 1).type
+            })
+        }
+
         this.pushStatements({
             type: TokenType.callMethod,
             method: method,
             isSuperCall: true,
             position: node.position,
-            stackframeBegin: -(parameterTypes.length + 1) // this-object followed by parameters
+            stackframeBegin: -(parameterTypes.length + 1 + stackframeDelta) // this-object followed by parameters
         });
         // Pabst, 21.10.2020:
         // super method is constructor => returns nothing even iv method.getReturnType() is class object
@@ -2879,7 +2892,7 @@ export class CodeGenerator {
                 method: method,
                 position: node.position,
                 stepFinished: true,
-                stackframeBegin: -(parameterTypes.length + 1) // this-object followed by parameters
+                stackframeBegin: -(parameterTypes.length + 1 + stackframeDelta) // this-object followed by parameters
             });
 
         } else {

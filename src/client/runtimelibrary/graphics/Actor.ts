@@ -213,6 +213,9 @@ export class ActorHelper {
             worldHelper = new WorldHelper(800, 600, interpreter.moduleStore.getModule("Base Module"), w);
             // worldHelper = new WorldHelper(800, 600, interpreter.main.currentWorkspace.moduleStore.getModule("Base Module"), w);
             w.intrinsicData["World"] = worldHelper;
+            if(runtimeObject.intrinsicData["isGNG"]){
+                worldHelper.setBackgroundColor("#e6e6e6");
+            }
         }
         this.worldHelper = worldHelper;
     }

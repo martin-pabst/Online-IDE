@@ -63,8 +63,8 @@ import { WebSocketClass } from "../../runtimelibrary/network/WebSocket.js";
 import { WebSocketClientClass } from "../../runtimelibrary/network/WebSocketClient.js";
 import { ProcessingClass } from "../../runtimelibrary/graphics/Processing.js";
 import { TurtleClass } from "../../runtimelibrary/graphics/Turtle.js";
-import { GNGZeichenfensterClass } from "../../runtimelibrary/gng/Zeichenfenster.js";
-import { GNGRechteckClass } from "../../runtimelibrary/gng/Rechteck.js";
+import { GNGZeichenfensterClass } from "../../runtimelibrary/gng/GNGZeichenfenster.js";
+import { GNGRechteckClass } from "../../runtimelibrary/gng/GNGRechteck.js";
 import { GNGBaseFigurClass } from "../../runtimelibrary/gng/GNGBaseFigur.js";
 import { GNGAktionsempfaengerInterface } from "../../runtimelibrary/gng/GNGAktionsempfaenger.js";
 

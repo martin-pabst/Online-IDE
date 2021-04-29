@@ -69,7 +69,7 @@ export class ShapeClass extends Klass {
 
             }, false, Visibility.protected, true, "Y-Koordinate des Diagonalenschnittpunkts der BoundingBox des Objekts"));
 
-            this.setupAttributeIndicesRecursive();
+        this.setupAttributeIndicesRecursive();
 
         // this.addAttribute(new Attribute("transformation", matrixType,
         //     (value) => {
@@ -272,7 +272,7 @@ export class ShapeClass extends Klass {
 
                 if (sh.testdestroyed("collidesWith")) return;
 
-                if(sh1.isDestroyed){
+                if (sh1.isDestroyed) {
                     sh.worldHelper.interpreter.throwException("Die der Methode collidesWith als Parameter übergebene Figur ist bereits zerstört.");
                     return;
                 }
@@ -553,25 +553,31 @@ export abstract class ShapeHelper extends ActorHelper {
             }
         }
 
+        // if !(this instanceof GroupHelper)
+        if (!this["shapes"]) {
+            this.worldHelper.shapes.push(this);
+        }
+
+
     }
 
     setHitPolygonDirty(dirty: boolean) {
         this.hitPolygonDirty = dirty;
     }
 
-    bringOnePlaneFurtherToFront(){
+    bringOnePlaneFurtherToFront() {
         let container: PIXI.Container = this.displayObject.parent;
         let highestIndex = container.children.length - 1;
         let index = container.getChildIndex(this.displayObject);
-        if( index < highestIndex){
+        if (index < highestIndex) {
             container.setChildIndex(this.displayObject, index + 1);
         }
     }
 
-    bringOnePlaneFurtherToBack(){
+    bringOnePlaneFurtherToBack() {
         let container: PIXI.Container = this.displayObject.parent;
         let index = container.getChildIndex(this.displayObject);
-        if( index > 0){
+        if (index > 0) {
             container.setChildIndex(this.displayObject, index - 1);
         }
     }
@@ -621,7 +627,7 @@ export abstract class ShapeHelper extends ActorHelper {
     collidesWith(shapeHelper: ShapeHelper) {
 
         // if(!(this instanceof TurtleHelper) && (shapeHelper instanceof TurtleHelper)){
-        if(!(this["lineElements"] != null) && (shapeHelper["lineElements"] != null)){
+        if (!(this["lineElements"] != null) && (shapeHelper["lineElements"] != null)) {
             return shapeHelper.collidesWith(this);
         }
 
@@ -691,7 +697,7 @@ export abstract class ShapeHelper extends ActorHelper {
     }
 
     rotate(angleInDeg: number, cX?: number, cY?: number) {
-        
+
         this.displayObject.updateTransform();
         if (cX == null) {
             let p = new PIXI.Point(this.centerXInitial, this.centerYInitial);
@@ -752,7 +758,7 @@ export abstract class ShapeHelper extends ActorHelper {
         this.worldHelper.stage.localTransform.applyInverse(p, p);
         return p.x;
     }
-    
+
     public getCenterY(): number {
         let p = new PIXI.Point(this.centerXInitial, this.centerYInitial);
         this.displayObject.updateTransform();
@@ -768,6 +774,12 @@ export abstract class ShapeHelper extends ActorHelper {
         if (this.belongsToGroup != null) {
             this.belongsToGroup.remove(this.runtimeObject);
         }
+        // if !(this instanceof GroupHelper)
+        if (!this["shapes"]) {
+            let index = this.worldHelper.shapes.indexOf(this);
+            this.worldHelper.shapes.splice(index, 1);
+        }
+
     }
 
     getCollidingShapes(groupHelper: GroupHelper, shapeType: Type): any {

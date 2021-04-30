@@ -444,7 +444,13 @@ export class WorldHelper {
 
 
         for (let listenerType of ["mouseup", "mousedown", "mousemove", "mouseenter", "mouseleave"]) {
-            this.$containerInner.on(listenerType, (e) => {
+
+            let eventType = listenerType;
+            if(window.PointerEvent){
+                eventType = eventType.replace('mouse', 'pointer');
+            }
+
+            this.$containerInner.on(eventType, (e) => {
                 let x = width * e.offsetX / this.$containerInner.width();
                 let y = height * e.offsetY / this.$containerInner.height();
 
@@ -473,7 +479,9 @@ export class WorldHelper {
 
         let $coordinateDiv = this.$coordinateDiv;
 
-        this.$containerInner.on("mousemove", (e) => {
+        let mousePointer = window.PointerEvent ? "pointer" : "mouse";
+
+        this.$containerInner.on(mousePointer + "move", (e) => {
             let x = width * e.offsetX / this.$containerInner.width();
             let y = height * e.offsetY / this.$containerInner.height();
 
@@ -484,11 +492,11 @@ export class WorldHelper {
             $coordinateDiv.text(`(${x}/${y})`);
         });
 
-        this.$containerInner.on("mouseenter", (e) => {
+        this.$containerInner.on(mousePointer + "enter", (e) => {
             $coordinateDiv.show();
         });
 
-        this.$containerInner.on("mouseleave", (e) => {
+        this.$containerInner.on(mousePointer + "leave", (e) => {
             $coordinateDiv.hide();
         });
 

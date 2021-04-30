@@ -32,32 +32,34 @@ export class ZoomControl {
         that.overallHeight = convertPxToNumber($zoomcontrolOuter.css('height'));
         that.gripHeight = convertPxToNumber(that.$grip.css('height'));
         that.yMax = that.overallHeight - that.gripHeight;
-        
-        $zoomcontrolBar.on('mousedown', (e) => {
+
+        let mousePointer = window.PointerEvent ? "pointer" : "mouse";
+
+        $zoomcontrolBar.on(mousePointer + 'down', (e) => {
 
             let y = e.pageY - $zoomcontrolOuter.offset().top - 4;
             that.setZoom(y);
             that.$grip.css('top', y + 'px');
             //@ts-ignore
-            that.$grip.trigger('mousedown', [e.clientY]);
+            that.$grip.trigger(mousePointer + 'down', [e.clientY]);
 
         });
         
         
-        this.$grip.on('mousedown', (e, y) => {
+        this.$grip.on(mousePointer + 'down', (e, y) => {
             if(y == null) y = e.clientY;
             mousedownY = y;
             oldPosition = that.position;
             this.$zoomcontrolDisplay.show();
 
-            jQuery(document).on('mousemove.zoomcontrol', (e)=>{
+            jQuery(document).on(mousePointer + 'move.zoomcontrol', (e)=>{
                 let deltaY = e.clientY - mousedownY;
                 that.setZoom(oldPosition + deltaY);
             });
 
-            jQuery(document).on('mouseup.zoomcontrol', () => {
-                jQuery(document).off('mouseup.zoomcontrol');
-                jQuery(document).off('mousemove.zoomcontrol');
+            jQuery(document).on(mousePointer + 'up.zoomcontrol', () => {
+                jQuery(document).off(mousePointer + 'up.zoomcontrol');
+                jQuery(document).off(mousePointer + 'move.zoomcontrol');
                 this.$zoomcontrolDisplay.hide();
             });
 
@@ -65,12 +67,12 @@ export class ZoomControl {
 
         });
 
-        $parentElement.on("mouseenter", (e) => {
+        $parentElement.on(mousePointer + "enter", (e) => {
             if(!ZoomControl.preventFading)
             $zoomcontrolOuter.fadeIn();
         });
         
-        $parentElement.on("mouseleave", (e) => {
+        $parentElement.on(mousePointer + "leave", (e) => {
             if(!ZoomControl.preventFading)
             $zoomcontrolOuter.fadeOut();
         });

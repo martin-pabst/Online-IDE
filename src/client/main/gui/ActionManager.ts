@@ -91,7 +91,9 @@ export class ActionManager {
 
             button.attr("title", t);
 
-            button.on('mousedown', () => {
+            let mousePointer = window.PointerEvent ? "pointer" : "mouse";
+
+            button.on(mousePointer + 'down', () => {
                 if(ae.active){
                     action(identifier, null, "mousedown");
                 }

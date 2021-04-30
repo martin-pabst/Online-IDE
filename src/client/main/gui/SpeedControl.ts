@@ -52,7 +52,9 @@ export class SpeedControl {
         that.gripWidth = convertPxToNumber(that.$grip.css('width'));
         that.xMax = that.overallWidth - that.gripWidth;
         
-        that.$outer.on('mousedown', (e) => {
+        let mousePointer = window.PointerEvent ? "pointer" : "mouse";
+        
+        that.$outer.on(mousePointer + 'down', (e) => {
             
             
 
@@ -60,7 +62,7 @@ export class SpeedControl {
             that.setSpeed(x);
             that.$grip.css('left', x + 'px');
             //@ts-ignore
-            that.$grip.trigger('mousedown', [e.clientX]);
+            that.$grip.trigger(mousePointer + 'down', [e.clientX]);
 
             // jQuery('#speedcontrol-display').show();
             // jQuery(document).on('mouseup.speedcontrol1', () => {
@@ -71,21 +73,21 @@ export class SpeedControl {
         });
         
         
-        this.$grip.on('mousedown', (e, x) => {
+        this.$grip.on(mousePointer + 'down', (e, x) => {
             if(x == null) x = e.clientX;
             mousedownX = x;
             oldPosition = that.position;
             jQuery('.joe_controlPanel_top').css("z-index", "1000");
             that.$display.show();
 
-            jQuery(document).on('mousemove.speedcontrol', (e)=>{
+            jQuery(document).on(mousePointer + 'move.speedcontrol', (e)=>{
                 let deltaX = e.clientX - mousedownX;
                 that.setSpeed(oldPosition + deltaX);
             });
 
-            jQuery(document).on('mouseup.speedcontrol', () => {
-                jQuery(document).off('mouseup.speedcontrol');
-                jQuery(document).off('mousemove.speedcontrol');
+            jQuery(document).on(mousePointer + 'up.speedcontrol', () => {
+                jQuery(document).off(mousePointer + 'up.speedcontrol');
+                jQuery(document).off(mousePointer + 'move.speedcontrol');
                 that.$display.hide();
                 jQuery('.joe_controlPanel_top').css("z-index", "0");
             });

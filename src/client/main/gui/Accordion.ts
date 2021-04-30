@@ -92,7 +92,8 @@ export class AccordionPanel {
             this.$buttonNew = jQuery('<div class="jo_button jo_active ' + this.newButtonClass + '" title="' + this.buttonNewTitle + '">');
             this.$captionElement.find('.jo_actions').append(this.$buttonNew);
 
-            this.$buttonNew.on('mousedown', (ev) => {
+            let mousePointer = window.PointerEvent ? "pointer" : "mouse";
+            this.$buttonNew.on(mousePointer + 'down', (ev) => {
 
                 Helper.close();
                 ev.stopPropagation();
@@ -139,8 +140,9 @@ export class AccordionPanel {
 
         let $ce = this.$captionElement;
         let $li = this.$listElement.parent();
+        let mousePointer = window.PointerEvent ? "pointer" : "mouse";
 
-        $ce.on('mousedown', (ev) => {
+        $ce.on(mousePointer + 'down', (ev) => {
             if (ev.button != 0) {
                 return;
             }
@@ -186,13 +188,14 @@ export class AccordionPanel {
         $div.addClass(cssClass);
         $div.html(text);
     }
-
+    
     addAction($element: JQuery<HTMLElement>) {
         this.$captionElement.find('.jo_actions').prepend($element);
     }
-
+    
     renderElement(element: AccordionElement): JQuery<HTMLElement> {
-
+        
+        let mousePointer = window.PointerEvent ? "pointer" : "mouse";
         let that = this;
 
         if (element.iconClass == null) element.iconClass = this.defaultIconClass;
@@ -205,14 +208,13 @@ export class AccordionPanel {
            <div class="jo_additionalButtonRepository"></div>
            ${this.withDeleteButton ? '<div class="jo_delete img_delete jo_button jo_active' + (false ? " jo_delete_always" : "") +'"></div>' : ""}
            ${!mouseDetected ? '<div class="jo_settings_button img_ellipsis-dark jo_button jo_active"></div>' : ""}
-        </div>`);
-
-        if (this.addElementActionCallback != null) {
-            let $elementAction = this.addElementActionCallback(element);
-            element.$htmlFirstLine.append($elementAction);
+           </div>`);
+           
+           if (this.addElementActionCallback != null) {
+               let $elementAction = this.addElementActionCallback(element);
+               element.$htmlFirstLine.append($elementAction);
         }
-
-        element.$htmlFirstLine.on('mousedown', (ev) => {
+        element.$htmlFirstLine.on(mousePointer + 'down', (ev) => {
 
             if (ev.button == 0 && that.selectCallback != null) {
                 that.selectCallback(element.externalElement);
@@ -270,13 +272,13 @@ export class AccordionPanel {
         element.$htmlFirstLine[0].addEventListener("contextmenu", contextmenuHandler, false);
 
         if(!mouseDetected){
-            element.$htmlFirstLine.find('.jo_settings_button').on('click', (e) => {
+            element.$htmlFirstLine.find('.jo_settings_button').on(mousePointer + 'down', (e) => {
                 contextmenuHandler(e);
             });
         }
 
         if (that.withDeleteButton) {
-            element.$htmlFirstLine.find('.jo_delete').on('mousedown', (ev) => {
+            element.$htmlFirstLine.find('.jo_delete').on(mousePointer + 'down', (ev) => {
                 ev.preventDefault();
                 openContextMenu([{
                     caption: "Abbrechen",

@@ -4,6 +4,8 @@ export function makeEditable(elementWithText: JQuery<HTMLElement>,
     elementToReplace: JQuery<HTMLElement>,
     renameDoneCallback: (newContent: string) => void, selectionRange: { start: number, end: number } = null) {
 
+    let mousePointer = window.PointerEvent ? "pointer" : "mouse";
+
     if (elementToReplace == null) {
         elementToReplace = elementWithText;
     }
@@ -20,7 +22,7 @@ export function makeEditable(elementWithText: JQuery<HTMLElement>,
         "box-sizing": "border-box"
     });
     $input.val(elementWithText.text());
-    $input.on("mousedown", (e) => { e.stopPropagation(); })
+    $input.on(mousePointer + "down", (e) => { e.stopPropagation(); })
 
     if (selectionRange != null) {
         (<HTMLInputElement>$input[0]).setSelectionRange(selectionRange.start, selectionRange.end);
@@ -64,7 +66,9 @@ export type ContextMenuItem = {
     subMenu?: ContextMenuItem[]
 };
 
-export function openContextMenu(items: ContextMenuItem[], x: number, y: number):JQuery<HTMLElement> {
+export function openContextMenu(items: ContextMenuItem[], x: number, y: number): JQuery<HTMLElement> {
+
+    let mousePointer = window.PointerEvent ? "pointer" : "mouse";
 
     let $contextMenu = jQuery('<div class="jo_contextmenu"></div>');
 
@@ -73,23 +77,23 @@ export function openContextMenu(items: ContextMenuItem[], x: number, y: number):
 
     for (let mi of items) {
         let caption: string = mi.caption;
-        if(mi.link != null){
+        if (mi.link != null) {
             caption = `<a href="${mi.link}" target="_blank" class="jo_menulink">${mi.caption}</a>`;
         }
-        let $item = jQuery('<div>' + caption + (mi.subMenu != null ? '<span style="float: right"> &nbsp; &nbsp; &gt;</span>' : "") +  '</div>');
+        let $item = jQuery('<div>' + caption + (mi.subMenu != null ? '<span style="float: right"> &nbsp; &nbsp; &gt;</span>' : "") + '</div>');
         if (mi.color != null) {
             $item.css('color', mi.color);
         }
-        if(mi.link == null){
-            $item.on('mousedown.contextmenu', () => {
+        if (mi.link == null) {
+            $item.on(mousePointer + 'down.contextmenu', () => {
                 jQuery('.jo_contextmenu').remove();
-                jQuery(document).off("mousedown.contextmenu");
+                jQuery(document).off(mousePointer + "down.contextmenu");
                 jQuery(document).off("keydown.contextmenu");
                 mi.callback();
             });
         } else {
             let $link = $item.find('a');
-            $link.on("mousedown", (event) => {
+            $link.on(mousePointer + "down", (event) => {
                 event.stopPropagation();
                 setTimeout(() => {
                     $item.hide();
@@ -97,14 +101,14 @@ export function openContextMenu(items: ContextMenuItem[], x: number, y: number):
             })
 
         }
-        
-        $item.on('mousemove.contextmenu', () => {
-            if(mi != parentMenuItem && $openSubMenu != null){
+
+        $item.on(mousePointer + 'move.contextmenu', () => {
+            if (mi != parentMenuItem && $openSubMenu != null) {
                 $openSubMenu.remove();
                 parentMenuItem = null;
                 $openSubMenu = null;
             }
-            if(mi.subMenu != null){
+            if (mi.subMenu != null) {
                 $openSubMenu = openContextMenu(mi.subMenu, $item.offset().left + $item.width(), $item.offset().top);
             }
         });
@@ -112,15 +116,15 @@ export function openContextMenu(items: ContextMenuItem[], x: number, y: number):
         $contextMenu.append($item);
     }
 
-    jQuery(document).on("mousedown.contextmenu", () => {
-        jQuery(document).off("mousedown.contextmenu");
+    jQuery(document).on(mousePointer + "down.contextmenu", () => {
+        jQuery(document).off(mousePointer + "down.contextmenu");
         jQuery(document).off("keydown.contextmenu");
         jQuery('.jo_contextmenu').remove();
     })
-    
+
     jQuery(document).on("keydown.contextmenu", (ev) => {
         if (ev.key == "Escape") {
-            jQuery(document).off("mousedown.contextmenu");
+            jQuery(document).off(mousePointer + "down.contextmenu");
             jQuery(document).off("keydown.contextmenu");
             jQuery('.jo_contextmenu').remove();
         }
@@ -148,7 +152,9 @@ export function makeTabs(tabDiv: JQuery<HTMLElement>) {
     let headings = tabDiv.find('.jo_tabheadings>div').not('.jo_noHeading');
     let tabs = tabDiv.find('.jo_tabs>div');
 
-    headings.on("mousedown", (ev) => {
+    let mousePointer = window.PointerEvent ? "pointer" : "mouse";
+
+    headings.on(mousePointer + "down", (ev) => {
         let target = jQuery(ev.target);
         headings.removeClass('jo_active');
         target.addClass('jo_active');
@@ -166,23 +172,23 @@ export function convertPxToNumber(pxString: string): number {
     return Number.parseInt(pxString);
 }
 
-export function makeDiv(id: string, klass: string = "", text: string = "", css?: {[id: string]: any}): JQuery<HTMLDivElement>{
+export function makeDiv(id: string, klass: string = "", text: string = "", css?: { [id: string]: any }): JQuery<HTMLDivElement> {
 
     let s = "";
-    if(id != null && id != "") s += ` id="${id}"`;
+    if (id != null && id != "") s += ` id="${id}"`;
 
-    if(klass != null && klass != "") s += ` class="${klass}"`; 
+    if (klass != null && klass != "") s += ` class="${klass}"`;
 
     let div = jQuery(`<div${s}></div>`);
 
-    if(css !=  null){
+    if (css != null) {
         div.css(css);
     }
 
-    if(text != null && text != ""){
+    if (text != null && text != "") {
         div.text(text);
     }
-    
+
     return <any>div;
 
 }
@@ -208,7 +214,7 @@ export function setSelectItems($selectElement: JQuery<HTMLSelectElement>, items:
 
 }
 
-export function getSelectedObject($selectDiv: JQuery<HTMLSelectElement>){
+export function getSelectedObject($selectDiv: JQuery<HTMLSelectElement>) {
 
     let items: SelectItem[] = $selectDiv.data('items');
 
@@ -218,9 +224,9 @@ export function getSelectedObject($selectDiv: JQuery<HTMLSelectElement>){
 
 }
 
-export var mouseDetected: boolean = false;
-export function checkIfMousePresent(){
+export var jo_mouseDetected: boolean = false;
+export function checkIfMousePresent() {
     if (matchMedia('(pointer:fine)').matches) {
-        mouseDetected = true;
+        jo_mouseDetected = true;
     }
 }

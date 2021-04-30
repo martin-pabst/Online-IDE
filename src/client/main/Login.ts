@@ -99,6 +99,7 @@ export class Login {
                     // credentials.password = loginRequest.password;
 
                     jQuery('#login').hide();
+                    jQuery('#main').css('visibility', 'visible');
 
                     jQuery('#bitteWartenText').html('Bitte warten ...');
                     jQuery('#bitteWarten').css('display', 'flex');
@@ -208,6 +209,7 @@ export class Login {
 
     private showLoginForm(){
         jQuery('#login').show();
+        jQuery('#main').css('visibility', 'hidden');
         jQuery('#bitteWarten').css('display', 'none');
         jQuery('#login-message').empty();
         this.main.interpreter.setState(InterpreterState.not_initialized);

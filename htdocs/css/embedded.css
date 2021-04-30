@@ -233,6 +233,10 @@
     overflow: auto;
 }
 
+.jo_file {
+    user-select: none;
+}
+
 .jo_file:hover>div>.jo_startButton {
     right: 20px !important; 
 }

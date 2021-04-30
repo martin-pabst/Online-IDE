@@ -274,6 +274,8 @@ body .monaco-editor-hover .monaco-tokenized-source {
     background-color: var(--backgroundDark);
     display: flex;
     flex-direction: row;
+    visibility: hidden;
+    z-index: 2;     /* over #rightdiv */
 }
 
 #code {
@@ -283,6 +285,12 @@ body .monaco-editor-hover .monaco-tokenized-source {
     display: flex;
     flex-direction: column;
     background-color: var(--backgroundDark);
+}
+
+.jo_sliderknob {
+    position: absolute;
+    top: -8px;
+    cursor: move !important;
 }
 
 #slider1 {
@@ -339,6 +347,8 @@ body .monaco-editor-hover .monaco-tokenized-source {
     user-select:none;
     overflow: hidden;
     white-space: nowrap;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .jo_leftpanelcaption>.jo_actions {
@@ -572,6 +582,8 @@ body .monaco-editor-hover .monaco-tokenized-source {
     line-height: 22px;
     overflow: hidden;
     white-space: nowrap;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .jo_file:hover {
@@ -633,7 +645,9 @@ body .monaco-editor-hover .monaco-tokenized-source {
 }
 
 .jo_file>.jo_filename {
-    flex-grow: 1
+    flex-grow: 1;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .jo_file.jo_java.jo_startable>.jo_fileimage:before {
@@ -719,7 +733,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
     padding: 5px 8px;
     min-width: 80px;
     user-select: none;
-    -ms-user-select: none;
+    -webkit-user-select: none;
 }
 
 .jo_contextmenu>div:hover {

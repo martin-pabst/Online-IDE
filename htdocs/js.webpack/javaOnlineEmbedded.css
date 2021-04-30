@@ -274,6 +274,8 @@ body .monaco-editor-hover .monaco-tokenized-source {
     background-color: var(--backgroundDark);
     display: flex;
     flex-direction: row;
+    visibility: hidden;
+    z-index: 2;     /* over #rightdiv */
 }
 
 #code {
@@ -283,6 +285,12 @@ body .monaco-editor-hover .monaco-tokenized-source {
     display: flex;
     flex-direction: column;
     background-color: var(--backgroundDark);
+}
+
+.jo_sliderknob {
+    position: absolute;
+    top: -8px;
+    cursor: move !important;
 }
 
 #slider1 {
@@ -339,6 +347,8 @@ body .monaco-editor-hover .monaco-tokenized-source {
     user-select:none;
     overflow: hidden;
     white-space: nowrap;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .jo_leftpanelcaption>.jo_actions {
@@ -572,6 +582,8 @@ body .monaco-editor-hover .monaco-tokenized-source {
     line-height: 22px;
     overflow: hidden;
     white-space: nowrap;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .jo_file:hover {
@@ -633,7 +645,9 @@ body .monaco-editor-hover .monaco-tokenized-source {
 }
 
 .jo_file>.jo_filename {
-    flex-grow: 1
+    flex-grow: 1;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .jo_file.jo_java.jo_startable>.jo_fileimage:before {
@@ -719,7 +733,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
     padding: 5px 8px;
     min-width: 80px;
     user-select: none;
-    -ms-user-select: none;
+    -webkit-user-select: none;
 }
 
 .jo_contextmenu>div:hover {
@@ -1170,6 +1184,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
     display: flex;
     flex-direction: row;
     margin-bottom: 4px;
+    user-select: none;
 }
 
 .jo_tabheading {
@@ -1177,6 +1192,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
     padding: 0 5px;
     margin: 0 2px;
     user-select: none;
+    -webkit-user-select: none;
 }
 
 .jo_tabheading:hover {
@@ -1992,6 +2008,13 @@ svgns|path.dropdown-triangle:active {
    height: 16px;
    background-repeat: no-repeat;
    background-image: url('data:image/svg+xml,%3C%3Fxml version="1.0" encoding="UTF-8" standalone="no"%3F%3E%3C!-- Created with Inkscape (http://www.inkscape.org/) --%3E%3Csvg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns%23" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns%23" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="15.768902mm" height="15.768902mm" viewBox="0 0 15.768902 15.768902" version="1.1" id="svg8" inkscape:version="0.92.3 (2405546, 2018-03-11)" sodipodi:docname="info-sign.svg"%3E%3Cdefs id="defs2" /%3E%3Csodipodi:namedview id="base" pagecolor="%23ffffff" bordercolor="%23666666" borderopacity="1.0" inkscape:pageopacity="0.0" inkscape:pageshadow="2" inkscape:zoom="7.9195959" inkscape:cx="30.085169" inkscape:cy="28.220315" inkscape:document-units="mm" inkscape:current-layer="layer1" showgrid="false" fit-margin-top="0" fit-margin-left="0" fit-margin-right="0" fit-margin-bottom="0" inkscape:window-width="1280" inkscape:window-height="961" inkscape:window-x="-8" inkscape:window-y="-8" inkscape:window-maximized="1" /%3E%3Cmetadata id="metadata5"%3E%3Crdf:RDF%3E%3Ccc:Work rdf:about=""%3E%3Cdc:format%3Eimage/svg+xml%3C/dc:format%3E%3Cdc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" /%3E%3Cdc:title%3E%3C/dc:title%3E%3C/cc:Work%3E%3C/rdf:RDF%3E%3C/metadata%3E%3Cg inkscape:label="Ebene 1" inkscape:groupmode="layer" id="layer1" transform="translate(-36.883196,-72.760866)"%3E%3Cpath style="fill:%2385bcff;fill-opacity:1;stroke:none;stroke-width:0.26499999;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 52.652098,80.645317 a 7.8844509,7.8844509 0 0 1 -7.884451,7.884451 7.8844509,7.8844509 0 0 1 -7.884451,-7.884451 7.8844509,7.8844509 0 0 1 7.884451,-7.884451 7.8844509,7.8844509 0 0 1 7.884451,7.884451 z" id="path819" inkscape:connector-curvature="0" /%3E%3Cpath style="fill:%23ffffff;fill-opacity:1;stroke:none;stroke-width:0.21221592;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 43.498116,78.774414 h 2.53906 v 7.88445 h -2.53906 z" id="rect824" inkscape:connector-curvature="0" /%3E%3Cpath style="fill:%23ffffff;fill-opacity:1;stroke:none;stroke-width:0.26499999;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 46.23763,76.235359 a 1.4699829,1.6036102 0 0 1 -1.469983,1.60361 1.4699829,1.6036102 0 0 1 -1.469983,-1.60361 1.4699829,1.6036102 0 0 1 1.469983,-1.60361 1.4699829,1.6036102 0 0 1 1.469983,1.60361 z" id="path826" inkscape:connector-curvature="0" /%3E%3C/g%3E%3C/svg%3E%0A');
+}
+
+.img_knob {
+   width: 16px;
+   height: 16px;
+   background-repeat: no-repeat;
+   background-image: url('data:image/svg+xml,%3C%3Fxml version="1.0" encoding="UTF-8" standalone="no"%3F%3E%3Csvg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns%23" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns%23" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="16" height="16" viewBox="0 0 16 16" fill="none" version="1.1" id="svg8" sodipodi:docname="knob.svg" inkscape:version="0.92.3 (2405546, 2018-03-11)"%3E%3Cmetadata id="metadata14"%3E%3Crdf:RDF%3E%3Ccc:Work rdf:about=""%3E%3Cdc:format%3Eimage/svg+xml%3C/dc:format%3E%3Cdc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" /%3E%3Cdc:title%3E%3C/dc:title%3E%3C/cc:Work%3E%3C/rdf:RDF%3E%3C/metadata%3E%3Cdefs id="defs12" /%3E%3Csodipodi:namedview pagecolor="%23ffffff" bordercolor="%23666666" borderopacity="1" objecttolerance="10" gridtolerance="10" guidetolerance="10" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-width="1068" inkscape:window-height="719" id="namedview10" showgrid="true" inkscape:zoom="20.85965" inkscape:cx="9.1157507" inkscape:cy="8.968183" inkscape:window-x="597" inkscape:window-y="228" inkscape:window-maximized="0" inkscape:current-layer="svg8"%3E%3Cinkscape:grid type="xygrid" id="grid4524" /%3E%3C/sodipodi:namedview%3E%3Cpath style="color:%23000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:%23000000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:%23000000;solid-opacity:1;vector-effect:none;fill:%23d4d4d4;fill-opacity:0.79607843;fill-rule:nonzero;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" d="M 8,1 C 6.6156255,1 5.2623957,1.4105825 4.1113281,2.1796875 2.9602425,2.9488044 2.0629901,4.0413062 1.5332031,5.3203125 1.0033931,6.5993041 0.86465209,8.0074569 1.1347656,9.3652344 c 0.270046,1.3577906 0.9371558,2.6050546 1.9160156,3.5839846 0.9789303,0.978861 2.2262305,1.645907 3.5839844,1.916015 1.3577496,0.270038 2.76593,0.131373 4.0449224,-0.398437 1.279006,-0.529787 2.371507,-1.427041 3.140624,-2.578125 C 14.589418,10.737605 15,9.3843746 15,8 15,6.1438431 14.26164,4.3632716 12.949219,3.0507812 11.636729,1.7383605 9.8561569,1 8,1 Z M 8,3 C 9.3264835,3 10.597168,3.5269043 11.535156,4.4648438 12.473097,5.4028338 13,6.6735165 13,8 13,8.9889858 12.707658,9.9550127 12.158203,10.777344 11.608758,11.599659 10.827816,12.240648 9.9140625,12.619141 9.000413,12.997611 7.9954013,13.097219 7.0253906,12.904297 6.0553843,12.711326 5.1642337,12.234497 4.4648438,11.535156 3.7655034,10.835766 3.2886172,9.9445808 3.0957031,8.9746094 2.9027367,8.0046265 3.0023892,6.9995861 3.3808594,6.0859375 3.7593524,5.1721834 4.4003416,4.39124 5.2226562,3.8417969 6.0449891,3.2923415 7.0110143,3 8,3 Z" id="path4" inkscape:connector-curvature="0" /%3E%3Cpath style="fill:%23888888;stroke-width:1;fill-opacity:1" inkscape:connector-curvature="0" id="path4526" d="M 11,7.9999974 C 11,8.5933375 10.82405,9.1733579 10.49441,9.6667078 10.16477,10.160058 9.6962297,10.544568 9.1480397,10.771638 8.5998794,10.998708 7.9966692,11.058108 7.4147291,10.942368 6.8327889,10.826598 6.2982488,10.540878 5.8786687,10.121328 5.4591186,9.7017478 5.1733985,9.1672079 5.0576585,8.5852675 4.9418885,8.0033274 5.0012885,7.4001172 5.2283585,6.8519571 5.4554286,6.303767 5.8399387,5.8352268 6.3332888,5.5055868 6.8266389,5.1759467 7.4066591,4.9999966 7.9999992,4.9999966 c 0.7956603,0 1.5587105,0.3160801 2.1213308,0.8786702 C 10.68392,6.441287 11,7.2043372 11,7.9999974 Z" /%3E%3C/svg%3E%0A');
 }
 
 .img_lightbulb-dark {
@@ -3109,7 +3132,7 @@ svgns|path.dropdown-triangle:active {
     box-sizing: border-box;
     /* background-color: #1e1e1e; */
     background-color: var(--backgroundDark);
-
+    z-index: 2;     /* over #main */
 }
 
 .jo_rightdiv-rightside-container {
@@ -3758,6 +3781,10 @@ svgns|path.dropdown-triangle:active {
     margin-left: 2px;
     height: calc(100% - 30px);
     overflow: auto;
+}
+
+.jo_file {
+    user-select: none;
 }
 
 .jo_file:hover>div>.jo_startButton {

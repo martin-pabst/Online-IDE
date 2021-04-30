@@ -1,4 +1,4 @@
-import { openContextMenu, makeEditable, ContextMenuItem, mouseDetected } from "../../tools/HtmlTools.js";
+import { openContextMenu, makeEditable, ContextMenuItem, jo_mouseDetected } from "../../tools/HtmlTools.js";
 import { Helper } from "./Helper.js";
 import { escapeHtml } from "../../tools/StringTools.js";
 
@@ -207,7 +207,7 @@ export class AccordionPanel {
            <div class="jo_additionalButtonStart"></div>
            <div class="jo_additionalButtonRepository"></div>
            ${this.withDeleteButton ? '<div class="jo_delete img_delete jo_button jo_active' + (false ? " jo_delete_always" : "") +'"></div>' : ""}
-           ${!mouseDetected ? '<div class="jo_settings_button img_ellipsis-dark jo_button jo_active"></div>' : ""}
+           ${!jo_mouseDetected ? '<div class="jo_settings_button img_ellipsis-dark jo_button jo_active"></div>' : ""}
            </div>`);
            
            if (this.addElementActionCallback != null) {
@@ -265,15 +265,34 @@ export class AccordionPanel {
 
             if (contextMenuItems.length > 0) {
                 event.preventDefault();
+                event.stopPropagation();
                 openContextMenu(contextMenuItems, event.pageX, event.pageY);
             }
         };
 
         element.$htmlFirstLine[0].addEventListener("contextmenu", contextmenuHandler, false);
 
-        if(!mouseDetected){
-            element.$htmlFirstLine.find('.jo_settings_button').on(mousePointer + 'down', (e) => {
+        // long press for touch devices
+        let pressTimer: number;
+        if(!jo_mouseDetected){
+            element.$htmlFirstLine.on('pointerup', () => {
+                clearTimeout(pressTimer);
+                return false;
+            }).on('pointerdown', (event) => {
+                pressTimer = window.setTimeout(() => {
+                    contextmenuHandler(event);
+                }, 500);
+                return false;
+            });
+        }
+
+        if(!jo_mouseDetected){
+            element.$htmlFirstLine.find('.jo_settings_button').on('pointerdown', (e) => {
                 contextmenuHandler(e);
+            });
+            element.$htmlFirstLine.find('.jo_settings_button').on('mousedown click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
             });
         }
 

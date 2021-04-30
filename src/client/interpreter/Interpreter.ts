@@ -22,7 +22,7 @@ import { GroupHelper } from "../runtimelibrary/graphics/Group.js";
 import { WebSocketRequestKeepAlive } from "../communication/Data.js";
 import { MainEmbedded } from "../embedded/MainEmbedded.js";
 import { ProcessingHelper } from "../runtimelibrary/graphics/Processing.js";
-import { GNGEreignisbehandlung } from "../runtimelibrary/gng/GNGEreignisbehandlung.js";
+import { GNGEreignisbehandlungHelper } from "../runtimelibrary/gng/GNGEreignisbehandlung.js";
 
 export enum InterpreterState {
     not_initialized, running, paused, error, done, waitingForInput, waitingForTimersToEnd
@@ -86,7 +86,7 @@ export class Interpreter {
     showProgrampointerUptoStepsPerSecond = 15;
 
     worldHelper: WorldHelper;
-    gngEreignisbehandlung: GNGEreignisbehandlung;
+    gngEreignisbehandlungHelper: GNGEreignisbehandlungHelper;
     processingHelper: ProcessingHelper;
 
     keyboardTool: KeyboardTool;
@@ -639,7 +639,8 @@ export class Interpreter {
         this.printManager.clear();
         this.worldHelper?.destroyWorld();
         this.processingHelper?.destroyWorld();
-        this.gngEreignisbehandlung?.detachEvents();
+        this.gngEreignisbehandlungHelper?.detachEvents();
+        this.gngEreignisbehandlungHelper = null;
     }
 
     stop(restart: boolean = false) {
@@ -649,7 +650,8 @@ export class Interpreter {
         if (this.worldHelper != null) {
             this.worldHelper.spriteAnimations = [];
         }
-        this.gngEreignisbehandlung?.detachEvents();
+        this.gngEreignisbehandlungHelper?.detachEvents();
+        this.gngEreignisbehandlungHelper = null;
 
         setTimeout(() => {
             this.setState(InterpreterState.done);
@@ -1273,7 +1275,8 @@ export class Interpreter {
                     break;
                 }
 
-                if ((this.worldHelper != null && this.worldHelper.actActors.length > 0) || this.processingHelper != null) {
+                if ((this.worldHelper != null && this.worldHelper.actActors.length > 0) || this.processingHelper != null 
+                    || (this.gngEreignisbehandlungHelper != null && this.gngEreignisbehandlungHelper.aktionsempfaengerMap["ausführen"].length > 0)) {
                     this.currentProgramPosition--;
                     break
                 }
@@ -1297,8 +1300,8 @@ export class Interpreter {
                 if (this.worldHelper != null) {
                     this.worldHelper.spriteAnimations = [];
                 }
-                this.gngEreignisbehandlung?.detachEvents();
-
+                this.gngEreignisbehandlungHelper?.detachEvents();
+                this.gngEreignisbehandlungHelper = null;
 
                 this.main.hideProgramPointerPosition();
 
@@ -1501,7 +1504,8 @@ export class Interpreter {
             if (this.worldHelper != null) {
                 this.worldHelper.clearActorLists();
             }
-            this.gngEreignisbehandlung?.detachEvents();
+            this.gngEreignisbehandlungHelper?.detachEvents();
+            this.gngEreignisbehandlungHelper = null;
         }
 
         if (this.runningStates.indexOf(oldState) >= 0 && this.runningStates.indexOf(state) < 0) {

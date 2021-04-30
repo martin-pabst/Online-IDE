@@ -468,7 +468,7 @@ export class WorldHelper {
                 }
 
                 if(listenerType == "mousedown"){
-                    let gngEreignisbehandlung = this.interpreter.gngEreignisbehandlung;
+                    let gngEreignisbehandlung = this.interpreter.gngEreignisbehandlungHelper;
                     if(gngEreignisbehandlung != null){
                         gngEreignisbehandlung.handleMouseClickedEvent(x, y);
                     }

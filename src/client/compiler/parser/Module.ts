@@ -67,6 +67,12 @@ import { GNGZeichenfensterClass } from "../../runtimelibrary/gng/GNGZeichenfenst
 import { GNGRechteckClass } from "../../runtimelibrary/gng/GNGRechteck.js";
 import { GNGBaseFigurClass } from "../../runtimelibrary/gng/GNGBaseFigur.js";
 import { GNGAktionsempfaengerInterface } from "../../runtimelibrary/gng/GNGAktionsempfaenger.js";
+import { GNGDreieckClass } from "../../runtimelibrary/gng/GNGDreieck.js";
+import { GNGKreisClass } from "../../runtimelibrary/gng/GNGKreis.js";
+import { GNGTurtleClass } from "../../runtimelibrary/gng/GNGTurtle.js";
+import { GNGTextClass } from "../../runtimelibrary/gng/GNGText.js";
+import { GNGEreignisbehandlung } from "../../runtimelibrary/gng/GNGEreignisbehandlung.js";
+import { GNGFigurClass } from "../../runtimelibrary/gng/GNGFigur.js";
 
 export type File = {
     name: string,
@@ -845,9 +851,15 @@ export class GNGModule extends Module {
         this.clear();
 
         this.typeStore.addType(new GNGAktionsempfaengerInterface(this));
-        this.typeStore.addType(new GNGZeichenfensterClass(this, moduleStore));
         this.typeStore.addType(new GNGBaseFigurClass(this, moduleStore));
+        this.typeStore.addType(new GNGZeichenfensterClass(this, moduleStore));
+        this.typeStore.addType(new GNGEreignisbehandlung(this, moduleStore));
         this.typeStore.addType(new GNGRechteckClass(this, moduleStore));
+        this.typeStore.addType(new GNGDreieckClass(this, moduleStore));
+        this.typeStore.addType(new GNGKreisClass(this, moduleStore));
+        this.typeStore.addType(new GNGTextClass(this, moduleStore));
+        this.typeStore.addType(new GNGTurtleClass(this, moduleStore));
+        this.typeStore.addType(new GNGFigurClass(this, moduleStore));
 
     }
 
@@ -870,7 +882,7 @@ export class ModuleStore {
 
     dirty: boolean = false;
 
-    constructor(private main: MainBase, withBaseModule: boolean, additionalLibraries: string[] = []) {
+    constructor(private main: MainBase, withBaseModule: boolean, additionalLibraries: string[] = ["gng"]) {
         if (withBaseModule) {
             this.baseModule = new BaseModule(main);
             this.putModule(this.baseModule);

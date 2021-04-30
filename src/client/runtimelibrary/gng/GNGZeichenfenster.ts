@@ -1,14 +1,10 @@
 import { Module, ModuleStore } from "../../compiler/parser/Module.js";
-import { Klass, Visibility } from "../../compiler/types/Class.js";
-import { Attribute, Method, Parameterlist, Value } from "../../compiler/types/Types.js";
-import { doublePrimitiveType, floatPrimitiveType, intPrimitiveType, voidPrimitiveType, stringPrimitiveType, booleanPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
+import { Klass } from "../../compiler/types/Class.js";
+import { intPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
+import { Method, Parameterlist } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
-import { ActorHelper } from "../graphics/Actor.js";
-import { InterpreterState, Interpreter } from "../../interpreter/Interpreter.js";
-import { ShapeHelper } from "../graphics/Shape.js";
 import { WorldHelper } from "../graphics/World.js";
-import { GNGSymbolArtClass } from "./GNGSymbolArt.js";
-import { GNGEreignisbehandlung } from "./GNGEreignisbehandlung.js";
+import { GNGEreignisbehandlung, GNGEreignisbehandlungHelper } from "./GNGEreignisbehandlung.js";
 
 export class GNGZeichenfensterClass extends Klass {
 
@@ -18,10 +14,7 @@ export class GNGZeichenfensterClass extends Klass {
 
         this.setBaseClass(<Klass>moduleStore.getType("Object").type);
 
-        // let groupType = <GroupClass>module.typeStore.getType("Group");
         let aktionsempfaengerType = <GNGZeichenfensterClass>module.typeStore.getType("Aktionsempfaenger");
-        // let symbolArtType = <GNGSymbolArtClass>module.typeStore.getType("SymbolArt");
-        let ereignisbehandlungClass: GNGEreignisbehandlung = <GNGEreignisbehandlung>moduleStore.getType("Ereignisbehandlung").type;
 
 
         // this.addAttribute(new Attribute("PI", doublePrimitiveType, (object) => { return Math.PI }, true, Visibility.public, true, "Die Kreiszahl Pi (3.1415...)"));
@@ -48,7 +41,8 @@ export class GNGZeichenfensterClass extends Klass {
 
                 let aktionsempfaenger: RuntimeObject = parameters[1].value;
 
-                ereignisbehandlungClass.registerEvents(aktionsempfaenger);
+                let helper: GNGEreignisbehandlungHelper = GNGEreignisbehandlung.getHelper(module);
+                helper.registerEvents(aktionsempfaenger);
 
             }, false, true, 'Trägt einen neuen Aktionsempfänger ein.', false));
 
@@ -59,21 +53,24 @@ export class GNGZeichenfensterClass extends Klass {
 
                 let aktionsempfaenger: RuntimeObject = parameters[1].value;
 
-                ereignisbehandlungClass.unregisterEvents(aktionsempfaenger);
+                let helper: GNGEreignisbehandlungHelper = GNGEreignisbehandlung.getHelper(module);
+                helper.unregisterEvents(aktionsempfaenger);
 
             }, false, true, 'Löscht einen Aktionsempfänger aus der Liste.', false));
 
         this.addMethod(new Method("TaktgeberStarten", new Parameterlist([]), voidPrimitiveType,
             (parameters) => {
 
-                ereignisbehandlungClass.startTimer();
+                let helper: GNGEreignisbehandlungHelper = GNGEreignisbehandlung.getHelper(module);
+                helper.startTimer();
 
             }, false, true, 'Startet den Taktgeber', false));
 
         this.addMethod(new Method("TaktgeberStoppen", new Parameterlist([]), voidPrimitiveType,
             (parameters) => {
 
-               ereignisbehandlungClass.stopTimer();
+                let helper: GNGEreignisbehandlungHelper = GNGEreignisbehandlung.getHelper(module);
+                helper.stopTimer();
 
             }, false, true, 'Stoppt den Taktgeber', false));
 
@@ -83,7 +80,9 @@ export class GNGZeichenfensterClass extends Klass {
             (parameters) => {
 
                 let dauer: number = parameters[1].value;
-                ereignisbehandlungClass.taktdauer = dauer;
+
+                let helper: GNGEreignisbehandlungHelper = GNGEreignisbehandlung.getHelper(module);
+                helper.taktdauer = dauer;
 
             }, false, true, 'Setzt die Taktdauer des Zeitgebers in Millisekunden', false));
 

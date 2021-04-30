@@ -9,6 +9,7 @@ import { TurtleHelper } from "../graphics/Turtle.js";
 import { FilledShapeHelper } from "../graphics/FilledShape.js";
 import { ShapeHelper } from "../graphics/Shape.js";
 import { GNGFarben } from "./GNGFarben.js";
+import { GNGEreignisbehandlung, GNGEreignisbehandlungHelper } from "./GNGEreignisbehandlung.js";
 
 export class GNGTurtleClass extends Klass {
 
@@ -31,29 +32,8 @@ export class GNGTurtleClass extends Klass {
                 rh.setBorderColor(0);
                 o.intrinsicData["Actor"] = rh;
 
-
-                /**
-                 * If current object is of GTurtle-child-class and has methods Ausführen(), Taste(char), Sondertaste(char) or Geklickt (int, int, int)
-                 * then wire them up:
-                 */
-                let wh = rh.worldHelper;
-                let klass = <Klass>o.class;   // This might be a child class of GTurtle!
-
-                let methodList = ["Ausführen()", "Taste(char)", "SonderTaste(int)", "Geklickt(int, int, int)"];
-
-                for (let ms of methodList) {
-                    let method: Method = klass.getMethodBySignature(ms);
-
-                    // if (method?.program != null || method?.invoke != null) {
-                    //     wh.aktionsempfaengerList.push({
-                    //         //@ts-ignore
-                    //         methodIdentifier: ms,
-                    //         method: method,
-                    //         runtimeObject: o
-                    //     });
-                    // }
-                }
-
+                let helper: GNGEreignisbehandlungHelper = GNGEreignisbehandlung.getHelper(module);
+                helper.registerEvents(o);
 
             }, false, false, 'Instanziert ein neues Turtle-Objekt.', true));
 

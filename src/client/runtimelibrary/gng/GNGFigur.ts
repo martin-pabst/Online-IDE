@@ -12,7 +12,7 @@ import { GNGFarben } from "./GNGFarben.js";
 import { PolygonHelper } from "../graphics/Polygon.js";
 import { CircleHelper } from "../graphics/Circle.js";
 import { EllipseHelper } from "../graphics/Ellipse.js";
-import { GNGEreignisbehandlung } from "./GNGEreignisbehandlung.js";
+import { GNGEreignisbehandlung, GNGEreignisbehandlungHelper } from "./GNGEreignisbehandlung.js";
 
 type GNGPoint = {
     x: number,
@@ -31,7 +31,6 @@ export class GNGFigurClass extends Klass {
         let circleClass: Klass = <Klass>moduleStore.getType("Circle").type;
         let ellipseClass: Klass = <Klass>moduleStore.getType("Ellipse").type;
         let rectangleClass: Klass = <Klass>moduleStore.getType("Rectangle").type;
-        let ereignisbehandlungClass: GNGEreignisbehandlung = <GNGEreignisbehandlung>moduleStore.getType("Ereignisbehandlung").type;
 
         // this.addAttribute(new Attribute("PI", doublePrimitiveType, (object) => { return Math.PI }, true, Visibility.public, true, "Die Kreiszahl Pi (3.1415...)"));
 
@@ -55,7 +54,8 @@ export class GNGFigurClass extends Klass {
                 this.drawInitialTriangle(rh, polygonClass, circleClass, interpreter, center);
                 o.intrinsicData["isInitialTriangle"] = true;
 
-                ereignisbehandlungClass.registerEvents(o);
+                let helper: GNGEreignisbehandlungHelper = GNGEreignisbehandlung.getHelper(module);
+                helper.registerEvents(o);
 
 
             }, false, false, 'Instanziert ein neues Figur-Objekt.', true));

@@ -6,7 +6,7 @@
 
 #rightdiv {
     position: relative;
-    width: 400px;
+    width: 360px;
     height: 100%;
     border-left: 1px solid var(--slider);
     box-sizing: border-box;

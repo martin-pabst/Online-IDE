@@ -13,9 +13,12 @@ export class ViewModeController {
     highContrast: boolean = false;
     editorHasFullWidth: boolean = false;
 
+    rightDivWidth: number;
+    editorWidth: number;
+
     constructor(private $buttonsContainer: JQuery<HTMLElement>, private main: Main) {
 
-        this.$buttonEditorFullscreen = jQuery('<div title="Editor in voller Breite" class="img_whole-window jo_button jo_active" style="padding: 1px; margin-right: 20px"></div>');
+        this.$buttonEditorFullscreen = jQuery('<div title="Editor in voller Breite" class="img_whole-window jo_button jo_active" style="padding: 1px; margin-right: 8px"></div>');
         this.$buttonPresentationMode = jQuery('<div title="Präsentation (Beamer)" class="img_presentation-mode jo_button jo_active" syle="padding: 1px"></div>');
         this.$buttonMonitorMode = jQuery('<div title="Monitor" class="img_monitor-mode jo_button jo_active" style="margin-left: 5px; padding: 1px"></div>');
         $buttonsContainer.append(this.$buttonEditorFullscreen, this.$buttonPresentationMode, this.$buttonMonitorMode);
@@ -49,13 +52,21 @@ export class ViewModeController {
             this.$buttonEditorFullscreen.removeClass('img_whole-window-back');
             this.$buttonEditorFullscreen.addClass('img_whole-window');
             this.$buttonEditorFullscreen.attr('title', 'Editor in voller Breite');
+            jQuery('#rightdiv').css('width', this.rightDivWidth + "px");
+            jQuery('#editor>.monaco-editor').css('width', this.editorWidth + 'px');
+
             jQuery('#rightdiv').show(600);
             jQuery('#leftpanel').show(600);
             jQuery('#controls').show();
+
         } else {
             this.$buttonEditorFullscreen.removeClass('img_whole-window');
             this.$buttonEditorFullscreen.addClass('img_whole-window-back');
             this.$buttonEditorFullscreen.attr('title', 'Editor in normaler Breite');
+            
+            this.rightDivWidth = Number.parseInt(jQuery('#rightdiv').css('width').replace('px', ''));
+            this.editorWidth = Number.parseInt(jQuery('#editor>.monaco-editor').css('width').replace('px', ''));
+
             jQuery('#rightdiv').hide(600);
             jQuery('#leftpanel').hide(600);
             jQuery('#controls').hide();

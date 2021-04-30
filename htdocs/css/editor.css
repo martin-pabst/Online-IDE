@@ -443,7 +443,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
 }
 
 #view-mode {
-    margin-right: 20px !important;
+    margin-right: 8px !important;
 }
 
 #debugpanel>div {

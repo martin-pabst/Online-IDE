@@ -345,7 +345,8 @@ export class MyConsole {
     }
 
     showTab(){
-        this.$consoleTabHeading.trigger("mousedown");
+        let mousePointer = window.PointerEvent ? "pointer" : "mouse";
+        this.$consoleTabHeading.trigger(mousePointer + "down");
     }
 
     writeConsoleEntry(command: string|JQuery<HTMLElement>, stackTop: Value, color: string = null) {

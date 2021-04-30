@@ -1044,7 +1044,7 @@ export class Interpreter {
                     let rt = method.getReturnType();
                     let parameters = stack.splice(parameterBegin);
                     let returnValue = method.invoke(parameters);
-                    if (rt != null) {
+                    if (rt != null && rt.identifier != 'void') {
                         stack.push({
                             value: returnValue,
                             type: rt

@@ -67,14 +67,16 @@ export class BottomDiv {
     showHomeworkTab() {
 
         jQuery('.jo_homeworkTabheading').css('visibility', 'visible');
-        jQuery('.jo_homeworkTabheading').trigger("mousedown");
+        let mousePointer = window.PointerEvent ? "pointer" : "mouse";
+        jQuery('.jo_homeworkTabheading').trigger(mousePointer + "down");
 
     }
 
     hideHomeworkTab() {
 
         jQuery('.jo_homeworkTabheading').css('visibility', 'hidden');
-        jQuery('.jo_tabheadings').children().first().trigger("mousedown");
+        let mousePointer = window.PointerEvent ? "pointer" : "mouse";
+        jQuery('.jo_tabheadings').children().first().trigger(mousePointer + "down");
 
     }
 

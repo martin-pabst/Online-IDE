@@ -177,14 +177,40 @@ export class ShapeClass extends Klass {
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
-                let angleInDeg: number = parameters[1].value;
+                let factor: number = parameters[1].value;
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("scale")) return;
 
-                sh.scale(angleInDeg);
+                sh.scale(factor);
 
             }, false, false, "Streckt das Grafikobjekt um den angegebenen Faktor. Das Zentrum der Streckung ist der 'Mittelpunkt' des Objekts.", false));
+
+        this.addMethod(new Method("mirrorX", new Parameterlist([
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: ShapeHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("mirrorX")) return;
+
+                sh.mirrorXY(-1, 1);
+
+            }, false, false, "Spiegelt das Objekt in X-Richtung.", false));
+
+        this.addMethod(new Method("mirrorY", new Parameterlist([
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: ShapeHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("mirrorX")) return;
+
+                sh.mirrorXY(1, -1);
+
+            }, false, false, "Spiegelt das Objekt in Y-Richtung.", false));
 
         this.addMethod(new Method("isOutsideView", new Parameterlist([
         ]), booleanPrimitiveType,
@@ -721,6 +747,25 @@ export abstract class ShapeHelper extends ActorHelper {
 
         this.angle += angleInDeg;
     }
+
+    mirrorXY(scaleX: number, scaleY: number) {
+        let cX: number, cY: number;
+
+        this.displayObject.updateTransform();
+        let p = new PIXI.Point(this.centerXInitial, this.centerYInitial);
+        this.displayObject.localTransform.apply(p, p);
+        cX = p.x;
+        cY = p.y;
+
+        this.displayObject.localTransform.translate(-cX, -cY);
+        this.displayObject.localTransform.scale(scaleX, scaleY);
+        this.displayObject.localTransform.translate(cX, cY);
+        this.displayObject.transform.onChange();
+
+        this.setHitPolygonDirty(true);
+
+    }
+
 
     scale(factor: number, cX?: number, cY?: number) {
 

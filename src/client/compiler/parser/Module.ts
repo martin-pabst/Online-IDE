@@ -882,7 +882,7 @@ export class ModuleStore {
 
     dirty: boolean = false;
 
-    constructor(private main: MainBase, withBaseModule: boolean, additionalLibraries: string[] = ["gng"]) {
+    constructor(private main: MainBase, withBaseModule: boolean, additionalLibraries: string[] = []) {
         if (withBaseModule) {
             this.baseModule = new BaseModule(main);
             this.putModule(this.baseModule);

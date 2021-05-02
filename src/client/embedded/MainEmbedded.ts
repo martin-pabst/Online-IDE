@@ -466,7 +466,7 @@ export class MainEmbedded implements MainBase {
             ev.stopPropagation();
             openContextMenu([{
                 caption: "Über die Online-IDE ...",
-                link: "https://learnj.de",
+                link: "https://www.online-ide.de",
                 callback: () => {
                     // nothing to do.
                 }}], ev.pageX + 2, ev.pageY + 2);

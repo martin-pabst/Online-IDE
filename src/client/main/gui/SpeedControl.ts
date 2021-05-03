@@ -98,6 +98,29 @@ export class SpeedControl {
 
     }
 
+    setSpeedInStepsPerSecond(stepsPerSecond: number | "max"){
+        let intervalBorders = [1, 10, 100, 1000, 10000, 100000, this.interpreter.maxStepsPerSecond];
+
+        if(stepsPerSecond == "max") stepsPerSecond = this.interpreter.maxStepsPerSecond;
+        stepsPerSecond = Math.min(stepsPerSecond, this.interpreter.maxStepsPerSecond);
+        stepsPerSecond = Math.max(stepsPerSecond, 1);
+
+        for(let i = 0; i < intervalBorders.length - 1; i++){
+            let left = intervalBorders[i];
+            let right = intervalBorders[i+1];
+            if(stepsPerSecond >= left && stepsPerSecond <= right){
+                let gripIntervalLength = this.xMax/(intervalBorders.length - 1);
+                let gripPosition = Math.round(gripIntervalLength * i + gripIntervalLength * (stepsPerSecond - left)/(right - left));
+                this.$grip.css('left', gripPosition + 'px');
+                this.position = gripPosition;
+                break;
+            }
+        }
+
+        this.setInterpreterSpeed(stepsPerSecond);
+
+    }
+
     setSpeed(newPosition: number){
 
         if(newPosition < 0){
@@ -125,21 +148,24 @@ export class SpeedControl {
 
         let speed = intervalMin + (intervalMax - intervalMin) * factorInsideInterval;
 
-        this.interpreter.stepsPerSecond = speed;
-
-        this.interpreter.hideProgrampointerPosition();
-
-        let speedString = "" + Math.ceil(speed);
-        if(speed >= this.interpreter.maxStepsPerSecond - 10){
-            speedString = "Maximale Geschwindigkeit";
-        }
-
-        this.$display.html(speedString + " Schritte/s");
+        this.setInterpreterSpeed(speed);
         
         // console.log( speed + ' steps/s entspricht ' + this.interpreter.timerDelayMs + ' ms zwischen Steps')
 
     }
     
+    setInterpreterSpeed(stepsPerSecond: number){
+        this.interpreter.stepsPerSecond = stepsPerSecond;
+
+        this.interpreter.hideProgrampointerPosition();
+
+        let speedString = "" + Math.ceil(stepsPerSecond);
+        if(stepsPerSecond >= this.interpreter.maxStepsPerSecond - 10){
+            speedString = "Maximale Geschwindigkeit";
+        }
+
+        this.$display.html(speedString + " Schritte/s");
+    }
 
 
 }

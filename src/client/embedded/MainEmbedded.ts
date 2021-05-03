@@ -25,6 +25,7 @@ type JavaOnlineConfig = {
     withConsole?: boolean,
     withErrorList?: boolean,
     withBottomPanel?: boolean,
+    speed?: number | "max",
     id?: string
 }
 
@@ -173,6 +174,8 @@ export class MainEmbedded implements MainBase {
             this.config.withConsole = false;
             this.config.withErrorList = false;
         }
+
+        if(this.config.speed == null) this.config.speed = 9;
 
 
     }
@@ -476,6 +479,7 @@ export class MainEmbedded implements MainBase {
             this.interpreter.initGUI();
             this.editor.editor.layout();
             this.compiler = new Compiler(this);
+            this.interpreter.controlButtons.speedControl.setSpeedInStepsPerSecond(this.config.speed);
             this.startTimer();
         }, 200);
 

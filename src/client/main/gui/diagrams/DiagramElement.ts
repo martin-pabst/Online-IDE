@@ -131,7 +131,8 @@ export abstract class DiagramElement {
                 font: "16px Roboto",
                 "font-family": "sans-serif",
                 fill: "#000",
-                "alignment-baseline":"hanging"
+                "alignment-baseline":"hanging",
+                "dominant-baseline":"hanging"
             });
 
             if(attributes != null) $element.attr(attributes);

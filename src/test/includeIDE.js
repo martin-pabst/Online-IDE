@@ -1,17 +1,32 @@
 
-let base = "https://online-ide.de/";
+let base = "https://learnj.de/javaonline/";
 
-includeJs("lib/monaco-editor/dev/vs/editor/editor.main.js");
-includeJs("lib/monaco-editor/dev/vs/editor/editor.main.nls.de.js");
-includeJs("lib/pixijs/pixi.js");
-includeCss('js.webpack/javaOnlineEmbedded.css');
-includeJs("lib/jquery/jquery-3.3.1.js");
-includeJs("lib/markdownit/markdownit.min.js");
-includeJs("lib/monaco-editor/dev/vs/loader.js");
-includeJs("js/runtimelibrary/graphics/SpriteLibrary.js");
-includeJs("lib/howler/howler.core.min.js");
-includeJs("lib/p5.js/p5.js");
-includeJs("js.webpack/javaOnline-embedded.js", null, "module");
+// includeJs("lib/monaco-editor/dev/vs/editor/editor.main.js");
+// includeJs("lib/monaco-editor/dev/vs/editor/editor.main.nls.de.js");
+includeJs(base + "lib/pixijs/pixi.js");
+includeCss(base + 'js.webpack/javaOnlineEmbedded.css');
+includeJs(base + "lib/jquery/jquery-3.3.1.js");
+includeJs(base + "lib/markdownit/markdownit.min.js");
+includeJs(base + "lib/monaco-editor/dev/vs/loader.js");
+includeJs(base + "js/runtimelibrary/graphics/SpriteLibrary.js");
+includeJs(base + "lib/howler/howler.core.min.js");
+includeJs(base + "lib/p5.js/p5.js");
+
+window.onload = function(){
+    // debugger;
+    // let iframes = window.parent.document.getElementsByTagName('iframe');
+    // for(let i = 0; i < iframes.length; i++){
+    //     let iframe = iframes[i];
+    //     if(iframe.contentWindow == this){
+    //         document.body.innerHTML = iframe.textContent;
+    //     }
+    // }
+
+    // document.body.innerHTML = window.frameElement.textContent;
+    document.body.innerHTML = window.jo_doc;
+    window.javaOnlineDir = "https://learnj.de/javaonline/";
+    includeJs(base + "js.webpack/javaOnline-embedded.js");
+};
 
 // <link rel="preload" href="lib/monaco-editor/dev/vs/editor/editor.main.js" as="script">
 // <link rel="preload" href="lib/monaco-editor/dev/vs/editor/editor.main.nls.de.js" as="script">
@@ -49,7 +64,6 @@ function includeJs(src, callback, type) {
 function includeCss(src) {
     var head = document.getElementsByTagName('head')[0];
     var link = document.createElement('link');
-    link.id = cssId;
     link.rel = 'stylesheet';
     link.type = 'text/css';
     link.href = src;

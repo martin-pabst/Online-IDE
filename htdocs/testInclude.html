@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Test Include</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+
+<body>
+
+    <iframe frameborder="0" srcdoc="<script>window.jo_doc = window.frameElement.textContent;</script><script src='js/test/includeIDE.js'></script>" width="800" height="500">
+        
+        <div class="java-online" style="width: calc(100% - 30px); calc(100% - 30px); margin-left: 5px" data-java-online="{
+            'id': 'abcd'
+        }">
+            <script type="text/plain" title="Test1.java" data-type="java">
+new Test();
+class Test extends Polygon {
+    public Test(){
+        super(true);
+        addPoints(new double[]{10, 10, 300, 10, 150, 200});
+    }
+}
+            </script>
+        </div>
+    </iframe>
+
+
+</body>
+
+</html>

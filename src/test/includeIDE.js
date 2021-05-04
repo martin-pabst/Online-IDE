@@ -24,6 +24,17 @@ window.onload = function(){
 
     // document.body.innerHTML = window.frameElement.textContent;
     document.body.innerHTML = window.jo_doc;
+    htmlElement = document.getElementsByTagName('html')[0];
+    bodyElement = document.getElementsByTagName('body')[0];
+    divElement = document.getElementsByClassName('java-online')[0];
+    htmlElement.style.height = "100%";
+    htmlElement.style.margin = "0";
+    bodyElement.style.height = "100%";
+    bodyElement.style.margin = "0";
+    divElement.style.margin = "0 0 0 10px";
+    divElement.style.width = "calc(100% - 30px)";
+    divElement.style.height = "calc(100% - 30px)";
+
     window.javaOnlineDir = "https://learnj.de/javaonline/";
     includeJs(base + "js.webpack/javaOnline-embedded.js");
 };

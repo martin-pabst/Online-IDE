@@ -157,6 +157,12 @@ export class RepositorySettingsManager {
             let $firstDiv: JQuery<HTMLDivElement>;
             let firstRepInfo: RepositoryInfo;
 
+            if(response.repositories.length == 0){
+                alert('Sie haben noch keine Repositories, und\nkönnen daher keine verwalten.\nTipp: Ein Repository können Sie durch Rechtsklick auf einen Workspace anlegen.');
+                that.exitButtonClicked();
+                return;
+            }
+
             response.repositories.forEach(repInfo => {
                 let $div = makeDiv('', 'updateRepo-repoListItem');
                 let $namediv = makeDiv('', '', repInfo.name);
@@ -192,6 +198,11 @@ export class RepositorySettingsManager {
                 this.selectRepository($firstDiv, firstRepInfo);
             }
 
+        }, (message) => {
+            console.log(message);
+            alert('Sie haben noch keine Repositories, und\nkönnen daher keine verwalten.\nTipp: Ein Repository können Sie durch Rechtsklick auf einen Workspace anlegen.');
+            that.exitButtonClicked();
+            return;
         });
     }
 

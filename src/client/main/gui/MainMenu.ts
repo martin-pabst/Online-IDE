@@ -1,6 +1,7 @@
 import { Main } from "../Main.js";
 import { UserData } from "../../communication/Data.js";
 import { PasswordChanger } from "./UserMenu.js";
+import { ajax } from "../../communication/AjaxHelper.js";
 
 export type Action = (identifier: string) => void;
 
@@ -239,6 +240,17 @@ export class MainMenu {
                         {
                             identifier: "Serverauslastung ...",
                             link: "statistics.html"
+                        },{
+                            identifier:"Shutdown server...",
+                            action: () => {
+                                if(confirm("Server wirklich herunterfahren?")){
+                                    ajax("shutdown", {}, () => {
+                                        alert('Server erfolgreich heruntergefahren.');
+                                    }, (message) => {
+                                        alert(message);
+                                    })
+                                }
+                            }
                         }
             )
         }

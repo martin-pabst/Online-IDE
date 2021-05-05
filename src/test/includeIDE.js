@@ -10,50 +10,44 @@ includeJs(base + "lib/markdownit/markdownit.min.js");
 includeJs(base + "lib/monaco-editor/dev/vs/loader.js");
 includeJs(base + "js/runtimelibrary/graphics/SpriteLibrary.js");
 includeJs(base + "lib/howler/howler.core.min.js");
-includeJs(base + "lib/p5.js/p5.js");
 
 window.onload = function(){
-    // debugger;
-    // let iframes = window.parent.document.getElementsByTagName('iframe');
-    // for(let i = 0; i < iframes.length; i++){
-    //     let iframe = iframes[i];
-    //     if(iframe.contentWindow == this){
-    //         document.body.innerHTML = iframe.textContent;
-    //     }
-    // }
+    
+    let scriptPosition = window.jo_doc.indexOf('<script>');
+    let scripts = window.jo_doc.substr(scriptPosition);
+    let config = window.jo_doc.substr(0, scriptPosition);
+    
+    if(config.indexOf('{') < 0){
+        config = "{}";
+    }
+    
+    let htmlElement = document.getElementsByTagName('html')[0];
+    let bodyElement = document.getElementsByTagName('body')[0];
+    
+    /** @type HTMLDivElement */
+    let divElement = document.createElement('div');
+    divElement.classList.add('java-online');
+    divElement.dataset["java-online"] = config;
+    divElement.style.margin = "0 0 0 10px";
+    divElement.style.width = "calc(100% - 30px)";
+    divElement.style.height = "calc(100% - 30px)";
+    divElement.innerHTML = scripts;
+    
+    bodyElement.appendChild(divElement);
 
-    // document.body.innerHTML = window.frameElement.textContent;
-    document.body.innerHTML = window.jo_doc;
-    htmlElement = document.getElementsByTagName('html')[0];
-    bodyElement = document.getElementsByTagName('body')[0];
-    divElement = document.getElementsByClassName('java-online')[0];
+    // document.body.innerHTML = window.jo_doc;
+    // divElement = document.getElementsByClassName('java-online')[0];
+
+
     htmlElement.style.height = "100%";
     htmlElement.style.margin = "0";
     bodyElement.style.height = "100%";
     bodyElement.style.margin = "0";
-    divElement.style.margin = "0 0 0 10px";
-    divElement.style.width = "calc(100% - 30px)";
-    divElement.style.height = "calc(100% - 30px)";
-
+    
     window.javaOnlineDir = "https://learnj.de/javaonline/";
     includeJs(base + "js.webpack/javaOnline-embedded.js");
+    includeJs(base + "lib/p5.js/p5.js");
 };
-
-// <link rel="preload" href="lib/monaco-editor/dev/vs/editor/editor.main.js" as="script">
-// <link rel="preload" href="lib/monaco-editor/dev/vs/editor/editor.main.nls.de.js" as="script">
-
-// <script src="lib/pixijs/pixi.js"></script>
-
-// <link rel='stylesheet' type='text/css' media='screen' href='js.webpack/javaOnlineEmbedded.css'>
-// <script src="lib/jquery/jquery-3.3.1.js"></script>
-// <script src="lib/markdownit/markdownit.min.js"></script>
-// <script src="lib/monaco-editor/dev/vs/loader.js"></script>
-// <script src="js/runtimelibrary/graphics/SpriteLibrary.js"></script>
-// <script src="lib/howler/howler.core.min.js"></script>
-// <script src="lib/p5.js/p5.js"></script>
-
-// <script type="module" src="js.webpack/javaOnline-embedded.js"></script>
-
 
 function includeJs(src, callback, type) {
     var script = document.createElement('script');

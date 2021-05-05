@@ -13,7 +13,7 @@ includeJs(base + "lib/howler/howler.core.min.js");
 
 window.onload = function(){
     
-    let scriptPosition = window.jo_doc.indexOf('<script>');
+    let scriptPosition = window.jo_doc.indexOf('<script');
     let scripts = window.jo_doc.substr(scriptPosition);
     let config = window.jo_doc.substr(0, scriptPosition);
     
@@ -27,13 +27,14 @@ window.onload = function(){
     /** @type HTMLDivElement */
     let divElement = document.createElement('div');
     divElement.classList.add('java-online');
-    divElement.dataset["java-online"] = config;
-    divElement.style.margin = "0 0 0 10px";
-    divElement.style.width = "calc(100% - 30px)";
-    divElement.style.height = "calc(100% - 30px)";
-    divElement.innerHTML = scripts;
+    divElement.setAttribute("data-java-online", config);
+    divElement.style.margin = "0 0 0 15px";
+    divElement.style.width = "calc(100% - 40px)";
+    divElement.style.height = "calc(100% - 45px)";
+    divElement.style.top = "15px";
     
     bodyElement.appendChild(divElement);
+    divElement.innerHTML = scripts;
 
     // document.body.innerHTML = window.jo_doc;
     // divElement = document.getElementsByClassName('java-online')[0];

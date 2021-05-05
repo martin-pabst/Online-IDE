@@ -11,11 +11,11 @@
 <body>
 
     <iframe frameborder="0" srcdoc="<script>window.jo_doc = window.frameElement.textContent;</script><script src='js/test/includeIDE.js'></script>" width="800" height="500">
-        
-        <div class="java-online" style="width: calc(100% - 30px); calc(100% - 30px); margin-left: 5px" data-java-online="{
-            'id': 'abcd'
-        }">
-            <script type="text/plain" title="Test1.java" data-type="java">
+        {
+            'id': 'abcd',
+            'speed': 10000
+        }
+           <script title="Test1.java">
 new Test();
 class Test extends Polygon {
     public Test(){
@@ -24,7 +24,6 @@ class Test extends Polygon {
     }
 }
             </script>
-        </div>
     </iframe>
 
 

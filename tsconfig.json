@@ -13,7 +13,7 @@
     "strict": false
   },
   "include": [
-    "./src/client/**/*", "./src/test/**/*"
+    "./src/client/**/*"
   ],
   "exclude": [
     "node_modules"

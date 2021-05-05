@@ -272,6 +272,7 @@ export class MyConsole {
                 // this.executeInStepMode(interpreter, program, command);
             // } else {
                 this.executeRapidly(interpreter, program, command);
+                interpreter.showProgramPointerAndVariables();
             // }
 
         });

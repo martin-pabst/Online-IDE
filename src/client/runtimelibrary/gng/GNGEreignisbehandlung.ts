@@ -126,7 +126,22 @@ export class GNGEreignisbehandlungHelper {
         "ArrowLeft": 37,
         "ArrowRight": 39,
         "ArrowUp": 38,
-        "ArrowDown": 40
+        "ArrowDown": 40,
+        "F1": 112,
+        "F2": 113,
+        "F3": 114,
+        "F4": 115,
+        "F5": 116,
+        "F6": 117,
+        "F7": 118,
+        "F8": 119,
+        "F9": 120,
+        "F10": 121,
+        "F11": 122,
+        "F12": 123,
+        "PageUp": 33,
+        "PageDown": 33,
+        "Insert": 155
     }
 
     // For gng library (Cornelsen-Verlag):
@@ -144,6 +159,19 @@ export class GNGEreignisbehandlungHelper {
         }
 
     }
+
+    hasAktionsEmpfaenger(): boolean {
+
+        for(let type of this.aktionsempfaengerTypes){
+            if(this.aktionsempfaengerMap[type].length > 0){
+                return true;
+            }
+        }
+
+        return false;
+
+    }
+
 
     registerEvents(o: RuntimeObject) {
         let klass = <Klass>o.class;   // This might be a child class of Ereignisbehandlung!

@@ -53,6 +53,7 @@ export class AccordionPanel {
     setFixed(fixed: boolean) {
         this.fixed = fixed;
         if (this.fixed) {
+            this.grow();
             this.$captionElement.addClass('jo_fixed');
         } else {
             this.$captionElement.removeClass('jo_fixed');
@@ -85,7 +86,7 @@ export class AccordionPanel {
     renderOuterHtmlElements($accordionDiv: JQuery<HTMLElement>) {
         let that = this;
 
-        this.$captionElement = jQuery(`<div class="jo_leftpanelcaption jo_expanded" id="workspace">
+        this.$captionElement = jQuery(`<div class="jo_leftpanelcaption jo_expanded">
         <span>` + this.caption + `</span><div class="jo_actions"></div></div>`);
 
         if (this.newButtonClass != null) {
@@ -165,6 +166,13 @@ export class AccordionPanel {
         });
 
 
+    }
+
+    grow(){
+        let $li = this.$listElement.parent();
+        let targetGrow = $li.data('grow');
+        $li.css('flex-grow', targetGrow);
+        this.$captionElement.addClass('jo_expanded');
     }
 
     addElement(element: AccordionElement) {

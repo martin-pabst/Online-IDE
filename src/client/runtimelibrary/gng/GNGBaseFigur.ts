@@ -1,7 +1,7 @@
 import { Module, ModuleStore } from "../../compiler/parser/Module.js";
-import { Klass } from "../../compiler/types/Class.js";
-import { doublePrimitiveType, intPrimitiveType, stringPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
-import { Method, Parameterlist } from "../../compiler/types/Types.js";
+import { Klass, Visibility } from "../../compiler/types/Class.js";
+import { booleanPrimitiveType, doublePrimitiveType, intPrimitiveType, stringPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
+import { Attribute, Method, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { RectangleHelper } from "../graphics/Rectangle.js";
@@ -14,9 +14,33 @@ export class GNGBaseFigurClass extends Klass {
 
         super("GNGBaseFigur", module, "Oberklasse der graphischen Elemente in der Graphics'n Games-Bibliothek (Cornelsen-Verlag)");
 
-        // this.setBaseClass(<Klass>module.typeStore.getType("FilledShape"));
+        this.addAttribute(new Attribute("farbe", stringPrimitiveType, (value: Value) => { 
+            let farbe = value.object.intrinsicData["Farbe"];
+            value.value = farbe == null ? "schwarz" : farbe;
+        }, false, Visibility.protected, false, "Farbe des Grafikobjekts"));
 
-        // this.addAttribute(new Attribute("PI", doublePrimitiveType, (object) => { return Math.PI }, true, Visibility.public, true, "Die Kreiszahl Pi (3.1415...)"));
+        this.addAttribute(new Attribute("x", intPrimitiveType, (value: Value) => { 
+            let sh = value.object.intrinsicData["Actor"];
+            value.value = Math.round(sh.getCenterX()); 
+        }, false, Visibility.protected, false, "x-Position des Grafikobjekts"));
+        this.addAttribute(new Attribute("y", intPrimitiveType, (value: Value) => { 
+            let sh = value.object.intrinsicData["Actor"];
+            value.value = Math.round(sh.getCenterY()); 
+        }, false, Visibility.protected, false, "y-Position des Grafikobjekts"));
+
+        this.addAttribute(new Attribute("winkel", intPrimitiveType, (value: Value) => { 
+            value.value = value.object.intrinsicData["Actor"].angle 
+        }, false, Visibility.protected, false, "Blickrichtung des Grafikobjekts in Grad"));
+
+        this.addAttribute(new Attribute("größe", intPrimitiveType, (value: Value) => { 
+            value.value = Math.round(value.object.intrinsicData["Actor"].scaleFactor*100) 
+        }, false, Visibility.protected, false, "Größe des Grafikobjekts (100 entspricht 'normalgroß')"));
+
+        this.addAttribute(new Attribute("sichtbar", booleanPrimitiveType, (value: Value) => { 
+            value.value = value.object.intrinsicData["Actor"].displayObject?.visible 
+        }, false, Visibility.protected, false, "true, wenn das Grafikobjekt sichtbar ist"));
+
+        this.setupAttributeIndicesRecursive();
 
         this.addMethod(new Method("PositionSetzen", new Parameterlist([
             { identifier: "x", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -77,6 +101,8 @@ export class GNGBaseFigurClass extends Klass {
                 let o: RuntimeObject = parameters[0].value;
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
                 let farbe: string = parameters[1].value;
+
+                o.intrinsicData["Farbe"] = farbe;
 
                 let color: number = GNGFarben[farbe.toLocaleLowerCase()];
                 if (color == null) color = 0x000000; // default: schwarz

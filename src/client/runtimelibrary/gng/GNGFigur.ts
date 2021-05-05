@@ -1,7 +1,7 @@
 import { Module, ModuleStore, TypeStore } from "../../compiler/parser/Module.js";
-import { Klass } from "../../compiler/types/Class.js";
+import { Klass, Visibility } from "../../compiler/types/Class.js";
 import { booleanPrimitiveType, charPrimitiveType, doublePrimitiveType, intPrimitiveType, stringPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
-import { Method, Parameterlist } from "../../compiler/types/Types.js";
+import { Attribute, Method, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { RectangleHelper } from "../graphics/Rectangle.js";
@@ -25,14 +25,28 @@ export class GNGFigurClass extends Klass {
 
         let objectType = moduleStore.getType("Object").type;
 
-        super("GTurtle", module, "Figur-Klasse der Graphics'n Games-Bibliothek (Cornelsen-Verlag)");
+        super("Figur", module, "Figur-Klasse der Graphics'n Games-Bibliothek (Cornelsen-Verlag)");
 
         let polygonClass: Klass = <Klass>moduleStore.getType("Polygon").type;
         let circleClass: Klass = <Klass>moduleStore.getType("Circle").type;
         let ellipseClass: Klass = <Klass>moduleStore.getType("Ellipse").type;
         let rectangleClass: Klass = <Klass>moduleStore.getType("Rectangle").type;
 
-        // this.addAttribute(new Attribute("PI", doublePrimitiveType, (object) => { return Math.PI }, true, Visibility.public, true, "Die Kreiszahl Pi (3.1415...)"));
+        this.addAttribute(new Attribute("x", intPrimitiveType, (value: Value) => { value.value = Math.round(value.object.intrinsicData["Center"].x) }, false, Visibility.private, false, "x-Position der Figur"));
+        this.addAttribute(new Attribute("y", intPrimitiveType, (value: Value) => { value.value = Math.round(value.object.intrinsicData["Center"].y) }, false, Visibility.private, false, "y-Position der Figur"));
+        this.addAttribute(new Attribute("winkel", intPrimitiveType, (value: Value) => { 
+            value.value = value.object.intrinsicData["Actor"].angle 
+        }, false, Visibility.private, false, "Blickrichtung der Figur in Grad"));
+
+        this.addAttribute(new Attribute("größe", intPrimitiveType, (value: Value) => { 
+            value.value = Math.round(value.object.intrinsicData["Actor"].scaleFactor*100) 
+        }, false, Visibility.private, false, "Größe der Figur (100 entspricht 'normalgroß')"));
+
+        this.addAttribute(new Attribute("sichtbar", booleanPrimitiveType, (value: Value) => { 
+            value.value = value.object.intrinsicData["Actor"].displayObject?.visible 
+        }, false, Visibility.private, false, "true, wenn die Figur sichtbar ist"));
+
+        this.setupAttributeIndicesRecursive();
 
         this.addMethod(new Method("Figur", new Parameterlist([]), null,
             (parameters) => {
@@ -109,7 +123,7 @@ export class GNGFigurClass extends Klass {
 
                 let angleRad = sh.angle / 180 * Math.PI;
                 let dx = länge * Math.cos(angleRad);
-                let dy = länge * Math.sin(angleRad);
+                let dy = länge * Math.sin(-angleRad);
                 center.x += dx;
                 center.y += dy;
 
@@ -546,7 +560,7 @@ export class GNGFigurClass extends Klass {
         ch.setFillColor("blue");
         ch.setBorderColor("black");
         ch.setBorderWidth(2);
-        gh.add(t);
+        gh.add(c);
 
     }
 

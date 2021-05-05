@@ -1,7 +1,7 @@
 import { Module, ModuleStore } from "../../compiler/parser/Module.js";
-import { Klass } from "../../compiler/types/Class.js";
+import { Klass, Visibility } from "../../compiler/types/Class.js";
 import { doublePrimitiveType, intPrimitiveType, stringPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
-import { Method, Parameterlist } from "../../compiler/types/Types.js";
+import { Attribute, Method, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { RectangleHelper } from "../graphics/Rectangle.js";
@@ -14,7 +14,19 @@ export class GNGRechteckClass extends Klass {
 
         this.setBaseClass(<Klass>module.typeStore.getType("GNGBaseFigur"));
 
-        // this.addAttribute(new Attribute("PI", doublePrimitiveType, (object) => { return Math.PI }, true, Visibility.public, true, "Die Kreiszahl Pi (3.1415...)"));
+        this.addAttribute(new Attribute("breite", intPrimitiveType, (value: Value) => { 
+            let sh = value.object.intrinsicData["Actor"];
+            value.value = Math.round(Math.abs(sh.width * sh.displayObject.scale.x)); 
+        }, false, Visibility.private, false, "Breite des Rechtecks"));
+
+        this.addAttribute(new Attribute("höhe", intPrimitiveType, (value: Value) => { 
+            let sh = value.object.intrinsicData["Actor"];
+            value.value = Math.round(Math.abs(sh.height * sh.displayObject.scale.x)); 
+        }, false, Visibility.private, false, "Höhe des Rechtecks"));
+
+
+        this.setupAttributeIndicesRecursive();
+
 
         this.addMethod(new Method("Rechteck", new Parameterlist([]), null,
             (parameters) => {
@@ -24,6 +36,9 @@ export class GNGRechteckClass extends Klass {
 
                 let rh = new RectangleHelper(10, 10, 100, 100, module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = rh;
+
+                o.intrinsicData["Farbe"] = "rot";
+                rh.setFillColor(0xff0000);
 
             }, false, false, 'Instanziert ein neues, achsenparalleles Rechteck-Objekt.', true));
 

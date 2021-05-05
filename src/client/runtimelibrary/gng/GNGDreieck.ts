@@ -1,7 +1,7 @@
 import { Module, ModuleStore } from "../../compiler/parser/Module.js";
-import { Klass } from "../../compiler/types/Class.js";
+import { Klass, Visibility } from "../../compiler/types/Class.js";
 import { intPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
-import { Method, Parameterlist } from "../../compiler/types/Types.js";
+import { Attribute, Method, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { CircleHelper } from "../graphics/Circle.js";
 import { PolygonHelper } from "../graphics/Polygon.js";
@@ -15,7 +15,17 @@ export class GNGDreieckClass extends Klass {
 
         this.setBaseClass(<Klass>module.typeStore.getType("GNGBaseFigur"));
 
-        // this.addAttribute(new Attribute("PI", doublePrimitiveType, (object) => { return Math.PI }, true, Visibility.public, true, "Die Dreieckzahl Pi (3.1415...)"));
+        this.addAttribute(new Attribute("breite", intPrimitiveType, (value: Value) => { 
+            let breite = value.object.intrinsicData["Breite"];
+            value.value = Math.round(breite); 
+        }, false, Visibility.private, false, "Breite des Dreiecks"));
+
+        this.addAttribute(new Attribute("höhe", intPrimitiveType, (value: Value) => { 
+            let höhe = value.object.intrinsicData["Höhe"];
+            value.value = Math.round(höhe); 
+        }, false, Visibility.private, false, "Höhe des Dreiecks"));
+
+        this.setupAttributeIndicesRecursive();
 
         this.addMethod(new Method("Dreieck", new Parameterlist([]), null,
             (parameters) => {
@@ -27,7 +37,39 @@ export class GNGDreieckClass extends Klass {
                 let rh = new PolygonHelper([60, 10, 110,110, 10, 110],true, module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = rh;
 
+                o.intrinsicData["Breite"] = 100;
+                o.intrinsicData["Höhe"] = 100;
+
+                o.intrinsicData["Farbe"] = "rot";
+                rh.setFillColor(0xff0000);
+
             }, false, false, 'Instanziert ein neues Dreieck-Objekt.', true));
+
+            this.addMethod(new Method("GrößeSetzen", new Parameterlist([
+                { identifier: "breite", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+                { identifier: "höhe", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+            ]), null,
+                (parameters) => {
+    
+                    let o: RuntimeObject = parameters[0].value;
+                    let sh: PolygonHelper = o.intrinsicData["Actor"];
+                    let breite: number = parameters[1].value;
+                    let höhe: number = parameters[2].value;
+
+                    o.intrinsicData["Breite"] = breite;
+                    o.intrinsicData["Höhe"] = höhe;    
+
+                    breite /= sh.scaleFactor;
+                    höhe /= sh.scaleFactor;
+
+                    if (sh.testdestroyed("GrößeSetzen")) return;
+    
+                    sh.setAllPointsUntransformed([60, 60 - höhe/2, 60 - breite/2, 60 + höhe/2, 60 + breite/2, 60 + höhe/2 ]);
+    
+                }, false, false, "Setzt die Breite und Höhe des Dreiecks.", false));
+    
+
+
 
     }
 

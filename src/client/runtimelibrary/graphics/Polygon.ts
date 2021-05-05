@@ -225,6 +225,13 @@ export class PolygonHelper extends FilledShapeHelper {
         this.render();
     }
 
-
+    setAllPointsUntransformed(points: number[]){
+        this.hitPolygonInitial = [];
+        for(let i = 0; i < points.length; i += 2){
+            this.hitPolygonInitial.push({x: points[i], y: points[i+1]})
+        }
+        this.hitPolygonDirty = true;
+        this.render();
+    }
 
 }

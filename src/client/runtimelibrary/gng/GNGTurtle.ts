@@ -1,7 +1,7 @@
 import { Module, ModuleStore } from "../../compiler/parser/Module.js";
-import { Klass } from "../../compiler/types/Class.js";
+import { Klass, Visibility } from "../../compiler/types/Class.js";
 import { booleanPrimitiveType, charPrimitiveType, doublePrimitiveType, intPrimitiveType, stringPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
-import { Method, Parameterlist } from "../../compiler/types/Types.js";
+import { Attribute, Method, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { RectangleHelper } from "../graphics/Rectangle.js";
@@ -19,7 +19,32 @@ export class GNGTurtleClass extends Klass {
 
         super("GTurtle", module, "Turtle-Klasse der Graphics'n Games-Bibliothek (Cornelsen-Verlag)");
 
-        // this.addAttribute(new Attribute("PI", doublePrimitiveType, (object) => { return Math.PI }, true, Visibility.public, true, "Die Kreiszahl Pi (3.1415...)"));
+        this.addAttribute(new Attribute("x", intPrimitiveType, (value: Value) => { 
+            let sh = value.object.intrinsicData["Actor"];
+            value.value = Math.round(sh.lineElements[sh.lineElements.length - 1].x); 
+        }, false, Visibility.private, false, "x-Position der Figur"));
+        this.addAttribute(new Attribute("y", intPrimitiveType, (value: Value) => { 
+            let sh = value.object.intrinsicData["Actor"];
+            value.value = Math.round(sh.lineElements[sh.lineElements.length - 1].y); 
+        }, false, Visibility.private, false, "x-Position der Figur"));
+
+        this.addAttribute(new Attribute("winkel", intPrimitiveType, (value: Value) => { 
+            value.value = value.object.intrinsicData["Actor"].angle 
+        }, false, Visibility.private, false, "Blickrichtung der Figur in Grad"));
+
+        this.addAttribute(new Attribute("größe", intPrimitiveType, (value: Value) => { 
+            value.value = Math.round(value.object.intrinsicData["Actor"].scaleFactor*100) 
+        }, false, Visibility.private, false, "Größe der Figur (100 entspricht 'normalgroß')"));
+
+        this.addAttribute(new Attribute("sichtbar", booleanPrimitiveType, (value: Value) => { 
+            value.value = value.object.intrinsicData["Actor"].displayObject?.visible 
+        }, false, Visibility.private, false, "true, wenn die Figur sichtbar ist"));
+
+        this.addAttribute(new Attribute("stiftUnten", booleanPrimitiveType, (value: Value) => { 
+            value.value = value.object.intrinsicData["Actor"].penIsDown; 
+        }, false, Visibility.private, false, "true, wenn die Turtle beim Gehen zeichnet"));
+
+        this.setupAttributeIndicesRecursive();
 
         this.addMethod(new Method("GTurtle", new Parameterlist([]), null,
             (parameters) => {

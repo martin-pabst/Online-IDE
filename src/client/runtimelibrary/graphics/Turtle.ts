@@ -181,6 +181,15 @@ export class TurtleHelper extends FilledShapeHelper {
 
     penIsDown: boolean = true;
 
+    lastLineWidth: number = 0;
+    lastColor: number = 0;
+    lastAlpha: number = 0;
+
+    lastPosX: number = -1;
+    lastPosY: number = -1;
+
+    renderJobPresent: boolean = false;
+
     constructor(xStart: number, yStart: number, private showTurtle: boolean,
         interpreter: Interpreter, runtimeObject: RuntimeObject) {
         super(interpreter, runtimeObject);
@@ -203,6 +212,10 @@ export class TurtleHelper extends FilledShapeHelper {
 
         this.lineGraphic = new PIXI.Graphics();
         container.addChild(this.lineGraphic);
+        this.lineGraphic.moveTo(xStart, yStart);
+        console.log("MoveTo: " + xStart + ", " + yStart);
+        this.lastPosX = xStart;
+        this.lastPosY = yStart;
 
         this.turtle = new PIXI.Graphics();
         container.addChild(this.turtle);
@@ -278,20 +291,33 @@ export class TurtleHelper extends FilledShapeHelper {
 
         this.lineElements.push(newLineElement);
 
-        if (this.isFilled) {
-            this.render();
-        } else {
-            if (this.borderColor != null) {
-                this.lineGraphic.moveTo(lastLineElement.x, lastLineElement.y);
-                this.lineGraphic.lineStyle(this.borderWidth, this.borderColor, this.borderAlpha, 0.5)
-                this.lineGraphic.lineTo(newLineElement.x, newLineElement.y);
-            }
-        }
+        // if (this.isFilled) {
+        //     this.render();
+        // } else {
+        //     if (this.borderColor != null) {
+        //         // this.lineGraphic.moveTo(lastLineElement.x, lastLineElement.y);
+        //         this.lineGraphic.lineStyle(this.borderWidth, this.borderColor, this.borderAlpha, 0.5);
+        //         this.lineGraphic.lineTo(newLineElement.x, newLineElement.y);
+        //         console.log("LineTo: " + newLineElement.x + ", " + newLineElement.y);
+        //     } else {
+        //         this.lineGraphic.moveTo(newLineElement.x, newLineElement.y);
+        //         console.log("MoveTo: " + newLineElement.x + ", " + newLineElement.y);
+        //     }
+        // }
 
         this.hitPolygonDirty = true;
         this.initialHitPolygonDirty = true;
         this.calculateCenter();
-        this.drawTurtle(newLineElement.x, newLineElement.y, this.angle);
+
+        // don't render more frequent than every 1/100 s
+        if (!this.renderJobPresent) {
+            this.renderJobPresent = true;
+            setTimeout(() => {
+                this.renderJobPresent = false;
+                this.render();
+                this.drawTurtle(newLineElement.x, newLineElement.y, this.angle);
+            }, 100);
+        }
 
     }
 
@@ -338,6 +364,10 @@ export class TurtleHelper extends FilledShapeHelper {
 
         let g: PIXI.Graphics = this.lineGraphic;
 
+        this.lastLineWidth = 0;
+        this.lastColor = 0;
+        this.lastAlpha = 0;
+
         if (this.displayObject == null) {
             g = new PIXI.Graphics();
             this.displayObject = g;
@@ -345,6 +375,7 @@ export class TurtleHelper extends FilledShapeHelper {
 
         } else {
             g.clear();
+            console.log("clear");
         }
 
         if (this.fillColor != null && this.isFilled) {
@@ -353,6 +384,7 @@ export class TurtleHelper extends FilledShapeHelper {
 
         let firstPoint = this.lineElements[0];
         g.moveTo(firstPoint.x, firstPoint.y);
+        // console.log("MoveTo: " + firstPoint.x + ", " + firstPoint.y);
 
         if (this.isFilled) {
             g.lineStyle(this.borderWidth, this.borderColor, this.borderAlpha, 0.5);
@@ -361,11 +393,18 @@ export class TurtleHelper extends FilledShapeHelper {
             let le: LineElement = this.lineElements[i];
             if (le.color != null) {
                 if (!this.isFilled) {
-                    g.lineStyle(le.lineWidth, le.color, le.alpha, 0.5)
+                    if (le.lineWidth != this.lastLineWidth || le.color != this.lastColor || le.alpha != this.lastAlpha) {
+                        g.lineStyle(le.lineWidth, le.color, le.alpha, 0.5)
+                        this.lastLineWidth = le.lineWidth;
+                        this.lastColor = le.color;
+                        this.lastAlpha = le.alpha;
+                    }
                 }
                 g.lineTo(le.x, le.y);
+                // console.log("LineTo: " + le.x + ", " + le.y);
             } else {
                 g.moveTo(le.x, le.y);
+                // console.log("MoveTo: " + le.x + ", " + le.y);
             }
         }
 
@@ -433,14 +472,14 @@ export class TurtleHelper extends FilledShapeHelper {
         this.drawTurtle(100, 200, 0);
     }
 
-    
+
     touchesAtLeastOneFigure(): boolean {
         let lastLineElement: LineElement = this.lineElements[this.lineElements.length - 1];
         let x = lastLineElement.x;
         let y = lastLineElement.y;
 
-        for(let sh of this.worldHelper.shapes){
-            if(sh.containsPoint(x, y) && sh != this){
+        for (let sh of this.worldHelper.shapes) {
+            if (sh.containsPoint(x, y) && sh != this) {
                 return true;
             }
         }
@@ -451,15 +490,15 @@ export class TurtleHelper extends FilledShapeHelper {
         let x = lastLineElement.x;
         let y = lastLineElement.y;
 
-        for(let sh of this.worldHelper.shapes){
-            if(sh.containsPoint(x, y) && sh != this){
-                if(sh instanceof FilledShapeHelper && sh.fillColor == farbe) return true;
+        for (let sh of this.worldHelper.shapes) {
+            if (sh.containsPoint(x, y) && sh != this) {
+                if (sh instanceof FilledShapeHelper && sh.fillColor == farbe) return true;
                 // if(sh instanceof TurtleHelper) TODO
             }
         }
     }
 
-    touchesShape(shape: ShapeHelper){
+    touchesShape(shape: ShapeHelper) {
         let lastLineElement: LineElement = this.lineElements[this.lineElements.length - 1];
         let x = lastLineElement.x;
         let y = lastLineElement.y;

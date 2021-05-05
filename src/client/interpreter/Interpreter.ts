@@ -1276,7 +1276,7 @@ export class Interpreter {
                 }
 
                 if ((this.worldHelper != null && this.worldHelper.actActors.length > 0) || this.processingHelper != null 
-                    || (this.gngEreignisbehandlungHelper != null && this.gngEreignisbehandlungHelper.aktionsempfaengerMap["ausführen"].length > 0)) {
+                    || (this.gngEreignisbehandlungHelper != null && this.gngEreignisbehandlungHelper.hasAktionsEmpfaenger())) {
                     this.currentProgramPosition--;
                     break
                 }

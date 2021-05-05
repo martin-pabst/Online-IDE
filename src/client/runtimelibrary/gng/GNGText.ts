@@ -1,10 +1,9 @@
 import { Module, ModuleStore } from "../../compiler/parser/Module.js";
-import { Klass } from "../../compiler/types/Class.js";
-import { doublePrimitiveType, intPrimitiveType, stringPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
-import { Method, Parameterlist } from "../../compiler/types/Types.js";
+import { Klass, Visibility } from "../../compiler/types/Class.js";
+import { intPrimitiveType, stringPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
+import { Attribute, Method, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
-import { Interpreter } from "../../interpreter/Interpreter.js";
-import { RectangleHelper } from "../graphics/Rectangle.js";
+import { CircleHelper } from "../graphics/Circle.js";
 import { TextHelper } from "../graphics/Text.js";
 
 export class GNGTextClass extends Klass {
@@ -15,7 +14,17 @@ export class GNGTextClass extends Klass {
 
         this.setBaseClass(<Klass>module.typeStore.getType("GNGBaseFigur"));
 
-        // this.addAttribute(new Attribute("PI", doublePrimitiveType, (object) => { return Math.PI }, true, Visibility.public, true, "Die Kreiszahl Pi (3.1415...)"));
+        this.addAttribute(new Attribute("text", stringPrimitiveType, (value: Value) => { 
+            let text = value.object.intrinsicData["Actor"].text;
+            value.value = text; 
+        }, false, Visibility.private, false, "Angezeigter Text"));
+
+        this.addAttribute(new Attribute("textgröße", intPrimitiveType, (value: Value) => { 
+            let fontsize = value.object.intrinsicData["Actor"].fontsize;
+            value.value = Math.round(fontsize); 
+        }, false, Visibility.private, false, "Textgröße"));
+
+        this.setupAttributeIndicesRecursive();
 
         this.addMethod(new Method("Text", new Parameterlist([]), null,
             (parameters) => {
@@ -24,6 +33,7 @@ export class GNGTextClass extends Klass {
                 o.intrinsicData["isGNG"] = true;
 
                 let rh = new TextHelper(10, 10, 12, "Text", module.main.getInterpreter(), o);
+
                 rh.setFillColor(0);
                 o.intrinsicData["Actor"] = rh;
 

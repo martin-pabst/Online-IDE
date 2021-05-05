@@ -1,7 +1,7 @@
 import { Module, ModuleStore } from "../../compiler/parser/Module.js";
-import { Klass } from "../../compiler/types/Class.js";
+import { Klass, Visibility } from "../../compiler/types/Class.js";
 import { intPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
-import { Method, Parameterlist } from "../../compiler/types/Types.js";
+import { Attribute, Method, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { CircleHelper } from "../graphics/Circle.js";
 import { RectangleHelper } from "../graphics/Rectangle.js";
@@ -14,7 +14,12 @@ export class GNGKreisClass extends Klass {
 
         this.setBaseClass(<Klass>module.typeStore.getType("GNGBaseFigur"));
 
-        // this.addAttribute(new Attribute("PI", doublePrimitiveType, (object) => { return Math.PI }, true, Visibility.public, true, "Die Kreiszahl Pi (3.1415...)"));
+        this.addAttribute(new Attribute("radius", intPrimitiveType, (value: Value) => { 
+            let sh = value.object.intrinsicData["Actor"];
+            value.value = Math.round(sh.r * sh.displayObject.scale.x); 
+        }, false, Visibility.private, false, "Radius des Kreises"));
+
+        this.setupAttributeIndicesRecursive();
 
         this.addMethod(new Method("Kreis", new Parameterlist([]), null,
             (parameters) => {
@@ -24,6 +29,9 @@ export class GNGKreisClass extends Klass {
 
                 let rh = new CircleHelper(60, 60, 50, module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = rh;
+
+                o.intrinsicData["Farbe"] = "rot";
+                rh.setFillColor(0xff0000);
 
             }, false, false, 'Instanziert ein neues Kreis-Objekt.', true));
 

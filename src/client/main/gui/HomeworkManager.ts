@@ -35,7 +35,8 @@ export class HomeworkManager {
         let that = this;
         this.$homeworkTab.append(this.$homeworkTabLeft = makeDiv("", "jo_homeworkTabLeft jo_scrollable"));
         this.$homeworkTab.append(this.$homeworkTabRight = makeDiv("", "jo_homeworkTabRight jo_scrollable"));
-        jQuery('#view-mode').prepend(this.$showRevisionButton = makeDiv("", "jo_button jo_active jo_homeworkRevisionButton", ""));
+        this.$showRevisionButton = makeDiv("", "jo_button jo_active jo_homeworkRevisionButton", "")
+        jQuery('#view-mode').prepend(this.$showRevisionButton);
         this.$showRevisionButton.on("click", () => {
             if (this.showRevisionActive) {
                 this.hideRevision();

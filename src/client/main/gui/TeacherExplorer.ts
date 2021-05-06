@@ -128,10 +128,10 @@ export class TeacherExplorer {
         this.studentPanel.clear();
 
         userDataList.sort((a, b) => {
-            if (a.familienname > b.familienname) return 1;
-            if (b.familienname > a.familienname) return -1;
-            if (a.rufname > b.rufname) return 1;
-            if (b.rufname > a.rufname) return -1;
+            if (a.familienname > b.familienname) return -1;
+            if (b.familienname > a.familienname) return 1;
+            if (a.rufname > b.rufname) return -1;
+            if (b.rufname > a.rufname) return 1;
             return 0;
         })
 

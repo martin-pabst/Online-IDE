@@ -42,7 +42,6 @@
 .joe_leftDiv {
     /* flex-grow: 1; */
     width: 20%;
-    background-color: antiquewhite;
 }
 
 .joe_centerDiv {
@@ -64,7 +63,7 @@
 .joe_rightDiv {
     flex: 0 1 auto;
     position: relative;
-    width: 350px;
+    width: 300px;
     border-left: 1px solid gray;
 }
 

@@ -158,21 +158,16 @@ export class MainEmbedded implements MainBase {
             this.config = {}
         }
 
-        if (this.config.withFileList == null) this.config.withFileList = true;
-        if (this.config.withPCode == null) this.config.withPCode = true;
-        if (this.config.withConsole == null) this.config.withConsole = true;
-        if (this.config.withErrorList == null) this.config.withErrorList = true;
-        if (this.config.withBottomPanel == null) this.config.withBottomPanel = true;
 
-        if (!(this.config.withConsole || this.config.withPCode || this.config.withFileList || this.config.withErrorList)) {
-            this.config.withBottomPanel = false;
+        if(this.config.withBottomPanel == null){
+            this.config.withBottomPanel = this.config.withConsole || this.config.withPCode || this.config.withFileList || this.config.withErrorList;
         }
 
-        if (!this.config.withBottomPanel) {
-            this.config.withFileList = false;
-            this.config.withPCode = false;
-            this.config.withConsole = false;
-            this.config.withErrorList = false;
+        if(this.config.withBottomPanel){
+            if (this.config.withFileList == null) this.config.withFileList = true;
+            if (this.config.withPCode == null) this.config.withPCode = true;
+            if (this.config.withConsole == null) this.config.withConsole = true;
+            if (this.config.withErrorList == null) this.config.withErrorList = true;
         }
 
         if(this.config.speed == null) this.config.speed = 9;

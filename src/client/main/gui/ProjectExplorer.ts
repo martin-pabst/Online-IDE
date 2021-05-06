@@ -269,7 +269,9 @@ export class ProjectExplorer {
 
         this.$homeAction = jQuery('<div class="img_home-dark jo_button jo_active" style="margin-right: 4px"' +
             ' title="Meine eigenen Workspaces anzeigen">');
-        this.$homeAction.on('mousedown', (e) => {
+        this.$homeAction.on('pointerdown', (e) => {
+            e.stopPropagation();
+            e.preventDefault();
 
             that.main.networkManager.sendUpdates(() => {
                 that.onHomeButtonClicked();
@@ -277,8 +279,8 @@ export class ProjectExplorer {
 
             that.main.bottomDiv.hideHomeworkTab();
 
-            e.stopPropagation();
         })
+
 
         this.workspaceListPanel.addAction(this.$homeAction);
         this.$homeAction.hide();

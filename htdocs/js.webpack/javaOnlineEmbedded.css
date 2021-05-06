@@ -290,7 +290,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
 .jo_sliderknob {
     position: absolute;
     top: -8px;
-    cursor: move !important;
+    /* cursor: move !important; */
 }
 
 #slider1 {
@@ -3592,7 +3592,6 @@ svgns|path.dropdown-triangle:active {
 .joe_leftDiv {
     /* flex-grow: 1; */
     width: 20%;
-    background-color: antiquewhite;
 }
 
 .joe_centerDiv {
@@ -3614,7 +3613,7 @@ svgns|path.dropdown-triangle:active {
 .joe_rightDiv {
     flex: 0 1 auto;
     position: relative;
-    width: 350px;
+    width: 300px;
     border-left: 1px solid gray;
 }
 

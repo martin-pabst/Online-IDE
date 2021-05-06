@@ -73,6 +73,10 @@ body .monaco-editor-hover .monaco-tokenized-source {
     word-break: normal !important;
 }
 
+.monaco-aria-container {
+    top: 0;     /* in certain conditions this is needed to prevent shifting up of #main-Div by height of this container, see mail from Dr. Siglinde Voß, 06.05.2021 */
+}
+
 .rename-input {
     color: var(--renameInput-color) !important;
 }

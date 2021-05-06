@@ -135,9 +135,10 @@ export class TeacherExplorer {
             return 0;
         })
 
-        for (let ud of userDataList) {
+        for(let i = 0; i < userDataList.length; i++){
+            let ud = userDataList[i];
             let ae: AccordionElement = {
-                name: ud.rufname + " " + ud.familienname,
+                name: ud.familienname + ", " + ud.rufname,
                 sortName: ud.familienname + " " + ud.rufname,
                 externalElement: ud
             }

@@ -13,6 +13,7 @@ export class NetworkManager {
 
     updateFrequencyInSeconds: number = 20;
     forcedUpdateEvery: number = 2;
+    forcedUpdatesInARow: number = 0;
     secondsTillNextUpdate: number = this.updateFrequencyInSeconds;
     errorHappened: boolean = false;
 
@@ -41,7 +42,13 @@ export class NetworkManager {
                 that.secondsTillNextUpdate = that.updateFrequencyInSeconds;
                 counterTillForcedUpdate--;
                 let forceUpdate = counterTillForcedUpdate == 0;
-                if(forceUpdate) counterTillForcedUpdate = this.forcedUpdateEvery;
+                if(forceUpdate){
+                    this.forcedUpdatesInARow++;
+                    counterTillForcedUpdate = this.forcedUpdateEvery;
+                    if(this.forcedUpdatesInARow > 50){
+                        counterTillForcedUpdate = this.forcedUpdateEvery * 50;
+                    }
+                } 
                 that.sendUpdates(() => {}, forceUpdate);
             }
 
@@ -62,7 +69,7 @@ export class NetworkManager {
     }
     
     sendUpdates(callback?: ()=>void, sendIfNothingIsDirty: boolean = false){
-        
+
         if(this.main.user == null || this.main.user.is_testuser){
             if(callback != null) callback();
             return;
@@ -74,9 +81,11 @@ export class NetworkManager {
         let userSettings = this.main.user.settings;
 
         if(classDiagram?.dirty || this.main.userDataDirty){
+            
             this.main.userDataDirty = false;
             userSettings.classDiagram = classDiagram?.serialize();
             this.sendUpdateUserSettings(() => {});
+            this.forcedUpdatesInARow = 0;
         }
 
         classDiagram.dirty = false;
@@ -89,10 +98,12 @@ export class NetworkManager {
             if(!ws.saved){
                 wdList.push(ws.getWorkspaceData(false));
                 ws.saved = true;
+                this.forcedUpdatesInARow = 0;
             }
             
             for(let m of ws.moduleStore.getModules(false)){
                 if(!m.file.saved){
+                    this.forcedUpdatesInARow = 0;
                     m.file.text = m.getProgramTextFromMonacoModel();
                     fdList.push(m.getFileData(ws));
                     // console.log("Save file " + m.file.name);

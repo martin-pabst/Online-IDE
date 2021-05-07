@@ -21,6 +21,8 @@ import { Actor as ActorClass } from "../../runtimelibrary/graphics/Actor.js";
 import { AlignmentClass } from "../../runtimelibrary/graphics/Alignment.js";
 import { BitmapClass } from "../../runtimelibrary/graphics/Bitmap.js";
 import { CircleClass as CircleClass } from "../../runtimelibrary/graphics/Circle.js";
+import { SectorClass } from "../../runtimelibrary/graphics/Sector.js";
+import { ArcClass } from "../../runtimelibrary/graphics/Arc.js";
 import { ColorClass } from "../../runtimelibrary/graphics/Color.js";
 import { EllipseClass } from "../../runtimelibrary/graphics/Ellipse.js";
 import { FilledShapeClass } from "../../runtimelibrary/graphics/FilledShape.js";
@@ -783,6 +785,8 @@ export class BaseModule extends Module {
         this.typeStore.addType(new RectangleClass(this));
         this.typeStore.addType(new RoundedRectangleClass(this));
         this.typeStore.addType(new CircleClass(this));
+        this.typeStore.addType(new SectorClass(this));
+        this.typeStore.addType(new ArcClass(this));
         this.typeStore.addType(new EllipseClass(this));
         this.typeStore.addType(new BitmapClass(this));
         this.typeStore.addType(new AlignmentClass(this));

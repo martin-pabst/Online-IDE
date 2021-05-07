@@ -4,6 +4,7 @@
   "description": "Online Java-Compiler",
   "main": "index.js",
   "dependencies": {
+    "@pixi/graphics-extras": "^6.0.2",
     "@types/chart.js": "^2.9.25",
     "@types/diff": "^4.0.2",
     "@types/diff-match-patch": "^1.0.32",

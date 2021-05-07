@@ -44,7 +44,7 @@ export class ColorClass extends Klass {
 
             this.addAttribute(new Attribute(colorName, this,
                 (value) => { value.value = r }, true, Visibility.public, true,
-                "Die Farbe " + colorName + " (" + ColorHelper.intColorToHexRGB(intColor) + " oder " + ColorHelper.intColorToRGB(intColor)));
+                "Die Farbe " + colorName + " (" + ColorHelper.intColorToHexRGB(intColor) + ") oder " + ColorHelper.intColorToRGB(intColor)));
         }
 
         this.setupAttributeIndicesRecursive();

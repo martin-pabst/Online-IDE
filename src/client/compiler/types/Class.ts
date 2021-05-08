@@ -1362,6 +1362,9 @@ function findSuitableMethods(methodList: Method[], identifier: string, parameter
             }
         } else {
             error = "Der Typ " + classIdentifier + " besitzt keine Methode mit dem Bezeichner " + identifier + ".";
+            if(identifier == 'setCenter'){
+                error += ' Tipp: Die Methode setCenter der Klasse Shape wurde umbenannt in "moveTo".'
+            }
         }
 
     }

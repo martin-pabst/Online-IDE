@@ -473,7 +473,7 @@ export class ShapeClass extends Klass {
 
             }, false, false, 'Überzieht das Grafikobjekt mit einer halbdurchsichtigen Farbschicht.', false));
 
-        this.addMethod(new Method("setDirection", new Parameterlist([
+        this.addMethod(new Method("defineDirection", new Parameterlist([
             { identifier: "angleInDeg", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), voidPrimitiveType,
             (parameters) => {
@@ -482,7 +482,7 @@ export class ShapeClass extends Klass {
                 let direction: number = parameters[1].value;
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
 
-                if (sh.testdestroyed("setDirection")) return;
+                if (sh.testdestroyed("defineDirection")) return;
 
                 sh.directionRad = direction / 180 * Math.PI;
 
@@ -501,7 +501,7 @@ export class ShapeClass extends Klass {
 
                 sh.forward(distance);
 
-            }, false, false, 'Bewegt das Objekt um die angegebene Länge in Richtung seiner Blickrichtung.\nBemerkung: Die Blickrichtung kann mit setDirection gesetzt werden.', false));
+            }, false, false, 'Bewegt das Objekt um die angegebene Länge in Richtung seiner Blickrichtung.\nBemerkung: Die Blickrichtung kann mit defineDirection gesetzt werden.', false));
 
         this.addMethod(new Method("copy", new Parameterlist([
         ]), this,

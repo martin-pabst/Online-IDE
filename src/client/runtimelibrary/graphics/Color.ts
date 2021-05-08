@@ -117,7 +117,7 @@ export class ColorClass extends Klass {
                 if (max < 0) max = 0;
                 if (max > 255) max = 255;
 
-                if(max < min){
+                if (max < min) {
                     let z = max;
                     max = min;
                     min = z;
@@ -140,6 +140,16 @@ export class ColorClass extends Klass {
                 return (<ColorClassIntrinsicData>(o.intrinsicData)).hex;
 
             }, false, false, 'Verwandelt die Farbe in einen String.', false));
+
+        this.addMethod(new Method("toInt", new Parameterlist([
+        ]), intPrimitiveType,
+            (parameters) => {
+                let o: RuntimeObject = parameters[0].value;
+                let cid = <ColorClassIntrinsicData>(o.intrinsicData);
+
+                return 0x10000 * cid.red + 0x100 * cid.green + cid.blue;
+
+            }, false, false, 'Verwandelt die Farbe in einen int-Wert um, genauer: gibt 0x10000 * red + 0x100 * green + blue zurück.', false));
 
         this.addMethod(new Method("equals", new Parameterlist([
             { identifier: "otherColor", type: this, declaration: null, usagePositions: null, isFinal: true },

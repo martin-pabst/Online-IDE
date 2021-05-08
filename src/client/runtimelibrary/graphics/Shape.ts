@@ -307,7 +307,7 @@ export class ShapeClass extends Klass {
 
             }, false, false, "Gibt genau dann true zurück, wenn das Grafikobjekt und das andere Grafikobjekt kollidieren.", false));
 
-        this.addMethod(new Method("setCenter", new Parameterlist([
+        this.addMethod(new Method("moveTo", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), voidPrimitiveType,
@@ -318,11 +318,28 @@ export class ShapeClass extends Klass {
                 let x: number = parameters[1].value;
                 let y: number = parameters[2].value;
 
-                if (sh.testdestroyed("setCenter")) return;
+                if (sh.testdestroyed("moveTo")) return;
 
                 sh.move(x - sh.getCenterX(), y - sh.getCenterY());
 
             }, false, false, "Verschiebt das Grafikobjekt so, dass sich sein 'Mittelpunkt' an den angegebenen Koordinaten befindet.", false));
+
+        this.addMethod(new Method("defineCenter", new Parameterlist([
+            { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: ShapeHelper = o.intrinsicData["Actor"];
+                let x: number = parameters[1].value;
+                let y: number = parameters[2].value;
+
+                if (sh.testdestroyed("defineCenter")) return;
+
+                sh.defineCenter(x, y);
+
+            }, false, false, "Setzt fest, wo der 'Mittelpunkt' des Objekts liegen soll. Dieser Punkt wird als Drehpunkt der Methode rotate, als Zentrum der Methode Scale und als Referenzpunkt der Methode moveTo benutzt.", false));
 
         this.addMethod(new Method("setAngle", new Parameterlist([
             { identifier: "angleDeg", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -467,7 +484,7 @@ export class ShapeClass extends Klass {
 
                 if (sh.testdestroyed("setDirection")) return;
 
-                sh.directionRad = direction/180*Math.PI;
+                sh.directionRad = direction / 180 * Math.PI;
 
             }, false, false, 'Setzt die Blickrichtung des graphischen Objekts. Dies ist die Richtung, in die es durch Aufruf der Methode forward bewegt wird. \nBemerkung: die Methode rotate ändert auch die Blickrichtung!', false));
 
@@ -747,6 +764,13 @@ export abstract class ShapeHelper extends ActorHelper {
             || bounds.bottom < screen.top || bounds.top > screen.bottom;
     }
 
+    defineCenter(x: number, y: number){
+        let p = new PIXI.Point(x, y);
+        this.displayObject.transform.worldTransform.applyInverse(p, p);
+        this.centerXInitial = x;
+        this.centerYInitial = y;
+    }
+
     move(dx: number, dy: number) {
         this.displayObject.localTransform.translate(dx, dy);
         this.displayObject.transform.onChange();
@@ -784,7 +808,7 @@ export abstract class ShapeHelper extends ActorHelper {
         this.setHitPolygonDirty(true);
 
         this.angle += angleInDeg;
-        this.directionRad += angleInDeg/180*Math.PI;
+        this.directionRad += angleInDeg / 180 * Math.PI;
     }
 
     mirrorXY(scaleX: number, scaleY: number) {

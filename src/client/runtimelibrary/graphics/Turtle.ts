@@ -375,7 +375,6 @@ export class TurtleHelper extends FilledShapeHelper {
 
         } else {
             g.clear();
-            console.log("clear");
         }
 
         if (this.fillColor != null && this.isFilled) {

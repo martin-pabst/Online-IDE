@@ -456,6 +456,36 @@ export class ShapeClass extends Klass {
 
             }, false, false, 'Überzieht das Grafikobjekt mit einer halbdurchsichtigen Farbschicht.', false));
 
+        this.addMethod(new Method("setDirection", new Parameterlist([
+            { identifier: "angleInDeg", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let direction: number = parameters[1].value;
+                let sh: ShapeHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("setDirection")) return;
+
+                sh.directionRad = direction/180*Math.PI;
+
+            }, false, false, 'Setzt die Blickrichtung des graphischen Objekts. Dies ist die Richtung, in die es durch Aufruf der Methode forward bewegt wird. \nBemerkung: die Methode rotate ändert auch die Blickrichtung!', false));
+
+        this.addMethod(new Method("forward", new Parameterlist([
+            { identifier: "distance", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let distance: number = parameters[1].value;
+                let sh: ShapeHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("forward")) return;
+
+                sh.forward(distance);
+
+            }, false, false, 'Bewegt das Objekt um die angegebene Länge in Richtung seiner Blickrichtung.\nBemerkung: Die Blickrichtung kann mit setDirection gesetzt werden.', false));
+
         this.addMethod(new Method("copy", new Parameterlist([
         ]), this,
             (parameters) => {
@@ -523,6 +553,8 @@ export abstract class ShapeHelper extends ActorHelper {
     trackMouseMove: boolean = false;
 
     scaleFactor: number = 1.0;
+
+    directionRad: number = 0;
 
     copyFrom(shapeHelper: ShapeHelper) {
 
@@ -722,6 +754,12 @@ export abstract class ShapeHelper extends ActorHelper {
         this.setHitPolygonDirty(true);
     }
 
+    forward(distance: number) {
+        let dx = distance * Math.cos(this.directionRad);
+        let dy = -distance * Math.sin(this.directionRad);
+        this.move(dx, dy);
+    }
+
     rotate(angleInDeg: number, cX?: number, cY?: number) {
 
         this.displayObject.updateTransform();
@@ -746,6 +784,7 @@ export abstract class ShapeHelper extends ActorHelper {
         this.setHitPolygonDirty(true);
 
         this.angle += angleInDeg;
+        this.directionRad += angleInDeg/180*Math.PI;
     }
 
     mirrorXY(scaleX: number, scaleY: number) {

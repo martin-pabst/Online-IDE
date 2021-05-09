@@ -4,7 +4,6 @@ import { doublePrimitiveType, booleanPrimitiveType, intPrimitiveType } from "../
 import { Method, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
-import { TilingSprite } from "pixi.js";
 import { ListHelper } from "./ArrayList.js";
 import { ListIteratorImplClass } from "./ListIteratorImpl.js";
 

@@ -9,7 +9,6 @@ import { EnumRuntimeObject } from "../../compiler/types/Enum.js";
 import { ShapeHelper, ShapeClass } from "./Shape.js";
 import { HitPolygonStore } from "./PolygonStore.js";
 import { ArrayType } from "../../compiler/types/Array.js";
-import { Point, PRECISION, TilingSprite } from "pixi.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 
 

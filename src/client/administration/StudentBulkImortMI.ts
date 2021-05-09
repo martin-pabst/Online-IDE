@@ -4,7 +4,6 @@ import { ajax } from "../communication/AjaxHelper.js";
 import { Administration } from "./Administration.js";
 import { TeachersWithClassesMI } from "./TeachersWithClasses.js";
 import { PasswordPopup } from "./PasswordPopup.js";
-import { LineStyle } from "pixi.js";
 import { UserMenu } from "../main/gui/UserMenu.js";
 import { setSelectItems, getSelectedObject } from "../tools/HtmlTools.js";
 

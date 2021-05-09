@@ -1,4 +1,3 @@
-import { TilingSprite } from "pixi.js";
 import { TokenType } from "../../compiler/lexer/Token.js";
 import { Module } from "../../compiler/parser/Module.js";
 import { Klass, Visibility } from "../../compiler/types/Class.js";

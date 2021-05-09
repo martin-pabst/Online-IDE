@@ -13,7 +13,6 @@ import { MyCodeActionProvider } from "./MyCodeActionProvider.js";
 import { MyReferenceProvider } from "./MyReferenceProvider.js";
 import { Enum } from "../../compiler/types/Enum.js";
 import { Workspace } from "../../workspace/Workspace.js";
-import { System } from "pixi.js";
 
 export type HistoryEntry = {
     module_id: number,

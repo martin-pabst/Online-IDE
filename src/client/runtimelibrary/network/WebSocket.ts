@@ -6,7 +6,6 @@ import { Interpreter, InterpreterState } from "../../interpreter/Interpreter.js"
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { WebSocketRequestConnect, WebSocketRequestDisconnect, WebSocketRequestSendToAll, WebSocketRequestSendToClient, WebSocketResponseOtherClientDisconnected, WebSocketResponseMessage, WebSocketResponseNewClient, WebSocketResponse, GetWebSocketTokenResponse, WebSocketResponsePairingFound, WebSocketRequestFindPairing } from "../../communication/Data.js";
 import { WebSocketClientHelper } from "./WebSocketClient.js";
-import { TilingSprite } from "pixi.js";
 import { ajax } from "../../communication/AjaxHelper.js";
 import { SystemClass } from "../System.js";
 import { ArrayType } from "../../compiler/types/Array.js";

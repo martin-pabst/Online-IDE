@@ -4,7 +4,6 @@ import { makeDiv, SelectItem, setSelectItems, getSelectedObject } from "../../to
 import { RepositoryUser, GetRepositoryRequest, GetRepositoryResponse, GetRepositoryUserListRequest, GetRepositoryUserListResponse, UserData, GetRepositoryListRequest, GetRepositoryListResponse, RepositoryInfo, UpdateRepositoryRequest, UpdateRepositoryResponse, AttachWorkspaceToRepositoryRequest, WorkspaceData, AttachWorkspaceToRepositoryResponse } from "../../communication/Data.js";
 import { ajax } from "../../communication/AjaxHelper.js";
 import { TeachersWithClassesMI } from "../../administration/TeachersWithClasses.js";
-import { TilingSprite } from "pixi.js";
 import { ProjectExplorer } from "../../main/gui/ProjectExplorer.js";
 
 

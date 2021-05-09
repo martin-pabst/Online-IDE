@@ -12,7 +12,6 @@ import { Workspace } from "../workspace/Workspace.js";
 import { JOScript } from "./EmbeddedStarter.js";
 import { makeDiv, makeTabs, openContextMenu } from "../tools/HtmlTools.js";
 import { EmbeddedSlider } from "./EmbeddedSlider.js";
-import { TilingSprite } from "pixi.js";
 import { EmbeddedFileExplorer } from "./EmbeddedFileExplorer.js";
 import { TextPosition } from "../compiler/lexer/Token.js";
 import { EmbeddedIndexedDB } from "./EmbeddedIndexedDB.js";

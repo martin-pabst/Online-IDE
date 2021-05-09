@@ -25,12 +25,12 @@
     <script src="js/runtimelibrary/graphics/SpriteLibrary.js"></script>
     <script src="lib/howler/howler.core.min.js"></script>
     <script src="js/main/gui/diagrams/classdiagram/Router.js"></script>
+    <script src="lib/pixijs/pixi.js"></script>
 
     <script type="module" src="js/embedded/EmbeddedStarter.js"></script>
 
     <!-- to use packed version just alter last line to:-->
     <!-- <script src="js.webpack/main.js"></script> -->
-    <script src="lib/pixijs/pixi.js"></script>
 
 </head>
 
@@ -39,7 +39,8 @@
 
     <div class="java-online" style="width: calc(100% - 10px); height: 400px; margin-left: 5px" data-java-online="{
         'id': 'abcd',
-        'speed': 'max'
+        'speed': 'max',
+        'withFileList': true
     }">
         <script type="text/plain" title="Test1.java" data-type="java">
 new Test();

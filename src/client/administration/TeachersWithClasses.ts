@@ -1,7 +1,6 @@
 import { AdminMenuItem } from "./AdminMenuItem.js";
 import { UserData, CRUDUserRequest, CRUDSchoolRequest, CRUDResponse, SchoolData, GetSchoolDataRequest, GetSchoolDataResponse, TeacherData, ClassData, CRUDClassRequest, GetTeacherDataRequest, GetTeacherDataResponse } from "../communication/Data.js";
 import { ajax } from "../communication/AjaxHelper.js";
-import { TilingSprite } from "pixi.js";
 import { PasswordPopup } from "./PasswordPopup.js";
 
 declare var w2prompt: any;

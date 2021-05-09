@@ -10,7 +10,6 @@ import { AccordionPanel, Accordion, AccordionElement, AccordionContextMenuItem }
 import { Helper } from "./Helper.js";
 import { text } from "express";
 import { WorkspaceData, Workspaces, ClassData } from "../../communication/Data.js";
-import { TilingSprite } from "pixi.js";
 import { dateToString } from "../../tools/StringTools.js";
 import { DistributeToStudentsDialog } from "./DistributeToStudentsDialog.js";
 

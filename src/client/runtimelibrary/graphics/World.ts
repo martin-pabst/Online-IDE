@@ -9,7 +9,6 @@ import { ShapeHelper } from "./Shape.js";
 import { KeyboardTool } from "../../tools/KeyboardTool.js";
 import { SpriteHelper } from "./Sprite.js";
 import { ColorHelper } from "./ColorHelper.js";
-import { Point } from "pixi.js";
 import { Punkt } from "../../tools/MatheTools.js";
 import { GroupClass, GroupHelper } from "./Group.js";
 import { MouseListenerInterface } from "./MouseListener.js";

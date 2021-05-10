@@ -2,7 +2,7 @@ import { booleanPrimitiveType, charPrimitiveType, doublePrimitiveType, floatPrim
 import { Formatter } from "../main/gui/Formatter.js";
 import { ThemeManager } from "../main/gui/ThemeManager.js";
 import { MainEmbedded } from "./MainEmbedded.js";
-import * as PIXI from "pixi.js";
+//import * as PIXI from "pixi.js";
 
 // declare const require: any;
 

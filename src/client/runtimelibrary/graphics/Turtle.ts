@@ -7,7 +7,7 @@ import { FilledShapeHelper } from "./FilledShape.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { polygonBerührtPolygon } from "../../tools/MatheTools.js";
 import { ShapeHelper } from "./Shape.js";
-import * as PIXI from "pixi.js";
+// import * as PIXI from "pixi.js";
 
 export class TurtleClass extends Klass {
 

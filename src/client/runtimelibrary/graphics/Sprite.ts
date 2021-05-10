@@ -11,7 +11,7 @@ import { HitPolygonStore } from "./PolygonStore.js";
 import { ArrayType } from "../../compiler/types/Array.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { SpriteLibraryPage } from "../../help/SpriteLibraryPage.js";
-import * as PIXI from "pixi.js";
+// import * as PIXI from "pixi.js";
 
 export class SpriteClass extends Klass {
 

@@ -31,7 +31,7 @@ import { RepositoryCheckoutManager } from "../repository/update/RepositoryChecko
 import { WindowStateManager } from "./gui/WindowStateManager.js";
 import { TextPositionWithModule } from "../compiler/types/Types.js";
 import { checkIfMousePresent } from "../tools/HtmlTools.js";
-import * as PIXI from "pixi.js";
+// import * as PIXI from "pixi.js";
 
 export class Main implements MainBase {
 

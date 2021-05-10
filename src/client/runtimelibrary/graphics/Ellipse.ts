@@ -7,7 +7,7 @@ import { FilledShapeHelper } from "./FilledShape.js";
 import { WorldHelper } from "./World.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { ShapeHelper } from "./Shape.js";
-import * as PIXI from "pixi.js";
+// import * as PIXI from "pixi.js";
 
 export class EllipseClass extends Klass {
 

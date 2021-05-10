@@ -9,7 +9,8 @@ import { Interpreter } from "../../interpreter/Interpreter.js";
 import { ShapeHelper } from "./Shape.js";
 import { ColorHelper } from "./ColorHelper.js";
 import { ColorClassIntrinsicData } from "./Color.js";
-// import * as PIXI from "pixi.js";
+import { isPrefixUnaryExpression } from "typescript";
+import { BufferResource } from "@pixi/core";
 
 export class BitmapClass extends Klass {
 
@@ -23,7 +24,7 @@ export class BitmapClass extends Klass {
 
         let colorType: Klass = <Klass>this.module.typeStore.getType("Color");
 
-        this.addMethod(new Method("Bitmap", new Parameterlist([
+        this.addMethod(new Method("BitmapNew", new Parameterlist([
             { identifier: "pointsX", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "pointsY", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "left", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -41,7 +42,7 @@ export class BitmapClass extends Klass {
                 let width: number = parameters[5].value;
                 let height: number = parameters[6].value;
 
-                let rh = new BitmapHelper(pointsX, pointsY, left, top, width, height, module.main.getInterpreter(), o);
+                let rh = new BitmapHelperNew(pointsX, pointsY, left, top, width, height, module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = rh;
 
             }, false, false, 'Instanziert eine neue Bitmap. pointsX bzw. pointsY bezeichnet Anzahl der Bildpunkte in x bzw. y-Richtung, (left, top) sind die Koordinaten der linken oberen Ecke.', true));
@@ -55,7 +56,7 @@ export class BitmapClass extends Klass {
                 let o: RuntimeObject = parameters[0].value;
                 let x: number = parameters[1].value;
                 let y: number = parameters[2].value;
-                let sh: BitmapHelper = o.intrinsicData["Actor"];
+                let sh: BitmapHelperNew = o.intrinsicData["Actor"];
 
                 return sh.getFarbeAsObject(x, y, colorType);
 
@@ -74,7 +75,7 @@ export class BitmapClass extends Klass {
                 let y: number = parameters[2].value;
                 let color: number = parameters[3].value;
                 let alpha: number = parameters[4].value;
-                let sh: BitmapHelper = o.intrinsicData["Actor"];
+                let sh: BitmapHelperNew = o.intrinsicData["Actor"];
 
                 sh.setzeFarbe(x, y, color, alpha);
 
@@ -91,7 +92,7 @@ export class BitmapClass extends Klass {
                 let x: number = parameters[1].value;
                 let y: number = parameters[2].value;
                 let color: number = parameters[3].value;
-                let sh: BitmapHelper = o.intrinsicData["Actor"];
+                let sh: BitmapHelperNew = o.intrinsicData["Actor"];
 
                 sh.setzeFarbe(x, y, color);
 
@@ -108,7 +109,7 @@ export class BitmapClass extends Klass {
                 let x: number = parameters[1].value;
                 let y: number = parameters[2].value;
                 let color: string = parameters[3].value;
-                let sh: BitmapHelper = o.intrinsicData["Actor"];
+                let sh: BitmapHelperNew = o.intrinsicData["Actor"];
 
                 sh.setzeFarbe(x, y, color);
 
@@ -127,7 +128,7 @@ export class BitmapClass extends Klass {
                 let y: number = parameters[2].value;
                 let color: string = parameters[3].value;
                 let alpha: number = parameters[4].value;
-                let sh: BitmapHelper = o.intrinsicData["Actor"];
+                let sh: BitmapHelperNew = o.intrinsicData["Actor"];
 
                 sh.setzeFarbe(x, y, color, alpha);
 
@@ -144,7 +145,7 @@ export class BitmapClass extends Klass {
                 let x: number = parameters[1].value;
                 let y: number = parameters[2].value;
                 let color: string = parameters[3].value;
-                let sh: BitmapHelper = o.intrinsicData["Actor"];
+                let sh: BitmapHelperNew = o.intrinsicData["Actor"];
 
                 return sh.istFarbe(x, y, color);
 
@@ -161,7 +162,7 @@ export class BitmapClass extends Klass {
                 let x: number = parameters[1].value;
                 let y: number = parameters[2].value;
                 let color: number = parameters[3].value;
-                let sh: BitmapHelper = o.intrinsicData["Actor"];
+                let sh: BitmapHelperNew = o.intrinsicData["Actor"];
 
                 return sh.istFarbe(x, y, color, 1);
 
@@ -177,7 +178,7 @@ export class BitmapClass extends Klass {
                 let o: RuntimeObject = parameters[0].value;
                 let color: number = parameters[1].value;
                 let alpha: number = parameters[2].value;
-                let sh: BitmapHelper = o.intrinsicData["Actor"];
+                let sh: BitmapHelperNew = o.intrinsicData["Actor"];
 
                 sh.fillAll(color, alpha);
 
@@ -190,7 +191,7 @@ export class BitmapClass extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
                 let color: number = parameters[1].value;
-                let sh: BitmapHelper = o.intrinsicData["Actor"];
+                let sh: BitmapHelperNew = o.intrinsicData["Actor"];
 
                 sh.fillAll(color);
 
@@ -201,7 +202,7 @@ export class BitmapClass extends Klass {
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
-                let sh: BitmapHelper = o.intrinsicData["Actor"];
+                let sh: BitmapHelperNew = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("copy")) return;
 
@@ -214,19 +215,19 @@ export class BitmapClass extends Klass {
 
 }
 
-export class BitmapHelper extends ShapeHelper {
+export class BitmapHelperNew extends ShapeHelper {
 
-    private colorArray: Float32Array;
-    private colorBuffer: PIXI.Buffer;
+    texture: PIXI.Texture;
+    data: Uint32Array;
 
+    isBigEndian: boolean = true;
 
     getCopy(klass: Klass): RuntimeObject {
 
         let ro: RuntimeObject = new RuntimeObject(klass);
-        let bh: BitmapHelper = new BitmapHelper(this.anzahlX, this.anzahlY, this.left, this.top, this.width, this.height, this.worldHelper.interpreter, ro);
+        let bh: BitmapHelperNew = new BitmapHelperNew(this.anzahlX, this.anzahlY, this.left, this.top, this.width, this.height, this.worldHelper.interpreter, ro);
 
-        for (let i = 0; i < this.colorArray.length; i++) bh.colorArray[i] = this.colorArray[i];
-        bh.colorBuffer.update();
+        // TODO
 
         ro.intrinsicData["Actor"] = bh;
 
@@ -240,6 +241,18 @@ export class BitmapHelper extends ShapeHelper {
     constructor(public anzahlX, public anzahlY, public left: number, public top: number, public width: number, public height: number,
         interpreter: Interpreter, runtimeObject: RuntimeObject) {
         super(interpreter, runtimeObject);
+
+        let uInt32 = new Uint32Array([0x11223344]);
+        let uInt8 = new Uint8Array(uInt32.buffer);
+     
+        if(uInt8[0] === 0x44) {
+            this.isBigEndian = false;
+        } else if (uInt8[0] === 0x11) {
+            this.isBigEndian = true;
+        }
+
+        // TODO: Little Endian...
+
         this.centerXInitial = left + width / 2;
         this.centerYInitial = top + height / 2;
 
@@ -248,6 +261,20 @@ export class BitmapHelper extends ShapeHelper {
         ];
 
         this.render();
+
+        let sprite = <PIXI.Sprite>this.displayObject;
+
+        sprite.localTransform.scale(width/anzahlY, height/anzahlY);
+        sprite.localTransform.translate(left, top);
+        //@ts-ignore
+        sprite.transform.onChange();
+
+        let p = new PIXI.Point(this.centerXInitial, this.centerYInitial);
+        sprite.localTransform.applyInverse(p, p);
+        this.centerXInitial = p.x;
+        this.centerYInitial = p.y;
+
+
         this.addToDefaultGroup();
     }
 
@@ -261,120 +288,36 @@ export class BitmapHelper extends ShapeHelper {
     };
 
     protected initGraphics() {
+        this.data = new Uint32Array(this.anzahlX * this.anzahlY);
+        let u8Array = new Uint8Array(this.data.buffer);
+        let bufferResource = new PIXI.BufferResource(u8Array, {width: this.anzahlX, height: this.anzahlY});
+        let bt = new PIXI.BaseTexture(bufferResource);
+        this.texture = new PIXI.Texture(bt);
+        this.displayObject = new PIXI.Sprite(this.texture);
+    }
 
-        let vertexArray = new Float32Array(this.anzahlX * this.anzahlY * 4 * 2);
-        this.colorArray = new Float32Array(this.anzahlX * this.anzahlY * 4 * 4);
-        let vertexIndexArray = new Int32Array(this.anzahlX * this.anzahlY * 6); // Anzahl der Dreieckseckpunkte
-
-        let xStep = this.width / this.anzahlX;
-        let yStep = this.height / this.anzahlY;
-
-        for (let y = 0; y < this.anzahlY; y++) {
-            for (let x = 0; x < this.anzahlX; x++) {
-                let left = x * xStep + this.left;
-                let top = y * yStep + this.top;
-                let index = (x + y * (this.anzahlX)) * 8;
-                vertexArray[index] = left;
-                vertexArray[index + 1] = top;
-                vertexArray[index + 2] = left + xStep;
-                vertexArray[index + 3] = top;
-                vertexArray[index + 4] = left;
-                vertexArray[index + 5] = top + yStep;
-                vertexArray[index + 6] = left + xStep;
-                vertexArray[index + 7] = top + yStep;
-
-                let color = (x + y) % 2;
-                index = (x + y * (this.anzahlX)) * 16;
-                for (let i = 0; i < 16; i++) {
-                    this.colorArray[index + i] = color;
-                }
-
-            }
-        }
-
-        let i: number = 0; // index des Dreieckspunktes
-
-        for (let y = 0; y < this.anzahlY; y++) {
-            for (let x = 0; x < this.anzahlX; x++) {
-
-                let index = (x + y * this.anzahlX) * 4;
-                i = (x + y * this.anzahlX) * 6;
-                vertexIndexArray[i] = index;
-                vertexIndexArray[i + 1] = index + 1;
-                vertexIndexArray[i + 2] = index + 2;
-                vertexIndexArray[i + 3] = index + 1;
-                vertexIndexArray[i + 4] = index + 3;
-                vertexIndexArray[i + 5] = index + 2;
-
-            }
-        }
-
-
-        let vertexBuffer = new PIXI.Buffer(vertexArray, true);
-        this.colorBuffer = new PIXI.Buffer(this.colorArray, false);
-        let VertexIndexBuffer = new PIXI.Buffer(vertexIndexArray, true, true);
-
-
-
-        const geometry = new PIXI.Geometry()
-            .addAttribute('aVertexPosition', // the attribute name
-                vertexBuffer, // x, y
-                2).addIndex(VertexIndexBuffer) // the size of the attribute
-
-            .addAttribute('aColor', // the attribute name
-                this.colorBuffer,
-                4); // the size of the attribute
-
-        const shader = PIXI.Shader.from(`
-    
-        precision mediump float;
-        attribute vec2 aVertexPosition;
-        attribute vec4 aColor;
-    
-        uniform mat3 translationMatrix;
-        uniform mat3 projectionMatrix;
-    
-        varying vec4 vColor;
-    
-        void main() {
-    
-            vColor = aColor;
-            gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);
-    
-        }`,
-
-            `precision mediump float;
-    
-        varying vec4 vColor;
-    
-        void main() {
-            gl_FragColor = vColor;
-        }
-    
-    `);
-
-        this.displayObject = new PIXI.Mesh(geometry, shader, null, PIXI.DRAW_MODES.TRIANGLES);
-
-        this.displayObject.position.set(this.left, this.top);
-
+    uploadData(){
+        this.texture.baseTexture.update();
     }
 
     public getFarbeAsObject(x: number, y: number, colorType: Klass): RuntimeObject {
-        let i = (x + y * (this.anzahlX)) * 16;
-        let c: number;
 
-        let r = this.colorArray[i];
-        let g = this.colorArray[i + 1];
-        let b = this.colorArray[i + 2];
-        let a = this.colorArray[i + 3];
+        let i = (x + y * (this.anzahlX));
 
+        // let a = this.data[i + 3];
         let rto: RuntimeObject = new RuntimeObject(colorType);
 
+        let c = this.data[i];
+
+        let red = c & 0xff;
+        let green = (c & 0xff00) >> 8;
+        let blue = (c & 0xff0000) >> 16;
+
         let id: ColorClassIntrinsicData = {
-            red: Math.round(r * 255),
-            green: Math.round(g * 255),
-            blue: Math.round(b * 255),
-            hex: ColorHelper.intColorToHexRGB(Math.round(r * 255) * 0x10000 + Math.round(g * 255) * 0x100 + Math.round(b * 255))
+            red: red,
+            green: green,
+            blue: blue,
+            hex: ColorHelper.intColorToHexRGB(c >> 8)
         }
 
         rto.intrinsicData = id;
@@ -385,7 +328,9 @@ export class BitmapHelper extends ShapeHelper {
 
 
     public istFarbe(x: number, y: number, color: string | number, alpha?: number) {
-        let i = (x + y * (this.anzahlX)) * 16;
+
+        let i = (x + y * (this.anzahlX));
+
         let c: number;
 
         if (typeof color == "string") {
@@ -396,20 +341,19 @@ export class BitmapHelper extends ShapeHelper {
             c = color;
         }
 
-        let r = ((c & 0xff0000) >> 16) / 255;
-        let g = ((c & 0xff00) >> 8) / 255;
-        let b = ((c & 0xff)) / 255;
+        let c1 = this.data[i];
+        let red = c1 & 0xff;
+        let green = (c1 & 0xff00) >> 8;
+        let blue = (c1 & 0xff0000) >> 16;
 
-        let r1 = this.colorArray[i];
-        let g1 = this.colorArray[i + 1];
-        let b1 = this.colorArray[i + 2];
 
-        return Math.abs(r - r1) < 0.5 && Math.abs(g - g1) < 0.5 && Math.abs(b - b1) < 0.5;
+        return c == red*0x10000 + green * 0x100 + blue;
 
     }
 
     public setzeFarbe(x: number, y: number, color: string | number, alpha?: number) {
-        let i = (x + y * (this.anzahlX)) * 16;
+
+        let i = (x + y * (this.anzahlX));
         let c: number;
 
         if (typeof color == "string") {
@@ -421,27 +365,9 @@ export class BitmapHelper extends ShapeHelper {
             if (alpha == null) alpha = 1.0;
         }
 
-        let r = ((c & 0xff0000) >> 16) / 255;
-        let g = ((c & 0xff00) >> 8) / 255;
-        let b = ((c & 0xff)) / 255;
-
-        this.colorArray[i] = r;
-        this.colorArray[i + 1] = g;
-        this.colorArray[i + 2] = b;
-        this.colorArray[i + 3] = alpha;
-        this.colorArray[i + 4] = r;
-        this.colorArray[i + 5] = g;
-        this.colorArray[i + 6] = b;
-        this.colorArray[i + 7] = alpha;
-        this.colorArray[i + 8] = r;
-        this.colorArray[i + 9] = g;
-        this.colorArray[i + 10] = b;
-        this.colorArray[i + 11] = alpha;
-        this.colorArray[i + 12] = r;
-        this.colorArray[i + 13] = g;
-        this.colorArray[i + 14] = b;
-        this.colorArray[i + 15] = alpha;
-        this.colorBuffer.update();
+        this.data[i] = Math.round(alpha * 255) * 0x1000000 + ((c & 0xff) << 16) + (c & 0xff00) + ((c & 0xff0000) >> 16);
+        
+        this.uploadData();
     }
 
     public fillAll(color: string | number, alpha?: number) {
@@ -455,64 +381,26 @@ export class BitmapHelper extends ShapeHelper {
             c = color;
         }
 
-        for (let y = 0; y < this.anzahlY; y++) {
-            for (let x = 0; x < this.anzahlX; x++) {
-                let i = (x + y * (this.anzahlX)) * 16;
-
-                let r = ((c & 0xff0000) >> 16) / 255;
-                let g = ((c & 0xff00) >> 8) / 255;
-                let b = ((c & 0xff)) / 255;
-
-                this.colorArray[i] = r;
-                this.colorArray[i + 1] = g;
-                this.colorArray[i + 2] = b;
-                this.colorArray[i + 3] = alpha;
-                this.colorArray[i + 4] = r;
-                this.colorArray[i + 5] = g;
-                this.colorArray[i + 6] = b;
-                this.colorArray[i + 7] = alpha;
-                this.colorArray[i + 8] = r;
-                this.colorArray[i + 9] = g;
-                this.colorArray[i + 10] = b;
-                this.colorArray[i + 11] = alpha;
-                this.colorArray[i + 12] = r;
-                this.colorArray[i + 13] = g;
-                this.colorArray[i + 14] = b;
-                this.colorArray[i + 15] = alpha;
-            }
-        }
-        this.colorBuffer.update();
+        this.data.fill(Math.round(alpha * 255) * 0x1000000 + ((c & 0xff) << 16) + (c & 0xff00) + ((c & 0xff0000) >> 16));
+        // this.data.fill(0xffff0000);
+        
+        this.uploadData();
     }
-
+    
     public setzeFarbeRGBA(x: number, y: number, r: number, g: number, b: number, alpha: number) {
-        let i = (x + y * (this.anzahlX)) * 16;
-        r /= 255;
-        g /= 255;
-        b /= 255;
-        this.colorArray[i] = r;
-        this.colorArray[i + 1] = g;
-        this.colorArray[i + 2] = b;
-        this.colorArray[i + 3] = alpha;
-        this.colorArray[i + 4] = r;
-        this.colorArray[i + 5] = g;
-        this.colorArray[i + 6] = b;
-        this.colorArray[i + 7] = alpha;
-        this.colorArray[i + 8] = r;
-        this.colorArray[i + 9] = g;
-        this.colorArray[i + 10] = b;
-        this.colorArray[i + 11] = alpha;
-        this.colorArray[i + 12] = r;
-        this.colorArray[i + 13] = g;
-        this.colorArray[i + 14] = b;
-        this.colorArray[i + 15] = alpha;
-        this.colorBuffer.update();
+        let c = alpha * 0xff000000 + b*0x10000 + g * 0x100 + r;
+        let i = (x + y * (this.anzahlX));
+        this.data[i] = c;
+        this.uploadData();
     }
 
     public getFarbe(x: number, y: number): number {
-        let i = (x + y * this.anzahlX) * 16;
-        return Math.trunc(this.colorArray[i] * 255) * 0x10000 +
-            Math.trunc(this.colorArray[i + 1] * 255) * 0x100 +
-            Math.trunc(this.colorArray[i + 2] * 255);
+        let c = this.data[x + y * this.anzahlX] & 0xffffff;
+        return (c & 0xff) << 16 + (c & 0xff00) + (c & 0xff0000) >> 16;
+    }
+
+    public getAlpha(x: number, y: number): number {
+        return (this.data[x + y * this.anzahlX] & 0xff000000) >> 24 / 255;
     }
 
 

@@ -20,7 +20,6 @@ import { ConsoleClass } from "../../runtimelibrary/Console.js";
 import { Actor as ActorClass } from "../../runtimelibrary/graphics/Actor.js";
 import { AlignmentClass } from "../../runtimelibrary/graphics/Alignment.js";
 import { BitmapClass } from "../../runtimelibrary/graphics/Bitmap.js";
-// import { BitmapClassNew } from "../../runtimelibrary/graphics/BitmapNew.js";
 import { CircleClass as CircleClass } from "../../runtimelibrary/graphics/Circle.js";
 import { SectorClass } from "../../runtimelibrary/graphics/Sector.js";
 import { ArcClass } from "../../runtimelibrary/graphics/Arc.js";
@@ -790,7 +789,6 @@ export class BaseModule extends Module {
         this.typeStore.addType(new ArcClass(this));
         this.typeStore.addType(new EllipseClass(this));
         this.typeStore.addType(new BitmapClass(this));
-        // this.typeStore.addType(new BitmapClassNew(this));
         this.typeStore.addType(new AlignmentClass(this));
         this.typeStore.addType(new TextClass(this));
         this.typeStore.addType(new ScaleModeClass(this));

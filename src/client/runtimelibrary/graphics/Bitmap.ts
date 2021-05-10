@@ -11,6 +11,7 @@ import { ColorHelper } from "./ColorHelper.js";
 import { ColorClassIntrinsicData } from "./Color.js";
 import { isPrefixUnaryExpression } from "typescript";
 import { BufferResource } from "@pixi/core";
+import { FORMATS } from "@pixi/constants";
 
 export class BitmapClass extends Klass {
 
@@ -291,7 +292,9 @@ export class BitmapHelperNew extends ShapeHelper {
         this.data = new Uint32Array(this.anzahlX * this.anzahlY);
         let u8Array = new Uint8Array(this.data.buffer);
         let bufferResource = new PIXI.BufferResource(u8Array, {width: this.anzahlX, height: this.anzahlY});
-        let bt = new PIXI.BaseTexture(bufferResource);
+        let bt = new PIXI.BaseTexture(bufferResource, {
+            scaleMode: PIXI.SCALE_MODES.NEAREST 
+        });
         this.texture = new PIXI.Texture(bt);
         this.displayObject = new PIXI.Sprite(this.texture);
     }

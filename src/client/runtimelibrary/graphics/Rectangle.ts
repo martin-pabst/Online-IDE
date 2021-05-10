@@ -6,7 +6,6 @@ import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { FilledShapeHelper } from "./FilledShape.js";
 import { WorldHelper } from "./World.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
-// import * as PIXI from "pixi.js";
 
 export class RectangleClass extends Klass {
 

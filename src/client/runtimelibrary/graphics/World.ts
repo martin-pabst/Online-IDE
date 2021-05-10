@@ -12,7 +12,6 @@ import { ColorHelper } from "./ColorHelper.js";
 import { Punkt } from "../../tools/MatheTools.js";
 import { GroupClass, GroupHelper } from "./Group.js";
 import { MouseListenerInterface } from "./MouseListener.js";
-//import * as PIXI from "pixi.js";
 
 export class WorldClass extends Klass {
 

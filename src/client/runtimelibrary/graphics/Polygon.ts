@@ -6,7 +6,6 @@ import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { FilledShapeHelper } from "./FilledShape.js";
 import { ArrayType } from "../../compiler/types/Array.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
-// import * as PIXI from "pixi.js";
 
 export class PolygonClass extends Klass {
 

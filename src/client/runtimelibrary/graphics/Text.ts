@@ -7,7 +7,6 @@ import { FilledShapeHelper } from "./FilledShape.js";
 import { WorldHelper } from "./World.js";
 import { EnumRuntimeObject } from "../../compiler/types/Enum.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
-// import * as PIXI from "pixi.js";
 
 export class TextClass extends Klass {
 

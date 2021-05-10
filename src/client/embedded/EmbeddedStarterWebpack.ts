@@ -3,7 +3,6 @@ import { Formatter } from "../main/gui/Formatter.js";
 import { ThemeManager } from "../main/gui/ThemeManager.js";
 import { MainEmbedded } from "./MainEmbedded.js";
 import { EmbeddedStarter } from "./EmbeddedStarter.js";
-// import * as PIXI from "pixi.js";
 
 
 import "../css/embedded.css";

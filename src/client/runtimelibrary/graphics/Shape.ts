@@ -12,7 +12,6 @@ import { Interpreter } from "../../interpreter/Interpreter.js";
 import { GroupHelper, GroupClass } from "./Group.js";
 import { CircleHelper } from "./Circle.js";
 import { TurtleHelper } from "./Turtle.js";
-// import * as PIXI from "pixi.js";
 
 export class ShapeClass extends Klass {
 

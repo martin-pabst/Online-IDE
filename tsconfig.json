@@ -1,13 +1,21 @@
 {
   "compilerOptions": {
-    "moduleResolution": "node", // for pixijs 6.0
+    // "moduleResolution": "node", // for pixijs 6.0
     // Loaders needs this to use the more strict mini-signal types
     "paths": {
+      "resource-loader": [
+        "node_modules/resource-loader/typings/resource-loader.d.ts" // for pixijs 6.0
+      ],
       "mini-signals": [
         "node_modules/resource-loader/typings/mini-signals.d.ts" // for pixijs 6.0
-      ]
+      ],
+      "pixi.js": [
+        "node_modules/pixi.js/index.d.ts"
+      ],
+      "*": ["*", "node_modules/*/index.d.ts", "node_modules/*/types/index.d.ts"]
     },
     "allowSyntheticDefaultImports": true, // for pixijs 6.0
+    
     "baseUrl": "./",
     "outDir": "./htdocs/js",
     "allowJs": true,

@@ -58,6 +58,14 @@ export class KeyboardTool {
             for(let kpc of that.keyUpCallbacks){
                 kpc(key);
             }
+
+            // in ActionManager.init there is a 
+            if(that.main.isEmbedded && key == " "){
+                for(let kpc of that.keyPressedCallbacks){
+                    kpc(key);
+                }    
+            }
+
             return true;
         });
         element.on("keypress", (e) => {

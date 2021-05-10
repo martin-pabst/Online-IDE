@@ -3,6 +3,7 @@ import { SynchronizationManager } from "../repository/synchronize/RepositorySync
 import { RepositoryCreateManager } from "../repository/update/RepositoryCreateManager.js";
 import { RepositorySettingsManager } from "../repository/update/RepositorySettingsManager.js";
 import { RepositoryCheckoutManager } from "../repository/update/RepositoryCheckoutManager.js";
+import * as PIXI from "pixi.js";
 
 
 jQuery(function () {

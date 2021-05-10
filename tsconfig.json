@@ -1,15 +1,26 @@
 {
   "compilerOptions": {
+    "moduleResolution": "node", // for pixijs 6.0
+    // Loaders needs this to use the more strict mini-signal types
+    "paths": {
+      "mini-signals": [
+        "node_modules/resource-loader/typings/mini-signals.d.ts" // for pixijs 6.0
+      ]
+    },
+    "allowSyntheticDefaultImports": true, // for pixijs 6.0
+    "baseUrl": "./",
     "outDir": "./htdocs/js",
     "allowJs": true,
     "target": "es6",
-//     "sourceMap": true,
+    //     "sourceMap": true,
     "inlineSourceMap": true,
     "inlineSources": true,
     /* jsx */
     "jsx": "react",
     "jsxFactory": "DOMCreateElement",
-    "typeRoots": ["./node_modules/@types"],
+    "typeRoots": [
+      "./node_modules/@types"
+    ],
     "strict": false
   },
   "include": [
@@ -18,5 +29,4 @@
   "exclude": [
     "node_modules"
   ]
-
 }

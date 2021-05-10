@@ -11,6 +11,7 @@ import { HitPolygonStore } from "./PolygonStore.js";
 import { ArrayType } from "../../compiler/types/Array.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { SpriteLibraryPage } from "../../help/SpriteLibraryPage.js";
+import * as PIXI from "pixi.js";
 
 export class SpriteClass extends Klass {
 
@@ -305,6 +306,7 @@ export class SpriteHelper extends ShapeHelper {
         let sprite = <PIXI.Sprite>this.displayObject;
 
         this.displayObject.localTransform.translate(this.x - sprite.width / 2, this.y - sprite.height / 2);
+        //@ts-ignore
         this.displayObject.transform.onChange();
 
         this.worldHelper.stage.addChild(sprite);
@@ -380,7 +382,9 @@ export class SpriteHelper extends ShapeHelper {
                         scaleMode: PIXI.SCALE_MODES.NEAREST
                     });
 
-                    this.worldHelper.app.renderer.render(sprite, dynamicTexture1, true);
+                    this.worldHelper.app.renderer.render(sprite, {
+                        renderTexture: dynamicTexture1
+                    });
                     this.worldHelper.scaledTextures[nameWithIndex] = dynamicTexture1;
                     t = dynamicTexture1;
                 }

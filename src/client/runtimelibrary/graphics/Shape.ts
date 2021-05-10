@@ -12,6 +12,7 @@ import { Interpreter } from "../../interpreter/Interpreter.js";
 import { GroupHelper, GroupClass } from "./Group.js";
 import { CircleHelper } from "./Circle.js";
 import { TurtleHelper } from "./Turtle.js";
+import * as PIXI from "pixi.js";
 
 export class ShapeClass extends Klass {
 
@@ -641,7 +642,7 @@ export abstract class ShapeHelper extends ActorHelper {
     }
 
     bringOnePlaneFurtherToFront() {
-        let container: PIXI.Container = this.displayObject.parent;
+        let container: PIXI.Container = <PIXI.Container>this.displayObject.parent;
         let highestIndex = container.children.length - 1;
         let index = container.getChildIndex(this.displayObject);
         if (index < highestIndex) {
@@ -650,7 +651,7 @@ export abstract class ShapeHelper extends ActorHelper {
     }
 
     bringOnePlaneFurtherToBack() {
-        let container: PIXI.Container = this.displayObject.parent;
+        let container: PIXI.Container = <PIXI.Container>this.displayObject.parent;
         let index = container.getChildIndex(this.displayObject);
         if (index > 0) {
             container.setChildIndex(this.displayObject, index - 1);
@@ -658,13 +659,13 @@ export abstract class ShapeHelper extends ActorHelper {
     }
 
     bringToFront() {
-        let container: PIXI.Container = this.displayObject.parent;
+        let container: PIXI.Container = <PIXI.Container>this.displayObject.parent;
         let highestIndex = container.children.length - 1;
         container.setChildIndex(this.displayObject, highestIndex);
     }
 
     sendToBack() {
-        let container: PIXI.Container = this.displayObject.parent;
+        let container: PIXI.Container = <PIXI.Container>this.displayObject.parent;
         container.setChildIndex(this.displayObject, 0);
     }
 
@@ -773,6 +774,7 @@ export abstract class ShapeHelper extends ActorHelper {
 
     move(dx: number, dy: number) {
         this.displayObject.localTransform.translate(dx, dy);
+        //@ts-ignore
         this.displayObject.transform.onChange();
         this.displayObject.updateTransform();
         this.setHitPolygonDirty(true);
@@ -804,6 +806,7 @@ export abstract class ShapeHelper extends ActorHelper {
         this.displayObject.localTransform.translate(-cX, -cY);
         this.displayObject.localTransform.rotate(-angleInDeg / 180 * Math.PI);
         this.displayObject.localTransform.translate(cX, cY);
+        //@ts-ignore
         this.displayObject.transform.onChange();
         this.setHitPolygonDirty(true);
 
@@ -823,6 +826,7 @@ export abstract class ShapeHelper extends ActorHelper {
         this.displayObject.localTransform.translate(-cX, -cY);
         this.displayObject.localTransform.scale(scaleX, scaleY);
         this.displayObject.localTransform.translate(cX, cY);
+        //@ts-ignore
         this.displayObject.transform.onChange();
 
         this.setHitPolygonDirty(true);
@@ -850,6 +854,7 @@ export abstract class ShapeHelper extends ActorHelper {
         this.displayObject.localTransform.translate(-cX, -cY);
         this.displayObject.localTransform.scale(factor, factor);
         this.displayObject.localTransform.translate(cX, cY);
+        //@ts-ignore
         this.displayObject.transform.onChange();
 
         this.setHitPolygonDirty(true);

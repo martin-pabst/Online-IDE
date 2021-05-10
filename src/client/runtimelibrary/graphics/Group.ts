@@ -10,7 +10,7 @@ import { ShapeHelper, ShapeClass } from "./Shape.js";
 import { HitPolygonStore } from "./PolygonStore.js";
 import { ArrayType } from "../../compiler/types/Array.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
-
+import * as PIXI from "pixi.js";
 
 export class CollisionPairClass extends Klass {
 
@@ -366,6 +366,7 @@ export class GroupHelper extends ShapeHelper {
         let inverse = new PIXI.Matrix().copyFrom(this.displayObject.transform.worldTransform);
         inverse.invert();
         shapeHelper.displayObject.localTransform.prepend(inverse.prepend(this.worldHelper.stage.localTransform));
+        //@ts-ignore
         shapeHelper.displayObject.transform.onChange();
 
         (<PIXI.Container>this.displayObject).addChild(shapeHelper.displayObject);
@@ -418,6 +419,7 @@ export class GroupHelper extends ShapeHelper {
         inverseStageTransform.invert();
         shapeHelper.displayObject.localTransform.identity();
         shapeHelper.displayObject.localTransform.append(transform.prepend(inverseStageTransform));
+        //@ts-ignore
         shapeHelper.displayObject.transform.onChange();
         this.worldHelper.stage.addChild(shapeHelper.displayObject);
         shapeHelper.displayObject.updateTransform();

@@ -7,6 +7,7 @@ import { FilledShapeHelper } from "./FilledShape.js";
 import { WorldHelper } from "./World.js";
 import { EnumRuntimeObject } from "../../compiler/types/Enum.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
+import * as PIXI from "pixi.js";
 
 export class TextClass extends Klass {
 
@@ -177,6 +178,7 @@ export class TextHelper extends FilledShapeHelper {
             g = new PIXI.Text(this.text, this.textStyle);
             this.displayObject = g;
             this.displayObject.localTransform.translate(this.x, this.y);
+            //@ts-ignore
             this.displayObject.transform.onChange();
             this.worldHelper.stage.addChild(g);
         } else {

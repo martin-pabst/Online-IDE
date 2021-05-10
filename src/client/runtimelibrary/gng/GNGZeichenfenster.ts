@@ -105,6 +105,7 @@ export class GNGZeichenfensterClass extends Klass {
                 wh.height = höhe;
                 // this.stage.localTransform.rotate(45/180*Math.PI);
                 // this.stage.localTransform.translate(400,300);
+                //@ts-ignore
                 wh.stage.transform.onChange();
 
                 this.module.main.getRightDiv()?.adjustWidthToWorld();

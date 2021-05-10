@@ -12,6 +12,7 @@ import { ColorHelper } from "./ColorHelper.js";
 import { Punkt } from "../../tools/MatheTools.js";
 import { GroupClass, GroupHelper } from "./Group.js";
 import { MouseListenerInterface } from "./MouseListener.js";
+import * as PIXI from "pixi.js";
 
 export class WorldClass extends Klass {
 
@@ -81,6 +82,7 @@ export class WorldClass extends Klass {
                 
                 
                 // wh.stage.localTransform.translate(x,y);
+                //@ts-ignore
                 wh.stage.transform.onChange();
 
             }, false, false, 'Verschiebt alle Objekte der Welt um x nach rechts und y nach unten.', false));
@@ -109,6 +111,7 @@ export class WorldClass extends Klass {
                 // wh.stage.localTransform.translate(-x, -y);
                 // wh.stage.localTransform.rotate(-angle / 180 * Math.PI);
                 // wh.stage.localTransform.translate(x, y);
+                //@ts-ignore
                 wh.stage.transform.onChange();
 
             }, false, false, 'Rotiert die Welt um den angegebenen Winkel im Urzeigersinn. Drehpunkt ist der Punkt (x/y).', false));
@@ -138,6 +141,7 @@ export class WorldClass extends Klass {
                 // wh.stage.localTransform.translate(-x, -y);
                 // wh.stage.localTransform.scale(factor, factor);
                 // wh.stage.localTransform.translate(x, y);
+                //@ts-ignore
                 wh.stage.transform.onChange();
 
             }, false, false, 'Streckt die Welt um den angegebenen Faktor. Zentrum der Streckung ist (x/y).', false));
@@ -162,6 +166,7 @@ export class WorldClass extends Klass {
                 wh.stage.localTransform.scale(wh.initialWidth/width, wh.initialHeight/height);
 
                 // wh.stage.localTransform.translate(x, y);
+                //@ts-ignore
                 wh.stage.transform.onChange();
 
             }, false, false, 'Streckt die Welt um den angegebenen Faktor. Zentrum der Streckung ist (x/y).', false));
@@ -249,6 +254,7 @@ export class WorldClass extends Klass {
                 wh.height = höhe;
                 // this.stage.localTransform.rotate(45/180*Math.PI);
                 // this.stage.localTransform.translate(400,300);
+                //@ts-ignore
                 wh.stage.transform.onChange();
 
                 this.module.main.getRightDiv()?.adjustWidthToWorld();

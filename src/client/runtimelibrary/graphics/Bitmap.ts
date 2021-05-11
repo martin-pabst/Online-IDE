@@ -25,13 +25,13 @@ export class BitmapClass extends Klass {
 
         let colorType: Klass = <Klass>this.module.typeStore.getType("Color");
 
-        this.addMethod(new Method("BitmapNew", new Parameterlist([
+        this.addMethod(new Method("Bitmap", new Parameterlist([
             { identifier: "pointsX", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "pointsY", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "left", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "top", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-            { identifier: "width", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-            { identifier: "height", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "displayWidth", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "displayHeight", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), null,
             (parameters) => {
 
@@ -211,6 +211,19 @@ export class BitmapClass extends Klass {
 
             }, false, false, 'Erstellt eine Kopie des Bitmap-Objekts und git sie zurück.', false));
 
+        this.addMethod(new Method("clone", new Parameterlist([
+        ]), this,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: BitmapHelperNew = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("clone")) return;
+
+                return sh.getCopyOrClone(<Klass>o.class, true);
+
+            }, false, false, 'Erstellt ein weiteres Bitmap-Objekt, das auf dieselben Pixeldaten zurückgreift.', false));
+
 
     }
 
@@ -225,8 +238,13 @@ export class BitmapHelperNew extends ShapeHelper {
 
     getCopy(klass: Klass): RuntimeObject {
 
+        return this.getCopyOrClone(klass, false)
+    }
+
+    getCopyOrClone(klass: Klass, clone: boolean = false): RuntimeObject {
+
         let ro: RuntimeObject = new RuntimeObject(klass);
-        let bh: BitmapHelperNew = new BitmapHelperNew(this.anzahlX, this.anzahlY, this.left, this.top, this.width, this.height, this.worldHelper.interpreter, ro, this.data);
+        let bh: BitmapHelperNew = new BitmapHelperNew(this.anzahlX, this.anzahlY, this.left, this.top, this.width, this.height, this.worldHelper.interpreter, ro, this, clone);
 
         ro.intrinsicData["Actor"] = bh;
 
@@ -238,7 +256,7 @@ export class BitmapHelperNew extends ShapeHelper {
 
 
     constructor(public anzahlX, public anzahlY, public left: number, public top: number, public width: number, public height: number,
-        interpreter: Interpreter, runtimeObject: RuntimeObject, dataToCopy?: Uint32Array) {
+        interpreter: Interpreter, runtimeObject: RuntimeObject, bitmapToCopy?: BitmapHelperNew, clone: boolean = false) {
         super(interpreter, runtimeObject);
 
         let uInt32 = new Uint32Array([0x11223344]);
@@ -250,12 +268,6 @@ export class BitmapHelperNew extends ShapeHelper {
             this.isBigEndian = true;
         }
 
-        if(dataToCopy){
-            this.data = new Uint32Array(dataToCopy);
-        } else {
-            this.data = new Uint32Array(this.anzahlX * this.anzahlY);
-        }
-
         // TODO: Little Endian...
 
         this.centerXInitial = left + width / 2;
@@ -265,7 +277,7 @@ export class BitmapHelperNew extends ShapeHelper {
             { x: left, y: top }, { x: left, y: top + height }, { x: left + width, y: top + height }, { x: left + width, y: top }
         ];
 
-        this.render();
+        this.initGraphics(bitmapToCopy, clone);
 
         let sprite = <PIXI.Sprite>this.displayObject;
 
@@ -285,21 +297,34 @@ export class BitmapHelperNew extends ShapeHelper {
 
     render(): void {
 
-        if (this.displayObject == null) {
-            this.initGraphics();
-            this.worldHelper.stage.addChild(this.displayObject);
-        }
-
     };
 
-    protected initGraphics() {
+    protected initGraphics(bitmapToCopy?: BitmapHelperNew, clone: boolean = false) {
+
+        if(bitmapToCopy == null){
+            this.data = new Uint32Array(this.anzahlX * this.anzahlY);
+        } else {
+            if(clone){
+                this.data = bitmapToCopy.data;
+            } else {
+                this.data = new Uint32Array(bitmapToCopy.data);
+            }
+        }
+        
         let u8Array = new Uint8Array(this.data.buffer);
-        let bufferResource = new PIXI.BufferResource(u8Array, {width: this.anzahlX, height: this.anzahlY});
-        let bt = new PIXI.BaseTexture(bufferResource, {
-            scaleMode: PIXI.SCALE_MODES.NEAREST 
-        });
-        this.texture = new PIXI.Texture(bt);
+
+        if(!clone){
+            let bufferResource = new PIXI.BufferResource(u8Array, {width: this.anzahlX, height: this.anzahlY});
+            let bt = new PIXI.BaseTexture(bufferResource, {
+                scaleMode: PIXI.SCALE_MODES.NEAREST 
+            });
+            this.texture = new PIXI.Texture(bt);
+        } else {
+            this.texture = bitmapToCopy.texture;
+        }
+
         this.displayObject = new PIXI.Sprite(this.texture);
+        this.worldHelper.stage.addChild(this.displayObject);
     }
 
     uploadData(){

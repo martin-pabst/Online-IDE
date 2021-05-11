@@ -422,9 +422,6 @@ export class SpriteHelper extends ShapeHelper {
         }
     }
 
-
-
-
     getWidth(): number {
         let sprite = <PIXI.Sprite>this.displayObject;
         return sprite.width * this.scaleFactor;

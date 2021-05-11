@@ -7,6 +7,8 @@ import { FilledShapeHelper } from "./FilledShape.js";
 import { ArrayType } from "../../compiler/types/Array.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { ShapeHelper } from "./Shape.js";
+import { convexhull } from "../../tools/ConvexHull.js";
+import { GroupHelper } from "./Group.js";
 
 export class PolygonClass extends Klass {
 
@@ -84,10 +86,13 @@ export class PolygonClass extends Klass {
                 }
 
                 let shapeHelper: ShapeHelper = shape.intrinsicData["Actor"];
-                if(shapeHelper.hitPolygonDirty) shapeHelper.transformHitPolygon();
+
+                let points: convexhull.Point[] = [];
+                points = this.extractPoints(shapeHelper, points);
+                points = convexhull.makeHull(points);
 
                 let pointsNumber: number[] = [];
-                for(let p of shapeHelper.hitPolygonTransformed){
+                for(let p of points){
                     pointsNumber.push(p.x);
                     pointsNumber.push(p.y);
                 }
@@ -219,6 +224,27 @@ export class PolygonClass extends Klass {
 
 
     }
+
+
+    extractPoints(shapeHelper: ShapeHelper, points: convexhull.Point[]): convexhull.Point[]{
+        if(shapeHelper instanceof GroupHelper){
+            let points1: convexhull.Point[] = [];
+            for(let sh of shapeHelper.shapes){
+                points1 = this.extractPoints(sh.intrinsicData["Actor"], points1);
+            }
+            let bounds = shapeHelper.displayObject.getBounds();
+            for(let p of points1){
+                p.x += bounds.left;
+                p.y += bounds.top;
+            }
+            return points.concat(points1);
+        } else {
+            if(shapeHelper.hitPolygonDirty) shapeHelper.transformHitPolygon();
+            return points.concat(shapeHelper.hitPolygonTransformed);
+        }
+    }
+
+
 
 }
 

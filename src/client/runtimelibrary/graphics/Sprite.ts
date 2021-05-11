@@ -408,6 +408,8 @@ export class SpriteHelper extends ShapeHelper {
 
         this.displayObject = new PIXI.Sprite(rt);
 
+        copyFromOtherShape.setHitPolygonDirty(true);
+
     }
 
     extractPoints(shapeHelper: ShapeHelper, points: convexhull.Point[]): convexhull.Point[]{
@@ -418,7 +420,8 @@ export class SpriteHelper extends ShapeHelper {
             return points;
         } else {
             if(shapeHelper.hitPolygonDirty) shapeHelper.transformHitPolygon();
-            return points.concat(shapeHelper.hitPolygonTransformed);
+            return points.concat(shapeHelper.hitPolygonTransformed.map(function(punkt){return {x: punkt.x, y: punkt.y}}));
+
         }
     }
 

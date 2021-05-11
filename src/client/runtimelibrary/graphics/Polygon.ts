@@ -86,10 +86,12 @@ export class PolygonClass extends Klass {
                 }
 
                 let shapeHelper: ShapeHelper = shape.intrinsicData["Actor"];
-
+                shapeHelper.displayObject.getBounds();  // seems to work magic in updating transforms of children...
+                
                 let points: convexhull.Point[] = [];
                 points = this.extractPoints(shapeHelper, points);
                 points = convexhull.makeHull(points);
+
 
                 let pointsNumber: number[] = [];
                 for(let p of points){
@@ -232,15 +234,10 @@ export class PolygonClass extends Klass {
             for(let sh of shapeHelper.shapes){
                 points1 = this.extractPoints(sh.intrinsicData["Actor"], points1);
             }
-            let bounds = shapeHelper.displayObject.getBounds();
-            for(let p of points1){
-                p.x += bounds.left;
-                p.y += bounds.top;
-            }
             return points.concat(points1);
         } else {
             if(shapeHelper.hitPolygonDirty) shapeHelper.transformHitPolygon();
-            return points.concat(shapeHelper.hitPolygonTransformed);
+            return points.concat(shapeHelper.hitPolygonTransformed.map(function(punkt){return {x: punkt.x, y: punkt.y}}));
         }
     }
 

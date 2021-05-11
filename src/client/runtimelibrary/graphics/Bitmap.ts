@@ -226,9 +226,7 @@ export class BitmapHelperNew extends ShapeHelper {
     getCopy(klass: Klass): RuntimeObject {
 
         let ro: RuntimeObject = new RuntimeObject(klass);
-        let bh: BitmapHelperNew = new BitmapHelperNew(this.anzahlX, this.anzahlY, this.left, this.top, this.width, this.height, this.worldHelper.interpreter, ro);
-
-        // TODO
+        let bh: BitmapHelperNew = new BitmapHelperNew(this.anzahlX, this.anzahlY, this.left, this.top, this.width, this.height, this.worldHelper.interpreter, ro, this.data);
 
         ro.intrinsicData["Actor"] = bh;
 
@@ -240,7 +238,7 @@ export class BitmapHelperNew extends ShapeHelper {
 
 
     constructor(public anzahlX, public anzahlY, public left: number, public top: number, public width: number, public height: number,
-        interpreter: Interpreter, runtimeObject: RuntimeObject) {
+        interpreter: Interpreter, runtimeObject: RuntimeObject, dataToCopy?: Uint32Array) {
         super(interpreter, runtimeObject);
 
         let uInt32 = new Uint32Array([0x11223344]);
@@ -250,6 +248,12 @@ export class BitmapHelperNew extends ShapeHelper {
             this.isBigEndian = false;
         } else if (uInt8[0] === 0x11) {
             this.isBigEndian = true;
+        }
+
+        if(dataToCopy){
+            this.data = new Uint32Array(dataToCopy);
+        } else {
+            this.data = new Uint32Array(this.anzahlX * this.anzahlY);
         }
 
         // TODO: Little Endian...
@@ -289,7 +293,6 @@ export class BitmapHelperNew extends ShapeHelper {
     };
 
     protected initGraphics() {
-        this.data = new Uint32Array(this.anzahlX * this.anzahlY);
         let u8Array = new Uint8Array(this.data.buffer);
         let bufferResource = new PIXI.BufferResource(u8Array, {width: this.anzahlX, height: this.anzahlY});
         let bt = new PIXI.BaseTexture(bufferResource, {

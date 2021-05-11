@@ -269,6 +269,23 @@ export class GroupClass extends Klass {
 
             }, false, false, 'Erstellt eine Kopie des Group-Objekts (und aller seiner enthaltenen Grafikobjekte!) und git sie zurück.', false));
 
+            this.addMethod(new Method("renderAsStaticBitmap", new Parameterlist([
+            { identifier: "renderAsStaticBitmap", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), this,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: GroupHelper = o.intrinsicData["Actor"];
+                let doCache: boolean = parameters[1].value;
+
+                if (sh.testdestroyed("renderAsStaticBitmap")) return;
+
+                sh.cacheAsBitmap(doCache);
+
+                return;
+
+            }, false, false, 'Zeichnet alle Objekte dieser Group in ein Bild und verwendet fortan nur noch dieses Bild, ohne die Kindelemente der Group erneut zu zeichnen. Mit dieser Methode können komplexe Bilder (z.B. ein Sternenhimmel) aufgebaut und dann statisch gemacht werden. Nach dem Aufbau brauchen sie daher kaum mehr Rechenzeit.', false));
+
 
     }
 
@@ -285,6 +302,22 @@ export class GroupHelper extends ShapeHelper {
         this.addToDefaultGroup();
 
     }
+
+
+    cacheAsBitmap(doCache: boolean) {
+        let container = <PIXI.Container>this.displayObject;
+        
+        // If you set doCache to false and shortly afterwards to true: 
+        // make shure there's at least one rendercycle in between.
+        if(doCache){
+            setTimeout(() => {
+                container.cacheAsBitmap = true;
+            }, 300);
+        } else {
+            container.cacheAsBitmap = doCache;
+        }
+    }
+
 
     removeElementAt(index: number) {
         if (index < 0 || index >= this.shapes.length) {

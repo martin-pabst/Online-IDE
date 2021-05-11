@@ -11,6 +11,9 @@ import { HitPolygonStore } from "./PolygonStore.js";
 import { ArrayType } from "../../compiler/types/Array.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { SpriteLibraryPage } from "../../help/SpriteLibraryPage.js";
+import { RenderTexture } from "@pixi/core";
+import { convexhull } from "../../tools/ConvexHull.js";
+import { GroupHelper } from "./Group.js";
 
 export class SpriteClass extends Klass {
 
@@ -41,10 +44,49 @@ export class SpriteClass extends Klass {
                 let index: number = parameters[4].value;
                 let scaleMode: EnumRuntimeObject = parameters[5].value;
 
-                let rh = new SpriteHelper(x, y, spriteLibraryEntry.enumValue.identifier, index, module.main.getInterpreter(), o, scaleMode.enumValue.identifier);
+                let rh = new SpriteHelper(x, y, spriteLibraryEntry.enumValue.identifier, index, module.main.getInterpreter(), o, null, scaleMode.enumValue.identifier);
                 o.intrinsicData["Actor"] = rh;
 
-            }, false, false, 'Instanziert ein neues Sprite und stellt es an der Position (x, y) dar. Falls scale ungleich 1 ist wird die Bitmap des Sprites VOR dem Rendern um den Faktor scale gestreckt. Dabei wird die nearest neighbour-Interpolation verwendet damit aus Einzelpixeln schöne Quadrate werden. SpriteLibraryEntry ist ein Auzählungstyp (enum). Gib einfach SpriteLibraryEntry gefolgt von einem Punkt ein, dann erhältst Du ein Auswahl von Bildern. Einen Überblick über die Bilder bekommst Du auch über den Menüpunkt Hilfe->Sprite-Bilderübersicht.', true));
+            }, false, false, 'Instanziert ein neues Sprite und stellt es an der Position (x, y) dar. SpriteLibraryEntry ist ein Auzählungstyp (enum). Gib einfach SpriteLibraryEntry gefolgt von einem Punkt ein, dann erhältst Du ein Auswahl von Bildern. Einen Überblick über die Bilder bekommst Du auch über den Menüpunkt Hilfe->Sprite-Bilderübersicht.', true));
+
+        this.addMethod(new Method("Sprite", new Parameterlist([
+            { identifier: "shape", type: module.typeStore.getType("Shape"), declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "scalemode", type: scaleModeClass, declaration: null, usagePositions: null, isFinal: true },
+
+        ]), null,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let shape: RuntimeObject = parameters[1].value;
+                let scaleMode: EnumRuntimeObject = parameters[2].value;
+
+                if(shape == null){
+                    module.main.getInterpreter().throwException("Die übergebene Figur ist null.");
+                    return;
+                }
+
+                let rh = new SpriteHelper(0, 0, "", 0, module.main.getInterpreter(), o, shape.intrinsicData["Actor"], scaleMode.enumValue.identifier);
+                o.intrinsicData["Actor"] = rh;
+
+            }, false, false, 'Zeichnet das graphische Objekt (shape) in eine Bitmap und macht daraus ein Sprite. Dieses wird an der Position (x, y) dargestellt.', true));
+
+        this.addMethod(new Method("Sprite", new Parameterlist([
+            { identifier: "shape", type: module.typeStore.getType("Shape"), declaration: null, usagePositions: null, isFinal: true },
+        ]), null,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let shape: RuntimeObject = parameters[1].value;
+
+                if(shape == null){
+                    module.main.getInterpreter().throwException("Die übergebene Figur ist null.");
+                    return;
+                }
+
+                let rh = new SpriteHelper(0, 0, "", 0, module.main.getInterpreter(), o, shape.intrinsicData["Actor"], "linear");
+                o.intrinsicData["Actor"] = rh;
+
+            }, false, false, 'Zeichnet das graphische Objekt (shape) in eine Bitmap und macht daraus ein Sprite. Dieses wird an der Position (x, y) dargestellt.', true));
 
         this.addMethod(new Method("Sprite", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -64,7 +106,7 @@ export class SpriteClass extends Klass {
                 let rh = new SpriteHelper(x, y, spriteLibraryEntry.enumValue.identifier, index, module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = rh;
 
-            }, false, false, 'Instanziert ein neues Sprite und stellt es an der Position (x, y) dar. SpriteLibraryEntry ist ein Auzählungstyp (enum). Gib einfach SpriteLibraryEntry gefolgt von einem Punkt ein, dann erhältst Du ein Auswahl von Bildern. Einen Überblick über die Bilder bekommst Du auch über den Menüpunkt Hilfe->Sprite-Bilderübersicht.', true));
+            }, false, false, 'Instanziert ein neues Sprite und stellt es an der Position (x, y) dar. SpriteLibraryEntry ist ein Aufzählungstyp (enum). Gib einfach SpriteLibraryEntry gefolgt von einem Punkt ein, dann erhältst Du ein Auswahl von Bildern. Einen Überblick über die Bilder bekommst Du auch über den Menüpunkt Hilfe->Sprite-Bilderübersicht.', true));
 
         this.addMethod(new Method("Sprite", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -296,11 +338,18 @@ export class SpriteHelper extends ShapeHelper {
     textureName: string = "";
 
     constructor(public x: number, public y: number, public name: string, public index: number,
-        interpreter: Interpreter, runtimeObject: RuntimeObject,
+        interpreter: Interpreter, runtimeObject: RuntimeObject, copyFromOtherShape?: ShapeHelper,
         public scaleMode: string = "linear") {
         super(interpreter, runtimeObject);
-
-        this.setTexture(null, index);
+        
+        if(copyFromOtherShape == null){
+            this.setTexture(null, index);
+        } else {
+            this.copyBitmapFromShape(copyFromOtherShape);
+            let bounds = copyFromOtherShape.displayObject.getBounds();
+            this.x = bounds.left + bounds.width/2;
+            this.y = bounds.top + bounds.height/2;
+        }
 
         let sprite = <PIXI.Sprite>this.displayObject;
 
@@ -310,13 +359,71 @@ export class SpriteHelper extends ShapeHelper {
 
         this.worldHelper.stage.addChild(sprite);
 
-
         this.centerXInitial = sprite.width / 2;
         this.centerYInitial = sprite.height / 2;
+
+        for(let p of this.hitPolygonInitial){
+            // p.x -= this.x;
+            // p.y -= this.centerYInitial;
+        }
 
         this.addToDefaultGroup();
 
     }
+
+    copyBitmapFromShape(copyFromOtherShape: ShapeHelper) {
+
+        let bounds = copyFromOtherShape.displayObject.getBounds();
+
+        let width = bounds.width;
+        let height = bounds.height;
+
+        const brt = new PIXI.BaseRenderTexture(
+            {
+                scaleMode: this.scaleMode == "nearest_neighbour" ? PIXI.SCALE_MODES.NEAREST : PIXI.SCALE_MODES.LINEAR,
+                width: width,
+                height: height
+            }
+            );
+        let rt: PIXI.RenderTexture = new PIXI.RenderTexture(brt);
+        
+        let dob = copyFromOtherShape.displayObject;
+        this.worldHelper.app.renderer.render(dob, {
+            renderTexture: rt,
+            transform: new PIXI.Matrix().translate(-bounds.left, -bounds.top)
+        });
+
+        let points: convexhull.Point[] = [];
+        points = this.extractPoints(copyFromOtherShape, points);
+
+        for(let p of points){
+            p.x -= bounds.left;
+            p.y -= bounds.top;
+        }
+
+         this.hitPolygonInitial = points;
+        this.hitPolygonInitial = convexhull.makeHull(points);
+
+        this.hitPolygonDirty = true;
+
+        this.displayObject = new PIXI.Sprite(rt);
+
+    }
+
+    extractPoints(shapeHelper: ShapeHelper, points: convexhull.Point[]): convexhull.Point[]{
+        if(shapeHelper instanceof GroupHelper){
+            for(let sh of shapeHelper.shapes){
+                points = this.extractPoints(sh.intrinsicData["Actor"], points);
+            }
+            return points;
+        } else {
+            if(shapeHelper.hitPolygonDirty) shapeHelper.transformHitPolygon();
+            return points.concat(shapeHelper.hitPolygonTransformed);
+        }
+    }
+
+
+
 
     getWidth(): number {
         let sprite = <PIXI.Sprite>this.displayObject;

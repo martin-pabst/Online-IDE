@@ -202,6 +202,11 @@ export class ColorClass extends Klass {
                 let r: number = parameters[1].value;
                 let g: number = parameters[2].value;
                 let b: number = parameters[3].value;
+
+                r = Math.min(r, 255); r = Math.max(0, r);
+                g = Math.min(g, 255); g = Math.max(0, g);
+                b = Math.min(b, 255); b = Math.max(0, b);
+
                 return (r * 0x10000 + g * 0x100 + b);
 
             }, false, true, 'Berechnet aus Rot-, Grün- und Blauwert (alle zwischen 0 und 255) die Farbe.', false));
@@ -218,12 +223,101 @@ export class ColorClass extends Klass {
                 let g: number = parameters[2].value;
                 let b: number = parameters[3].value;
                 let a: number = parameters[4].value;
+
+                r = Math.min(r, 255); r = Math.max(0, r);
+                g = Math.min(g, 255); g = Math.max(0, g);
+                b = Math.min(b, 255); b = Math.max(0, b);
+
+                a = Math.min(a, 1); a = Math.max(0, a);
+
                 let color: string = (r * 0x1000000 + g * 0x10000 + b * 0x100 + Math.floor(a * 255)).toString(16);
                 while (color.length < 8) color = "0" + color;
 
                 return "#" + color;
 
             }, false, true, 'Berechnet aus Rot-, Grün- und Blauwert (alle zwischen 0 und 255) sowie Alpha-Wert (zwischen 0 und 1) die Farbe.', false));
+
+        this.addMethod(new Method("fromHSLA", new Parameterlist([
+            { identifier: "hue", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "saturation", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "luminance", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "alpha", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), stringPrimitiveType,
+            (parameters) => {
+                let o: RuntimeObject = parameters[0].value;
+                let h: number = parameters[1].value;
+                let s: number = parameters[2].value;
+                let l: number = parameters[3].value;
+                let a: number = parameters[4].value;
+
+                h = Math.min(h, 360); h = Math.max(0, h);
+                s = Math.min(s, 100); s = Math.max(0, s);
+                l = Math.min(l, 100); l = Math.max(0, l);
+                a = Math.min(a, 1); a = Math.max(0, a);
+
+                let rgb = this.hslToRgb(h, s, l);
+
+                let color: string = (rgb.r * 0x1000000 + rgb.g * 0x10000 + rgb.b * 0x100 + Math.floor(a * 255)).toString(16);
+                while (color.length < 8) color = "0" + color;
+
+                return "#" + color;
+
+            }, false, true, 'Berechnet Hue (0 - 360), Saturation (0 - 100) und Luminance (0 - 100) sowie Alpha-Wert (zwischen 0 und 1) die Farbe.', false));
+
+        this.addMethod(new Method("fromHSL", new Parameterlist([
+            { identifier: "hue", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "saturation", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "luminance", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), intPrimitiveType,
+            (parameters) => {
+                let o: RuntimeObject = parameters[0].value;
+                let h: number = parameters[1].value;
+                let s: number = parameters[2].value;
+                let l: number = parameters[3].value;
+
+                h = Math.min(h, 360); h = Math.max(0, h);
+                s = Math.min(s, 100); s = Math.max(0, s);
+                l = Math.min(l, 100); l = Math.max(0, l);
+
+                let rgb = this.hslToRgb(h, s, l);
+
+                return (rgb.r * 0x10000 + rgb.g * 0x100 + rgb.b);
+
+            }, false, true, 'Berechnet Hue (0 - 360), Saturation (0 - 100) und Luminance (0 - 100)die Farbe.', false));
+
+    }
+
+    hslToRgb(h: number, s: number, l: number): { r: number, g: number, b: number } {
+
+        s /= 100;
+        l /= 100;
+
+        let c = (1 - Math.abs(2 * l - 1)) * s,
+            x = c * (1 - Math.abs((h / 60) % 2 - 1)),
+            m = l - c / 2,
+            r = 0,
+            g = 0,
+            b = 0;
+
+        if (0 <= h && h < 60) {
+            r = c; g = x; b = 0;
+        } else if (60 <= h && h < 120) {
+            r = x; g = c; b = 0;
+        } else if (120 <= h && h < 180) {
+            r = 0; g = c; b = x;
+        } else if (180 <= h && h < 240) {
+            r = 0; g = x; b = c;
+        } else if (240 <= h && h < 300) {
+            r = x; g = 0; b = c;
+        } else if (300 <= h && h < 360) {
+            r = c; g = 0; b = x;
+        }
+        r = Math.round((r + m) * 255);
+        g = Math.round((g + m) * 255);
+        b = Math.round((b + m) * 255);
+
+
+        return {r: r, g: g, b: b}
 
     }
 

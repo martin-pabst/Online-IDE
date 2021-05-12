@@ -26,6 +26,8 @@ export class ShapeClass extends Klass {
         let shapeType = module.typeStore.getType("Shape");
         let shapeArrayType = new ArrayType(shapeType);
 
+        let vector2Class = <Klass>module.typeStore.getType("Vector2");
+
         this.addAttribute(new Attribute("angle", doublePrimitiveType,
             (value) => {
 
@@ -543,6 +545,19 @@ export class ShapeClass extends Klass {
 
             }, false, false, 'Setzt das Grafikobjekt hinter alle anderen.', false));
 
+            this.addMethod(new Method("getHitPolygon", new Parameterlist([
+            ]), new ArrayType(vector2Class),
+                (parameters) => {
+    
+                    let o: RuntimeObject = parameters[0].value;
+                    let sh: ShapeHelper = o.intrinsicData["Actor"];
+    
+                    if (sh.testdestroyed("getHitPolygon")) return;
+    
+                    return sh.getHitPolygon(vector2Class);
+    
+                }, false, false, "Gibt ein Array zurück, das die vier Eckpunkte des Hit-Polygons in Form von Vector2-Ortsvektoren enthält. Bei den Klassen Rectangle, Triangle und Polygon sind dies die Eckpunkte.", false));
+    
 
     }
 
@@ -910,5 +925,22 @@ export abstract class ShapeHelper extends ActorHelper {
     }
 
     abstract getCopy(klass: Klass): RuntimeObject;
+
+    getHitPolygon(vector2Class: Klass):Value[] {
+
+        if(this.hitPolygonDirty){
+            this.transformHitPolygon();
+        }
+
+        let ret: Value[] = [];
+        for(let p of this.hitPolygonTransformed){
+            let ro = new RuntimeObject(vector2Class);
+            ro.attributes = [{type: doublePrimitiveType, value: p.x}, {type: doublePrimitiveType, value: p.y}];
+            ret.push({type: vector2Class, value: ro});
+        }
+
+        return ret;
+    }
+
 
 }

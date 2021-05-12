@@ -34,7 +34,7 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
             $tableLeft.w2grid({
                 name: this.schoolGridName,
                 header: 'Schulen',
-                selectType: "cell",
+                // selectType: "cell",
                 multiSelect: false,
                 show: {
                     header: true,
@@ -56,10 +56,10 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
                 searches: [
                     { field: 'name', label: 'Bezeichnung', type: 'text' }
                 ],
-                sortData: [{ field: 'name', direction: 'asc' }, {field: 'kuerzel', direction: 'asc'}, 
-                           {field: 'numberOfClasses', direction: 'asc'}, {field: 'numberOfUsers', direction: 'asc'}],
-                onSelect: (event) => { that.onSelectSchool(event) },
-                onUnselect: (event) => { that.onSelectSchool(event) },
+                sortData: [{ field: 'name', direction: 'asc' }, { field: 'kuerzel', direction: 'asc' },
+                { field: 'numberOfClasses', direction: 'asc' }, { field: 'numberOfUsers', direction: 'asc' }],
+                onSelect: (event) => { event.done(() => { that.onSelectSchool(event) }) },
+                onUnselect: (event) => { that.onUnSelectSchool(event) },
                 onAdd: (event) => { that.onAddSchool() },
                 onChange: (event) => { that.onUpdateSchool(event) },
                 onDelete: (event) => { that.onDeleteSchool(event) },
@@ -78,7 +78,7 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
             $tableRight.w2grid({
                 name: this.adminGridName,
                 header: 'Schuladmins',
-                selectType: "cell",
+                // selectType: "cell",
                 show: {
                     header: true,
                     toolbar: true,
@@ -108,7 +108,7 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
                     { field: 'familienname', caption: 'Familienname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
                     {
                         field: 'id', caption: 'PW', size: '40px', sortable: false, render: (e) => {
-                            return '<div class="pw_button" title="Passwort ändern" data-recid="' + e.recid + '">PW!</div>';
+                            return '<div class="pw_button" title="Passwort ändern" data-recid="' + e.recid + '" style="visibility: hidden">PW!</div>';
                         }
                     }
                 ],
@@ -136,9 +136,9 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
 
         let adminGrid = w2ui[this.adminGridName];
 
-        let selection = adminGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
+        // let selection = adminGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
 
-        if (selection.length == 1) {
+        if (event != null && adminGrid.getSelection().length == 1) {
             //@ts-ignore
             adminGrid.toolbar.enable('passwordButton');
         } else {
@@ -151,11 +151,11 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
 
 
     changePassword(recIds: number[] = []) {
-        let that = this;
 
         if (recIds.length == 0) {
+            recIds = <number[]>this.adminGrid.getSelection();
             //@ts-ignore
-            recIds = <any>this.adminGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
+            // recIds = <any>this.adminGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
         }
 
         if (recIds.length != 1) {
@@ -197,14 +197,14 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
     onDeleteSchool(event: any) {
         if (!event.force || event.isStopped) return;
 
-        let recIds: number[];
+        let recIds: number[] = <number[]>this.schoolGrid.getSelection();
 
 
         //@ts-ignore
-        recIds = <any>this.schoolGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
+        // recIds = <any>this.schoolGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
 
-        let selectedSchools: SchoolData[] = <SchoolData[]>this.schoolGrid.records.filter(
-            (cd: SchoolData) => recIds.indexOf(cd.id) >= 0);
+        // let selectedSchools: SchoolData[] = <SchoolData[]>this.schoolGrid.records.filter(
+        //     (cd: SchoolData) => recIds.indexOf(cd.id) >= 0);
 
 
         let request: CRUDSchoolRequest = {
@@ -214,7 +214,7 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
         }
 
         ajax("CRUDSchool", request, (response: CRUDResponse) => {
-            recIds.forEach(id => this.schoolGrid.remove("" + id));
+            this.schoolGrid.remove("" + recIds[0]);
             this.schoolGrid.refresh();
         }, () => {
             this.schoolGrid.refresh();
@@ -225,8 +225,8 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
     onUpdateSchool(event: any) {
 
         let data: SchoolData = <SchoolData>this.schoolGrid.records[event.index];
-
-        data[this.schoolGrid.columns[event.column]["field"]] = event.value_new;
+        let field = this.schoolGrid.columns[event.column]["field"];
+        data[field] = event.value_new;
 
         let request: CRUDSchoolRequest = {
             type: "update",
@@ -236,9 +236,9 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
         ajax("CRUDSchool", request, (response: CRUDResponse) => {
             // console.log(data);
             delete data["w2ui"]["changes"];
-            this.schoolGrid.refresh();
-        }, () => {
-            data[this.schoolGrid.columns[event.column]["field"]] = event.value_original;
+            this.schoolGrid.refreshCell(data["recid"], field);
+        }, () => {  
+            data[field] = event.value_original;
             this.schoolGrid.refresh();
         });
     }
@@ -267,44 +267,48 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
 
     onSelectSchool(event: any) {
 
-        let that = this;
+        let recIds: number[] = <number[]>this.schoolGrid.getSelection();
+        if (recIds.length == 0){
+            return;
+        } 
 
-        event.done(() => {
-            let recIds: number[];
+        // event.done(() => {
+
+        // old: for selecttype = "cell"
+        //@ts-ignore
+        // recIds = <any>this.schoolGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
 
 
-            //@ts-ignore
-            recIds = <any>this.schoolGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
+        let selectedSchools: SchoolData[] = <SchoolData[]>this.schoolGrid.records.filter(
+            (cd: SchoolData) => recIds.indexOf(cd.id) >= 0);
 
-            let selectedSchools: SchoolData[] = <SchoolData[]>this.schoolGrid.records.filter(
-                (cd: SchoolData) => recIds.indexOf(cd.id) >= 0);
+        let adminList: UserData[] = [];
 
-
-            this.adminGrid.clear();
-
-            let adminList: UserData[] = [];
-
-            for (let sc of selectedSchools) {
-                this.adminGrid.header = "Admins der Schule " + sc.name;
-                for (let sd of sc.usersWithoutClass) {
-                    if (sd.is_schooladmin) adminList.push(sd);
-                }
+        for (let sc of selectedSchools) {
+            this.adminGrid.header = "Admins der Schule " + sc.name;
+            for (let sd of sc.usersWithoutClass) {
+                if (sd.is_schooladmin) adminList.push(sd);
             }
+        }
+
+        // setTimeout(() => {
+            this.adminGrid.clear();
+            this.adminGrid.add(adminList);
+            this.adminGrid.refresh();
+            this.onSelectAdmin(null);           // to disable "change password"-Button
+            this.initializePasswordButtons();
+        // }, 20);
 
 
-            setTimeout(() => {
-                this.adminGrid.add(adminList);
-                this.adminGrid.refresh();
-                this.onSelectAdmin(null);
-                this.initializePasswordButtons();
-            }, 20);
-
-
-        });
+        // });
 
     }
 
-    initializePasswordButtons(){
+    onUnSelectSchool(event){
+        this.adminGrid.clear();
+    }
+
+    initializePasswordButtons() {
         let that = this;
         setTimeout(() => {
             jQuery('.pw_button').off('click');
@@ -313,8 +317,8 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
                 e.preventDefault();
                 e.stopPropagation();
                 that.changePassword([recid]);
-            });
-        }, 1500);
+            }).css('visibility', 'visible');
+        }, 1000);
 
     }
 
@@ -353,11 +357,11 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
     onDeleteAdmin(event: any) {
         if (!event.force || event.isStopped) return;
 
-        let recIds: number[];
+        let recIds: number[] = <number[]>this.adminGrid.getSelection();
 
 
         //@ts-ignore
-        recIds = <any>this.adminGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
+        // recIds = <any>this.adminGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
 
         let selectedadmins: UserData[] = <UserData[]>this.adminGrid.records.filter(
             (cd: UserData) => recIds.indexOf(cd.id) >= 0 && this.administration.userData.id != cd.id);
@@ -390,8 +394,8 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
     onUpdateAdmin(event: any) {
 
         let data: UserData = <UserData>this.adminGrid.records[event.index];
-
-        data[this.adminGrid.columns[event.column]["field"]] = event.value_new;
+        let field: string = this.adminGrid.columns[event.column]["field"];
+        data[field] = event.value_new;
 
         let request: CRUDUserRequest = {
             type: "update",
@@ -403,10 +407,12 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
             for (let key in data["w2ui"]["changes"]) {
                 delete data["w2ui"]["changes"][key];
             }
+            data["w2ui"]["changes"] = null;
+            this.adminGrid.refreshCell(data["recid"], field)
             // //@ts-ignore
             // this.adminGrid.last.inEditMode = false;
         }, () => {
-            data[this.adminGrid.columns[event.column]["field"]] = event.value_original;
+            data[field] = event.value_original;
             // this.adminGrid.refresh();
         });
 
@@ -414,7 +420,8 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
 
     onAddAdmin() {
 
-        let selectedSchools = <number[]>this.schoolGrid.getSelection().map((d: { recid: number }) => d.recid).filter((value, index, array) => array.indexOf(value) === index);
+        let selectedSchools = <number[]>this.schoolGrid.getSelection();
+        // let selectedSchools = <number[]>this.schoolGrid.getSelection().map((d: { recid: number }) => d.recid).filter((value, index, array) => array.indexOf(value) === index);
         if (selectedSchools.length != 1) {
             this.adminGrid.error("Wenn Sie Admins hinzufügen möchten muss links genau eine Schule ausgewählt sein.");
             return;

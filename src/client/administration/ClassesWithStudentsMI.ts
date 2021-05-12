@@ -42,7 +42,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
             $tableLeft.w2grid({
                 name: this.classesGridName,
                 header: 'Klassen',
-                selectType: "cell",
+                // selectType: "cell",
                 show: {
                     header: true,
                     toolbar: true,
@@ -58,7 +58,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                     { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
                     { field: 'name', caption: 'Bezeichnung', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
                     {
-                        field: 'numberOfStudents', caption: 'Schüler/innen', size: '30%', sortable: true, resizable: true,
+                        field: 'numberOfStudents', caption: 'Schüler/innen', size: '30%', sortable: false, resizable: true,
                         render: function (record: ClassData) {
                             return '<div>' + record.students.length + '</div>';
                         }
@@ -68,8 +68,8 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                     { field: 'name', label: 'Bezeichnung', type: 'text' }
                 ],
                 sortData: [{ field: 'name', direction: 'ASC' }],
-                onSelect: (event) => { that.onSelectClass(event) },
-                onUnselect: (event) => { that.onSelectClass(event) },
+                onSelect: (event) => { event.done(() => { that.onSelectClass(event) }) },
+                onUnselect: (event) => { event.done(() => { that.onUnselectClass(event) }) },
                 onAdd: (event) => { that.onAddClass() },
                 onChange: (event) => { that.onUpdateClass(event) },
                 onDelete: (event) => { that.onDeleteClass(event) },
@@ -85,7 +85,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                 $tableRight.w2grid({
                     name: this.studentGridName,
                     header: 'Schüler/innen',
-                    selectType: "cell",
+                    // selectType: "cell",
                     show: {
                         header: true,
                         toolbar: true,
@@ -120,7 +120,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                         { field: 'familienname', caption: 'Familienname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
                         {
                             field: 'id', caption: 'PW', size: '40px', sortable: false, render: (e) => {
-                                return '<div class="pw_button" title="Passwort ändern" data-recid="' + e.recid + '">PW!</div>';
+                                return '<div class="pw_button" title="Passwort ändern" data-recid="' + e.recid + '" style="visibility: hidden">PW!</div>';
                             }
                         }
                     ],
@@ -139,7 +139,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                         }
                     },
                     onSelect: (event) => { event.done(() => { that.onSelectStudent(event) }) },
-                    onUnselect: (event) => { event.done(() => { that.onSelectStudent(event) }) },
+                    onUnselect: (event) => { event.done(() => { that.onUnselectStudent(event) }) },
                 });
             }
         });
@@ -147,11 +147,27 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
 
     }
 
+    onUnselectStudent(event) {
+        let studentGrid = w2ui[this.studentGridName];
+        let selection = studentGrid.getSelection();
+
+        if (selection.length == 0) {
+            //@ts-ignore
+            studentGrid.toolbar.disable('changeClassButton');
+
+            //@ts-ignore
+            studentGrid.toolbar.disable('passwordButton');
+        }
+    }
+
+
     onSelectStudent(event: any) {
 
         let studentGrid = w2ui[this.studentGridName];
 
-        let selection = studentGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
+        let selection = studentGrid.getSelection();
+
+        // let selection = studentGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
 
         if (selection.length > 0) {
             //@ts-ignore
@@ -177,8 +193,10 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
 
         let studentGrid: W2UI.W2Grid = w2ui[this.studentGridName];
         let classesGrid: W2UI.W2Grid = w2ui[this.classesGridName];
+
+        recIds = <number[]>studentGrid.getSelection();
         //@ts-ignore
-        recIds = <any>studentGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
+        // recIds = <any>studentGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
         let students: UserData[] = recIds.map((id) => <UserData>studentGrid.get(id + ""));
 
         this.openChooseClassPopup((newClass: ClassData) => {
@@ -228,8 +246,9 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
 
 
         if (recIds.length == 0) {
+            recIds = <number[]>studentGrid.getSelection();
             //@ts-ignore
-            recIds = <any>studentGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
+            // recIds = <any>studentGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
         }
 
         if (recIds.length != 1) {
@@ -270,49 +289,6 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
 
             });
 
-
-            // w2prompt({
-            //     label: 'Neues Passwort',
-            //     value: '',
-            //     attrs: 'style="width: 200px" type="password"',
-            //     title: "Passwort für " + student.rufname + " " + student.familienname + " (" + student.username + ")",
-            //     ok_text: "OK",
-            //     cancel_text: "Abbrechen",
-            //     width: 600,
-            //     height: 200
-            // })
-            //     .change(function (event) {
-
-            //     })
-            //     .ok(function (password) {
-            //         student.password = password;
-
-            //         let request: CRUDUserRequest = {
-            //             type: "update",
-            //             data: student,
-            //         }
-
-            //         ajax("CRUDUser", request, (response: CRUDResponse) => {
-
-            //             w2alert('Das Passwort für ' + student.rufname + " " + student.familienname + " (" + student.username + ") wurde erfolgreich geändert.");
-            //             studentGrid.searchReset();
-            //             that.preparePasswordButtons();
-            //         }, () => {
-            //             w2alert('Fehler beim Ändern des Passworts!');
-            //             studentGrid.searchReset();
-            //             that.preparePasswordButtons();
-            //         });
-
-
-            //     })
-
-
-            // .cancel(function () {
-            //     studentGrid.searchReset();
-            //     that.preparePasswordButtons();
-            // });
-
-            // jQuery('#w2ui-popup #w2prompt').attr("type", "password");                
         }
 
     }
@@ -324,11 +300,12 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
 
         let classesGrid: W2UI.W2Grid = w2ui[this.classesGridName];
 
+        recIds = <number[]>classesGrid.getSelection();
         //@ts-ignore
-        recIds = <any>classesGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
+        // recIds = <any>classesGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
 
-        let selectedClasses: ClassData[] = <ClassData[]>classesGrid.records.filter(
-            (cd: ClassData) => recIds.indexOf(cd.id) >= 0);
+        // let selectedClasses: ClassData[] = <ClassData[]>classesGrid.records.filter(
+        //     (cd: ClassData) => recIds.indexOf(cd.id) >= 0);
 
 
         let request: CRUDClassRequest = {
@@ -338,7 +315,12 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
         }
 
         ajax("CRUDClass", request, (response: CRUDResponse) => {
-            recIds.forEach(id => classesGrid.remove("" + id));
+            recIds.forEach(id => {
+                classesGrid.remove("" + id);
+                this.allClassesList = this.allClassesList.filter(cd => cd.id != id);
+            }
+            );
+
             classesGrid.refresh();
         }, () => {
             classesGrid.refresh();
@@ -351,7 +333,9 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
 
         let data: ClassData = <ClassData>classesGrid.records[event.index];
 
-        data[classesGrid.columns[event.column]["field"]] = event.value_new;
+        let field = classesGrid.columns[event.column]["field"];
+
+        data[field] = event.value_new;
 
         let request: CRUDClassRequest = {
             type: "update",
@@ -360,11 +344,20 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
 
         ajax("CRUDClass", request, (response: CRUDResponse) => {
             // console.log(data);
-            delete data["w2ui"]["changes"];
-            classesGrid.refresh();
+            delete data["w2ui"]["changes"][field];
+            classesGrid.refreshCell(data["recid"], field);
+
+            let classData = this.allClassesList.find(c => "" + c.id == data["recid"]);
+            if (classData != null) {
+                classData[field] = event.value_new;
+                if (field == "name") {
+                    classData.text = event.value_new;
+                }
+            }
         }, () => {
-            data[classesGrid.columns[event.column]["field"]] = event.value_original;
-            classesGrid.refresh();
+            data[field] = event.value_original;
+            delete data["w2ui"]["changes"][field];
+            classesGrid.refreshCell(data["recid"], field);
         });
     }
 
@@ -388,20 +381,31 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
             cd.id = response.id;
             classesGrid.add(cd);
             classesGrid.editField(cd.id + "", 1, undefined, { keyCode: 13 });
+            this.allClassesList.push({
+                id: cd.id,
+                lehrkraft_id: userData.id,
+                schule_id: userData.schule_id,
+                name: cd.name,
+                students: []
+            })
 
             this.selectTextInCell();
         });
     }
 
 
+    onUnselectClass(event: any) {
+
+        this.updateStudentTableToSelectedClasses();
+        this.preparePasswordButtons();
+
+    }
+
+
     onSelectClass(event: any) {
 
-        let that = this;
-
-        event.done(() => {
-            that.updateStudentTableToSelectedClasses();
-            that.preparePasswordButtons();
-        });
+        this.updateStudentTableToSelectedClasses();
+        this.preparePasswordButtons();
 
     }
 
@@ -414,8 +418,8 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                 e.preventDefault();
                 e.stopPropagation();
                 that.changePassword([recid]);
-            });
-        }, 1500);
+            }).css('visibility', 'visible');
+        }, 1000);
     }
 
     updateStudentTableToSelectedClasses() {
@@ -424,7 +428,9 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
         let classesGrid: W2UI.W2Grid = w2ui[this.classesGridName];
 
         //@ts-ignore
-        recIds = <any>classesGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
+        // recIds = <any>classesGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
+
+        recIds = <number[]>classesGrid.getSelection();
 
         let selectedClasses: ClassData[] = this.allClassesList.filter(
             (cd: ClassData) => recIds.indexOf(cd.id) >= 0);
@@ -442,12 +448,12 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
         }
 
         // studentsGrid.records = studentList;
-        setTimeout(() => {
-            studentsGrid.clear();
-            studentsGrid.add(studentList);
-            studentsGrid.refresh();
-            this.onSelectStudent(null);
-        }, 20);
+        // setTimeout(() => {
+        studentsGrid.clear();
+        studentsGrid.add(studentList);
+        studentsGrid.refresh();
+        this.onSelectStudent(null);
+        // }, 20);
 
     }
 
@@ -485,7 +491,8 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
         let classesGrid: W2UI.W2Grid = w2ui[this.classesGridName];
 
         //@ts-ignore
-        recIds = <any>studentGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
+        // recIds = <any>studentGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
+        recIds = <number[]>studentGrid.getSelection();
 
         let request: CRUDUserRequest = {
             type: "delete",
@@ -534,7 +541,8 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
             }
         }
 
-        data[studentGrid.columns[event.column]["field"]] = value_new_presented;
+        let field = studentGrid.columns[event.column]["field"];
+        data[field] = value_new_presented;
 
 
         let request: CRUDUserRequest = {
@@ -543,16 +551,13 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
         }
 
         ajax("CRUDUser", request, (response: CRUDResponse) => {
-            // console.log(data);
-            for (let key in data["w2ui"]["changes"]) {
-                delete data["w2ui"]["changes"][key];
-            }
-            // //@ts-ignore
-            // studentGrid.last.inEditMode = false;
+            delete data["w2ui"]["changes"][field];
+            studentGrid.refreshCell(data["recid"], field);
         }, () => {
-            data[studentGrid.columns[event.column]["field"]] = event.value_original;
+            data[field] = event.value_original;
             data.klasse_id = value_old_database;
-            // studentGrid.refresh();
+            delete data["w2ui"]["changes"][field];
+            studentGrid.refreshCell(data["recid"], field);
         });
 
     }
@@ -562,7 +567,10 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
         let studentGrid: W2UI.W2Grid = w2ui[this.studentGridName];
 
         let classesGrid: W2UI.W2Grid = w2ui[this.classesGridName];
-        let selectedClasses = <number[]>classesGrid.getSelection().filter((value, index, array) => array.indexOf(value) === index).map(cl => (<any>cl).recid);
+
+        let selectedClasses = <number[]>classesGrid.getSelection();
+
+        // let selectedClasses = <number[]>classesGrid.getSelection().filter((value, index, array) => array.indexOf(value) === index).map(cl => (<any>cl).recid);
         if (selectedClasses.length != 1) {
             studentGrid.error("Wenn Sie Schüler hinzufügen möchten muss links genau eine Klasse ausgewählt sein.");
             return;

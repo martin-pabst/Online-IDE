@@ -233,7 +233,7 @@ export class GroupClass extends Klass {
                 let o: RuntimeObject = parameters[0].value;
                 let sh: GroupHelper = <GroupHelper>o.intrinsicData["Actor"];
 
-                if (sh.testdestroyed("empty")) return;
+                if (sh.testdestroyed("destroyAllChildren")) return;
 
                 sh.destroyChildren();
 

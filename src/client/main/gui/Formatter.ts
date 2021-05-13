@@ -123,6 +123,7 @@ export class Formatter implements monaco.languages.DocumentFormattingEditProvide
                     switchHappend = true;
                     break;
                 case TokenType.keywordCase:
+                case TokenType.keywordDefault:
                     // outdent: line with case:
                     if (t.position.column > 3) {
                         this.deleteSpaces(edits, t.position.line, 1, 3);
@@ -210,7 +211,8 @@ export class Formatter implements monaco.languages.DocumentFormattingEditProvide
                     lastTokenWasNewLine = 2;
                     if (i < tokenlist.length - 2) {
 
-                        let lastTokenIsOperator = this.isBinaryOperator(lastNonSpaceToken?.tt);
+                        // no additional indent after "case 12 :"
+                        let lastTokenIsOperator = this.isBinaryOperator(lastNonSpaceToken?.tt) && lastNonSpaceToken?.tt != TokenType.colon;
                         let nextTokenIsOperator = this.isBinaryOperator(this.getNextNonSpaceToken(i, tokenlist).tt);
 
                         let beginNextLine = tokenlist[i + 1];

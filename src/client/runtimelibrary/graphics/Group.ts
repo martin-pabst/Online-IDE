@@ -37,7 +37,7 @@ export class CollisionPairClass extends Klass {
 
             }, false, Visibility.public, true, "Zweites an der Kollision beteiligtes Shape"));
 
-            this.setupAttributeIndicesRecursive();
+        this.setupAttributeIndicesRecursive();
 
     }
 }
@@ -269,7 +269,7 @@ export class GroupClass extends Klass {
 
             }, false, false, 'Erstellt eine Kopie des Group-Objekts (und aller seiner enthaltenen Grafikobjekte!) und git sie zurück.', false));
 
-            this.addMethod(new Method("renderAsStaticBitmap", new Parameterlist([
+        this.addMethod(new Method("renderAsStaticBitmap", new Parameterlist([
             { identifier: "renderAsStaticBitmap", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), this,
             (parameters) => {
@@ -306,10 +306,10 @@ export class GroupHelper extends ShapeHelper {
 
     cacheAsBitmap(doCache: boolean) {
         let container = <PIXI.Container>this.displayObject;
-        
+
         // If you set doCache to false and shortly afterwards to true: 
         // make shure there's at least one rendercycle in between.
-        if(doCache){
+        if (doCache) {
             setTimeout(() => {
                 container.cacheAsBitmap = true;
             }, 300);

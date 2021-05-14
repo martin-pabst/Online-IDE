@@ -326,7 +326,7 @@ export class SynchronizationManager {
         new EmbeddedSlider(this.$historyOuterDiv, true, false, () => { this.diffEditor.layout(); }).$sliderDiv.css('left', '-3px');
         this.$historyOuterDiv.find('.joe_slider').css('position', 'absolute');
 
-        this.$historyScrollDiv = makeDiv("historyScrollDiv", "jo_srollable");
+        this.$historyScrollDiv = makeDiv("historyScrollDiv", "jo_scrollable");
         this.$historyOuterDiv.append(this.$historyScrollDiv);
 
 

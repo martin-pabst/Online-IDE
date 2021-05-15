@@ -881,12 +881,12 @@ export class GNGModule extends Module {
 export class ModuleStore {
 
     private modules: Module[] = [];
-    private moduleMap: Map<string, Module> = new Map();
+    private moduleMap: {[name: string]: Module} = {};
     private baseModule: BaseModule;
 
     dirty: boolean = false;
 
-    constructor(private main: MainBase, withBaseModule: boolean, additionalLibraries: string[] = []) {
+    constructor(private main: MainBase, withBaseModule: boolean, private additionalLibraries: string[] = []) {
         if (withBaseModule) {
             this.baseModule = new BaseModule(main);
             this.putModule(this.baseModule);
@@ -904,6 +904,23 @@ export class ModuleStore {
             case "gng": this.putModule(new GNGModule(this.main, this));
             break;
         }
+    }
+
+    setAdditionalLibraries(additionalLibraries: string[]){
+
+        this.modules = this.modules.filter( m => (!m.isSystemModule) || m instanceof BaseModule);
+        this.moduleMap = {};
+
+        for(let m of this.modules){
+            this.moduleMap[m.file.name] =  m;
+        }
+
+        if(additionalLibraries != null){
+            for(let lib of additionalLibraries){
+                this.addLibraryModule(lib);
+            }
+        }
+
     }
 
     findModuleById(module_id: number): Module {

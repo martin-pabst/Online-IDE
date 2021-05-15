@@ -12,6 +12,7 @@ import { text } from "express";
 import { WorkspaceData, Workspaces, ClassData } from "../../communication/Data.js";
 import { dateToString } from "../../tools/StringTools.js";
 import { DistributeToStudentsDialog } from "./DistributeToStudentsDialog.js";
+import { WorkspaceSettingsDialog } from "./WorkspaceSettingsDialog.js";
 
 
 export class ProjectExplorer {
@@ -404,6 +405,14 @@ export class ProjectExplorer {
                     });
                 }
             }
+
+            cmiList.push({
+                caption: "Einstellungen...",
+                callback: (element: AccordionElement) => {
+                    let workspace: Workspace = element.externalElement;
+                    new WorkspaceSettingsDialog(workspace, this.main).open();
+                }
+            })
 
             return cmiList;
         }

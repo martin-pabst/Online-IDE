@@ -213,7 +213,6 @@ export class TurtleHelper extends FilledShapeHelper {
         this.lineGraphic = new PIXI.Graphics();
         container.addChild(this.lineGraphic);
         this.lineGraphic.moveTo(xStart, yStart);
-        console.log("MoveTo: " + xStart + ", " + yStart);
         this.lastPosX = xStart;
         this.lastPosY = yStart;
 

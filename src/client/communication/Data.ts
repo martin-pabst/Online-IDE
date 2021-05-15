@@ -30,6 +30,7 @@ export type ViewMode = {
 
 
 export type WorkspaceSettings = {
+    libaries: string[]
 }
 
 export type FileData = {
@@ -54,7 +55,7 @@ export type WorkspaceData = {
     owner_id: number,
     files: FileData[],
     currentFileId: number,
-    settings?: WorkspaceSettings,
+    settings?: string,       // serialized WorkspaceSettings
 
     version: number,
     repository_id: number,    // id of repository-workspace

@@ -28,6 +28,19 @@
     font-size: 200%;
 }
 
+.dialog-subheading {
+    font-size: 150%;
+}
+
+.jo_checkbox_div {
+    display: flex;
+    flex-direction: row;
+}
+
+.jo_checkbox_div>label {
+    cursor: pointer;
+}
+
 .dialog-input {
     width: 20em;
 }

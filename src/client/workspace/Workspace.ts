@@ -1,4 +1,4 @@
-import { WorkspaceData } from "../communication/Data.js";
+import { WorkspaceData, WorkspaceSettings } from "../communication/Data.js";
 import { Module, ModuleStore } from "../compiler/parser/Module.js";
 import { Evaluator } from "../interpreter/Evaluator.js";
 import { AccordionElement } from "../main/gui/Accordion.js";
@@ -27,14 +27,23 @@ export class Workspace {
     compilerMessage: string;
 
     evaluator: Evaluator;
+
+    settings: WorkspaceSettings = {
+        libaries: []
+    };
     
     constructor(name: string, private main: MainBase, owner_id: number){
         this.name = name;
         this.owner_id = owner_id;
-        this.moduleStore = new ModuleStore(main, true);
+        this.moduleStore = new ModuleStore(main, true, this.settings.libaries);
         this.evaluator = new Evaluator(this, main);
     }
-    
+
+    alterAdditionalLibraries() {
+        this.moduleStore.setAdditionalLibraries(this.settings.libaries);
+        this.moduleStore.dirty = true;
+    }
+
     getWorkspaceData(withFiles: boolean): WorkspaceData {
         let wd: WorkspaceData = {
             name: this.name,
@@ -48,7 +57,8 @@ export class Workspace {
             language: 0,
             sql_baseDatabase: "",
             sql_history: "",
-            sql_manipulateDatabaseStatements: ""
+            sql_manipulateDatabaseStatements: "",
+            settings: JSON.stringify(this.settings)
         }
 
         if(withFiles){
@@ -98,12 +108,19 @@ export class Workspace {
 
     static restoreFromData(ws: WorkspaceData, main: Main): Workspace {
 
+        let settings: WorkspaceSettings = (ws.settings != null && ws.settings.startsWith("{")) ? JSON.parse(ws.settings) : {libaries: []}; 
+
         let w = new Workspace(ws.name, main, ws.owner_id);
         w.id = ws.id;
         w.owner_id = ws.owner_id;
         w.version = ws.version;
         w.repository_id = ws.repository_id;
         w.has_write_permission_to_repository = ws.has_write_permission_to_repository;
+        w.settings = settings;
+
+        if(w.settings.libaries.length > 0){
+            w.moduleStore.setAdditionalLibraries(w.settings.libaries);
+        }
 
         for(let f of ws.files){
 

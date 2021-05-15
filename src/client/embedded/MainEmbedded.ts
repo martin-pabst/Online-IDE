@@ -17,6 +17,7 @@ import { TextPosition } from "../compiler/lexer/Token.js";
 import { EmbeddedIndexedDB } from "./EmbeddedIndexedDB.js";
 import { SemicolonAngel } from "../compiler/parser/SemicolonAngel.js";
 import { TextPositionWithModule } from "../compiler/types/Types.js";
+import { HitPolygonStore } from "../runtimelibrary/graphics/PolygonStore.js";
 
 type JavaOnlineConfig = {
     withFileList?: boolean,
@@ -25,7 +26,8 @@ type JavaOnlineConfig = {
     withErrorList?: boolean,
     withBottomPanel?: boolean,
     speed?: number | "max",
-    id?: string
+    id?: string,
+    libraries?: string[]
 }
 
 export class MainEmbedded implements MainBase {
@@ -170,6 +172,7 @@ export class MainEmbedded implements MainBase {
         }
 
         if(this.config.speed == null) this.config.speed = 9;
+        if(this.config.libraries == null) this.config.libraries = [];
 
 
     }
@@ -317,6 +320,8 @@ export class MainEmbedded implements MainBase {
 
     initWorkspace(scriptList: JOScript[]) {
         this.currentWorkspace = new Workspace("Embedded-Workspace", this, 0);
+        this.currentWorkspace.settings.libaries = this.config.libraries;
+        this.currentWorkspace.alterAdditionalLibraries();
 
         let i = 0;
         for (let script of scriptList) {

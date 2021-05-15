@@ -211,15 +211,17 @@ export class Formatter implements monaco.languages.DocumentFormattingEditProvide
                     lastTokenWasNewLine = 2;
                     if (i < tokenlist.length - 2) {
 
+                        let nextNonSpaceToken = this.getNextNonSpaceToken(i, tokenlist);
+
                         // no additional indent after "case 12 :"
                         let lastTokenIsOperator = this.isBinaryOperator(lastNonSpaceToken?.tt) && lastNonSpaceToken?.tt != TokenType.colon;
-                        let nextTokenIsOperator = this.isBinaryOperator(this.getNextNonSpaceToken(i, tokenlist).tt);
+                        let nextTokenIsOperator = this.isBinaryOperator(nextNonSpaceToken.tt);
 
                         let beginNextLine = tokenlist[i + 1];
                         let token2 = tokenlist[i + 2];
                         let currentIndentation = 0;
 
-                        if (beginNextLine.tt == TokenType.newline) {
+                        if (beginNextLine.tt == TokenType.newline || nextNonSpaceToken.tt == TokenType.comment) {
                             break;
                         }
 

@@ -320,7 +320,7 @@ export class MainEmbedded implements MainBase {
 
     initWorkspace(scriptList: JOScript[]) {
         this.currentWorkspace = new Workspace("Embedded-Workspace", this, 0);
-        this.currentWorkspace.settings.libaries = this.config.libraries;
+        this.currentWorkspace.settings.libraries = this.config.libraries;
         this.currentWorkspace.alterAdditionalLibraries();
 
         let i = 0;

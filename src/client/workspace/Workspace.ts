@@ -29,18 +29,18 @@ export class Workspace {
     evaluator: Evaluator;
 
     settings: WorkspaceSettings = {
-        libaries: []
+        libraries: []
     };
     
     constructor(name: string, private main: MainBase, owner_id: number){
         this.name = name;
         this.owner_id = owner_id;
-        this.moduleStore = new ModuleStore(main, true, this.settings.libaries);
+        this.moduleStore = new ModuleStore(main, true, this.settings.libraries);
         this.evaluator = new Evaluator(this, main);
     }
 
     alterAdditionalLibraries() {
-        this.moduleStore.setAdditionalLibraries(this.settings.libaries);
+        this.moduleStore.setAdditionalLibraries(this.settings.libraries);
         this.moduleStore.dirty = true;
     }
 
@@ -108,7 +108,13 @@ export class Workspace {
 
     static restoreFromData(ws: WorkspaceData, main: Main): Workspace {
 
-        let settings: WorkspaceSettings = (ws.settings != null && ws.settings.startsWith("{")) ? JSON.parse(ws.settings) : {libaries: []}; 
+        let settings: WorkspaceSettings = (ws.settings != null && ws.settings.startsWith("{")) ? JSON.parse(ws.settings) : {libraries: []}; 
+
+        //@ts-ignore
+        if(settings.libaries){
+            //@ts-ignore
+            settings.libraries = settings.libaries;
+        }
 
         let w = new Workspace(ws.name, main, ws.owner_id);
         w.id = ws.id;
@@ -118,8 +124,8 @@ export class Workspace {
         w.has_write_permission_to_repository = ws.has_write_permission_to_repository;
         w.settings = settings;
 
-        if(w.settings.libaries.length > 0){
-            w.moduleStore.setAdditionalLibraries(w.settings.libaries);
+        if(w.settings.libraries.length > 0){
+            w.moduleStore.setAdditionalLibraries(w.settings.libraries);
         }
 
         for(let f of ws.files){

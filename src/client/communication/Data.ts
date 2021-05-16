@@ -30,7 +30,7 @@ export type ViewMode = {
 
 
 export type WorkspaceSettings = {
-    libaries: string[]
+    libraries: string[]
 }
 
 export type FileData = {

@@ -26,7 +26,7 @@ export class WorkspaceSettingsDialog{
         dialog.heading("Einstellungen zum Workspace " + this.workspace.name);
         dialog.subHeading("A. Verwendete Bibliotheken:");
 
-        let currentLibraries = this.workspace.settings.libaries;
+        let currentLibraries = this.workspace.settings.libraries;
 
         for(let library of this.libraries){
             let cbs = dialog.addCheckbox(library.description, currentLibraries.indexOf(library.identifier) >= 0, library.identifier);
@@ -52,7 +52,7 @@ export class WorkspaceSettingsDialog{
                     }
 
                     if(changed){
-                        this.workspace.settings.libaries = newLibs;
+                        this.workspace.settings.libraries = newLibs;
                         this.workspace.saved = false;
                         this.workspace.alterAdditionalLibraries();
                         this.main.networkManager.sendUpdates(null, true);

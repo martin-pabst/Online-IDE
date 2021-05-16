@@ -215,8 +215,8 @@ export class Vector2Class extends Klass {
         ]), doublePrimitiveType,
             (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let o1: RuntimeObject = parameters[1].value;
+                let o: RuntimeObject = parameters[1].value;
+                let o1: RuntimeObject = parameters[2].value;
 
                 let x: number = o.attributes[xIndex].value;
                 let y: number = o.attributes[yIndex].value;

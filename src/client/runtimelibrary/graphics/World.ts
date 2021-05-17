@@ -565,8 +565,11 @@ export class WorldHelper {
         if (this.interpreter.state == InterpreterState.running) {
             if (this.actActors.length > 0) {
                 this.interpreter.timerFunction(33.33, true, 0.5);
-                this.interpreter.timerStopped = false;
-                this.interpreter.timerFunction(33.33, false, 0.08);
+                //@ts-ignore
+                if(this.interpreter.state == InterpreterState.running){
+                    this.interpreter.timerStopped = false;
+                    this.interpreter.timerFunction(33.33, false, 0.08);
+                }
             } else {
                 this.interpreter.timerFunction(33.33, false, 0.7);
             }

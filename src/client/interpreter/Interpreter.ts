@@ -533,7 +533,7 @@ export class Interpreter {
         }
 
         if (this.timerStopped) {
-            if (this.state == InterpreterState.paused) {
+            if (this.state == InterpreterState.paused || this.state == InterpreterState.waitingForInput) {
                 this.showProgramPointerAndVariables();
             }
             if (this.callbackAfterExecution != null) {

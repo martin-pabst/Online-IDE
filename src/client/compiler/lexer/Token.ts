@@ -180,6 +180,7 @@ export enum TokenType {
     methodDeclaration,
     parameterDeclaration,
     superConstructorCall,
+    constructorCall,       // call constructor with this() inside another constructor
     newArray,
     arrayInitialization,
     print,

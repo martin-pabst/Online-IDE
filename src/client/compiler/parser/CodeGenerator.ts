@@ -4,7 +4,7 @@ import { ArrayType } from "../types/Array.js";
 import { Klass, Interface, StaticClass, Visibility, getVisibilityUpTo } from "../types/Class.js";
 import { booleanPrimitiveType, charPrimitiveType, floatPrimitiveType, intPrimitiveType, stringPrimitiveType, objectType, nullType, voidPrimitiveType, varType, doublePrimitiveType } from "../types/PrimitiveTypes.js";
 import { Attribute, Type, Variable, Value, PrimitiveType, UsagePositions, Method, Heap, getTypeIdentifier, Parameterlist } from "../types/Types.js";
-import { ASTNode, AttributeDeclarationNode, BinaryOpNode, ClassDeclarationNode, ConstantNode, DoWhileNode, ForNode, IdentifierNode, IfNode, IncrementDecrementNode, MethodcallNode, MethodDeclarationNode, NewObjectNode, ReturnNode, SelectArrayElementNode, SelectArributeNode, SuperconstructorCallNode, SuperNode, ThisNode, UnaryOpNode, WhileNode, LocalVariableDeclarationNode, ArrayInitializationNode, NewArrayNode, PrintNode, CastManuallyNode, EnumDeclarationNode, TermNode, SwitchNode, ScopeNode, ParameterNode, ForNodeOverCollecion } from "./AST.js";
+import { ASTNode, AttributeDeclarationNode, BinaryOpNode, ClassDeclarationNode, ConstantNode, DoWhileNode, ForNode, IdentifierNode, IfNode, IncrementDecrementNode, MethodcallNode, MethodDeclarationNode, NewObjectNode, ReturnNode, SelectArrayElementNode, SelectArributeNode, SuperconstructorCallNode, SuperNode, ThisNode, UnaryOpNode, WhileNode, LocalVariableDeclarationNode, ArrayInitializationNode, NewArrayNode, PrintNode, CastManuallyNode, EnumDeclarationNode, TermNode, SwitchNode, ScopeNode, ParameterNode, ForNodeOverCollecion, ConstructorCallNode } from "./AST.js";
 import { LabelManager } from "./LabelManager.js";
 import { Module, ModuleStore, MethodCallPosition } from "./Module.js";
 import { AssignmentStatement, InitStackframeStatement, JumpAlwaysStatement, Program, Statement, BeginArrayStatement, NewObjectStatement, JumpOnSwitchStatement, Breakpoint, ExtendedForLoopCheckCounterAndGetElement } from "./Program.js";
@@ -517,7 +517,7 @@ export class CodeGenerator {
                     error = true;
                     if (methodNode.statements[0].type == TokenType.scopeNode) {
                         let stm = methodNode.statements[0].statements;
-                        if (stm.length > 0 && stm[0].type == TokenType.superConstructorCall) {
+                        if (stm.length > 0 && [TokenType.superConstructorCall, TokenType.constructorCall].indexOf(stm[0].type) >= 0) {
                             error = false;
                         }
                     } else if (methodNode.statements[0].type == TokenType.superConstructorCall) {
@@ -1139,6 +1139,8 @@ export class CodeGenerator {
             case TokenType.incrementDecrementAfter:
                 return this.incrementDecrementBeforeOrAfter(node);
             case TokenType.superConstructorCall:
+                return this.superconstructorCall(node);
+            case TokenType.constructorCall:
                 return this.superconstructorCall(node);
             case TokenType.keywordThis:
                 return this.pushThisOrSuper(node, false);
@@ -2397,27 +2399,42 @@ export class CodeGenerator {
 
     }
 
-    superconstructorCall(node: SuperconstructorCallNode): StackType {
+    superconstructorCall(node: SuperconstructorCallNode | ConstructorCallNode): StackType {
 
         let classContext = this.currentSymbolTable.classContext;
 
-        if (classContext?.baseClass == null || classContext.baseClass.identifier == "Object") {
-            this.pushError("Die Klasse ist nur Kindklasse der Klasse Object, daher ist der Aufruf des Superkonstruktors nicht möglich.", node.position);
+        let isSuperConstructorCall: boolean = node.type == TokenType.superConstructorCall;
+
+        if(isSuperConstructorCall){
+            if (classContext?.baseClass == null || classContext.baseClass.identifier == "Object") {
+                this.pushError("Die Klasse ist nur Kindklasse der Klasse Object, daher ist der Aufruf des Superkonstruktors nicht möglich.", node.position);
+            }
         }
 
         let methodContext = this.currentSymbolTable.method;
 
         if (classContext == null || methodContext == null || !methodContext.isConstructor) {
-            this.pushError("Ein Aufruf des Superkonstructors ist nur innerhalb des Konstruktors einer Klasse möglich.", node.position);
+            this.pushError("Ein Aufruf des Konstruktors oder des Superkonstructors ist nur innerhalb des Konstruktors einer Klasse möglich.", node.position);
             return null;
         }
 
-        let superclassType: Klass = <Klass>classContext.baseClass;
-        if (superclassType instanceof StaticClass) {
-            this.pushError("Statische Methoden haben keine super-Methoden.", node.position);
-            return { type: null, isAssignable: false };
+
+        let superclassType: Klass|StaticClass;
+
+        if(isSuperConstructorCall){
+            superclassType = <Klass>classContext.baseClass;
+            if (superclassType instanceof StaticClass) {
+                this.pushError("Statische Methoden haben keine super-Methodenaufrufe.", node.position);
+                return { type: null, isAssignable: false };
+            }
+            if (superclassType == null) superclassType = <Klass>this.moduleStore.getType("Object").type;
+        } else {
+            superclassType = <Klass>classContext;
+            if (superclassType instanceof StaticClass) {
+                this.pushError("Statische Methoden haben keine this-Methodenaufrufe.", node.position);
+                return { type: null, isAssignable: false };
+            }
         }
-        if (superclassType == null) superclassType = <Klass>this.moduleStore.getType("Object").type;
 
         // Push this-object to stack:
         this.pushStatements({
@@ -2473,12 +2490,12 @@ export class CodeGenerator {
         this.pushStatements({
             type: TokenType.callMethod,
             method: method,
-            isSuperCall: true,
+            isSuperCall: isSuperConstructorCall,
             position: node.position,
             stackframeBegin: -(parameterTypes.length + 1 + stackframeDelta) // this-object followed by parameters
         });
         // Pabst, 21.10.2020:
-        // super method is constructor => returns nothing even iv method.getReturnType() is class object
+        // super method is constructor => returns nothing even if method.getReturnType() is class object
         // return { type: method.getReturnType(), isAssignable: false };
         return { type: null, isAssignable: false };
 

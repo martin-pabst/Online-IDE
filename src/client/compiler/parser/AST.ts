@@ -16,7 +16,7 @@ export type ASTNode =
 
     export type TermNode = BinaryOpNode | UnaryOpNode | MethodcallNode | 
     ConstantNode | IdentifierNode |
-    SelectArrayElementNode | IncrementDecrementNode | SuperconstructorCallNode |
+    SelectArrayElementNode | IncrementDecrementNode | SuperconstructorCallNode | ConstructorCallNode |
     ThisNode | SuperNode | SelectArributeNode | NewObjectNode | 
     ArrayInitializationNode | NewArrayNode | CastManuallyNode | BracketsNode;
 
@@ -292,6 +292,15 @@ export type AttributeDeclarationNode = {
 
     export type SuperconstructorCallNode = {
         type: TokenType.superConstructorCall,
+        position: TextPosition,
+        rightBracketPosition: TextPosition,
+    
+        operands: TermNode[],
+        commaPositions: TextPosition[]
+    }
+    
+    export type ConstructorCallNode = {
+        type: TokenType.constructorCall,
         position: TextPosition,
         rightBracketPosition: TextPosition,
     

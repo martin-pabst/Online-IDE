@@ -1103,10 +1103,23 @@ export class Parser {
                 this.nextToken();
                 return this.parseDotOrArrayChains(term);
             case TokenType.keywordThis:
-                term = {
-                    type: TokenType.keywordThis,
-                    position: position
-                };
+                if (this.ct[1].tt == TokenType.leftBracket) {
+                    this.nextToken(); // skip "super"
+                    let parameters = this.parseMethodCallParameters();
+                    term = {
+                        type: TokenType.constructorCall,
+                        position: position,
+                        operands: parameters.nodes,
+                        commaPositions: parameters.commaPositions,
+                        rightBracketPosition: parameters.rightBracketPosition
+                    };
+                    return term;
+                } else {
+                    term = {
+                        type: TokenType.keywordThis,
+                        position: position
+                    };
+                }
                 this.nextToken();
                 return this.parseDotOrArrayChains(term);
             case TokenType.keywordNew:

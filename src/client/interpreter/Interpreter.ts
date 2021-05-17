@@ -664,6 +664,7 @@ export class Interpreter {
 
     pause() {
         this.setState(InterpreterState.paused);
+        this.showProgramPointerAndVariables();
         this.timerStopped = true;
     }
 

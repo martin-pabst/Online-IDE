@@ -147,7 +147,7 @@ export class GNGEreignisbehandlungHelper {
     // For gng library (Cornelsen-Verlag):
     aktionsempfaengerMap: { [aktionsempfaengerType: string]: GNGAktionsempfaengerData[] } = {};
 
-    timerRunning: boolean;
+    timerRunning: boolean = false;
     taktdauer: number = 300;
     remainingTime: number = 0;
 
@@ -224,7 +224,7 @@ export class GNGEreignisbehandlungHelper {
 
         interpreter.keyboardTool.keyDownCallbacks.push(this.onKeyDownMethod);
 
-        this.startTimer();
+        // this.startTimer();
 
     }
 

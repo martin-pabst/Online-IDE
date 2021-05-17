@@ -319,7 +319,7 @@ export class GNGFigurClass extends Klass {
                 o.intrinsicData["isInitialTriangle"] = true;
 
 
-            }, false, false, 'Setzt das Grafikobjekt eine Ebene nach hinten.', false));
+            }, false, false, 'Löscht die hinzugefügten Figuren', false));
 
         this.addMethod(new Method("Berührt", new Parameterlist([
         ]), booleanPrimitiveType,

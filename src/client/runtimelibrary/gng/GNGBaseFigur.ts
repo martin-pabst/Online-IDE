@@ -55,7 +55,11 @@ export class GNGBaseFigurClass extends Klass {
 
                 if (sh.testdestroyed("PositionSetzen")) return;
 
-                sh.move(x - sh.getCenterX(), y - sh.getCenterY());
+                let p: PIXI.Point = new PIXI.Point(10, 10);
+                sh.displayObject.updateTransform();
+                sh.displayObject.transform.worldTransform.apply(p, p);
+        
+                sh.move(x - p.x, y - p.y);
 
             }, false, false, "Verschiebt das Rechteck so, dass seine linke obere Ecke bei (x,y) zu liegen kommt.", false));
 

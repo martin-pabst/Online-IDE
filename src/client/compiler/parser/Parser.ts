@@ -1861,6 +1861,7 @@ export class Parser {
             let annotation = null;
             if(this.tt == TokenType.at){
                 annotation = this.cct.value;
+                this.nextToken();
             }
             let modifiers = this.collectModifiers();
 

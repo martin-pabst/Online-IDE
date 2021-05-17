@@ -43,14 +43,14 @@ export class GNGEreignisbehandlung extends Klass {
 
         //     }, false, false, "Setzt die Größe der Figur.", false));
 
-        this.addMethod(new Method("Starten()", new Parameterlist([
+        this.addMethod(new Method("Starten", new Parameterlist([
         ]), null,
             (parameters) => {
                  GNGEreignisbehandlung.getHelper(module).startTimer();
 
             }, false, false, "Zeitgeber starten.", false));
 
-        this.addMethod(new Method("Anhalten()", new Parameterlist([
+        this.addMethod(new Method("Anhalten", new Parameterlist([
         ]), null,
             (parameters) => {
                 GNGEreignisbehandlung.getHelper(module).stopTimer();

@@ -55,7 +55,8 @@ export class GNGFigurClass extends Klass {
                 o.intrinsicData["isGNG"] = true;
 
                 let interpreter = module.main.getInterpreter();
-                let rh = new GroupHelper(interpreter, o);
+                let helper: GNGEreignisbehandlungHelper = GNGEreignisbehandlung.getHelper(module);
+                let rh = new FigurHelper(interpreter, o, helper);
                 o.intrinsicData["Actor"] = rh;
 
                 let center: GNGPoint = {
@@ -68,7 +69,9 @@ export class GNGFigurClass extends Klass {
                 this.drawInitialTriangle(rh, polygonClass, circleClass, interpreter, center);
                 o.intrinsicData["isInitialTriangle"] = true;
 
-                let helper: GNGEreignisbehandlungHelper = GNGEreignisbehandlung.getHelper(module);
+                rh.scale(0.4, center.x, center.y);
+                rh.displayObject.updateTransform();
+
                 helper.registerEvents(o);
 
 
@@ -87,8 +90,8 @@ export class GNGFigurClass extends Klass {
 
                 let center: GNGPoint = o.intrinsicData["Center"];
                 let newFactor = groesse / 100;
-
                 sh.scale(newFactor / sh.scaleFactor, center.x, center.y);
+                sh.displayObject.updateTransform();
 
             }, false, false, "Setzt die Größe der Figur.", false));
 
@@ -106,6 +109,7 @@ export class GNGFigurClass extends Klass {
                 let center: GNGPoint = o.intrinsicData["Center"];
 
                 sh.rotate(grad, center.x, center.y);
+                sh.displayObject.updateTransform();
 
             }, false, false, "Dreht die Figur um den angegebenen Winkel. Positiver Winkel bedeutet Drehung gegen den Uhrzeigersinn.", false));
 
@@ -125,9 +129,10 @@ export class GNGFigurClass extends Klass {
                 let dx = länge * Math.cos(angleRad);
                 let dy = länge * Math.sin(-angleRad);
                 center.x += dx;
-                center.y += dy;
+                center.y += dy;                
 
                 sh.move(dx, dy);
+                sh.displayObject.updateTransform();
 
             }, false, false, "Bewirkt, dass die Figur um die angegebene Länge 'nach vorne' geht.", false));
 
@@ -146,6 +151,7 @@ export class GNGFigurClass extends Klass {
                 let center: GNGPoint = o.intrinsicData["Center"];
 
                 sh.move(x - center.x, y - center.y);
+                sh.displayObject.updateTransform();
                 center.x = x;
                 center.y = y;
 
@@ -163,6 +169,7 @@ export class GNGFigurClass extends Klass {
                 let center: GNGPoint = o.intrinsicData["Center"];
 
                 sh.move(100 - center.x, 200 - center.y);
+                sh.displayObject.updateTransform();
                 center.x = 100;
                 center.y = 200;
 
@@ -180,6 +187,7 @@ export class GNGFigurClass extends Klass {
                 if (sh.testdestroyed("WinkelSetzen")) return;
 
                 sh.rotate(winkel - sh.angle);
+                sh.displayObject.updateTransform();
 
             }, false, false, "Setzt den Blickwinkel der Figur. 0° => nach rechts (initial), 90°: => nach oben, usw..", false));
 
@@ -192,6 +200,8 @@ export class GNGFigurClass extends Klass {
 
                 if (sh.testdestroyed("WinkelGeben")) return;
 
+                if(sh.angle < 0) sh.angle += 360*Math.ceil(sh.angle/(-360));
+                if(sh.angle >= 360) sh.angle -= 360*Math.floor(sh.angle/360);
                 return Math.round(sh.angle);
 
             }, false, false, "Gibt den Blickwinkel der Turtle zurück.", false));
@@ -243,7 +253,7 @@ export class GNGFigurClass extends Klass {
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
-                let sh: FilledShapeHelper = o.intrinsicData["Actor"];
+                let sh: FigurHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("Entfernen")) return;
 
@@ -331,7 +341,7 @@ export class GNGFigurClass extends Klass {
                 if (sh.testdestroyed("Berührt")) return;
 
                 for (let shape of sh.worldHelper.shapes) {
-                    if (shape != sh && sh.collidesWith(shape)) return true;
+                    if (sh.shapes.indexOf(shape.runtimeObject) < 0 &&  sh.collidesWith(shape)) return true;
                 }
 
                 return false;
@@ -455,7 +465,7 @@ export class GNGFigurClass extends Klass {
                 if (farbe == null) farbe = 0;
 
                 let rto = new RuntimeObject(rectangleClass);
-                let rectangleHelper = new RectangleHelper(x, y, breite, höhe, this.module.main.getInterpreter(), rto);
+                let rectangleHelper = new RectangleHelper(x + 0.05, y + 0.05, breite - 0.1, höhe - 0.1, this.module.main.getInterpreter(), rto);
                 rto.intrinsicData["Actor"] = rectangleHelper;
 
                 let center: GNGPoint = o.intrinsicData["Center"];
@@ -497,8 +507,11 @@ export class GNGFigurClass extends Klass {
                 let farbe = GNGFarben[farbeString];
                 if (farbe == null) farbe = 0;
 
+                höhe = höhe - 0.1;      // hack to ensure collision-handling identical to gng (also 0.05 two lines below)
+                breite = breite - 0.1;
+
                 let rto = new RuntimeObject(ellipseClass);
-                let ellipseHelper = new EllipseHelper(x + breite / 2, y + höhe / 2, breite / 2, höhe / 2, this.module.main.getInterpreter(), rto);
+                let ellipseHelper = new EllipseHelper(x + breite / 2 + 0.05, y + höhe / 2 + 0.05, breite / 2, höhe / 2, this.module.main.getInterpreter(), rto);
                 rto.intrinsicData["Actor"] = ellipseHelper;
 
                 let center: GNGPoint = o.intrinsicData["Center"];
@@ -563,7 +576,18 @@ export class GNGFigurClass extends Klass {
         gh.add(c);
 
     }
+}
 
 
+class FigurHelper extends GroupHelper {
+    constructor(interpreter: Interpreter, runtimeObject: RuntimeObject, private gngEreignisbehandlungsHelper: GNGEreignisbehandlungHelper) {
+        super(interpreter, runtimeObject);
+        this.worldHelper.shapes.splice(this.worldHelper.shapes.indexOf(this), 1);
+    }
+
+    destroy(){
+        this.gngEreignisbehandlungsHelper.unregisterEvents(this.runtimeObject);
+        super.destroy();
+    }
 }
 

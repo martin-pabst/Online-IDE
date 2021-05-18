@@ -84,7 +84,7 @@ export class GNGEreignisbehandlung extends Klass {
             null,  // no implementation!
             false, false, "Wird aufgerufen, wenn eine Sondertaste gedrückt wird."));
 
-        this.addMethod(new Method("MausGecklickt", new Parameterlist([
+        this.addMethod(new Method("MausGeklickt", new Parameterlist([
             { identifier: "x", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "anzahl", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -292,7 +292,8 @@ export class GNGEreignisbehandlungHelper {
     handleMouseClickedEvent(x: number, y: number) {
         let parameters: Value[] = [
             { type: intPrimitiveType, value: Math.round(x) },
-            { type: intPrimitiveType, value: Math.round(y) }
+            { type: intPrimitiveType, value: Math.round(y) },
+            { type: intPrimitiveType, value: 1 }
         ]
 
         let liste = this.aktionsempfaengerMap["geklickt"];

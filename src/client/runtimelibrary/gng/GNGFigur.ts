@@ -363,7 +363,7 @@ export class GNGFigurClass extends Klass {
                 if (farbe == null) farbe = 0;
 
                 for (let shape of sh.worldHelper.shapes) {
-                    if (shape != sh && sh.collidesWith(shape)) {
+                    if (sh.shapes.indexOf(shape.runtimeObject) < 0 && sh.collidesWith(shape)) {
                         if (shape instanceof FilledShapeHelper && farbe == shape.fillColor) return true;
                     }
                 }

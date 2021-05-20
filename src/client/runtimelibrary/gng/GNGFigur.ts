@@ -341,7 +341,7 @@ export class GNGFigurClass extends Klass {
                 if (sh.testdestroyed("Berührt")) return;
 
                 for (let shape of sh.worldHelper.shapes) {
-                    if (sh.shapes.indexOf(shape.runtimeObject) < 0 &&  sh.collidesWith(shape)) return true;
+                    if (shape != sh &&  sh.collidesWith(shape)) return true;
                 }
 
                 return false;
@@ -363,7 +363,7 @@ export class GNGFigurClass extends Klass {
                 if (farbe == null) farbe = 0;
 
                 for (let shape of sh.worldHelper.shapes) {
-                    if (sh.shapes.indexOf(shape.runtimeObject) < 0 && sh.collidesWith(shape)) {
+                    if (shape != sh && sh.collidesWith(shape)) {
                         if (shape instanceof FilledShapeHelper && farbe == shape.fillColor) return true;
                     }
                 }
@@ -582,7 +582,6 @@ export class GNGFigurClass extends Klass {
 class FigurHelper extends GroupHelper {
     constructor(interpreter: Interpreter, runtimeObject: RuntimeObject, private gngEreignisbehandlungsHelper: GNGEreignisbehandlungHelper) {
         super(interpreter, runtimeObject);
-        this.worldHelper.shapes.splice(this.worldHelper.shapes.indexOf(this), 1);
     }
 
     destroy(){

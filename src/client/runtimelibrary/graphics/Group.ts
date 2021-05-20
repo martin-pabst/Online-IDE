@@ -146,6 +146,7 @@ export class GroupClass extends Klass {
                 if (sh.testdestroyed("remove")) return;
 
                 sh.remove(shape);
+                sh.worldHelper.shapes.push(shape.intrinsicData["Actor"]);
 
             }, false, false, 'Entfernt das übergebene Grafikelement aus der Gruppe, zerstört es jedoch nicht.', false));
 
@@ -391,6 +392,9 @@ export class GroupHelper extends ShapeHelper {
 
         if (shapeHelper.belongsToGroup != null) {
             shapeHelper.belongsToGroup.remove(shape);
+        } else {
+            let index = this.worldHelper.shapes.indexOf(shapeHelper);
+            this.worldHelper.shapes.splice(index, 1);
         }
 
         shapeHelper.belongsToGroup = this;

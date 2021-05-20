@@ -21,8 +21,8 @@ type StackType = {
 
 export class CodeGenerator {
 
-    static assignmentOperators = [TokenType.assignment, TokenType.plusAssignment, TokenType.minusAssignment, 
-        TokenType.multiplicationAssignment, TokenType.divisionAssignment, TokenType.ANDAssigment, TokenType.ORAssigment,
+    static assignmentOperators = [TokenType.assignment, TokenType.plusAssignment, TokenType.minusAssignment,
+    TokenType.multiplicationAssignment, TokenType.divisionAssignment, TokenType.ANDAssigment, TokenType.ORAssigment,
     TokenType.XORAssigment, TokenType.shiftLeftAssigment, TokenType.shiftRightAssigment, TokenType.shiftRightUnsignedAssigment];
 
     moduleStore: ModuleStore;
@@ -510,19 +510,22 @@ export class CodeGenerator {
 
         if (method.isConstructor && this.currentSymbolTable.classContext instanceof Klass) {
             let c: Klass = this.currentSymbolTable.classContext;
-            if (c != null && c.baseClass?.hasConstructor()) {
+
+            let superconstructorCallEnsured: boolean = false;
+            if (methodNode.statements[0].type == TokenType.scopeNode) {
+                let stm = methodNode.statements[0].statements;
+                if (stm.length > 0 && [TokenType.superConstructorCall, TokenType.constructorCall].indexOf(stm[0].type) >= 0) {
+                    superconstructorCallEnsured = true;
+                }
+            } else if ([TokenType.superConstructorCall, TokenType.constructorCall].indexOf(methodNode.statements[0].type) >= 0) {
+                superconstructorCallEnsured = true;
+            }
+
+            if (c != null && c.baseClass?.hasConstructor() && !c.baseClass?.hasParameterlessConstructor()) {
                 let error: boolean = false;
                 if (methodNode.statements == null || methodNode.statements.length == 0) error = true;
                 if (!error) {
-                    error = true;
-                    if (methodNode.statements[0].type == TokenType.scopeNode) {
-                        let stm = methodNode.statements[0].statements;
-                        if (stm.length > 0 && [TokenType.superConstructorCall, TokenType.constructorCall].indexOf(stm[0].type) >= 0) {
-                            error = false;
-                        }
-                    } else if (methodNode.statements[0].type == TokenType.superConstructorCall) {
-                        error = false;
-                    }
+                    error = !superconstructorCallEnsured;
                 }
                 if (error) {
                     let quickFix: QuickFix = null;
@@ -549,9 +552,28 @@ export class CodeGenerator {
                             }
                         }
                     }
-                    this.pushError("Die Basisklasse der Klasse " + c.identifier + " besitzt Konstruktoren, daher muss diese Konstruktordefinition mit einem Aufruf eines Konstruktors der Basisklasse (super(...)) beginnen.",
+                    this.pushError("Die Basisklasse der Klasse " + c.identifier + " besitzt keinen parameterlosen Konstruktor, daher muss diese Konstruktordefinition mit einem Aufruf eines Konstruktors der Basisklasse (super(...)) beginnen.",
                         methodNode.position, "error", quickFix);
                 }
+            } else if (!superconstructorCallEnsured && c.baseClass.hasParameterlessConstructor()) {
+                // invoke parameterless constructor
+                let baseClassConstructor = c.baseClass.getParameterlessConstructor();
+                this.pushStatements([
+                    // Push this-object to stack:
+                    {
+                        type: TokenType.pushLocalVariableToStack,
+                        position: methodNode.position,
+                        stackposOfVariable: 0
+                    },
+                    {
+                        type: TokenType.callMethod,
+                        method: baseClassConstructor,
+                        isSuperCall: true,
+                        position: methodNode.position,
+                        stackframeBegin: -1 // this-object followed by parameters
+                    }
+
+                ])
             }
         }
 
@@ -560,6 +582,7 @@ export class CodeGenerator {
             "onMouseDown", "onMouseUp", "onMouseMove", "onMouseEnter", "onMouseLeave"];
         if (methodIdentifiers.indexOf(method.identifier) >= 0 && this.currentSymbolTable.classContext.hasAncestorOrIs(actorClass)) {
             this.pushStatements([
+
                 {
                     type: TokenType.returnIfDestroyed,
                     position: methodNode.position
@@ -815,12 +838,12 @@ export class CodeGenerator {
     }
 
     checkIfAssignmentInstedOfEqual(nodeFrom: ASTNode, conditionType?: Type) {
-        if(nodeFrom == null) return;
+        if (nodeFrom == null) return;
 
         if (nodeFrom.type == TokenType.binaryOp && nodeFrom.operator == TokenType.assignment) {
             let pos = nodeFrom.position;
             this.pushError("= ist der Zuweisungsoperator. Du willst sicher zwei Werte vergleichen. Dazu benötigst Du den Vergleichsoperator ==.",
-                pos,  conditionType == booleanPrimitiveType ? "warning" : "error", {
+                pos, conditionType == booleanPrimitiveType ? "warning" : "error", {
                 title: '= durch == ersetzen',
                 editsProvider: (uri) => {
                     return [{
@@ -2236,8 +2259,8 @@ export class CodeGenerator {
 
             let attributeWithError = objectType.getAttribute(node.identifier, visibilityUpTo);
 
-            let staticAttributeWithError: { attribute: Attribute, error: string, foundButInvisible: boolean, staticClass: StaticClass} 
-               = null;
+            let staticAttributeWithError: { attribute: Attribute, error: string, foundButInvisible: boolean, staticClass: StaticClass }
+                = null;
             if (attributeWithError.attribute == null) {
                 staticAttributeWithError = objectType.staticClass.getAttribute(node.identifier, visibilityUpTo);
             }
@@ -2405,7 +2428,7 @@ export class CodeGenerator {
 
         let isSuperConstructorCall: boolean = node.type == TokenType.superConstructorCall;
 
-        if(isSuperConstructorCall){
+        if (isSuperConstructorCall) {
             if (classContext?.baseClass == null || classContext.baseClass.identifier == "Object") {
                 this.pushError("Die Klasse ist nur Kindklasse der Klasse Object, daher ist der Aufruf des Superkonstruktors nicht möglich.", node.position);
             }
@@ -2419,9 +2442,9 @@ export class CodeGenerator {
         }
 
 
-        let superclassType: Klass|StaticClass;
+        let superclassType: Klass | StaticClass;
 
-        if(isSuperConstructorCall){
+        if (isSuperConstructorCall) {
             superclassType = <Klass>classContext.baseClass;
             if (superclassType instanceof StaticClass) {
                 this.pushError("Statische Methoden haben keine super-Methodenaufrufe.", node.position);
@@ -2635,7 +2658,7 @@ export class CodeGenerator {
                 let cc = this.currentSymbolTable.classContext;
                 let scc = (cc instanceof StaticClass) ? cc : cc.staticClass;
 
-                while(scc != null && scc.attributes.indexOf(attribute) == -1){
+                while (scc != null && scc.attributes.indexOf(attribute) == -1) {
                     scc = scc.baseClass;
                 }
 
@@ -3068,23 +3091,23 @@ export class CodeGenerator {
                 let booleanOperators = ["&& (boolescher UND-Operator)", "|| (boolescher ODER-Operator)"];
                 let betterOperators = ["& &", "||"];
                 let opIndex = bitOperators.indexOf(node.operator);
-                if(opIndex >= 0 && leftType.type == booleanPrimitiveType && rightType.type == booleanPrimitiveType){
+                if (opIndex >= 0 && leftType.type == booleanPrimitiveType && rightType.type == booleanPrimitiveType) {
                     this.pushError("Die Operation " + TokenTypeReadable[node.operator] + " ist für die Operanden der Typen " + leftType.type.identifier + " und " + rightType.type.identifier + " nicht definiert. Du meintest wahrscheinlich den Operator " + booleanOperators[opIndex] + ".", node.position, "error",
-                    {
-                        title: "Operator " + betterOperators[opIndex] + " verwenden statt " + TokenTypeReadable[node.operator],
-                        editsProvider: (uri) => {
-                            return [
-                                {
-                                    resource: uri,
-                                    edit: {
-                                        range: { startLineNumber: node.position.line, startColumn: node.position.column, endLineNumber: node.position.line, endColumn: node.position.column },
-                                        text: TokenTypeReadable[node.operator]
+                        {
+                            title: "Operator " + betterOperators[opIndex] + " verwenden statt " + TokenTypeReadable[node.operator],
+                            editsProvider: (uri) => {
+                                return [
+                                    {
+                                        resource: uri,
+                                        edit: {
+                                            range: { startLineNumber: node.position.line, startColumn: node.position.column, endLineNumber: node.position.line, endColumn: node.position.column },
+                                            text: TokenTypeReadable[node.operator]
+                                        }
                                     }
-                                }
-                            ]
-                        }
-                    
-                    });
+                                ]
+                            }
+
+                        });
                 } else {
                     this.pushError("Die Operation " + TokenTypeReadable[node.operator] + " ist für die Operanden der Typen " + leftType.type.identifier + " und " + rightType.type.identifier + " nicht definiert.", node.position);
                 }

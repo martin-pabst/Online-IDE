@@ -512,6 +512,39 @@ export class Klass extends Type {
         return false;
     }
 
+    public hasParameterlessConstructor() {
+        let hasConstructorWithParameters: boolean = false;
+        for (let m of this.methods) {
+            if (m.isConstructor) {
+                if (m.parameterlist.parameters.length == 0) {
+                    return true;
+                } else {
+                    hasConstructorWithParameters = true;
+                }
+            } 
+
+        }
+
+        if(!hasConstructorWithParameters && this.baseClass != null){
+            return this.baseClass.hasParameterlessConstructor();
+        }
+
+        return false;
+    }
+
+    public getParameterlessConstructor(): Method {
+        for (let m of this.methods) {
+            if (m.isConstructor && m.parameterlist.parameters.length == 0) return m;
+        }
+
+        if(this.baseClass != null){
+            return this.baseClass.getParameterlessConstructor();
+        }
+
+        return null;
+    }
+
+
     public getConstructor(parameterTypes: Type[], upToVisibility: Visibility, classIdentifier: string = this.identifier): { error: string, methodList: Method[] } {
 
         let constructors: Method[] = this.methods.filter((m) => {

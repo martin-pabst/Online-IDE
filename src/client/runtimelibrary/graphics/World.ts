@@ -83,6 +83,7 @@ export class WorldClass extends Klass {
                 // wh.stage.localTransform.translate(x,y);
                 //@ts-ignore
                 wh.stage.transform.onChange();
+                wh.setAllHitpolygonsDirty();
 
             }, false, false, 'Verschiebt alle Objekte der Welt um x nach rechts und y nach unten.', false));
 
@@ -112,6 +113,7 @@ export class WorldClass extends Klass {
                 // wh.stage.localTransform.translate(x, y);
                 //@ts-ignore
                 wh.stage.transform.onChange();
+                wh.setAllHitpolygonsDirty();
 
             }, false, false, 'Rotiert die Welt um den angegebenen Winkel im Urzeigersinn. Drehpunkt ist der Punkt (x/y).', false));
 
@@ -142,6 +144,7 @@ export class WorldClass extends Klass {
                 // wh.stage.localTransform.translate(x, y);
                 //@ts-ignore
                 wh.stage.transform.onChange();
+                wh.setAllHitpolygonsDirty();
 
             }, false, false, 'Streckt die Welt um den angegebenen Faktor. Zentrum der Streckung ist (x/y).', false));
 
@@ -167,6 +170,7 @@ export class WorldClass extends Klass {
                 // wh.stage.localTransform.translate(x, y);
                 //@ts-ignore
                 wh.stage.transform.onChange();
+                wh.setAllHitpolygonsDirty();
 
             }, false, false, 'Streckt die Welt um den angegebenen Faktor. Zentrum der Streckung ist (x/y).', false));
 
@@ -318,7 +322,7 @@ export class WorldHelper {
     public scaledTextures: { [name: string]: PIXI.Texture } = {};
 
 
-    shapes: ShapeHelper[] = [];     // all non-group-shapes (for GNG-Library collision-Functions)
+    shapes: ShapeHelper[] = [];     // all shapes incl. groups that aren't part of a group
 
     tickerFunction: (t: number) => void;
 
@@ -506,6 +510,12 @@ export class WorldHelper {
 
         this.module.main.getRightDiv()?.adjustWidthToWorld();
 
+    }
+
+    setAllHitpolygonsDirty(){
+        for(let shape of this.shapes){
+            shape.setHitPolygonDirty(true);
+        }
     }
 
     setCursor(cursor: string) {

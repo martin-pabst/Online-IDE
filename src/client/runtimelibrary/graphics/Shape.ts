@@ -643,8 +643,7 @@ export abstract class ShapeHelper extends ActorHelper {
             }
         }
 
-        // if !(this instanceof GroupHelper)
-        if (!this["shapes"]) {
+        if(this.worldHelper.defaultGroup == null){
             this.worldHelper.shapes.push(this);
         }
 
@@ -900,9 +899,7 @@ export abstract class ShapeHelper extends ActorHelper {
         super.destroy();
         if (this.belongsToGroup != null) {
             this.belongsToGroup.remove(this.runtimeObject);
-        }
-        // if !(this instanceof GroupHelper)
-        if (!this["shapes"]) {
+        } else {
             let index = this.worldHelper.shapes.indexOf(this);
             this.worldHelper.shapes.splice(index, 1);
         }

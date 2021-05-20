@@ -240,6 +240,7 @@ export class GNGEreignisbehandlungHelper {
         let program = method.program;
         let invoke = method.invoke;
 
+        parameters = parameters.slice(0);
         parameters.unshift({ type: runtimeObject.class, value: runtimeObject });
 
         if (program != null) {

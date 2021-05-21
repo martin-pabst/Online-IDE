@@ -75,6 +75,7 @@ import { GNGTurtleClass } from "../../runtimelibrary/gng/GNGTurtle.js";
 import { GNGTextClass } from "../../runtimelibrary/gng/GNGText.js";
 import { GNGEreignisbehandlung } from "../../runtimelibrary/gng/GNGEreignisbehandlung.js";
 import { GNGFigurClass } from "../../runtimelibrary/gng/GNGFigur.js";
+import { RandomClass } from "../../runtimelibrary/Random.js";
 
 export type File = {
     name: string,
@@ -772,6 +773,7 @@ export class BaseModule extends Module {
 
         this.typeStore.addType(new ConsoleClass(this));
         this.typeStore.addType(new MathClass(this));
+        this.typeStore.addType(new RandomClass(this));
         this.typeStore.addType(new Vector2Class(this));
         this.typeStore.addType(new KeyClass(this));
         this.typeStore.addType(new SoundClass(this));

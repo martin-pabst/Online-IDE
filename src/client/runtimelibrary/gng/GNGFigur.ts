@@ -363,8 +363,23 @@ export class GNGFigurClass extends Klass {
                 if (farbe == null) farbe = 0;
 
                 for (let shape of sh.worldHelper.shapes) {
-                    if (shape != sh && sh.collidesWith(shape)) {
-                        if (shape instanceof FilledShapeHelper && farbe == shape.fillColor) return true;
+                    if (shape != sh) {
+                        if(shape instanceof FigurHelper){
+                            for(let part of shape.shapes){
+                                let partHelper = part.intrinsicData["Actor"];
+                                if (partHelper instanceof FilledShapeHelper && farbe == partHelper.fillColor){
+                                    if(sh.collidesWith(partHelper)){
+                                        return true;
+                                    }
+                                }
+                            }
+                        } else {
+
+                            if(shape instanceof FilledShapeHelper && farbe == shape.fillColor){
+                                if (sh.collidesWith(shape)) return true;
+                            }
+                        }
+
                     }
                 }
 

@@ -294,6 +294,8 @@ export function abstandPunktZuGerade(a: Punkt, b: Punkt, p: Punkt) {
 export function polygonBerührtPolygonExakt(punkte1: Punkt[], punkte2: Punkt[], istGeschlossen1: boolean = false,
     istGeschlossen2: boolean = false, normaleDerBerührtenGerade1: Punkt = null) {
 
+    if(punkte1.length == 0 || punkte2.length == 0) return false;
+
     let endIndex1 = punkte1.length + (istGeschlossen1 ? 0 : -1);
     let endIndex2 = punkte2.length + (istGeschlossen2 ? 0 : -1);
 

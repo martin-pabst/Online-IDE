@@ -1277,7 +1277,7 @@ export class Interpreter {
                     break;
                 }
 
-                if ((this.worldHelper != null && this.worldHelper.actActors.length > 0) || this.processingHelper != null 
+                if ((this.worldHelper != null && this.worldHelper.hasActors()) || this.processingHelper != null 
                     || (this.gngEreignisbehandlungHelper != null && this.gngEreignisbehandlungHelper.hasAktionsEmpfaenger())) {
                     this.currentProgramPosition--;
                     break

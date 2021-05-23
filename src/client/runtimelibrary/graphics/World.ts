@@ -512,6 +512,10 @@ export class WorldHelper {
 
     }
 
+    hasActors(): boolean {
+        return this.actActors.length > 0 || this.keyPressedActors.length > 0 || this.keyUpActors.length > 0 || this.keyDownActors.length > 0;
+    }
+
     setAllHitpolygonsDirty(){
         for(let shape of this.shapes){
             shape.setHitPolygonDirty(true);

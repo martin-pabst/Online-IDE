@@ -513,7 +513,8 @@ export class WorldHelper {
     }
 
     hasActors(): boolean {
-        return this.actActors.length > 0 || this.keyPressedActors.length > 0 || this.keyUpActors.length > 0 || this.keyDownActors.length > 0;
+        return this.actActors.length > 0 || this.keyPressedActors.length > 0 || this.keyUpActors.length > 0 
+        || this.keyDownActors.length > 0 || this.mouseListeners.length > 0 || this.mouseListenerShapes.length > 0;
     }
 
     setAllHitpolygonsDirty(){

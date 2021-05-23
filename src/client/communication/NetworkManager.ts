@@ -401,7 +401,8 @@ export class NetworkManager {
         this.main.projectExplorer.workspaceListPanel.addElement({
             name: remoteWorkspace.name,
             externalElement: w,
-            iconClass: remoteWorkspace.repository_id == null ? "workspace" : "repository"
+            iconClass: remoteWorkspace.repository_id == null ? "workspace" : "repository",
+            isFolder: false
         });
 
         for (let fileData of remoteWorkspace.files) {

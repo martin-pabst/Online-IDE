@@ -91,7 +91,8 @@ export class EmbeddedFileExplorer {
 
         module.file.panelElement = {
             name: module.file.name,
-            $htmlFirstLine: $fileDiv
+            $htmlFirstLine: $fileDiv,
+            isFolder: false
         }
 
         $fileDiv.find('.jo_delete').on("mousedown", (e: JQuery.MouseDownEvent) => {

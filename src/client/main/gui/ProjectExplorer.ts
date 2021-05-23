@@ -300,7 +300,8 @@ export class ProjectExplorer {
                                 newWorkspace.panelElement = {
                                     name: newWorkspace.name,
                                     externalElement: newWorkspace,
-                                    iconClass: newWorkspace.repository_id == null ? 'workspace' : 'repository'
+                                    iconClass: newWorkspace.repository_id == null ? 'workspace' : 'repository',
+                                    isFolder: false
                                 };
 
                                 this.workspaceListPanel.addElement(newWorkspace.panelElement);
@@ -452,7 +453,8 @@ export class ProjectExplorer {
 
                 m.file.panelElement = {
                     name: m.file.name,
-                    externalElement: m
+                    externalElement: m,
+                    isFolder: false
                 };
 
                 this.fileListPanel.addElement(m.file.panelElement);
@@ -473,7 +475,8 @@ export class ProjectExplorer {
             w.panelElement = {
                 name: w.name,
                 externalElement: w,
-                iconClass: w.repository_id == null ? 'workspace' : 'repository'
+                iconClass: w.repository_id == null ? 'workspace' : 'repository',
+                isFolder: false
             };
 
             this.workspaceListPanel.addElement(w.panelElement);

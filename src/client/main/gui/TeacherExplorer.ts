@@ -140,7 +140,8 @@ export class TeacherExplorer {
             let ae: AccordionElement = {
                 name: ud.familienname + ", " + ud.rufname,
                 sortName: ud.familienname + " " + ud.rufname,
-                externalElement: ud
+                externalElement: ud,
+                isFolder: false
             }
             this.studentPanel.addElement(ae);
         }
@@ -159,7 +160,8 @@ export class TeacherExplorer {
         for (let cd of classDataList) {
             let ae: AccordionElement = {
                 name: cd.name,
-                externalElement: cd
+                externalElement: cd,
+                isFolder: false
             }
             this.classPanel.addElement(ae);
         }

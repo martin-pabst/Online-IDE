@@ -9,6 +9,9 @@ export type AccordionElement = {
     iconClass?: string;
     $htmlFirstLine?: JQuery<HTMLElement>;
     $htmlSecondLine?: JQuery<HTMLElement>;
+
+    isFolder: boolean;
+    path?: string[];
 }
 
 export type AccordionContextMenuItem = {
@@ -100,7 +103,8 @@ export class AccordionPanel {
                 ev.stopPropagation();
 
                 let ae: AccordionElement = {
-                    name: "Neu"
+                    name: "Neu", 
+                    isFolder: false
                 }
 
                 that.elements.push(ae);
@@ -209,7 +213,9 @@ export class AccordionPanel {
         if (element.iconClass == null) element.iconClass = this.defaultIconClass;
 
         element.$htmlFirstLine = jQuery(`<div class="jo_file jo_${element.iconClass}">
-        <div class="jo_fileimage"></div><div class="jo_filename">${escapeHtml(element.name)}</div>
+        <div class="jo_fileimage"></div>
+        <div class="jo_folderlines"></div>
+        <div class="jo_filename">${escapeHtml(element.name)}</div>
            <div class="jo_textAfterName"></div>
            <div class="jo_additionalButtonHomework"></div>
            <div class="jo_additionalButtonStart"></div>

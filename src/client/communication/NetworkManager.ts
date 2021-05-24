@@ -398,11 +398,14 @@ export class NetworkManager {
         w.has_write_permission_to_repository = remoteWorkspace.has_write_permission_to_repository;
 
         this.main.workspaceList.push(w);
+        let path = remoteWorkspace.path.split("/");
+        if(path.length == 1 && path[0] == "") path = [];
         this.main.projectExplorer.workspaceListPanel.addElement({
             name: remoteWorkspace.name,
             externalElement: w,
             iconClass: remoteWorkspace.repository_id == null ? "workspace" : "repository",
-            isFolder: false
+            isFolder: remoteWorkspace.isFolder,
+            path: path
         });
 
         for (let fileData of remoteWorkspace.files) {

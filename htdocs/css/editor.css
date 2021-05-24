@@ -686,8 +686,15 @@ body .monaco-editor-hover .monaco-tokenized-source {
     flex-direction: row;
 }
 
+.jo_active>.jo_folderlines {
+    position: relative;
+    left: -1px;
+}
+
 .jo_folderline {
-    
+    border-left: 1px solid gray;
+    width: 5px;
+    margin-left: 4px;
 }
 
 .jo_homeworkButton, .jo_startButton {

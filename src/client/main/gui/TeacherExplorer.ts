@@ -39,7 +39,7 @@ export class TeacherExplorer {
 
         this.studentPanel = new AccordionPanel(this.main.projectExplorer.accordion,
             "Schüler/innen", "2", null,
-            "", "student", false);
+            "", "student", false, false);
 
         this.studentPanel.selectCallback = (ae: UserData) => {
 
@@ -108,7 +108,7 @@ export class TeacherExplorer {
         let that = this;
 
         this.classPanel = new AccordionPanel(this.main.projectExplorer.accordion,
-            "Klassen", "1", null, "", "class", false);
+            "Klassen", "1", null, "", "class", false, false);
 
         this.classPanel.selectCallback = (ea) => {
             that.main.networkManager.sendUpdates(() => {
@@ -141,7 +141,8 @@ export class TeacherExplorer {
                 name: ud.familienname + ", " + ud.rufname,
                 sortName: ud.familienname + " " + ud.rufname,
                 externalElement: ud,
-                isFolder: false
+                isFolder: false,
+                path: []
             }
             this.studentPanel.addElement(ae);
         }
@@ -161,7 +162,8 @@ export class TeacherExplorer {
             let ae: AccordionElement = {
                 name: cd.name,
                 externalElement: cd,
-                isFolder: false
+                isFolder: false,
+                path: []
             }
             this.classPanel.addElement(ae);
         }

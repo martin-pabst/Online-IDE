@@ -1,7 +1,7 @@
 import { openContextMenu, makeEditable, ContextMenuItem, jo_mouseDetected } from "../../tools/HtmlTools.js";
 import { Helper } from "./Helper.js";
 import { escapeHtml } from "../../tools/StringTools.js";
-import { isJSDocThisTag } from "typescript";
+import { isJSDocThisTag, isThisTypeNode } from "typescript";
 
 export type AccordionElement = {
     name: string;
@@ -34,6 +34,8 @@ export class AccordionPanel {
 
     dontSortElements: boolean = false;
 
+    currentlyDraggedElement: AccordionElement;
+
     newElementCallback: (ae: AccordionElement, callbackIfSuccessful: (externalElement: any) => void) => void;
     newFolderCallback: (ae: AccordionElement, callbackIfSuccessful: (externalElement: any) => void) => void;
     renameCallback: (externalElement: any, newName: string) => string;
@@ -41,6 +43,9 @@ export class AccordionPanel {
     selectCallback: (externalElement: any) => void;
     addElementActionCallback: (accordionElement: AccordionElement) => JQuery<HTMLElement>;
     contextMenuProvider: (externalElement: any) => AccordionContextMenuItem[];
+    moveCallback: (ae: AccordionElement) => void;
+
+    $newFolderAction: JQuery<HTMLElement>;
 
     constructor(private accordion: Accordion, private caption: string, private flexWeight: string,
         private newButtonClass: string, private buttonNewTitle: string,
@@ -48,10 +53,12 @@ export class AccordionPanel {
 
         accordion.addPanel(this);
 
+        let mousePointer = window.PointerEvent ? "pointer" : "mouse";
+
         if (withFolders) {
-            let $newFolderAction = jQuery('<div class="img_add-folder-dark jo_button jo_active" style="margin-right: 4px"' +
+            this.$newFolderAction = jQuery('<div class="img_add-folder-dark jo_button jo_active" style="margin-right: 4px"' +
                 ' title="Neuen Ordner anlegen">');
-            $newFolderAction.on('pointerdown', (e) => {
+            this.$newFolderAction.on(mousePointer + 'down', (e) => {
                 e.stopPropagation();
                 e.preventDefault();
 
@@ -63,7 +70,7 @@ export class AccordionPanel {
 
             })
 
-            this.addAction($newFolderAction);
+            this.addAction(this.$newFolderAction);
 
         }
 
@@ -141,6 +148,19 @@ export class AccordionPanel {
         return this.elements.length;
     }
 
+    insertElement(ae: AccordionElement) {
+        let insertIndex = this.getElementIndex(ae.name, ae.path);
+        this.elements.splice(insertIndex, 0, ae);
+
+        if (insertIndex == 0) {
+            this.$listElement.prepend(ae.$htmlFirstLine);
+        } else {
+            let elementAtIndex = this.$listElement.find('.jo_file').get(insertIndex);
+            jQuery(elementAtIndex).after(ae.$htmlFirstLine);
+        }
+
+    }
+
     addFolder(name: string, path: string[], callback: (newPanel: AccordionElement) => void) {
 
         let ae: AccordionElement = {
@@ -149,17 +169,9 @@ export class AccordionPanel {
             path: path
         }
 
-        let insertIndex = this.getElementIndex(name, path);
-        this.elements.splice(insertIndex, 0, ae);
         let $element = this.renderElement(ae);
 
-
-        if (insertIndex == 0) {
-            this.$listElement.prepend($element);
-        } else {
-            let elementAtIndex = this.$listElement.find('.jo_file').get(insertIndex);
-            jQuery(elementAtIndex).after($element);
-        }
+        this.insertElement(ae);
 
         $element[0].scrollIntoView();
 
@@ -327,8 +339,8 @@ export class AccordionPanel {
 
         element.$htmlFirstLine = jQuery(`<div class="jo_file jo_${element.iconClass} ${expandedCollapsed}">
         <div class="jo_folderlines">${pathHtml}</div>
-        <div class="jo_fileimage"></div>
-        <div class="jo_filename">${escapeHtml(element.name)}</div>
+           <div class="jo_fileimage"></div>
+           <div class="jo_filename">${escapeHtml(element.name)}</div>
            <div class="jo_textAfterName"></div>
            <div class="jo_additionalButtonHomework"></div>
            <div class="jo_additionalButtonStart"></div>
@@ -341,6 +353,36 @@ export class AccordionPanel {
             let $elementAction = this.addElementActionCallback(element);
             element.$htmlFirstLine.append($elementAction);
         }
+
+        if (this.withFolders) {
+            if (element.isFolder) {
+                element.$htmlFirstLine.on('dragover', (event) => {
+                    element.$htmlFirstLine.addClass('jo_file_dragover');
+                    event.preventDefault();
+                })
+
+                element.$htmlFirstLine.on('dragleave', (event) => {
+                    element.$htmlFirstLine.removeClass('jo_file_dragover');
+                })
+
+                element.$htmlFirstLine.on('drop', (event) => {
+                    event.preventDefault();
+                    element.$htmlFirstLine.removeClass('jo_file_dragover');
+                    let element1 = that.currentlyDraggedElement;
+                    if (element1 != null) {
+                        that.moveElement(element1, element);
+                    }
+                });
+            }
+
+            let $filedragpart = element.$htmlFirstLine.find('.jo_filename');
+            $filedragpart.attr('draggable', 'true');
+            $filedragpart.on('drag', (event) => {
+                that.currentlyDraggedElement = element;
+            })
+        }
+
+
         element.$htmlFirstLine.on(mousePointer + 'down', (ev) => {
 
             if (ev.button == 0 && that.selectCallback != null) {
@@ -401,6 +443,27 @@ export class AccordionPanel {
                     }
                 })
             }
+
+            let mousePointer = window.PointerEvent ? "pointer" : "mouse";
+
+            if (element.isFolder) {
+                contextMenuItems = contextMenuItems.concat([
+                    {
+                        caption: "Neuer Ordner...",
+                        callback: () => {
+                            that.select(element.externalElement);
+                            that.$newFolderAction.trigger(mousePointer + 'down');
+                        }
+                    }, {
+                        caption: "Neuer Workspace...",
+                        callback: () => {
+                            that.select(element.externalElement);
+                            that.$buttonNew.trigger(mousePointer + 'down');
+                        }
+                    }
+                ])
+            }
+
 
             if (that.contextMenuProvider != null && !element.isFolder) {
 
@@ -498,6 +561,31 @@ export class AccordionPanel {
 
         return element.$htmlFirstLine;
 
+    }
+
+    moveElement(elementToMove: AccordionElement, destinationFolder: AccordionElement) {
+        let destinationPath: string[] = destinationFolder == null ? [] : destinationFolder.path.slice(0).concat([destinationFolder.name]);
+        if (elementToMove.isFolder) {
+            let sourcePath = elementToMove.path.concat([elementToMove.name]).join("/");
+            for(let element of this.elements){
+                if(element.path.join("/").startsWith(sourcePath)){
+                    element.path.splice(0, elementToMove.path.length);
+                    element.path = destinationPath.concat(element.path);
+                    element.$htmlFirstLine.remove();
+                    this.elements.splice(this.elements.indexOf(element), 1);
+                    this.renderElement(element);
+                    this.insertElement(element);
+                    this.moveCallback(element);
+                }
+            }
+        } else {
+            elementToMove.path = destinationPath;
+            elementToMove.$htmlFirstLine.remove();
+            this.elements.splice(this.elements.indexOf(elementToMove), 1);
+            this.renderElement(elementToMove);
+            this.insertElement(elementToMove);
+            this.moveCallback(elementToMove);
+        }
     }
 
     getChildElements(folder: AccordionElement): AccordionElement[] {

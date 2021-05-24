@@ -665,6 +665,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
 .jo_file>.jo_filename {
     flex-grow: 1;
     user-select: none;
+    cursor: pointer !important;
     -webkit-user-select: none;
 }
 
@@ -686,9 +687,15 @@ body .monaco-editor-hover .monaco-tokenized-source {
     flex-direction: row;
 }
 
-.jo_active>.jo_folderlines {
+.jo_active>.jo_folderlines{
     position: relative;
     left: -1px;
+}
+
+.jo_active>.jo_filename, .jo_active>.jo_fileimage {
+    position: relative;
+    left: -1px;
+    top: -1px;
 }
 
 .jo_folderline {
@@ -744,7 +751,9 @@ body .monaco-editor-hover .monaco-tokenized-source {
     transform: scale(1.jo_2);
 }
 
-
+.jo_file_dragover {
+    background-color: rgba(34, 114, 27, 0.596);
+}
 
 .jo_inplaceeditor {
     z-index: 1000;

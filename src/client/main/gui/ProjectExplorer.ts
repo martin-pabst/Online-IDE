@@ -26,7 +26,6 @@ export class ProjectExplorer {
     workspaceListPanel: AccordionPanel;
 
     $homeAction: JQuery<HTMLElement>;
-    $newFolderAction: JQuery<HTMLElement>;
     $synchronizeAction: JQuery<HTMLElement>;
 
     constructor(private main: Main, private $projectexplorerDiv: JQuery<HTMLElement>) {
@@ -296,6 +295,11 @@ export class ProjectExplorer {
                 }
             });
 
+        }
+
+        this.workspaceListPanel.moveCallback = (ae: AccordionElement) => {
+            let ws: Workspace = ae.externalElement;
+            ws.saved = false;
         }
 
         this.$homeAction = jQuery('<div class="img_home-dark jo_button jo_active" style="margin-right: 4px"' +

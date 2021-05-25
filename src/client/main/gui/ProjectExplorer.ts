@@ -47,7 +47,7 @@ export class ProjectExplorer {
         let that = this;
 
         this.fileListPanel = new AccordionPanel(this.accordion, "Kein Workspace gewählt", "3",
-            "img_add-file-dark", "Neue Datei...", "java", true);
+            "img_add-file-dark", "Neue Datei...", "java", true, false);
 
         this.fileListPanel.newElementCallback =
 
@@ -209,8 +209,8 @@ export class ProjectExplorer {
 
         let that = this;
 
-        this.workspaceListPanel = new AccordionPanel(this.accordion, "WORKSPACES", "2",
-            "img_add-workspace-dark", "Neuer Workspace...", "workspace", true);
+        this.workspaceListPanel = new AccordionPanel(this.accordion, "WORKSPACES", "3",
+            "img_add-workspace-dark", "Neuer Workspace...", "workspace", true, true);
 
         this.workspaceListPanel.newElementCallback =
 
@@ -222,6 +222,8 @@ export class ProjectExplorer {
                 }
 
                 let w: Workspace = new Workspace(accordionElement.name, that.main, owner_id);
+                w.isFolder = false;
+                w.path = accordionElement.path.join("/");
                 that.main.workspaceList.push(w);
 
                 that.main.networkManager.sendCreateWorkspace(w, that.main.workspacesOwnerId, (error: string) => {
@@ -262,10 +264,48 @@ export class ProjectExplorer {
 
         this.workspaceListPanel.selectCallback =
             (workspace: Workspace) => {
-                that.main.networkManager.sendUpdates(() => {
-                    that.setWorkspaceActive(workspace);
-                });
+                if(!workspace.isFolder){
+                    that.main.networkManager.sendUpdates(() => {
+                        that.setWorkspaceActive(workspace);
+                    });
+                }
+
             }
+
+        this.workspaceListPanel.newFolderCallback = (newElement: AccordionElement, successCallback) => {
+            let owner_id: number = that.main.user.id;
+            if(that.main.workspacesOwnerId != null){
+                owner_id = that.main.workspacesOwnerId;
+            }
+
+            let folder: Workspace = new Workspace(newElement.name, that.main, owner_id);
+            folder.isFolder = true;
+    
+            folder.path = newElement.path.join("/");
+            folder.panelElement = newElement;
+            newElement.externalElement = folder;
+            that.main.workspaceList.push(folder);
+
+            that.main.networkManager.sendCreateWorkspace(folder, that.main.workspacesOwnerId, (error: string) => {
+                if (error == null) {
+                    successCallback(folder);
+                } else {
+                    alert("Fehler: " + error);
+                    that.workspaceListPanel.removeElement(newElement);
+                }
+            });
+
+        }
+
+        this.workspaceListPanel.moveCallback = (ae: AccordionElement|AccordionElement[]) => {
+            if(!Array.isArray(ae)) ae = [ae];
+            for(let a of ae){
+                let ws: Workspace = a.externalElement;
+                ws.path = a.path.join("/");
+                ws.saved = false;
+            }
+            this.main.networkManager.sendUpdates();
+        }
 
         this.$homeAction = jQuery('<div class="img_home-dark jo_button jo_active" style="margin-right: 4px"' +
             ' title="Meine eigenen Workspaces anzeigen">');
@@ -297,10 +337,14 @@ export class ProjectExplorer {
                             if (error == null && workspaceData != null) {
                                 let newWorkspace: Workspace = Workspace.restoreFromData(workspaceData, this.main);
                                 this.main.workspaceList.push(newWorkspace);
+                                let path = workspaceData.path.split("/");
+                                if(path.length == 1 && path[0] == "") path = [];
                                 newWorkspace.panelElement = {
                                     name: newWorkspace.name,
                                     externalElement: newWorkspace,
-                                    iconClass: newWorkspace.repository_id == null ? 'workspace' : 'repository'
+                                    iconClass: newWorkspace.repository_id == null ? 'workspace' : 'repository',
+                                    isFolder: false,
+                                    path: path
                                 };
 
                                 this.workspaceListPanel.addElement(newWorkspace.panelElement);
@@ -452,7 +496,9 @@ export class ProjectExplorer {
 
                 m.file.panelElement = {
                     name: m.file.name,
-                    externalElement: m
+                    externalElement: m,
+                    isFolder: false,
+                    path: []
                 };
 
                 this.fileListPanel.addElement(m.file.panelElement);
@@ -470,10 +516,14 @@ export class ProjectExplorer {
         this.workspaceListPanel.clear();
 
         for (let w of workspaceList) {
+            let path = w.path.split("/");
+            if(path.length == 1 && path[0] == "") path = [];
             w.panelElement = {
                 name: w.name,
                 externalElement: w,
-                iconClass: w.repository_id == null ? 'workspace' : 'repository'
+                iconClass: w.repository_id == null ? 'workspace' : 'repository',
+                isFolder: w.isFolder,
+                path: path
             };
 
             this.workspaceListPanel.addElement(w.panelElement);
@@ -483,8 +533,6 @@ export class ProjectExplorer {
 
         this.workspaceListPanel.sortElements();
         this.fileListPanel.enableNewButton(workspaceList.length > 0);
-
-
 
     }
 

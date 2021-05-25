@@ -116,7 +116,8 @@ export class Login {
                                 speedControlHelperDone: false,
                                 homeButtonHelperDone: false,
                                 stepButtonHelperDone: false,
-                                repositoryButtonDone: false
+                                repositoryButtonDone: false,
+                                folderButtonDone: false
                             },
                             viewModes: null,
                             classDiagram: null
@@ -155,6 +156,13 @@ export class Login {
 
                         that.main.viewModeController.initViewMode();
                         that.main.bottomDiv.hideHomeworkTab();
+                        
+                        if (!this.main.user.settings.helperHistory.folderButtonDone && that.main.projectExplorer.workspaceListPanel.elements.length > 5) {
+                            
+                            Helper.showHelper("folderButton", this.main, jQuery('.img_add-folder-dark'));
+            
+                        }
+            
 
                     }
 

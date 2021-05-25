@@ -9,6 +9,8 @@ import { MainBase } from "../main/MainBase.js";
 export class Workspace {
     
     name: string;
+    path: string;
+    isFolder: boolean;
     id: number;
     owner_id: number;
 
@@ -47,6 +49,8 @@ export class Workspace {
     getWorkspaceData(withFiles: boolean): WorkspaceData {
         let wd: WorkspaceData = {
             name: this.name,
+            path: this.path,
+            isFolder: this.isFolder,
             id: this.id,
             owner_id: this.owner_id,
             currentFileId: this.currentlyOpenModule == null ? null : this.currentlyOpenModule.file.id,
@@ -118,11 +122,17 @@ export class Workspace {
 
         let w = new Workspace(ws.name, main, ws.owner_id);
         w.id = ws.id;
+        w.path = ws.path;
+        w.isFolder = ws.isFolder;
         w.owner_id = ws.owner_id;
         w.version = ws.version;
         w.repository_id = ws.repository_id;
         w.has_write_permission_to_repository = ws.has_write_permission_to_repository;
         w.settings = settings;
+
+        if(w.settings.libraries == null){
+            w.settings.libraries = [];
+        }
 
         if(w.settings.libraries.length > 0){
             w.moduleStore.setAdditionalLibraries(w.settings.libraries);

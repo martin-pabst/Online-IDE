@@ -126,7 +126,9 @@ export class NetworkManager {
                 that.errorHappened = !response.success;
                 if(!that.errorHappened){
 
-                    that.updateWorkspaces(request, response);
+                    if(this.main.workspacesOwnerId == this.main.user.id){
+                        that.updateWorkspaces(request, response);
+                    }
 
                     if(callback != null){
                         callback();

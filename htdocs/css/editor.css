@@ -138,7 +138,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
 
 /* Login */
 #login, #bitteWarten {
-    z-index: 1000;
+    z-index: 1010;
     position: absolute;
     height: 100%;
     width: 100%;

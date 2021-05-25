@@ -86,6 +86,15 @@ export class Helper {
             let direction: HelperDirection = "left";
 
             switch (id) {
+                case "folderButton":
+                    text = `Mit diesem Button können Sie in der Liste der Workspaces Ordner anlegen. 
+                    <ul>
+                    <li>Bestehende Workspaces lassen sich mit der Maus in Ordner ziehen.</li>
+                    <li>Wollen Sie einen Workspace in die oberste Ordnerebene bringen, so ziehen Sie ihn einfach auf den "Workspaces"-Balken.</li>
+                    <li>Über das Kontextmenü der Ordner lassen sich Workspaces und Unterordner anlegen.</li>
+                    </ul>`,
+                    direction = "top";
+                    break;
                 case "repositoryButton":
                     text = `Wenn der aktuelle Workspace mit einem Repository verknüft ist, erscheint hier der "Synchronisieren-Button". Ein Klick darauf öffnet einen Dialog, in dem die Dateien des Workspace mit denen des Repositorys abgeglichen werden können.`;
                     direction = "top";

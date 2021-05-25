@@ -9,7 +9,8 @@ export type UserSettings = {
         consoleHelperDone: boolean,
         homeButtonHelperDone: boolean,
         stepButtonHelperDone: boolean,
-        repositoryButtonDone: boolean
+        repositoryButtonDone: boolean,
+        folderButtonDone: boolean
     },
     //    theme: string,  // old!
     viewModes: ViewModes,

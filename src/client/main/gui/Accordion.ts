@@ -43,7 +43,7 @@ export class AccordionPanel {
     selectCallback: (externalElement: any) => void;
     addElementActionCallback: (accordionElement: AccordionElement) => JQuery<HTMLElement>;
     contextMenuProvider: (externalElement: any) => AccordionContextMenuItem[];
-    moveCallback: (ae: AccordionElement) => void;
+    moveCallback: (ae: AccordionElement|AccordionElement[]) => void;
 
     $newFolderAction: JQuery<HTMLElement>;
 
@@ -280,6 +280,27 @@ export class AccordionPanel {
                 }
             }
         });
+
+        if(this.withFolders){
+            $ce.on('dragover', (event) => {
+                $ce.addClass('jo_file_dragover');
+                event.preventDefault();
+            })
+
+            $ce.on('dragleave', (event) => {
+                $ce.removeClass('jo_file_dragover');
+            })
+
+            $ce.on('drop', (event) => {
+                event.preventDefault();
+                $ce.removeClass('jo_file_dragover');
+                let element1 = that.currentlyDraggedElement;
+                if (element1 != null) {
+                    that.moveElement(element1, null);
+                }
+            });
+
+        }
 
 
     }
@@ -566,24 +587,36 @@ export class AccordionPanel {
     moveElement(elementToMove: AccordionElement, destinationFolder: AccordionElement) {
         let destinationPath: string[] = destinationFolder == null ? [] : destinationFolder.path.slice(0).concat([destinationFolder.name]);
         if (elementToMove.isFolder) {
+            let movedElements: AccordionElement[] = [elementToMove];
+            
             let sourcePath = elementToMove.path.concat([elementToMove.name]).join("/");
+            let oldPathLength = elementToMove.path.length;
+            elementToMove.path = destinationPath.slice(0);
+
             for(let element of this.elements){
                 if(element.path.join("/").startsWith(sourcePath)){
-                    element.path.splice(0, elementToMove.path.length);
+                    element.path.splice(0, oldPathLength);
                     element.path = destinationPath.concat(element.path);
-                    element.$htmlFirstLine.remove();
-                    this.elements.splice(this.elements.indexOf(element), 1);
-                    this.renderElement(element);
-                    this.insertElement(element);
-                    this.moveCallback(element);
+                    movedElements.push(element);
                 }
             }
+
+            for(let el of movedElements){
+                el.$htmlFirstLine.remove();
+                this.elements.splice(this.elements.indexOf(el), 1);
+                this.renderElement(el);
+                this.insertElement(el);
+            }
+
+            this.moveCallback(movedElements);
         } else {
             elementToMove.path = destinationPath;
             elementToMove.$htmlFirstLine.remove();
             this.elements.splice(this.elements.indexOf(elementToMove), 1);
             this.renderElement(elementToMove);
             this.insertElement(elementToMove);
+            this.select(elementToMove.externalElement);
+            elementToMove.$htmlFirstLine[0].scrollIntoView();
             this.moveCallback(elementToMove);
         }
     }
@@ -626,6 +659,19 @@ export class AccordionPanel {
 
                 ae.$htmlFirstLine.addClass('jo_active');
                 if (scrollIntoView) {
+                    let pathString = ae.path.join("/");
+                    for(let el of this.elements){
+
+                        if(pathString.startsWith(el.path.join("/"))){
+                            if(el.isFolder){
+                                el.$htmlFirstLine.removeClass("jo_collapsed");
+                                el.$htmlFirstLine.addClass("jo_expanded");
+                            }
+                            el.$htmlFirstLine.show();
+                        }
+
+                    }
+
                     ae.$htmlFirstLine[0].scrollIntoView();
                 }
             }
@@ -634,6 +680,15 @@ export class AccordionPanel {
 
         if (invokeCallback && this.selectCallback != null) this.selectCallback(externalElement);
 
+    }
+
+    getPathString(ae: AccordionElement){
+        let ps: string = ae.path.join("/");
+        if(ae.isFolder){
+            if(ps != "") ps += "/";
+            ps += ae.name;
+        }
+        return ps;
     }
 
     setElementClass(element: AccordionElement, iconClass: string) {

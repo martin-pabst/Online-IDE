@@ -209,7 +209,7 @@ export class ProjectExplorer {
 
         let that = this;
 
-        this.workspaceListPanel = new AccordionPanel(this.accordion, "WORKSPACES", "2",
+        this.workspaceListPanel = new AccordionPanel(this.accordion, "WORKSPACES", "3",
             "img_add-workspace-dark", "Neuer Workspace...", "workspace", true, true);
 
         this.workspaceListPanel.newElementCallback =
@@ -297,9 +297,14 @@ export class ProjectExplorer {
 
         }
 
-        this.workspaceListPanel.moveCallback = (ae: AccordionElement) => {
-            let ws: Workspace = ae.externalElement;
-            ws.saved = false;
+        this.workspaceListPanel.moveCallback = (ae: AccordionElement|AccordionElement[]) => {
+            if(!Array.isArray(ae)) ae = [ae];
+            for(let a of ae){
+                let ws: Workspace = a.externalElement;
+                ws.path = a.path.join("/");
+                ws.saved = false;
+            }
+            this.main.networkManager.sendUpdates();
         }
 
         this.$homeAction = jQuery('<div class="img_home-dark jo_button jo_active" style="margin-right: 4px"' +

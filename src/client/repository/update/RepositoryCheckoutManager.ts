@@ -218,7 +218,10 @@ export class RepositoryCheckoutManager {
 
             if(workspace == null && response.new_workspace != null){
 
-                that.main.networkManager.createNewWorkspaceFromWorkspaceData(response.new_workspace);
+                let newWorkspace = that.main.networkManager.createNewWorkspaceFromWorkspaceData(response.new_workspace);
+                that.main.projectExplorer.workspaceListPanel.sortElements();
+                that.main.projectExplorer.workspaceListPanel.select(newWorkspace, false, true);
+
                 alert('Der neue Workspace ' + response.new_workspace.name + " wurde erfolgreich angelegt.");
 
             } else {

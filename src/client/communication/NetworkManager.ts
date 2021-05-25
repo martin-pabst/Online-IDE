@@ -391,11 +391,13 @@ export class NetworkManager {
 
     }
 
-    public createNewWorkspaceFromWorkspaceData(remoteWorkspace: WorkspaceData, withSort: boolean = false) {
+    public createNewWorkspaceFromWorkspaceData(remoteWorkspace: WorkspaceData, withSort: boolean = false):Workspace {
         let w = this.main.createNewWorkspace(remoteWorkspace.name, remoteWorkspace.owner_id);
         w.id = remoteWorkspace.id;
         w.repository_id = remoteWorkspace.repository_id;
         w.has_write_permission_to_repository = remoteWorkspace.has_write_permission_to_repository;
+        w.path = remoteWorkspace.path;
+        w.isFolder = remoteWorkspace.isFolder;
 
         this.main.workspaceList.push(w);
         let path = remoteWorkspace.path.split("/");
@@ -416,6 +418,7 @@ export class NetworkManager {
             this.main.projectExplorer.workspaceListPanel.sortElements();
             this.main.projectExplorer.fileListPanel.sortElements();
         }
+        return w;
     }
 
     private createFile(workspace: Workspace, remoteFile: FileData) {

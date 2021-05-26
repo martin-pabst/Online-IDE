@@ -76,6 +76,7 @@ import { GNGTextClass } from "../../runtimelibrary/gng/GNGText.js";
 import { GNGEreignisbehandlung } from "../../runtimelibrary/gng/GNGEreignisbehandlung.js";
 import { GNGFigurClass } from "../../runtimelibrary/gng/GNGFigur.js";
 import { RandomClass } from "../../runtimelibrary/Random.js";
+import { DirectionClass } from "../../runtimelibrary/graphics/Direction.js";
 
 export type File = {
     name: string,
@@ -782,6 +783,7 @@ export class BaseModule extends Module {
         this.typeStore.addType(new TimerClass(this));
         this.typeStore.addType(new ColorClass(this));
         this.typeStore.addType(new ActorClass(this));
+        this.typeStore.addType(new DirectionClass(this));
         this.typeStore.addType(new ShapeClass(this));
         this.typeStore.addType(new FilledShapeClass(this));
         this.typeStore.addType(new RectangleClass(this));

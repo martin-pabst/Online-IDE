@@ -12,6 +12,7 @@ import { Interpreter } from "../../interpreter/Interpreter.js";
 import { GroupHelper, GroupClass } from "./Group.js";
 import { CircleHelper } from "./Circle.js";
 import { TurtleHelper } from "./Turtle.js";
+import { Enum, EnumInfo } from "src/client/compiler/types/Enum.js";
 
 export class ShapeClass extends Klass {
 
@@ -24,6 +25,7 @@ export class ShapeClass extends Klass {
 
         // let matrixType = new ArrayType(doublePrimitiveType);
         let shapeType = module.typeStore.getType("Shape");
+        let directionType = <Enum>(<any>module.typeStore.getType("Direction"));
         let shapeArrayType = new ArrayType(shapeType);
 
         let vector2Class = <Klass>module.typeStore.getType("Vector2");
@@ -292,7 +294,7 @@ export class ShapeClass extends Klass {
                 let shape: RuntimeObject = parameters[1].value;
 
                 if (shape == null) {
-                    module.main.getInterpreter().throwException("Der zweite Parameter der Methode collidesWith darf nicht null sein.");
+                    module.main.getInterpreter().throwException("Der Parameter der Methode collidesWith darf nicht null sein.");
                 }
 
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
@@ -308,6 +310,60 @@ export class ShapeClass extends Klass {
                 return sh.collidesWith(sh1);
 
             }, false, false, "Gibt genau dann true zurück, wenn das Grafikobjekt und das andere Grafikobjekt kollidieren.", false));
+
+        this.addMethod(new Method("moveBackFrom", new Parameterlist([
+            { identifier: "object", type: this, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "keepColliding", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let shape: RuntimeObject = parameters[1].value;
+                let keepColliding: boolean = parameters[2].value;
+
+                if (shape == null) {
+                    module.main.getInterpreter().throwException("Der erste Parameter der Methode moveBackFrom darf nicht null sein.");
+                }
+
+                let sh: ShapeHelper = o.intrinsicData["Actor"];
+                let sh1: ShapeHelper = shape.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("moveBackFrom")) return;
+
+                if (sh1.isDestroyed) {
+                    sh.worldHelper.interpreter.throwException("Die der Methode moveBackFrom als Parameter übergebene Figur ist bereits zerstört.");
+                    return;
+                }
+
+                sh.moveBackFrom(sh1, keepColliding);
+
+            }, false, false, "Gibt genau dann true zurück, wenn das Grafikobjekt und das andere Grafikobjekt kollidieren.", false));
+
+        this.addMethod(new Method("directionRelativeTo", new Parameterlist([
+            { identifier: "object", type: this, declaration: null, usagePositions: null, isFinal: true },
+        ]), directionType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let shape: RuntimeObject = parameters[1].value;
+
+                if (shape == null) {
+                    module.main.getInterpreter().throwException("Der erste Parameter der Methode directionRelativeTo darf nicht null sein.");
+                }
+
+                let sh: ShapeHelper = o.intrinsicData["Actor"];
+                let sh1: ShapeHelper = shape.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("directionRelativeTo")) return;
+
+                if (sh1.isDestroyed) {
+                    sh.worldHelper.interpreter.throwException("Die der Methode directionRelativeTo als Parameter übergebene Figur ist bereits zerstört.");
+                    return;
+                }
+
+                return sh.directionRelativeTo(sh1, directionType);
+
+            }, false, false, "Gibt die Richtung (top, right, bottom oder left) zurück, in der das graphische Objekt relativ zum übergebenen graphischen Objekt steht.", false));
 
         this.addMethod(new Method("moveTo", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -588,6 +644,9 @@ export abstract class ShapeHelper extends ActorHelper {
 
     directionRad: number = 0;
 
+    lastMoveDx: number = 0;
+    lastMoveDy: number = 0;
+
     copyFrom(shapeHelper: ShapeHelper) {
 
         this.centerXInitial = shapeHelper.centerXInitial;
@@ -745,6 +804,88 @@ export abstract class ShapeHelper extends ActorHelper {
 
     }
 
+    directionRelativeTo(shapeHelper: ShapeHelper, directionType: Enum) {
+        this.displayObject.updateTransform();
+        shapeHelper.displayObject.updateTransform();
+
+        let bb = this.displayObject.getBounds();
+        let bb1 = shapeHelper.displayObject.getBounds();
+
+        let dx1 = bb1.left - bb.right;  // positive if left
+        let dx2 = bb.left - bb1.right;  // positive if right
+
+        let dy1 = bb1.top - bb.bottom;  // positive if top
+        let dy2 = bb.top - bb1.bottom;  // positive if bottom
+
+        let enuminfo = directionType.enumInfoList;
+
+        let pairs: {n: number, ei: EnumInfo}[] = [
+            {n: dy1, ei: enuminfo[0]},
+            {n: dx2, ei: enuminfo[1]},
+            {n: dy2, ei: enuminfo[2]},
+            {n: dx1, ei: enuminfo[3]}
+        ]
+
+        let max = pairs[0].n;
+        let ei = pairs[0].ei;
+        for(let i = 1; i < 4; i++){
+            if(pairs[i].n > max){
+                max = pairs[i].n;
+                ei = pairs[i].ei;
+            }
+        }
+        
+        return ei.object;
+    }
+
+
+    moveBackFrom(sh1: ShapeHelper, keepColliding: boolean) {
+
+        // subsequent calls to move destroy values in this.lastMoveDx and this.lastMoveDy, so:
+        let lmdx = this.lastMoveDx;
+        let lmdy = this.lastMoveDy;
+
+        let length = Math.sqrt(lmdx*lmdx + lmdy * lmdy);
+        if(length < 0.001) return;
+
+        if(!this.collidesWith(sh1)) return;
+
+        let parameterMax = 0;       // collision with this parameter
+        this.move(-lmdx, -lmdy);
+
+        let currentParameter = -1;  // move to parameterMin
+
+        while(this.collidesWith(sh1)){
+            parameterMax = currentParameter;    // collision at this parameter
+            let newParameter = currentParameter * 2;
+            this.move(lmdx * (newParameter - currentParameter), lmdy*(newParameter - currentParameter));
+            currentParameter = newParameter;
+        }
+        let parameterMin = currentParameter;
+
+        let isColliding: boolean = false;
+        // Situation now: no collision at parameterMin == currentParameter, collision at parameterMax
+        while((parameterMax - parameterMin) * length > 1){
+            let np = (parameterMax + parameterMin)/2;
+            this.move(lmdx * (np - currentParameter), lmdy*(np - currentParameter));
+            if(isColliding = this.collidesWith(sh1)){
+                parameterMax = np;
+            } else {
+                parameterMin = np;
+            }
+            currentParameter = np;
+        }
+
+        if(keepColliding && !isColliding){
+            this.move(lmdx*(parameterMax - currentParameter), lmdy*(parameterMax - currentParameter));
+        } else if(isColliding && !keepColliding){
+            this.move(lmdx*(parameterMin - currentParameter), lmdy*(parameterMin - currentParameter));
+        }
+
+    }
+
+
+
     containsPoint(x: number, y: number) {
         if (!this.displayObject.getBounds().contains(x, y)) return false;
 
@@ -786,6 +927,12 @@ export abstract class ShapeHelper extends ActorHelper {
     }
 
     move(dx: number, dy: number) {
+
+        if(dx != 0 || dy != 0){
+            this.lastMoveDx = dx;
+            this.lastMoveDy = dy;
+        }
+
         this.displayObject.localTransform.translate(dx, dy);
         //@ts-ignore
         this.displayObject.transform.onChange();

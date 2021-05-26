@@ -1194,6 +1194,10 @@ body .monaco-editor-hover .monaco-tokenized-source {
 #jo_embedded_ide {
     background-color: rgb(194, 150, 70);
 }
+
+#jo_moodle_mebis {
+    background-color: rgb(214, 214, 214);
+}
 :root {
     --bottomdiv-tabheading-hover: white;
     --bottomdiv-tabheading-active: rgb(97,97,255);

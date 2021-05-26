@@ -1,5 +1,5 @@
 
-let base = "https://learnj.de/javaonline/";
+let base = "https://embed.learnj.de/include/";
 
 // includeJs("lib/monaco-editor/dev/vs/editor/editor.main.js");
 // includeJs("lib/monaco-editor/dev/vs/editor/editor.main.nls.de.js");

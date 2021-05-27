@@ -77,6 +77,7 @@ import { GNGEreignisbehandlung } from "../../runtimelibrary/gng/GNGEreignisbehan
 import { GNGFigurClass } from "../../runtimelibrary/gng/GNGFigur.js";
 import { RandomClass } from "../../runtimelibrary/Random.js";
 import { DirectionClass } from "../../runtimelibrary/graphics/Direction.js";
+import { Patcher } from "./Patcher.js";
 
 export type File = {
     name: string,
@@ -235,14 +236,16 @@ export class Module {
 
     static restoreFromData(f: FileData, main: MainBase): Module {
 
+        let patched = Patcher.patch(f.text);
+
         let f1: File = {
             name: f.name,
-            text: f.text,
+            text: patched.patchedText,
             text_before_revision: f.text_before_revision,
             submitted_date: f.submitted_date,
             student_edited_after_revision: false,
             dirty: true,
-            saved: true,
+            saved: !patched.modified,
             version: f.version,
             id: f.id,
             is_copy_of_id: f.is_copy_of_id,

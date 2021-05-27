@@ -79,7 +79,7 @@ export class RepositoryCheckoutManager {
 
         $divBelow.append(makeDiv('', 'updateRepo-minorHeading', 'Repositories:', {'margin-bottom': '10px', 'margin-top': '20px'}));
 
-        this.$repoListDiv = makeDiv('#checkoutRepo-repoListDiv', 'jo_scrollable');
+        this.$repoListDiv = makeDiv('checkoutRepo-repoListDiv', 'jo_scrollable');
         $divBelow.append(this.$repoListDiv);
 
         let $buttonDiv = makeDiv("updateRepo-buttonDiv");

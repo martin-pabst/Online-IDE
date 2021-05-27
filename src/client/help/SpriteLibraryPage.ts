@@ -6,7 +6,8 @@ type SpriteLibraryEntry = {
     indexName?: string,
     tilesX?: number,
     tilesY?: number,
-    minIndex?: number
+    minIndex?: number,
+    skipAtEnd?: number
 }
 
 declare var SpriteLibrary: SpriteLibraryEntry[];
@@ -19,11 +20,13 @@ export class SpriteLibraryPage {
 
         let nameOld: string = "";
         for (let e of SpriteLibrary) {
+            if(!e.skipAtEnd) e.skipAtEnd = 0;
 
             let tilesX = e.tilesX == null ? 1 : e.tilesX;
             let tilesY = e.tilesY == null ? 1 : e.tilesY;
             let index: number = e.index == null ? 0 : e.index;
 
+            let numberOfTiles = 0;
             for (let row = 0; row < tilesY; row++) {
                 for (let column = 0; column < tilesX; column++) {
                     if (e.name != nameOld) {
@@ -53,12 +56,15 @@ export class SpriteLibraryPage {
                         height = $sh.height();
                     }
                     $outerbox.append('<div class="jo_spritelibrary-subscript">Nr. ' + index + '</div>');
-                    $outerbox.append('<div class="jo_spritelibrary-subscript">' + width + ' x ' + height + '</div>');
+                    $outerbox.append('<div class="jo_spritelibrary-subscript">' + Math.round(width) + ' x ' + Math.round(height) + '</div>');
                     if (e.indexName != null) {
                         $outerbox.append('<div class="jo_spritelibrary-subscript">(' + e.indexName + ')</div>');
                     }
                     index++;
+                    numberOfTiles++;
+                    if(tilesX * tilesY - numberOfTiles <= e.skipAtEnd) break;
                 }
+                if(tilesX * tilesY - numberOfTiles <= e.skipAtEnd) break;
             }
         }
 

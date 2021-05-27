@@ -819,18 +819,18 @@ export abstract class ShapeHelper extends ActorHelper {
 
         let enuminfo = directionType.enumInfoList;
 
-        let pairs: {n: number, ei: EnumInfo}[] = [
-            {n: dy1, ei: enuminfo[0]},
-            {n: dx2, ei: enuminfo[1]},
-            {n: dy2, ei: enuminfo[2]},
-            {n: dx1, ei: enuminfo[3]}
+        let pairs: {distance: number, ei: EnumInfo}[] = [
+            {distance: dy1, ei: enuminfo[0]},
+            {distance: dx2, ei: enuminfo[1]},
+            {distance: dy2, ei: enuminfo[2]},
+            {distance: dx1, ei: enuminfo[3]}
         ]
 
-        let max = pairs[0].n;
+        let max = pairs[0].distance;
         let ei = pairs[0].ei;
         for(let i = 1; i < 4; i++){
-            if(pairs[i].n > max){
-                max = pairs[i].n;
+            if(pairs[i].distance > max){
+                max = pairs[i].distance;
                 ei = pairs[i].ei;
             }
         }
@@ -882,6 +882,8 @@ export abstract class ShapeHelper extends ActorHelper {
             this.move(lmdx*(parameterMin - currentParameter), lmdy*(parameterMin - currentParameter));
         }
 
+        this.lastMoveDx = lmdx;
+        this.lastMoveDy = lmdy;
     }
 
 

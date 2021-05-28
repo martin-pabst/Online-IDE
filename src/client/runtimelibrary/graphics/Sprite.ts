@@ -221,7 +221,7 @@ export class SpriteClass extends Klass {
                 let indices: number[] = [];
 
                 if (fromIndex < toIndex && toIndex - fromIndex < 10000) {
-                    for (let i = fromIndex; i < toIndex; i++) indices.push(i);
+                    for (let i = fromIndex; i <= toIndex; i++) indices.push(i);
                 }
 
                 sh.playAnimation(indices, repeatType.enumValue.identifier, imagesPerSecond);
@@ -237,9 +237,9 @@ export class SpriteClass extends Klass {
 
                 if (sh.testdestroyed("stopAnimation")) return;
 
-                sh.stopAnimation(true);
+                sh.stopAnimation(false);
 
-            }, false, false, 'Stoppt die gerade laufende Animation und macht das Sprite unsichtbar.', false));
+            }, false, false, 'Stoppt die gerade laufende Animation', false));
 
         this.addMethod(new Method("pauseAnimation", new Parameterlist([
         ]), null,
@@ -339,7 +339,7 @@ export class SpriteHelper extends ShapeHelper {
 
     constructor(public x: number, public y: number, public name: string, public index: number,
         interpreter: Interpreter, runtimeObject: RuntimeObject, copyFromOtherShape?: ShapeHelper,
-        public scaleMode: string = "linear") {
+        public scaleMode: string = "nearest_neighbour") {
         super(interpreter, runtimeObject);
         
         if(copyFromOtherShape == null){
@@ -475,7 +475,7 @@ export class SpriteHelper extends ShapeHelper {
 
         if (texture != null) {
 
-            if (this.scaleMode == "nearest_neighbour") {
+            if (this.scaleMode == "linear") {
 
                 let t = this.worldHelper.scaledTextures[nameWithIndex];
 
@@ -485,7 +485,7 @@ export class SpriteHelper extends ShapeHelper {
                     let dynamicTexture1 = PIXI.RenderTexture.create({
                         width: sprite.width,
                         height: sprite.height,
-                        scaleMode: PIXI.SCALE_MODES.NEAREST
+                        scaleMode: PIXI.SCALE_MODES.LINEAR
                     });
 
                     this.worldHelper.app.renderer.render(sprite, {

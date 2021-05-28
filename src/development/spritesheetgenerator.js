@@ -77,24 +77,24 @@ Spritesmith.run({
             let tiles = filenameToTilesMap[filename];
             if (typeof tiles == "undefined") {
                 pixi.frames[filenameToNameMap[filename]] = {
-                    frame: { x: data.x, y: data.y, w: data.width, h: data.height },
+                    frame: { x: Math.round(data.x), y: Math.round(data.y), w: Math.round(data.width), h: Math.round(data.height) },
                     "rotated": false,
                     "trimmed": false,
-                    "spriteSourceSize": { x: 0, y: 0, w: data.width, h: data.height },
-                    "sourceSize": { "w": data.width, "h": data.height },
+                    "spriteSourceSize": { x: 0, y: 0, w: Math.round(data.width), h: Math.round(data.height) },
+                    "sourceSize": { "w": Math.round(data.width), "h": Math.round(data.height) },
                     "pivot": { "x": 0.5, "y": 0.5 }
                 }
                 let cssInfo = filenameToCssInfoMap[filename];
-                cssFile += getCssPart(cssInfo.name, cssInfo.index, data.x, data.y, data.width, data.height, cssGraphicURL);
+                cssFile += getCssPart(cssInfo.name, cssInfo.index, Math.round(data.x), Math.round(data.y), Math.round(data.width), Math.round(data.height), cssGraphicURL);
             } else {
                 let number = tiles.minIndex;
-                let w = (data.width - (tiles.tilesX - 1) * tiles.spacingX) / tiles.tilesX;
-                let h = (data.height - (tiles.tilesY - 1) * tiles.spacingY) / tiles.tilesY;
+                let w = Math.round((data.width - (tiles.tilesX - 1) * tiles.spacingX) / tiles.tilesX);
+                let h = Math.round((data.height - (tiles.tilesY - 1) * tiles.spacingY) / tiles.tilesY);
                 if (tiles.firstYThenX) {
                     for (let column = 0; column < tiles.tilesX; column++) {
                         for (let row = 0; row < tiles.tilesY; row++) {
-                            let x = data.x + w * column + column * tiles.spacingX;
-                            let y = data.y + h * row + row * tiles.spacingY;
+                            let x = Math.round(data.x + w * column + column * tiles.spacingX);
+                            let y = Math.round(data.y + h * row + row * tiles.spacingY);
                             pixi.frames[filenameToNameMap[filename] + "#" + number] = {
                                 frame: { x: x, y: y, w: w, h: h },
                                 "rotated": false,

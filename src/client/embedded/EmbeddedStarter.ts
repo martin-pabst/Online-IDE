@@ -172,7 +172,7 @@ jQuery(function () {
 
     });
 
-
+    PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
     PIXI.Loader
         .shared.add(prefix + "assets/graphics/spritesheet.json")
         .load(() => { });

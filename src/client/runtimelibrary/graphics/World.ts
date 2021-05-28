@@ -5,7 +5,7 @@ import { doublePrimitiveType, floatPrimitiveType, intPrimitiveType, voidPrimitiv
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { ActorHelper } from "./Actor.js";
 import { InterpreterState, Interpreter } from "../../interpreter/Interpreter.js";
-import { ShapeHelper } from "./Shape.js";
+import { ShapeClass, ShapeHelper } from "./Shape.js";
 import { KeyboardTool } from "../../tools/KeyboardTool.js";
 import { SpriteHelper } from "./Sprite.js";
 import { ColorHelper } from "./ColorHelper.js";
@@ -22,6 +22,7 @@ export class WorldClass extends Klass {
         this.setBaseClass(<Klass>module.typeStore.getType("Object"));
 
         let groupType = <GroupClass>module.typeStore.getType("Group");
+        let shapeType = <ShapeClass>module.typeStore.getType("Shape");
         let mouseListenerType = <MouseListenerInterface>module.typeStore.getType("MouseListener");
 
         // this.addAttribute(new Attribute("PI", doublePrimitiveType, (object) => { return Math.PI }, true, Visibility.public, true, "Die Kreiszahl Pi (3.1415...)"));
@@ -83,9 +84,76 @@ export class WorldClass extends Klass {
                 // wh.stage.localTransform.translate(x,y);
                 //@ts-ignore
                 wh.stage.transform.onChange();
+                wh.stage.updateTransform();
                 wh.setAllHitpolygonsDirty();
+                wh.computerCurrentWorldBounds();
 
             }, false, false, 'Verschiebt alle Objekte der Welt um x nach rechts und y nach unten.', false));
+
+        this.addMethod(new Method("moveToRevealShape", new Parameterlist([
+            { identifier: "shape", type: shapeType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "frameWidth", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "xMin", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "xMax", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "yMin", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "yMax", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let shape: RuntimeObject = parameters[1].value;
+                let frameWidth: number = parameters[2].value;
+                let xMin: number = parameters[3].value;
+                let xMax: number = parameters[4].value;
+                let yMin: number = parameters[5].value;
+                let yMax: number = parameters[6].value;
+                let wh: WorldHelper = o.intrinsicData["World"];
+
+                let shapeHelper: ShapeHelper = shape.intrinsicData["Actor"];
+
+                let moveX: number = 0;
+                let moveY: number = 0;
+
+                let shapeX: number = shapeHelper.getCenterX();
+                let shapeY: number = shapeHelper.getCenterY();
+
+                let outsideRight = shapeX - (wh.currentLeft + wh.currentWidth - frameWidth);
+                if(outsideRight > 0 && wh.currentLeft + wh.currentWidth < xMax ) {
+                   moveX = -outsideRight;
+                }
+          
+                let outsideLeft = (wh.currentLeft + frameWidth) - shapeX;
+                if(outsideLeft > 0 && wh.currentLeft > xMin) {
+                   moveX = outsideLeft;
+                }
+                
+                let outsideBottom = shapeY - (wh.currentTop + wh.currentHeight - frameWidth);
+                if(outsideBottom > 0 && wh.currentTop + wh.currentHeight <= yMax) {
+                   moveY = -outsideBottom;
+                }
+          
+                let outsideTop = (wh.currentTop + frameWidth) - shapeY;
+                if(outsideTop > 0 && wh.currentTop >= yMin) {
+                   moveY = outsideTop;
+                }
+
+                if(moveX != 0 || moveY != 0){
+                    let matrix = new PIXI.Matrix().copyFrom(wh.stage.localTransform);
+                    wh.stage.localTransform.identity();
+                    wh.stage.localTransform.translate(moveX,moveY);
+                    wh.stage.localTransform.prepend(matrix);
+                    
+                    
+                    // wh.stage.localTransform.translate(x,y);
+                    //@ts-ignore
+                    wh.stage.transform.onChange();
+                    wh.stage.updateTransform();
+                    wh.setAllHitpolygonsDirty();
+                    wh.computerCurrentWorldBounds();
+                }
+
+
+            }, false, false, 'Verschiebt die Welt so, dass das übergebene graphische Objekt (shape) sichtbar wird. Verschoben wird nur, wenn das Objekt weniger als frameWidth vom Rand entfernt ist und die Welt nicht über die gegebenen Koordinaten xMin, xMax, yMin und yMax hinausragt.', false));
 
         this.addMethod(new Method("rotate", new Parameterlist([
             { identifier: "angleInDeg", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -114,6 +182,7 @@ export class WorldClass extends Klass {
                 //@ts-ignore
                 wh.stage.transform.onChange();
                 wh.setAllHitpolygonsDirty();
+                wh.computerCurrentWorldBounds();
 
             }, false, false, 'Rotiert die Welt um den angegebenen Winkel im Urzeigersinn. Drehpunkt ist der Punkt (x/y).', false));
 
@@ -145,6 +214,7 @@ export class WorldClass extends Klass {
                 //@ts-ignore
                 wh.stage.transform.onChange();
                 wh.setAllHitpolygonsDirty();
+                wh.computerCurrentWorldBounds();
 
             }, false, false, 'Streckt die Welt um den angegebenen Faktor. Zentrum der Streckung ist (x/y).', false));
 
@@ -171,6 +241,7 @@ export class WorldClass extends Klass {
                 //@ts-ignore
                 wh.stage.transform.onChange();
                 wh.setAllHitpolygonsDirty();
+                wh.computerCurrentWorldBounds();
 
             }, false, false, 'Streckt die Welt um den angegebenen Faktor. Zentrum der Streckung ist (x/y).', false));
 
@@ -209,7 +280,7 @@ export class WorldClass extends Klass {
                 let o: RuntimeObject = parameters[0].value;
                 let wh: WorldHelper = o.intrinsicData["World"];
 
-                return Math.round(wh.width);
+                return Math.round(wh.currentWidth);
 
             }, false, false, 'Gibt die "Breite" des Grafikbereichs zurück, genauer: die x-Koordinate am rechten Rand.', false));
 
@@ -220,9 +291,31 @@ export class WorldClass extends Klass {
                 let o: RuntimeObject = parameters[0].value;
                 let wh: WorldHelper = o.intrinsicData["World"];
 
-                return Math.round(wh.height);
+                return Math.round(wh.currentHeight);
 
             }, false, false, 'Gibt die "Höhe" des Grafikbereichs zurück, genauer: die y-Koordinate am unteren Rand.', false));
+
+        this.addMethod(new Method("getTop", new Parameterlist([
+        ]), intPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let wh: WorldHelper = o.intrinsicData["World"];
+
+                return Math.round(wh.currentTop);
+
+            }, false, false, 'Gibt die y-Koordinate der linken oberen Ecke zurück.', false));
+
+        this.addMethod(new Method("getLeft", new Parameterlist([
+        ]), intPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let wh: WorldHelper = o.intrinsicData["World"];
+
+                return Math.round(wh.currentLeft);
+
+            }, false, false, 'Gibt die x-Koordinate der linken oberen Ecke zurück.', false));
 
         this.addMethod(new Method("setCursor", new Parameterlist([
             { identifier: "cursor", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -324,6 +417,11 @@ export class WorldHelper {
 
     shapes: ShapeHelper[] = [];     // all shapes incl. groups that aren't part of a group
 
+    currentLeft: number;
+    currentTop: number;
+    currentWidth: number;
+    currentHeight: number;
+
     tickerFunction: (t: number) => void;
 
     clearActorLists() {
@@ -339,6 +437,11 @@ export class WorldHelper {
 
         this.initialHeight = height;
         this.initialWidth = width;
+
+        this.currentLeft = 0;
+        this.currentTop = 0;
+        this.currentWidth = width;
+        this.currentHeight = height;
 
         this.interpreter = this.module?.main?.getInterpreter();
 
@@ -511,6 +614,21 @@ export class WorldHelper {
         this.module.main.getRightDiv()?.adjustWidthToWorld();
 
     }
+
+    computerCurrentWorldBounds(){
+
+        let p1: PIXI.Point = new PIXI.Point(0, 0);
+        this.stage.localTransform.applyInverse(p1, p1);
+        
+        let p2: PIXI.Point = new PIXI.Point(this.initialWidth, this.initialHeight);
+        this.stage.localTransform.applyInverse(p2, p2);
+
+        this.currentLeft = p1.x;
+        this.currentTop = p1.y;
+        this.currentWidth = p2.x - p1.x;
+        this.currentHeight = p2.y - p1.y;
+    }
+
 
     hasActors(): boolean {
         return this.actActors.length > 0 || this.keyPressedActors.length > 0 || this.keyUpActors.length > 0 

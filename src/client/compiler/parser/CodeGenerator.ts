@@ -508,7 +508,7 @@ export class CodeGenerator {
         // " + 1" is for "this"-object
         this.nextFreeRelativeStackPos = methodNode.parameters.length + 1;
 
-        if (method.isConstructor && this.currentSymbolTable.classContext instanceof Klass) {
+        if (method.isConstructor && this.currentSymbolTable.classContext instanceof Klass && methodNode.statements != null) {
             let c: Klass = this.currentSymbolTable.classContext;
 
             let superconstructorCallEnsured: boolean = false;
@@ -555,7 +555,7 @@ export class CodeGenerator {
                     this.pushError("Die Basisklasse der Klasse " + c.identifier + " besitzt keinen parameterlosen Konstruktor, daher muss diese Konstruktordefinition mit einem Aufruf eines Konstruktors der Basisklasse (super(...)) beginnen.",
                         methodNode.position, "error", quickFix);
                 }
-            } else if (!superconstructorCallEnsured && c.baseClass.hasParameterlessConstructor()) {
+            } else if (!superconstructorCallEnsured && c.baseClass?.hasParameterlessConstructor()) {
                 // invoke parameterless constructor
                 let baseClassConstructor = c.baseClass.getParameterlessConstructor();
                 this.pushStatements([

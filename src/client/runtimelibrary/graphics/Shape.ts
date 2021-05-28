@@ -860,6 +860,10 @@ export abstract class ShapeHelper extends ActorHelper {
             let newParameter = currentParameter * 2;
             this.move(lmdx * (newParameter - currentParameter), lmdy*(newParameter - currentParameter));
             currentParameter = newParameter;
+            if((currentParameter + 1) * length < -30){
+                this.move(lmdx *(-1 - currentParameter), lmdy*(-1 - currentParameter));
+                return;
+            }
         }
         let parameterMin = currentParameter;
 

@@ -695,7 +695,7 @@ export class Klass extends Type {
 
         if (message == "") {
 
-            if (this.baseClass != null && !this.isAbstract) {
+            if (this.baseClass != null) {
 
                 let abstractMethods: Method[] = [];
 
@@ -725,7 +725,7 @@ export class Klass extends Type {
 
             }
 
-            if (missingAbstractMethods.length > 0) {
+            if (missingAbstractMethods.length > 0 && !this.isAbstract) {
                 message = "Die Klasse " + this.identifier + " muss noch folgende Methoden ihrer abstrakten Basisklassen implementieren: ";
 
                 message += missingAbstractMethods.map((m) => m.getSignatureWithReturnParameter()).join(", ");

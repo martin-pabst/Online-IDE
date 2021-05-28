@@ -77,16 +77,17 @@ export class WorldClass extends Klass {
 
                 let matrix = new PIXI.Matrix().copyFrom(wh.stage.localTransform);
                 wh.stage.localTransform.identity();
-                wh.stage.localTransform.translate(x,y);
+                wh.stage.localTransform.translate(x, y);
                 wh.stage.localTransform.prepend(matrix);
-                
-                
+
+
                 // wh.stage.localTransform.translate(x,y);
                 //@ts-ignore
                 wh.stage.transform.onChange();
                 wh.stage.updateTransform();
                 wh.setAllHitpolygonsDirty();
-                wh.computerCurrentWorldBounds();
+                wh.computeCurrentWorldBounds();
+                wh.shapesNotAffectedByWorldTransforms.forEach((shape) => shape.move(-x, -y));
 
             }, false, false, 'Verschiebt alle Objekte der Welt um x nach rechts und y nach unten.', false));
 
@@ -118,42 +119,58 @@ export class WorldClass extends Klass {
                 let shapeY: number = shapeHelper.getCenterY();
 
                 let outsideRight = shapeX - (wh.currentLeft + wh.currentWidth - frameWidth);
-                if(outsideRight > 0 && wh.currentLeft + wh.currentWidth < xMax ) {
-                   moveX = -outsideRight;
-                }
-          
-                let outsideLeft = (wh.currentLeft + frameWidth) - shapeX;
-                if(outsideLeft > 0 && wh.currentLeft > xMin) {
-                   moveX = outsideLeft;
-                }
-                
-                let outsideBottom = shapeY - (wh.currentTop + wh.currentHeight - frameWidth);
-                if(outsideBottom > 0 && wh.currentTop + wh.currentHeight <= yMax) {
-                   moveY = -outsideBottom;
-                }
-          
-                let outsideTop = (wh.currentTop + frameWidth) - shapeY;
-                if(outsideTop > 0 && wh.currentTop >= yMin) {
-                   moveY = outsideTop;
+                if (outsideRight > 0 && wh.currentLeft + wh.currentWidth < xMax) {
+                    moveX = -outsideRight;
                 }
 
-                if(moveX != 0 || moveY != 0){
+                let outsideLeft = (wh.currentLeft + frameWidth) - shapeX;
+                if (outsideLeft > 0 && wh.currentLeft > xMin) {
+                    moveX = outsideLeft;
+                }
+
+                let outsideBottom = shapeY - (wh.currentTop + wh.currentHeight - frameWidth);
+                if (outsideBottom > 0 && wh.currentTop + wh.currentHeight <= yMax) {
+                    moveY = -outsideBottom;
+                }
+
+                let outsideTop = (wh.currentTop + frameWidth) - shapeY;
+                if (outsideTop > 0 && wh.currentTop >= yMin) {
+                    moveY = outsideTop;
+                }
+
+                if (moveX != 0 || moveY != 0) {
                     let matrix = new PIXI.Matrix().copyFrom(wh.stage.localTransform);
                     wh.stage.localTransform.identity();
-                    wh.stage.localTransform.translate(moveX,moveY);
+                    wh.stage.localTransform.translate(moveX, moveY);
                     wh.stage.localTransform.prepend(matrix);
-                    
-                    
+
+
                     // wh.stage.localTransform.translate(x,y);
                     //@ts-ignore
                     wh.stage.transform.onChange();
                     wh.stage.updateTransform();
                     wh.setAllHitpolygonsDirty();
-                    wh.computerCurrentWorldBounds();
+                    wh.computeCurrentWorldBounds();
+                    wh.shapesNotAffectedByWorldTransforms.forEach((shape) => shape.move(-moveX, -moveY));
                 }
 
 
             }, false, false, 'Verschiebt die Welt so, dass das übergebene graphische Objekt (shape) sichtbar wird. Verschoben wird nur, wenn das Objekt weniger als frameWidth vom Rand entfernt ist und die Welt nicht über die gegebenen Koordinaten xMin, xMax, yMin und yMax hinausragt.', false));
+
+        this.addMethod(new Method("addToShapesNotAffectedByWorldTransformations", new Parameterlist([
+            { identifier: "shape", type: shapeType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let shape: RuntimeObject = parameters[1].value;
+                let wh: WorldHelper = o.intrinsicData["World"];
+
+                let shapeHelper: ShapeHelper = shape.intrinsicData["Actor"];
+
+                wh.shapesNotAffectedByWorldTransforms.push(shapeHelper);
+
+            }, false, false, 'Sorgt dafür, dass das übergebene graphische Objekt (shape) bei Transformation der Welt (mittels rotate, move, setCoordinateSystem, scale, moveToRevealShape) unverändert in der Grafikausgabe sichtbar bleibt. Diese Methode eignet sich z.B., um die Punktenazeige immer links oben anzuzeigen, auch wenn die Welt scrollt.', false));
 
         this.addMethod(new Method("rotate", new Parameterlist([
             { identifier: "angleInDeg", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -168,21 +185,26 @@ export class WorldClass extends Klass {
                 let y: number = parameters[3].value;
                 let wh: WorldHelper = o.intrinsicData["World"];
 
+                let angleRad = -angle / 180 * Math.PI;
                 let matrix = new PIXI.Matrix().copyFrom(wh.stage.localTransform);
                 wh.stage.localTransform.identity();
                 wh.stage.localTransform.translate(-x, -y);
-                wh.stage.localTransform.rotate(-angle / 180 * Math.PI);
+                wh.stage.localTransform.rotate(angleRad);
                 wh.stage.localTransform.translate(x, y);
                 wh.stage.localTransform.prepend(matrix);
-                
-                
+
+
                 // wh.stage.localTransform.translate(-x, -y);
                 // wh.stage.localTransform.rotate(-angle / 180 * Math.PI);
                 // wh.stage.localTransform.translate(x, y);
                 //@ts-ignore
                 wh.stage.transform.onChange();
                 wh.setAllHitpolygonsDirty();
-                wh.computerCurrentWorldBounds();
+                wh.computeCurrentWorldBounds();
+                wh.shapesNotAffectedByWorldTransforms.forEach(
+                    (shape) => { 
+                        shape.rotate(-angle, x, y);
+                    });
 
             }, false, false, 'Rotiert die Welt um den angegebenen Winkel im Urzeigersinn. Drehpunkt ist der Punkt (x/y).', false));
 
@@ -206,15 +228,16 @@ export class WorldClass extends Klass {
                 wh.stage.localTransform.scale(factor, factor);
                 wh.stage.localTransform.translate(x, y);
                 wh.stage.localTransform.prepend(matrix);
-                
-                
+
+
                 // wh.stage.localTransform.translate(-x, -y);
                 // wh.stage.localTransform.scale(factor, factor);
                 // wh.stage.localTransform.translate(x, y);
                 //@ts-ignore
                 wh.stage.transform.onChange();
                 wh.setAllHitpolygonsDirty();
-                wh.computerCurrentWorldBounds();
+                wh.computeCurrentWorldBounds();
+                wh.shapesNotAffectedByWorldTransforms.forEach((shape) => shape.scale(1/factor,x, y));
 
             }, false, false, 'Streckt die Welt um den angegebenen Faktor. Zentrum der Streckung ist (x/y).', false));
 
@@ -235,13 +258,17 @@ export class WorldClass extends Klass {
 
                 wh.stage.localTransform.identity();     // coordinate system (0/0) to (initialWidth/initialHeight)
                 wh.stage.localTransform.translate(-left, -top);
-                wh.stage.localTransform.scale(wh.initialWidth/width, wh.initialHeight/height);
+                wh.stage.localTransform.scale(wh.initialWidth / width, wh.initialHeight / height);
 
                 // wh.stage.localTransform.translate(x, y);
                 //@ts-ignore
                 wh.stage.transform.onChange();
                 wh.setAllHitpolygonsDirty();
-                wh.computerCurrentWorldBounds();
+                wh.computeCurrentWorldBounds();
+                wh.shapesNotAffectedByWorldTransforms.forEach((shape) => {
+                    shape.scale(width/wh.initialWidth, left, top);
+                    shape.move(left, top);
+                } );
 
             }, false, false, 'Streckt die Welt um den angegebenen Faktor. Zentrum der Streckung ist (x/y).', false));
 
@@ -422,6 +449,8 @@ export class WorldHelper {
     currentWidth: number;
     currentHeight: number;
 
+    shapesNotAffectedByWorldTransforms: ShapeHelper[] = [];
+
     tickerFunction: (t: number) => void;
 
     clearActorLists() {
@@ -557,7 +586,7 @@ export class WorldHelper {
         for (let listenerType of ["mouseup", "mousedown", "mousemove", "mouseenter", "mouseleave"]) {
 
             let eventType = listenerType;
-            if(window.PointerEvent){
+            if (window.PointerEvent) {
                 eventType = eventType.replace('mouse', 'pointer');
             }
 
@@ -578,9 +607,9 @@ export class WorldHelper {
                     }
                 }
 
-                if(listenerType == "mousedown"){
+                if (listenerType == "mousedown") {
                     let gngEreignisbehandlung = this.interpreter.gngEreignisbehandlungHelper;
-                    if(gngEreignisbehandlung != null){
+                    if (gngEreignisbehandlung != null) {
                         gngEreignisbehandlung.handleMouseClickedEvent(x, y);
                     }
                 }
@@ -615,11 +644,11 @@ export class WorldHelper {
 
     }
 
-    computerCurrentWorldBounds(){
+    computeCurrentWorldBounds() {
 
         let p1: PIXI.Point = new PIXI.Point(0, 0);
         this.stage.localTransform.applyInverse(p1, p1);
-        
+
         let p2: PIXI.Point = new PIXI.Point(this.initialWidth, this.initialHeight);
         this.stage.localTransform.applyInverse(p2, p2);
 
@@ -631,12 +660,12 @@ export class WorldHelper {
 
 
     hasActors(): boolean {
-        return this.actActors.length > 0 || this.keyPressedActors.length > 0 || this.keyUpActors.length > 0 
-        || this.keyDownActors.length > 0 || this.mouseListeners.length > 0 || this.mouseListenerShapes.length > 0;
+        return this.actActors.length > 0 || this.keyPressedActors.length > 0 || this.keyUpActors.length > 0
+            || this.keyDownActors.length > 0 || this.mouseListeners.length > 0 || this.mouseListenerShapes.length > 0;
     }
 
-    setAllHitpolygonsDirty(){
-        for(let shape of this.shapes){
+    setAllHitpolygonsDirty() {
+        for (let shape of this.shapes) {
             shape.setHitPolygonDirty(true);
         }
     }
@@ -699,7 +728,7 @@ export class WorldHelper {
             if (this.actActors.length > 0) {
                 this.interpreter.timerFunction(33.33, true, 0.5);
                 //@ts-ignore
-                if(this.interpreter.state == InterpreterState.running){
+                if (this.interpreter.state == InterpreterState.running) {
                     this.interpreter.timerStopped = false;
                     this.interpreter.timerFunction(33.33, false, 0.08);
                 }
@@ -949,8 +978,8 @@ export class WorldHelper {
             If a shape is registered as MouseListener of the world-object, it gets all mouse-events twice. 
             => Deregister shape as mouseListenerShape and register it as mouse listener for the world object.
         */
-        let index: number = this.mouseListenerShapes.findIndex((mls) => {return mls.shapeHelper.runtimeObject == listener});
-        if(index >= 0){
+        let index: number = this.mouseListenerShapes.findIndex((mls) => { return mls.shapeHelper.runtimeObject == listener });
+        if (index >= 0) {
             this.mouseListenerShapes.splice(index, 1);
         }
 

@@ -399,6 +399,23 @@ export class ShapeClass extends Klass {
 
             }, false, false, "Setzt fest, wo der 'Mittelpunkt' des Objekts liegen soll. Dieser Punkt wird als Drehpunkt der Methode rotate, als Zentrum der Methode Scale und als Referenzpunkt der Methode moveTo benutzt.", false));
 
+        this.addMethod(new Method("defineCenterRelative", new Parameterlist([
+            { identifier: "xRel", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "yRel", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: ShapeHelper = o.intrinsicData["Actor"];
+                let x: number = parameters[1].value;
+                let y: number = parameters[2].value;
+
+                if (sh.testdestroyed("defineCenterRelative")) return;
+
+                sh.defineCenterRelative(x, y);
+
+            }, false, false, "Setzt fest, wo der 'Mittelpunkt' des Objekts liegen soll. Dabei bedeutet (XRel/YRel) = (0/0) die linke obere Ecke der Bounding Box des Objekts, (XRel/YRel) = (1/1) die rechte untere Ecke. Defaultwert ist (XRel/YRel) = (0.5/0.5), also der Diagonalenschnittpunkt der Bounding Box. Dieser Punkt wird als Drehpunkt der Methode rotate, als Zentrum der Methode Scale und als Referenzpunkt der Methode moveTo benutzt.\n\nVORSICHT: Diese Methode arbeitet nicht mehr korrekt, wenn das Objekt schon gedreht wurde!", false));
+
         this.addMethod(new Method("setAngle", new Parameterlist([
             { identifier: "angleDeg", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), voidPrimitiveType,
@@ -601,19 +618,19 @@ export class ShapeClass extends Klass {
 
             }, false, false, 'Setzt das Grafikobjekt hinter alle anderen.', false));
 
-            this.addMethod(new Method("getHitPolygon", new Parameterlist([
-            ]), new ArrayType(vector2Class),
-                (parameters) => {
-    
-                    let o: RuntimeObject = parameters[0].value;
-                    let sh: ShapeHelper = o.intrinsicData["Actor"];
-    
-                    if (sh.testdestroyed("getHitPolygon")) return;
-    
-                    return sh.getHitPolygon(vector2Class);
-    
-                }, false, false, "Gibt ein Array zurück, das die vier Eckpunkte des Hit-Polygons in Form von Vector2-Ortsvektoren enthält. Bei den Klassen Rectangle, Triangle und Polygon sind dies die Eckpunkte.", false));
-    
+        this.addMethod(new Method("getHitPolygon", new Parameterlist([
+        ]), new ArrayType(vector2Class),
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: ShapeHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("getHitPolygon")) return;
+
+                return sh.getHitPolygon(vector2Class);
+
+            }, false, false, "Gibt ein Array zurück, das die vier Eckpunkte des Hit-Polygons in Form von Vector2-Ortsvektoren enthält. Bei den Klassen Rectangle, Triangle und Polygon sind dies die Eckpunkte.", false));
+
 
     }
 
@@ -702,7 +719,7 @@ export abstract class ShapeHelper extends ActorHelper {
             }
         }
 
-        if(this.worldHelper.defaultGroup == null){
+        if (this.worldHelper.defaultGroup == null) {
             this.worldHelper.shapes.push(this);
         }
 
@@ -819,22 +836,22 @@ export abstract class ShapeHelper extends ActorHelper {
 
         let enuminfo = directionType.enumInfoList;
 
-        let pairs: {distance: number, ei: EnumInfo}[] = [
-            {distance: dy1, ei: enuminfo[0]},
-            {distance: dx2, ei: enuminfo[1]},
-            {distance: dy2, ei: enuminfo[2]},
-            {distance: dx1, ei: enuminfo[3]}
+        let pairs: { distance: number, ei: EnumInfo }[] = [
+            { distance: dy1, ei: enuminfo[0] },
+            { distance: dx2, ei: enuminfo[1] },
+            { distance: dy2, ei: enuminfo[2] },
+            { distance: dx1, ei: enuminfo[3] }
         ]
 
         let max = pairs[0].distance;
         let ei = pairs[0].ei;
-        for(let i = 1; i < 4; i++){
-            if(pairs[i].distance > max){
+        for (let i = 1; i < 4; i++) {
+            if (pairs[i].distance > max) {
                 max = pairs[i].distance;
                 ei = pairs[i].ei;
             }
         }
-        
+
         return ei.object;
     }
 
@@ -845,23 +862,23 @@ export abstract class ShapeHelper extends ActorHelper {
         let lmdx = this.lastMoveDx;
         let lmdy = this.lastMoveDy;
 
-        let length = Math.sqrt(lmdx*lmdx + lmdy * lmdy);
-        if(length < 0.001) return;
+        let length = Math.sqrt(lmdx * lmdx + lmdy * lmdy);
+        if (length < 0.001) return;
 
-        if(!this.collidesWith(sh1)) return;
+        if (!this.collidesWith(sh1)) return;
 
         let parameterMax = 0;       // collision with this parameter
         this.move(-lmdx, -lmdy);
 
         let currentParameter = -1;  // move to parameterMin
 
-        while(this.collidesWith(sh1)){
+        while (this.collidesWith(sh1)) {
             parameterMax = currentParameter;    // collision at this parameter
             let newParameter = currentParameter * 2;
-            this.move(lmdx * (newParameter - currentParameter), lmdy*(newParameter - currentParameter));
+            this.move(lmdx * (newParameter - currentParameter), lmdy * (newParameter - currentParameter));
             currentParameter = newParameter;
-            if((currentParameter + 1) * length < -30){
-                this.move(lmdx *(-1 - currentParameter), lmdy*(-1 - currentParameter));
+            if ((currentParameter + 1) * length < -30) {
+                this.move(lmdx * (-1 - currentParameter), lmdy * (-1 - currentParameter));
                 return;
             }
         }
@@ -869,10 +886,10 @@ export abstract class ShapeHelper extends ActorHelper {
 
         let isColliding: boolean = false;
         // Situation now: no collision at parameterMin == currentParameter, collision at parameterMax
-        while((parameterMax - parameterMin) * length > 1){
-            let np = (parameterMax + parameterMin)/2;
-            this.move(lmdx * (np - currentParameter), lmdy*(np - currentParameter));
-            if(isColliding = this.collidesWith(sh1)){
+        while ((parameterMax - parameterMin) * length > 1) {
+            let np = (parameterMax + parameterMin) / 2;
+            this.move(lmdx * (np - currentParameter), lmdy * (np - currentParameter));
+            if (isColliding = this.collidesWith(sh1)) {
                 parameterMax = np;
             } else {
                 parameterMin = np;
@@ -880,10 +897,10 @@ export abstract class ShapeHelper extends ActorHelper {
             currentParameter = np;
         }
 
-        if(keepColliding && !isColliding){
-            this.move(lmdx*(parameterMax - currentParameter), lmdy*(parameterMax - currentParameter));
-        } else if(isColliding && !keepColliding){
-            this.move(lmdx*(parameterMin - currentParameter), lmdy*(parameterMin - currentParameter));
+        if (keepColliding && !isColliding) {
+            this.move(lmdx * (parameterMax - currentParameter), lmdy * (parameterMax - currentParameter));
+        } else if (isColliding && !keepColliding) {
+            this.move(lmdx * (parameterMin - currentParameter), lmdy * (parameterMin - currentParameter));
         }
 
         this.lastMoveDx = lmdx;
@@ -925,16 +942,21 @@ export abstract class ShapeHelper extends ActorHelper {
             || bounds.bottom < screen.top || bounds.top > screen.bottom;
     }
 
-    defineCenter(x: number, y: number){
+    defineCenter(x: number, y: number) {
         let p = new PIXI.Point(x, y);
         this.displayObject.transform.worldTransform.applyInverse(p, p);
-        this.centerXInitial = x;
-        this.centerYInitial = y;
+        this.centerXInitial = p.x;
+        this.centerYInitial = p.y;
+    }
+
+    defineCenterRelative(x: number, y: number) {
+        let bounds = this.displayObject.getBounds(false);
+        this.defineCenter(bounds.left + bounds.width * x, bounds.top + bounds.height * y);
     }
 
     move(dx: number, dy: number) {
 
-        if(dx != 0 || dy != 0){
+        if (dx != 0 || dy != 0) {
             this.lastMoveDx = dx;
             this.lastMoveDy = dy;
         }
@@ -1076,17 +1098,17 @@ export abstract class ShapeHelper extends ActorHelper {
 
     abstract getCopy(klass: Klass): RuntimeObject;
 
-    getHitPolygon(vector2Class: Klass):Value[] {
+    getHitPolygon(vector2Class: Klass): Value[] {
 
-        if(this.hitPolygonDirty){
+        if (this.hitPolygonDirty) {
             this.transformHitPolygon();
         }
 
         let ret: Value[] = [];
-        for(let p of this.hitPolygonTransformed){
+        for (let p of this.hitPolygonTransformed) {
             let ro = new RuntimeObject(vector2Class);
-            ro.attributes = [{type: doublePrimitiveType, value: p.x}, {type: doublePrimitiveType, value: p.y}];
-            ret.push({type: vector2Class, value: ro});
+            ro.attributes = [{ type: doublePrimitiveType, value: p.x }, { type: doublePrimitiveType, value: p.y }];
+            ret.push({ type: vector2Class, value: ro });
         }
 
         return ret;

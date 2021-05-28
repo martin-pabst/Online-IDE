@@ -904,9 +904,12 @@ export class Parser {
 
         let first = true;
 
-        if (this.tt == TokenType.colon) {
-            return left;
-        }
+        // 28.05.2021: This broke evalation of ternery operator, so i commented it out.
+        // Don't know why it was there in the first place, so i expect some havoc to come...
+        //
+        // if (this.tt == TokenType.colon) {
+        //     return left;
+        // }
 
         while (first || operators.indexOf(this.tt) >= 0) {
 

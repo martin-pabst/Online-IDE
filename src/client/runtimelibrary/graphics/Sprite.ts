@@ -362,11 +362,6 @@ export class SpriteHelper extends ShapeHelper {
         this.centerXInitial = sprite.width / 2;
         this.centerYInitial = sprite.height / 2;
 
-        for(let p of this.hitPolygonInitial){
-            // p.x -= this.x;
-            // p.y -= this.centerYInitial;
-        }
-
         this.addToDefaultGroup();
 
     }
@@ -469,7 +464,7 @@ export class SpriteHelper extends ShapeHelper {
             prefix = window.javaOnlineDir;
         }
 
-        let sheet = PIXI.Loader.shared.resources[prefix + "assets/graphics/spritesheet.json"];
+        let sheet = PIXI.Loader.shared.resources[prefix + "assets/graphics/spritesheet.json"].spritesheet;
         let nameWithIndex = name + "#" + index;
         let texture = sheet.textures[nameWithIndex];
 

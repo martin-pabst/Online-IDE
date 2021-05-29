@@ -480,8 +480,25 @@ export class GroupHelper extends ShapeHelper {
         this.shapes = [];
     }
 
+    hasOverlappingBoundingBoxWith(shapeHelper: ShapeHelper): boolean {
+        this.displayObject.updateTransform();
+        shapeHelper.displayObject.updateTransform();
+
+        let bb = this.displayObject.getBounds();
+        let bb1 = shapeHelper.displayObject.getBounds();
+
+        if (bb.left > bb1.right || bb1.left > bb.right) return false;
+
+        if (bb.top > bb1.bottom || bb1.top > bb.bottom) return false;
+        return true;        
+    }
+
 
     collidesWith(shapeHelper: ShapeHelper) {
+        if(!this.hasOverlappingBoundingBoxWith(shapeHelper)){
+            return false;
+        } 
+
         for (let shape of this.shapes) {
             let sh: ShapeHelper = <ShapeHelper>shape.intrinsicData["Actor"];
             if (sh.collidesWith(shapeHelper)) {
@@ -499,6 +516,14 @@ export class GroupHelper extends ShapeHelper {
     }
 
     containsPoint(x: number, y: number) {
+        this.displayObject.updateTransform();
+
+        let bb = this.displayObject.getBounds();
+
+        if(x < bb.left || x > bb.left + bb.width || y < bb.top || y > bb.top + bb.height){
+            return false;
+        }
+
         for (let shape of this.shapes) {
             let sh: ShapeHelper = <ShapeHelper>shape.intrinsicData["Actor"];
             if (sh.containsPoint(x, y)) {

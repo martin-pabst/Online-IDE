@@ -792,7 +792,11 @@ export abstract class ShapeHelper extends ActorHelper {
     collidesWith(shapeHelper: ShapeHelper) {
 
         // if(!(this instanceof TurtleHelper) && (shapeHelper instanceof TurtleHelper)){
-        if (!(this["lineElements"] != null) && (shapeHelper["lineElements"] != null)) {
+        if (this["lineElements"] == null && (shapeHelper["lineElements"] != null)) {
+            return shapeHelper.collidesWith(this);
+        }
+
+        if (shapeHelper["shapes"]) {
             return shapeHelper.collidesWith(this);
         }
 
@@ -805,10 +809,6 @@ export abstract class ShapeHelper extends ActorHelper {
         if (bb.left > bb1.right || bb1.left > bb.right) return false;
 
         if (bb.top > bb1.bottom || bb1.top > bb.bottom) return false;
-
-        if (shapeHelper["shapes"]) {
-            return shapeHelper.collidesWith(this);
-        }
 
         if (this.hitPolygonInitial == null || shapeHelper.hitPolygonInitial == null) return true;
 
@@ -835,17 +835,31 @@ export abstract class ShapeHelper extends ActorHelper {
         let dy2 = bb.top - bb1.bottom;  // positive if bottom
 
         let enuminfo = directionType.enumInfoList;
+        let pairs: { distance: number, ei: EnumInfo }[] = [];
 
-        let pairs: { distance: number, ei: EnumInfo }[] = [
-            { distance: dy1, ei: enuminfo[0] },
-            { distance: dx2, ei: enuminfo[1] },
-            { distance: dy2, ei: enuminfo[2] },
-            { distance: dx1, ei: enuminfo[3] }
-        ]
+        if(this.lastMoveDx > 0){
+            pairs.push({ distance: dx1, ei: enuminfo[3] });
+        } else if(this.lastMoveDx < 0) {
+            pairs.push({ distance: dx2, ei: enuminfo[1] });
+        }
+
+        if(this.lastMoveDy > 0){
+            pairs.push({ distance: dy1, ei: enuminfo[0] });
+        } else if(this.lastMoveDy < 0) {
+            pairs.push({ distance: dy2, ei: enuminfo[2] });
+        }
+
+
+        // let pairs: { distance: number, ei: EnumInfo }[] = [
+        //     { distance: dy1, ei: enuminfo[0] },
+        //     { distance: dx2, ei: enuminfo[1] },
+        //     { distance: dy2, ei: enuminfo[2] },
+        //     { distance: dx1, ei: enuminfo[3] }
+        // ]
 
         let max = pairs[0].distance;
         let ei = pairs[0].ei;
-        for (let i = 1; i < 4; i++) {
+        for (let i = 1; i < pairs.length; i++) {
             if (pairs[i].distance > max) {
                 max = pairs[i].distance;
                 ei = pairs[i].ei;

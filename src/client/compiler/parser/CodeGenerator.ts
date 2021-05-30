@@ -2127,14 +2127,18 @@ export class CodeGenerator {
         this.pushTypePosition(node.rightBracketPosition, resolvedType); // to enable code completion when typing a point after the closing bracket
 
         let parameterTypes: Type[] = [];
-        let parameterStatements: Statement[][] = [];
+        // let parameterStatements: Statement[][] = [];
+        let positionsAfterParameterStatements: number[] = []
         let allStatements = this.currentProgram.statements;
 
         if (node.constructorOperands?.length > 0) {
-            for (let p of node.constructorOperands) {
-                let programPointer = allStatements.length;
+            // for (let p of node.constructorOperands) {
+            for (let j = 0; j < node.constructorOperands.length; j++) {
+                let p = node.constructorOperands[j];
+                // let programPointer = allStatements.length;
                 let typeNode = this.processNode(p);
-                parameterStatements.push(allStatements.splice(programPointer, allStatements.length - programPointer));
+                // parameterStatements.push(allStatements.splice(programPointer, allStatements.length - programPointer));
+                positionsAfterParameterStatements.push(allStatements.length);
                 if (typeNode == null) {
                     parameterTypes.push(voidPrimitiveType);
                 } else {
@@ -2182,14 +2186,22 @@ export class CodeGenerator {
                         destType = (<ArrayType>destType).arrayOfType;
                     }
                 }
+
                 let srcType = parameterTypes[i];
-                for (let st of parameterStatements[i]) {
-                    this.currentProgram.statements.push(st);
-                }
+                // for (let st of parameterStatements[i]) {
+                //     this.currentProgram.statements.push(st);
+                // }
+                let programPosition = allStatements.length;
                 if (!this.ensureAutomaticCasting(srcType, destType, node.constructorOperands[i].position, node.constructorOperands[i])) {
                     this.pushError("Der Wert vom Datentyp " + srcType.identifier + " kann nicht als Parameter (Datentyp " + destType.identifier + ") verwendet werden.", node.constructorOperands[i].position);
                 }
 
+                if(allStatements.length > programPosition){
+                    let castingStatements = allStatements.splice(programPosition, allStatements.length - programPosition);
+                    allStatements.splice(positionsAfterParameterStatements[i], 0, ...castingStatements);
+                    this.currentProgram.labelManager.correctPositionsAfterInsert(positionsAfterParameterStatements[i], castingStatements.length);
+                }
+    
             }
 
             let stackframeDelta = 0;
@@ -2804,14 +2816,18 @@ export class CodeGenerator {
         let posBeforeParameterEvaluation = this.currentProgram.statements.length;
 
         let parameterTypes: Type[] = [];
-        let parameterStatements: Statement[][] = [];
+        // let parameterStatements: Statement[][] = [];
+        let positionsAfterParameterStatements: number[] = []
 
         let allStatements = this.currentProgram.statements;
         if (node.operands != null) {
-            for (let p of node.operands) {
-                let programPointer = allStatements.length;
+            // for (let p of node.operands) {
+            for (let j = 0; j < node.operands.length; j++) {
+                let p = node.operands[j];
+                // let programPointer = allStatements.length;
                 let typeNode = this.processNode(p);
-                parameterStatements.push(allStatements.splice(programPointer, allStatements.length - programPointer));
+                // parameterStatements.push(allStatements.splice(programPointer, allStatements.length - programPointer));
+                positionsAfterParameterStatements.push(allStatements.length);
                 if (typeNode == null) {
                     parameterTypes.push(voidPrimitiveType);
                 } else {
@@ -2868,13 +2884,24 @@ export class CodeGenerator {
                     destType = (<ArrayType>destType).arrayOfType;
                 }
             }
+
+            // Marker 1
             let srcType = parameterTypes[i];
-            for (let st of parameterStatements[i]) {
-                this.currentProgram.statements.push(st);
-            }
+            // for (let st of parameterStatements[i]) {
+            //     this.currentProgram.statements.push(st);
+            // }
+            let programPosition = allStatements.length;
+
             if (!this.ensureAutomaticCasting(srcType, destType, node.operands[i].position, node.operands[i])) {
                 this.pushError("Der Wert vom Datentyp " + srcType.identifier + " kann nicht als Parameter (Datentyp " + destType.identifier + ") verwendet werden.", node.operands[i].position);
             }
+
+            if (allStatements.length > programPosition) {
+                let castingStatements = allStatements.splice(programPosition, allStatements.length - programPosition);
+                allStatements.splice(positionsAfterParameterStatements[i], 0, ...castingStatements);
+                this.currentProgram.labelManager.correctPositionsAfterInsert(positionsAfterParameterStatements[i], castingStatements.length);
+            }
+
 
             // if (srcType instanceof PrimitiveType && destType instanceof PrimitiveType) {
             //     if (srcType.getCastInformation(destType).needsStatement) {
@@ -3148,6 +3175,7 @@ export class CodeGenerator {
                     let lm = this.currentProgram.labelManager;
                     let variantFalseLabel = lm.insertJumpNode(TokenType.jumpIfFalse, node.position, this);
                     let firstType = this.processNode(secondOperand.firstOperand);
+
                     let endLabel = lm.insertJumpNode(TokenType.jumpAlways, secondOperand.firstOperand.position, this);
                     lm.markJumpDestination(1, variantFalseLabel);
                     let secondType = this.processNode(secondOperand.secondOperand);

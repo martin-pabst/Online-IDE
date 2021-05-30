@@ -602,4 +602,12 @@ export class GroupHelper extends ShapeHelper {
         return false;
     }
 
+
+    tint(color: string){
+        for(let child of this.shapes){
+            (<ShapeHelper>child.intrinsicData["Actor"]).tint(color);
+        }
+    }
+
+
 }

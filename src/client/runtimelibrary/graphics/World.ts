@@ -91,9 +91,9 @@ export class WorldClass extends Klass {
 
             }, false, false, 'Verschiebt alle Objekte der Welt um x nach rechts und y nach unten.', false));
 
-        this.addMethod(new Method("followShape", new Parameterlist([
+        this.addMethod(new Method("follow", new Parameterlist([
             { identifier: "shape", type: shapeType, declaration: null, usagePositions: null, isFinal: true },
-            { identifier: "frameWidth", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "margin", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "xMin", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "xMax", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "yMin", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },

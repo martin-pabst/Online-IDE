@@ -91,7 +91,7 @@ export class WorldClass extends Klass {
 
             }, false, false, 'Verschiebt alle Objekte der Welt um x nach rechts und y nach unten.', false));
 
-        this.addMethod(new Method("moveToRevealShape", new Parameterlist([
+        this.addMethod(new Method("followShape", new Parameterlist([
             { identifier: "shape", type: shapeType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "frameWidth", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "xMin", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -156,21 +156,6 @@ export class WorldClass extends Klass {
 
 
             }, false, false, 'Verschiebt die Welt so, dass das übergebene graphische Objekt (shape) sichtbar wird. Verschoben wird nur, wenn das Objekt weniger als frameWidth vom Rand entfernt ist und die Welt nicht über die gegebenen Koordinaten xMin, xMax, yMin und yMax hinausragt.', false));
-
-        this.addMethod(new Method("addToShapesNotAffectedByWorldTransformations", new Parameterlist([
-            { identifier: "shape", type: shapeType, declaration: null, usagePositions: null, isFinal: true },
-        ]), voidPrimitiveType,
-            (parameters) => {
-
-                let o: RuntimeObject = parameters[0].value;
-                let shape: RuntimeObject = parameters[1].value;
-                let wh: WorldHelper = o.intrinsicData["World"];
-
-                let shapeHelper: ShapeHelper = shape.intrinsicData["Actor"];
-
-                wh.shapesNotAffectedByWorldTransforms.push(shapeHelper);
-
-            }, false, false, 'Sorgt dafür, dass das übergebene graphische Objekt (shape) bei Transformation der Welt (mittels rotate, move, setCoordinateSystem, scale, moveToRevealShape) unverändert in der Grafikausgabe sichtbar bleibt. Diese Methode eignet sich z.B., um die Punktenazeige immer links oben anzuzeigen, auch wenn die Welt scrollt.', false));
 
         this.addMethod(new Method("rotate", new Parameterlist([
             { identifier: "angleInDeg", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },

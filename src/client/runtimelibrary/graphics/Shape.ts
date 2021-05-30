@@ -446,6 +446,21 @@ export class ShapeClass extends Klass {
 
             }, false, false, "Macht das Grafikobjekt sichtbar (visible == true) bzw. unsichtbar (visible == false).", false));
 
+        this.addMethod(new Method("setStatic", new Parameterlist([
+            { identifier: "isStatic", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: ShapeHelper = o.intrinsicData["Actor"];
+                let isStatic: boolean = parameters[1].value;
+
+                if (sh.testdestroyed("setStatic")) return;
+
+                sh.setStatic(isStatic);
+
+            }, false, false, "setStatic(true) hat zur Folge, dass die Ansicht des Objekts durch Transformationen des World-Objekts nicht verändert wird.", false));
+
         this.addMethod(new Method("onMouseEnter", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -1128,6 +1143,18 @@ export abstract class ShapeHelper extends ActorHelper {
         }
 
         return ret;
+    }
+
+    setStatic(isStatic: boolean) {
+        let list = this.worldHelper.shapesNotAffectedByWorldTransforms;
+        if(isStatic){
+            list.push(this);
+        } else {
+            let index = list.indexOf(this);
+            if(index >= 0){
+                list.splice(index, 1);
+            }
+        }
     }
 
 

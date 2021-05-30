@@ -869,7 +869,7 @@ export class WorldHelper {
 
         // this.app.destroy(true, { children: true, texture: false, baseTexture: false});
         this.app.stage.children.forEach(c => c.destroy());
-        $(this.app.view).detach();
+        jQuery(this.app.view).detach();
 
         this.$containerOuter.remove();
         this.module.main.getInterpreter().printManager.getGraphicsDiv().hide();

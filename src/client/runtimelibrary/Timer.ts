@@ -78,7 +78,7 @@ export class TimerClass extends Klass {
 
                 this.timerEntries.push(timerEntry);
 
-                console.log("TimerListener added with dt = " + dt + " ms.");
+                // console.log("TimerListener added with dt = " + dt + " ms.");
 
             }, false, true, "Fügt ein neues TimerListener-Objekt hinzu und ruft dessen tick-Methode immer wieder auf."));
 
@@ -88,13 +88,11 @@ export class TimerClass extends Klass {
         if(!this.timerStarted){
             this.timerStarted = true;
             this.processTimerEntries();
-            console.log("Timer started!");
         }
     }
     
     stopTimer(){
         this.timerStarted = false;
-        console.log("Timer stopped!");
     }
 
     processTimerEntries() {

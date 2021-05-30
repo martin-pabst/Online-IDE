@@ -528,6 +528,7 @@ export class WorldHelper {
         if(this.module.main.pixiApp){
             this.app = this.module.main.pixiApp;
             this.app.renderer.resize(width, height);
+            this.app.renderer.backgroundColor = 0x0;
         } else {
             this.app = new PIXI.Application({
                 antialias: true,
@@ -850,6 +851,13 @@ export class WorldHelper {
             invoke([]);
         }
     }
+
+    cacheAsBitmap() {
+        this.stage.cacheAsBitmap = true;
+        setTimeout(() => {
+            this.stage.children.forEach(c => c.destroy());            
+        }, 100);
+}
 
 
     destroyWorld() {

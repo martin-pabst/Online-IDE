@@ -662,6 +662,15 @@ export class Interpreter {
         this.gngEreignisbehandlungHelper = null;
 
         this.getTimerClass().stopTimer();
+        if(this.worldHelper != null){
+            this.worldHelper.cacheAsBitmap();
+        }
+
+        this.heap = {};
+        this.programStack = [];
+        this.stack = [];
+        this.stackframes = [];
+
 
         setTimeout(() => {
             this.setState(InterpreterState.done);

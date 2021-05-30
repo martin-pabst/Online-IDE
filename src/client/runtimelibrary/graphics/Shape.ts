@@ -849,13 +849,15 @@ export abstract class ShapeHelper extends ActorHelper {
             pairs.push({ distance: dy2, ei: enuminfo[2] });
         }
 
+        if(pairs.length == 0){
+            pairs = [
+                { distance: dx1, ei: enuminfo[3] },
+                { distance: dx2, ei: enuminfo[1] },
+                { distance: dy1, ei: enuminfo[0] },
+                { distance: dy2, ei: enuminfo[2] }
+            ]
+        }
 
-        // let pairs: { distance: number, ei: EnumInfo }[] = [
-        //     { distance: dy1, ei: enuminfo[0] },
-        //     { distance: dx2, ei: enuminfo[1] },
-        //     { distance: dy2, ei: enuminfo[2] },
-        //     { distance: dx1, ei: enuminfo[3] }
-        // ]
 
         let max = pairs[0].distance;
         let ei = pairs[0].ei;

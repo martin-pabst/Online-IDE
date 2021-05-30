@@ -36,6 +36,8 @@ export class TimerClass extends Klass {
     timerEntries: TimerEntry[] = [];
     timerRunning: boolean = false;
 
+    timerStarted: boolean = false;
+
     constructor(module: Module) {
         super("Timer", module, "Timer Klasse zur periodischen Ausführung von Methoden");
 
@@ -80,12 +82,26 @@ export class TimerClass extends Klass {
 
             }, false, true, "Fügt ein neues TimerListener-Objekt hinzu und ruft dessen tick-Methode immer wieder auf."));
 
+    }
 
-        this.processTimerEntries();
-
+    startTimer(){
+        if(!this.timerStarted){
+            this.timerStarted = true;
+            this.processTimerEntries();
+            console.log("Timer started!");
+        }
+    }
+    
+    stopTimer(){
+        this.timerStarted = false;
+        console.log("Timer stopped!");
     }
 
     processTimerEntries() {
+
+        if(!this.timerStarted){
+            return;
+        }
 
         if (this.timerEntries.length > 0) {
             let interpreter = this.module?.main?.getInterpreter();
@@ -117,7 +133,6 @@ export class TimerClass extends Klass {
 
 
         let that = this;
-
         setTimeout(() => {
             that.processTimerEntries();
         }, 10);

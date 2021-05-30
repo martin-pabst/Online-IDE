@@ -16,6 +16,7 @@ export interface MainBase {
     compileIfDirty();
 
     version: number;
+    pixiApp: PIXI.Application;
 
     getCurrentlyEditedModule(): import("../compiler/parser/Module").Module;
     drawClassDiagrams(onlyUpdateIdentifiers: boolean);

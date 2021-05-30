@@ -31,6 +31,9 @@ type JavaOnlineConfig = {
 }
 
 export class MainEmbedded implements MainBase {
+
+    pixiApp: PIXI.Application;
+    
     isEmbedded(): boolean { return true; }
 
     jumpToDeclaration(module: Module, declaration: TextPositionWithModule){};

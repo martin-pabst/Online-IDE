@@ -465,8 +465,14 @@ export class Interpreter {
         this.timeWhenProgramStarted = performance.now();
         this.timerStopped = false;
 
+        this.getTimerClass().startTimer();
+
     }
 
+    getTimerClass():TimerClass{
+        let baseModule = this.main.getCurrentWorkspace().moduleStore.getModule("Base Module");
+        return <TimerClass>baseModule.typeStore.getType("Timer");
+    }
 
     lastStepTime: number = 0;
     lastTimeBetweenEvents: number = 0;
@@ -641,6 +647,7 @@ export class Interpreter {
         this.processingHelper?.destroyWorld();
         this.gngEreignisbehandlungHelper?.detachEvents();
         this.gngEreignisbehandlungHelper = null;
+        
     }
 
     stop(restart: boolean = false) {
@@ -653,6 +660,8 @@ export class Interpreter {
         }
         this.gngEreignisbehandlungHelper?.detachEvents();
         this.gngEreignisbehandlungHelper = null;
+
+        this.getTimerClass().stopTimer();
 
         setTimeout(() => {
             this.setState(InterpreterState.done);

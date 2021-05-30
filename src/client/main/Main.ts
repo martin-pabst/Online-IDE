@@ -34,6 +34,8 @@ import { checkIfMousePresent } from "../tools/HtmlTools.js";
 
 export class Main implements MainBase {
 
+    pixiApp: PIXI.Application;
+
     repositoryOn: boolean = true;
 
     isEmbedded(): boolean { return false; }

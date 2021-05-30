@@ -461,8 +461,9 @@ export class WorldHelper {
     }
 
     constructor(public width: number, public height: number, private module: Module, public world: RuntimeObject) {
-
+        
         PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+        PIXI.settings.TARGET_FPMS = 30.0 / 1000.0;
 
         this.initialHeight = height;
         this.initialWidth = width;
@@ -484,18 +485,16 @@ export class WorldHelper {
 
         this.interpreter.worldHelper = this;
 
-        this.$containerOuter = jQuery('<div></div>');
         let $graphicsDiv = this.module.main.getInterpreter().printManager.getGraphicsDiv();
         this.$coordinateDiv = this.module.main.getRightDiv().$rightDiv.find(".jo_coordinates");
-
-
+        
         let f = () => {
             let $jo_tabs = $graphicsDiv.parents(".jo_tabs");
             let maxWidth: number = $jo_tabs.width();
             let maxHeight: number = $jo_tabs.height();
             // let maxWidth: number = $graphicsDiv.parent().width();
             // let maxHeight: number = $graphicsDiv.parent().height();
-
+            
             if (height / width > maxHeight / maxWidth) {
                 $graphicsDiv.css({
                     'width': width / height * maxHeight + "px",
@@ -508,30 +507,35 @@ export class WorldHelper {
                 })
             }
         };
-
+        
         $graphicsDiv.off('sizeChanged');
         $graphicsDiv.on('sizeChanged', f);
-
+        
         f();
 
+        this.$containerOuter = jQuery('<div></div>');
         this.$containerInner = jQuery('<div></div>');
         this.$containerOuter.append(this.$containerInner);
-
+        
         $graphicsDiv.append(this.$containerOuter);
+
         $graphicsDiv.show();
 
         $graphicsDiv[0].oncontextmenu = function (e) {
             e.preventDefault();
         };
 
-        PIXI.settings.TARGET_FPMS = 30.0 / 1000.0;
-
-        this.app = new PIXI.Application({
-            antialias: true,
-            width: width, height: height,
-            //resizeTo: $containerInner[0]
-        });
-
+        if(this.module.main.pixiApp){
+            this.app = this.module.main.pixiApp;
+            this.app.renderer.resize(width, height);
+        } else {
+            this.app = new PIXI.Application({
+                antialias: true,
+                width: width, height: height,
+                //resizeTo: $containerInner[0]
+            });
+            this.module.main.pixiApp = this.app;
+        }
 
         let that = this;
         // let i = 0;
@@ -854,7 +858,11 @@ export class WorldHelper {
         }
         this.spriteAnimations = [];
         this.app.ticker.remove(this.tickerFunction);
-        this.app.destroy();
+
+        // this.app.destroy(true, { children: true, texture: false, baseTexture: false});
+        this.app.stage.children.forEach(c => c.destroy());
+        $(this.app.view).detach();
+
         this.$containerOuter.remove();
         this.module.main.getInterpreter().printManager.getGraphicsDiv().hide();
         this.interpreter.timerExtern = false;

@@ -337,7 +337,7 @@ export class ShapeClass extends Klass {
 
                 sh.moveBackFrom(sh1, keepColliding);
 
-            }, false, false, "Gibt genau dann true zurück, wenn das Grafikobjekt und das andere Grafikobjekt kollidieren.", false));
+            }, false, false, "Rückt das Objekt entlang der letzten durch move vorgegebenen Richtung zurück, bis es das übergebene Objekt gerade noch (keepColliding == true) bzw. gerade nicht mehr (keepColliding == false) berührt.", false));
 
         this.addMethod(new Method("directionRelativeTo", new Parameterlist([
             { identifier: "object", type: this, declaration: null, usagePositions: null, isFinal: true },
@@ -908,7 +908,7 @@ export abstract class ShapeHelper extends ActorHelper {
             let newParameter = currentParameter * 2;
             this.move(lmdx * (newParameter - currentParameter), lmdy * (newParameter - currentParameter));
             currentParameter = newParameter;
-            if ((currentParameter + 1) * length < -30) {
+            if ((currentParameter + 1) * length < -100) {
                 this.move(lmdx * (-1 - currentParameter), lmdy * (-1 - currentParameter));
                 return;
             }

@@ -41,6 +41,7 @@ import { TextClass } from "../../runtimelibrary/graphics/Text.js";
 import { WorldClass } from "../../runtimelibrary/graphics/World.js";
 import { InputClass } from "../../runtimelibrary/Input.js";
 import { MathClass } from "../../runtimelibrary/Math.js";
+import { MathToolsClass } from "../../runtimelibrary/MathToolsClass.js";
 import { PrintStreamClass, SystemClass } from "../../runtimelibrary/System.js";
 import { KeyListener, SystemToolsClass } from "../../runtimelibrary/SystemTools.js";
 import { Runnable, TimerClass } from "../../runtimelibrary/Timer.js";
@@ -779,6 +780,7 @@ export class BaseModule extends Module {
         this.typeStore.addType(new MathClass(this));
         this.typeStore.addType(new RandomClass(this));
         this.typeStore.addType(new Vector2Class(this));
+        this.typeStore.addType(new MathToolsClass(this));
         this.typeStore.addType(new KeyClass(this));
         this.typeStore.addType(new SoundClass(this));
         this.typeStore.addType(new InputClass(this));

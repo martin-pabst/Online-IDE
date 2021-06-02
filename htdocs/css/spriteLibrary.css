@@ -54,6 +54,9 @@
 
         }   
 
+html {
+    margin: 8px;
+}
 
 body {
     background-color: black;
@@ -80,13 +83,18 @@ h1 {
 
 .jo_spritelibrary-set {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     width: 100%;
     overflow: auto;
     margin-bottom: 20px;
 }
 
-.jo_spritelibrary-set>div {
+.jo_spritelibrary-line {
+    display: flex;
+    flex-direction: row;
+}
+
+.jo_spritelibrary-line>div {
     margin: 10px;
     flex-shrink: 0;
 }

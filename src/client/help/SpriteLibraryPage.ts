@@ -14,9 +14,10 @@ declare var SpriteLibrary: SpriteLibraryEntry[];
 
 export class SpriteLibraryPage {
     start() {
-
+        
         let $entries = jQuery('#entries');
         let $set: JQuery<HTMLElement>;
+        let $currentLine: JQuery<HTMLElement>;
 
         let nameOld: string = "";
         for (let e of SpriteLibrary) {
@@ -33,7 +34,9 @@ export class SpriteLibraryPage {
                         nameOld = e.name;
                         $set = jQuery('<div class="jo_spritelibrary-set jo_scrollable"></div>');
                         $entries.append(jQuery('<div class="jo_spritelibrary-heading">' + e.name + "</div>"));
-                        jQuery('#entries').append($set);
+                        $entries.append($set);
+                        $currentLine = jQuery('<div class="jo_spritelibrary-line"></div>');
+                        $set.append($currentLine);
                     }
                     let $sh = jQuery('<div class="' + e.name + "_" + (index) + '"></div>');
                     let width: number;
@@ -45,13 +48,13 @@ export class SpriteLibraryPage {
                         let $sh1 = jQuery('<div class="jo_transformed-sprite" style="transform: scale(' + e.scale + '); transform-origin: top left"></div>');
                         $sh1.append($sh);
                         $innerbox.append($sh1);
-                        $set.append($outerbox);
+                        $currentLine.append($outerbox);
                         width = $sh.width();
                         height = $sh.height();
                         $sh1.css({ width: width * e.scale + "px", height: height * e.scale + "px" });
                     } else {
                         $innerbox.append($sh);
-                        $set.append($outerbox);
+                        $currentLine.append($outerbox);
                         width = $sh.width();
                         height = $sh.height();
                     }
@@ -65,6 +68,14 @@ export class SpriteLibraryPage {
                     if(tilesX * tilesY - numberOfTiles <= e.skipAtEnd) break;
                 }
                 if(tilesX * tilesY - numberOfTiles <= e.skipAtEnd) break;
+                if(row < tilesY - 1){
+                    if(row % 4 == 3){
+                        $set = jQuery('<div class="jo_spritelibrary-set jo_scrollable"></div>');
+                        $entries.append($set);
+                    }
+                    $currentLine = jQuery('<div class="jo_spritelibrary-line"></div>');
+                    $set.append($currentLine);
+                }
             }
         }
 

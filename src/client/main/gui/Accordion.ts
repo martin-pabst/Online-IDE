@@ -34,7 +34,8 @@ export class AccordionPanel {
 
     dontSortElements: boolean = false;
 
-    currentlyDraggedElement: AccordionElement;
+    static currentlyDraggedElement: AccordionElement;
+    static currentlyDraggedElementKind: string;
 
     newElementCallback: (ae: AccordionElement, callbackIfSuccessful: (externalElement: any) => void) => void;
     newFolderCallback: (ae: AccordionElement, callbackIfSuccessful: (externalElement: any) => void) => void;
@@ -43,13 +44,15 @@ export class AccordionPanel {
     selectCallback: (externalElement: any) => void;
     addElementActionCallback: (accordionElement: AccordionElement) => JQuery<HTMLElement>;
     contextMenuProvider: (externalElement: any) => AccordionContextMenuItem[];
-    moveCallback: (ae: AccordionElement|AccordionElement[]) => void;
+    moveCallback: (ae: AccordionElement | AccordionElement[]) => void;
+    dropElementCallback: (dest: AccordionElement, droppedElement: AccordionElement, dropEffekt: "copy" | "move") => void;
 
     $newFolderAction: JQuery<HTMLElement>;
 
     constructor(private accordion: Accordion, private caption: string, private flexWeight: string,
         private newButtonClass: string, private buttonNewTitle: string,
-        private defaultIconClass: string, private withDeleteButton: boolean, private withFolders: boolean) {
+        private defaultIconClass: string, private withDeleteButton: boolean, private withFolders: boolean,
+        private kind: "workspace" | "file" | "class" | "student", private enableDrag: boolean, private acceptDropKinds: string[]) {
 
         accordion.addPanel(this);
 
@@ -281,26 +284,28 @@ export class AccordionPanel {
             }
         });
 
-        if(this.withFolders){
-            $ce.on('dragover', (event) => {
+        $ce.on('dragover', (event) => {
+            if (AccordionPanel.currentlyDraggedElementKind == that.kind) {
                 $ce.addClass('jo_file_dragover');
                 event.preventDefault();
-            })
+            }
+        })
 
-            $ce.on('dragleave', (event) => {
-                $ce.removeClass('jo_file_dragover');
-            })
+        $ce.on('dragleave', (event) => {
+            $ce.removeClass('jo_file_dragover');
+        })
 
-            $ce.on('drop', (event) => {
+        $ce.on('drop', (event) => {
+            if (AccordionPanel.currentlyDraggedElementKind == that.kind) {
                 event.preventDefault();
                 $ce.removeClass('jo_file_dragover');
-                let element1 = that.currentlyDraggedElement;
+                let element1 = AccordionPanel.currentlyDraggedElement;
                 if (element1 != null) {
                     that.moveElement(element1, null);
                 }
-            });
+            }
+        });
 
-        }
 
 
     }
@@ -378,8 +383,10 @@ export class AccordionPanel {
         if (this.withFolders) {
             if (element.isFolder) {
                 element.$htmlFirstLine.on('dragover', (event) => {
-                    element.$htmlFirstLine.addClass('jo_file_dragover');
-                    event.preventDefault();
+                    if (event.originalEvent.dataTransfer.getData("text") == this.kind) {
+                        element.$htmlFirstLine.addClass('jo_file_dragover');
+                        event.preventDefault();
+                    }
                 })
 
                 element.$htmlFirstLine.on('dragleave', (event) => {
@@ -387,20 +394,62 @@ export class AccordionPanel {
                 })
 
                 element.$htmlFirstLine.on('drop', (event) => {
-                    event.preventDefault();
-                    element.$htmlFirstLine.removeClass('jo_file_dragover');
-                    let element1 = that.currentlyDraggedElement;
-                    if (element1 != null) {
-                        that.moveElement(element1, element);
+                    if (event.originalEvent.dataTransfer.getData("text") == this.kind) {
+                        event.preventDefault();
+                        element.$htmlFirstLine.removeClass('jo_file_dragover');
+                        let element1 = AccordionPanel.currentlyDraggedElement;
+                        AccordionPanel.currentlyDraggedElement = null;
+                        if (element1 != null) {
+                            that.moveElement(element1, element);
+                        }
                     }
                 });
             }
+        }
 
+        if (this.withFolders || this.enableDrag) {
             let $filedragpart = element.$htmlFirstLine.find('.jo_filename');
             $filedragpart.attr('draggable', 'true');
-            $filedragpart.on('drag', (event) => {
-                that.currentlyDraggedElement = element;
+            $filedragpart.on('dragstart', (event) => {
+                AccordionPanel.currentlyDraggedElement = element;
+                AccordionPanel.currentlyDraggedElementKind = that.kind;
+                event.originalEvent.dataTransfer.effectAllowed = element.isFolder ? "move" : "copyMove";
             })
+        }
+
+        if (this.acceptDropKinds != null && this.acceptDropKinds.length > 0) {
+            if (!element.isFolder) {
+                element.$htmlFirstLine.on('dragover', (event) => {
+                    if (this.acceptDropKinds.indexOf(AccordionPanel.currentlyDraggedElementKind) >= 0) {
+                        element.$htmlFirstLine.addClass('jo_file_dragover');
+
+                        if (event.ctrlKey) {
+                            event.originalEvent.dataTransfer.dropEffect = "copy";
+                        } else {
+                            event.originalEvent.dataTransfer.dropEffect = "move";
+                        }
+
+                        event.preventDefault();
+                    }
+                })
+
+                element.$htmlFirstLine.on('dragleave', (event) => {
+                    element.$htmlFirstLine.removeClass('jo_file_dragover');
+                })
+
+                element.$htmlFirstLine.on('drop', (event) => {
+                    if (this.acceptDropKinds.indexOf(AccordionPanel.currentlyDraggedElementKind) >= 0) {
+                        event.preventDefault();
+                        element.$htmlFirstLine.removeClass('jo_file_dragover');
+
+                        let element1 = AccordionPanel.currentlyDraggedElement;
+                        AccordionPanel.currentlyDraggedElement = null;
+                        if (element1 != null) {
+                            if (that.dropElementCallback != null) that.dropElementCallback(element, element1, event.ctrlKey ? "copy" : "move");
+                        }
+                    }
+                });
+            }
         }
 
 
@@ -588,20 +637,20 @@ export class AccordionPanel {
         let destinationPath: string[] = destinationFolder == null ? [] : destinationFolder.path.slice(0).concat([destinationFolder.name]);
         if (elementToMove.isFolder) {
             let movedElements: AccordionElement[] = [elementToMove];
-            
+
             let sourcePath = elementToMove.path.concat([elementToMove.name]).join("/");
             let oldPathLength = elementToMove.path.length;
             elementToMove.path = destinationPath.slice(0);
 
-            for(let element of this.elements){
-                if(element.path.join("/").startsWith(sourcePath)){
+            for (let element of this.elements) {
+                if (element.path.join("/").startsWith(sourcePath)) {
                     element.path.splice(0, oldPathLength);
                     element.path = destinationPath.concat(element.path);
                     movedElements.push(element);
                 }
             }
 
-            for(let el of movedElements){
+            for (let el of movedElements) {
                 el.$htmlFirstLine.remove();
                 this.elements.splice(this.elements.indexOf(el), 1);
                 this.renderElement(el);
@@ -660,10 +709,10 @@ export class AccordionPanel {
                 ae.$htmlFirstLine.addClass('jo_active');
                 if (scrollIntoView) {
                     let pathString = ae.path.join("/");
-                    for(let el of this.elements){
+                    for (let el of this.elements) {
 
-                        if(pathString.startsWith(el.path.join("/"))){
-                            if(el.isFolder){
+                        if (pathString.startsWith(el.path.join("/"))) {
+                            if (el.isFolder) {
                                 el.$htmlFirstLine.removeClass("jo_collapsed");
                                 el.$htmlFirstLine.addClass("jo_expanded");
                             }
@@ -682,10 +731,10 @@ export class AccordionPanel {
 
     }
 
-    getPathString(ae: AccordionElement){
+    getPathString(ae: AccordionElement) {
         let ps: string = ae.path.join("/");
-        if(ae.isFolder){
-            if(ps != "") ps += "/";
+        if (ae.isFolder) {
+            if (ps != "") ps += "/";
             ps += ae.name;
         }
         return ps;

@@ -52,6 +52,19 @@ export class WorldClass extends Klass {
             }, false, false, "Legt einen neuen Grafikbereich (='Welt') an. Das Koordinatensystem geht von 0 bis 800 in x-Richtung und von 0 - 600 in y-Richtung.", true));
 
         this.addMethod(new Method("setBackgroundColor", new Parameterlist([
+            { identifier: "colorAsRGBInt", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let color: number = parameters[1].value;
+                let wh: WorldHelper = o.intrinsicData["World"];
+
+                wh.setBackgroundColor(color);
+
+            }, false, false, 'Setzt die Hintergrundfarbe. Die Farbe wird als integer-Zahl erwartet. Am besten schreibt man sie als Hexadezimalzahl, also z.B. setBackgroundColor(0xff8080)."', false));
+
+        this.addMethod(new Method("setBackgroundColor", new Parameterlist([
             { identifier: "colorAsRGBAString", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), voidPrimitiveType,
             (parameters) => {
@@ -769,11 +782,16 @@ export class WorldHelper {
 
     }
 
-    setBackgroundColor(color: string) {
-        let c = ColorHelper.parseColorToOpenGL(color);
-        this.app.renderer.backgroundColor = c.color;
-    }
+    setBackgroundColor(color: string| number) {
 
+        if (typeof color == "string") {
+            let c = ColorHelper.parseColorToOpenGL(color);
+            this.app.renderer.backgroundColor = c.color;
+        } else {
+            this.app.renderer.backgroundColor = color;
+        }
+
+    }
 
     runActorWhenKeyEvent(actorData: ActorData, key: string) {
 

@@ -27,12 +27,12 @@ export class Debugger {
 
         this.accordion = new Accordion($debuggerDiv);
 
-        this.variablePanel = new AccordionPanel(this.accordion, "Variablen", "3", null, null, "", false, false);
+        this.variablePanel = new AccordionPanel(this.accordion, "Variablen", "3", null, null, "", false, false, "file", false, []);
         this.variablePanel.$listElement.css('margin-left', '4px');
 
         this.watchPanel = new AccordionPanel(this.accordion, "Beobachten", "2",
             "img_add-dark", "Beobachtungsterm hinzufügen",
-            "watcher", true, false);
+            "watcher", true, false, "file", false, []);
         this.watchPanel.$listElement.css('margin-left', '4px');
 
         let that = this;

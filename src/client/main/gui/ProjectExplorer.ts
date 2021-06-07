@@ -47,7 +47,7 @@ export class ProjectExplorer {
         let that = this;
 
         this.fileListPanel = new AccordionPanel(this.accordion, "Kein Workspace gewählt", "3",
-            "img_add-file-dark", "Neue Datei...", "java", true, false);
+            "img_add-file-dark", "Neue Datei...", "java", true, false, "file", true, []);
 
         this.fileListPanel.newElementCallback =
 
@@ -110,45 +110,45 @@ export class ProjectExplorer {
                 });
             }
 
-            this.fileListPanel.contextMenuProvider = (accordionElement: AccordionElement) => {
+        this.fileListPanel.contextMenuProvider = (accordionElement: AccordionElement) => {
 
-                let cmiList: AccordionContextMenuItem[] = [];
+            let cmiList: AccordionContextMenuItem[] = [];
 
-                if(!(that.main.user.is_teacher || that.main.user.is_admin || that.main.user.is_schooladmin)){
-                    let module: Module = <Module>accordionElement.externalElement;
-                    let file = module.file;
+            if (!(that.main.user.is_teacher || that.main.user.is_admin || that.main.user.is_schooladmin)) {
+                let module: Module = <Module>accordionElement.externalElement;
+                let file = module.file;
 
-                    if(file.submitted_date == null){
-                        cmiList.push({
-                            caption: "Als Hausaufgabe markieren",
-                            callback: (element: AccordionElement) => {
+                if (file.submitted_date == null) {
+                    cmiList.push({
+                        caption: "Als Hausaufgabe markieren",
+                        callback: (element: AccordionElement) => {
 
-                                let file = (<Module>element.externalElement).file;
-                                file.submitted_date = dateToString(new Date());
-                                file.saved = false;
-                                that.main.networkManager.sendUpdates(null, true);
-                                that.renderHomeworkButton(file);
-                            }
-                        });
-                    } else {
-                        cmiList.push({
-                            caption: "Hausaufgabenmarkierung entfernen",
-                            callback: (element: AccordionElement) => {
-                                
-                                let file = (<Module>element.externalElement).file;
-                                file.submitted_date = null;
-                                file.saved = false;
-                                that.main.networkManager.sendUpdates(null, true);
-                                that.renderHomeworkButton(file);
-                                
-                            }
-                        });
-                    }
+                            let file = (<Module>element.externalElement).file;
+                            file.submitted_date = dateToString(new Date());
+                            file.saved = false;
+                            that.main.networkManager.sendUpdates(null, true);
+                            that.renderHomeworkButton(file);
+                        }
+                    });
+                } else {
+                    cmiList.push({
+                        caption: "Hausaufgabenmarkierung entfernen",
+                        callback: (element: AccordionElement) => {
 
+                            let file = (<Module>element.externalElement).file;
+                            file.submitted_date = null;
+                            file.saved = false;
+                            that.main.networkManager.sendUpdates(null, true);
+                            that.renderHomeworkButton(file);
+
+                        }
+                    });
                 }
 
-                return cmiList;
-            }    
+            }
+
+            return cmiList;
+        }
 
 
 
@@ -170,6 +170,61 @@ export class ProjectExplorer {
         this.fileListPanel.addAction(this.$synchronizeAction);
         this.$synchronizeAction.hide();
 
+
+        this.fileListPanel.contextMenuProvider = (fileElement: AccordionElement) => {
+
+            let cmiList: AccordionContextMenuItem[] = [];
+
+            cmiList.push({
+                caption: "Duplizieren",
+                callback: (element: AccordionElement) => {
+
+                    let module: Module = element.externalElement;
+
+                    let f: File = {
+                        name: module.file.name + " - Kopie",
+                        dirty: true,
+                        saved: false,
+                        text: module.file.text,
+                        text_before_revision: null,
+                        submitted_date: null,
+                        student_edited_after_revision: false,
+                        version: module.file.version,
+                        panelElement: null,
+                        identical_to_repository_version: false
+                    };
+                
+                    let m = new Module(f, that.main);
+                    let workspace = that.main.currentWorkspace;
+                    let modulStore = workspace.moduleStore;
+                    modulStore.putModule(m);
+                    that.main.networkManager.sendCreateFile(m, workspace, that.main.workspacesOwnerId,
+                        (error: string) => {
+                            if (error == null) {
+                                let element: AccordionElement = {
+                                    isFolder: false,
+                                    name: f.name,
+                                    path: [],
+                                    externalElement: m
+                                }
+                                f.panelElement = element;
+                                that.fileListPanel.addElement(element);
+                                that.fileListPanel.sortElements();
+                                that.setModuleActive(m);
+                                that.fileListPanel.renameElement(element);
+                            } else {
+                                alert('Der Server ist nicht erreichbar!');
+        
+                            }
+                        });
+                        
+
+                }
+            });
+
+            return cmiList;
+        }
+
     }
 
     renderHomeworkButton(file: File) {
@@ -180,19 +235,19 @@ export class ProjectExplorer {
 
         let klass: string = null;
         let title: string = "";
-        if(file.submitted_date != null){
+        if (file.submitted_date != null) {
             klass = "img_homework";
             title = "Wurde als Hausaufgabe abgegeben: " + file.submitted_date
-            if(file.text_before_revision){
+            if (file.text_before_revision) {
                 klass = "img_homework-corrected";
                 title = "Korrektur liegt vor."
             }
-        } 
+        }
 
         if (klass != null) {
             let $homeworkButtonDiv = jQuery(`<div class="jo_homeworkButton ${klass}" title="${title}"></div>`);
             $buttonDiv.prepend($homeworkButtonDiv);
-            if(klass.indexOf("jo_active") >= 0){
+            if (klass.indexOf("jo_active") >= 0) {
                 $homeworkButtonDiv.on('mousedown', (e) => e.stopPropagation());
                 $homeworkButtonDiv.on('click', (e) => {
                     e.stopPropagation();
@@ -210,14 +265,14 @@ export class ProjectExplorer {
         let that = this;
 
         this.workspaceListPanel = new AccordionPanel(this.accordion, "WORKSPACES", "3",
-            "img_add-workspace-dark", "Neuer Workspace...", "workspace", true, true);
+            "img_add-workspace-dark", "Neuer Workspace...", "workspace", true, true, "workspace", false, ["file"]);
 
         this.workspaceListPanel.newElementCallback =
 
             (accordionElement, successfulNetworkCommunicationCallback) => {
 
                 let owner_id: number = that.main.user.id;
-                if(that.main.workspacesOwnerId != null){
+                if (that.main.workspacesOwnerId != null) {
                     owner_id = that.main.workspacesOwnerId;
                 }
 
@@ -264,7 +319,7 @@ export class ProjectExplorer {
 
         this.workspaceListPanel.selectCallback =
             (workspace: Workspace) => {
-                if(!workspace.isFolder){
+                if (!workspace.isFolder) {
                     that.main.networkManager.sendUpdates(() => {
                         that.setWorkspaceActive(workspace);
                     });
@@ -274,13 +329,13 @@ export class ProjectExplorer {
 
         this.workspaceListPanel.newFolderCallback = (newElement: AccordionElement, successCallback) => {
             let owner_id: number = that.main.user.id;
-            if(that.main.workspacesOwnerId != null){
+            if (that.main.workspacesOwnerId != null) {
                 owner_id = that.main.workspacesOwnerId;
             }
 
             let folder: Workspace = new Workspace(newElement.name, that.main, owner_id);
             folder.isFolder = true;
-    
+
             folder.path = newElement.path.join("/");
             folder.panelElement = newElement;
             newElement.externalElement = folder;
@@ -297,14 +352,55 @@ export class ProjectExplorer {
 
         }
 
-        this.workspaceListPanel.moveCallback = (ae: AccordionElement|AccordionElement[]) => {
-            if(!Array.isArray(ae)) ae = [ae];
-            for(let a of ae){
+        this.workspaceListPanel.moveCallback = (ae: AccordionElement | AccordionElement[]) => {
+            if (!Array.isArray(ae)) ae = [ae];
+            for (let a of ae) {
                 let ws: Workspace = a.externalElement;
                 ws.path = a.path.join("/");
                 ws.saved = false;
             }
             this.main.networkManager.sendUpdates();
+        }
+
+        this.workspaceListPanel.dropElementCallback = (dest: AccordionElement, droppedElement: AccordionElement, dropEffekt: "copy" | "move") => {
+            let workspace: Workspace = dest.externalElement;
+            let module: Module = droppedElement.externalElement;
+
+            if (workspace.moduleStore.getModules(false).indexOf(module) >= 0) return; // module is already in destination workspace
+
+            let f: File = {
+                name: module.file.name,
+                dirty: true,
+                saved: false,
+                text: module.file.text,
+                text_before_revision: null,
+                submitted_date: null,
+                student_edited_after_revision: false,
+                version: module.file.version,
+                panelElement: null,
+                identical_to_repository_version: false
+            };
+
+            if (dropEffekt == "move") {
+                // move file
+                let oldWorkspace = that.main.currentWorkspace;
+                oldWorkspace.moduleStore.removeModule(module);
+                that.fileListPanel.removeElement(module);
+                that.main.networkManager.sendDeleteWorkspaceOrFile("file", module.file.id, () => { });
+            }
+
+            let m = new Module(f, that.main);
+            let modulStore = workspace.moduleStore;
+            modulStore.putModule(m);
+            that.main.networkManager.sendCreateFile(m, workspace, that.main.workspacesOwnerId,
+                (error: string) => {
+                    if (error == null) {
+                    } else {
+                        alert('Der Server ist nicht erreichbar!');
+
+                    }
+                });
+
         }
 
         this.$homeAction = jQuery('<div class="img_home-dark jo_button jo_active" style="margin-right: 4px"' +
@@ -338,7 +434,7 @@ export class ProjectExplorer {
                                 let newWorkspace: Workspace = Workspace.restoreFromData(workspaceData, this.main);
                                 this.main.workspaceList.push(newWorkspace);
                                 let path = workspaceData.path.split("/");
-                                if(path.length == 1 && path[0] == "") path = [];
+                                if (path.length == 1 && path[0] == "") path = [];
                                 newWorkspace.panelElement = {
                                     name: newWorkspace.name,
                                     externalElement: newWorkspace,
@@ -357,7 +453,7 @@ export class ProjectExplorer {
                 }
             });
 
-            if(this.main.user.is_teacher && this.main.teacherExplorer.classPanel.elements.length > 0){
+            if (this.main.user.is_teacher && this.main.teacherExplorer.classPanel.elements.length > 0) {
                 cmiList.push({
                     caption: "An Klasse austeilen...",
                     callback: (element: AccordionElement) => { },
@@ -373,8 +469,8 @@ export class ProjectExplorer {
                                     if (error == null) {
                                         let networkManager = this.main.networkManager;
                                         let dt = networkManager.updateFrequencyInSeconds * networkManager.forcedUpdateEvery;
-                                        alert("Der Workspace " + workspace.name + " wurde an die Klasse " + klasse.name + " ausgeteilt. Er wird in maximal " + 
-                                                      dt + " s bei jedem Schüler ankommen.");
+                                        alert("Der Workspace " + workspace.name + " wurde an die Klasse " + klasse.name + " ausgeteilt. Er wird in maximal " +
+                                            dt + " s bei jedem Schüler ankommen.");
                                     } else {
                                         alert(error);
                                     }
@@ -384,14 +480,14 @@ export class ProjectExplorer {
                         }
                     })
                 },
-                {
-                    caption: "An einzelne Schüler/innen austeilen...",
-                    callback: (element: AccordionElement) => { 
-                        let classes: ClassData[] = this.main.teacherExplorer.classPanel.elements.map(ae => ae.externalElement);
-                        let workspace: Workspace = element.externalElement;
-                        new DistributeToStudentsDialog(classes, workspace, this.main);
+                    {
+                        caption: "An einzelne Schüler/innen austeilen...",
+                        callback: (element: AccordionElement) => {
+                            let classes: ClassData[] = this.main.teacherExplorer.classPanel.elements.map(ae => ae.externalElement);
+                            let workspace: Workspace = element.externalElement;
+                            new DistributeToStudentsDialog(classes, workspace, this.main);
+                        }
                     }
-                }
                 );
             }
 
@@ -399,11 +495,11 @@ export class ProjectExplorer {
                 if (workspaceAccordionElement.externalElement.repository_id == null) {
                     cmiList.push({
                         caption: "Repository anlegen...",
-                        callback: (element: AccordionElement) => { 
+                        callback: (element: AccordionElement) => {
                             let workspace: Workspace = element.externalElement;
 
                             that.main.repositoryCreateManager.show(workspace);
-                },
+                        },
                         subMenu: null,
                         // [{ n: 0, text: "nur privat sichtbar" }, { n: 1, text: "sichtbar für die Klasse" },
                         // { n: 2, text: "sichtbar für die Schule" }].map((k) => {
@@ -412,15 +508,15 @@ export class ProjectExplorer {
                         //         callback: (element: AccordionElement) => {
 
 
-                                    // this.main.networkManager.sendCreateRepository(workspace, k.n, (error: string, repository_id?: number) => {
-                                    //     if (error == null) {
-                                    //         this.workspaceListPanel.setElementClass(element, "repository");
-                                    //         workspace.renderSynchronizeButton();
-                                    //         this.showRepositoryButtonIfNeeded(workspace);
-                                    //     } else {
-                                    //         alert(error);
-                                    //     }
-                                    // });
+                        // this.main.networkManager.sendCreateRepository(workspace, k.n, (error: string, repository_id?: number) => {
+                        //     if (error == null) {
+                        //         this.workspaceListPanel.setElementClass(element, "repository");
+                        //         workspace.renderSynchronizeButton();
+                        //         this.showRepositoryButtonIfNeeded(workspace);
+                        //     } else {
+                        //         alert(error);
+                        //     }
+                        // });
 
                         //         }
                         //     }
@@ -517,7 +613,7 @@ export class ProjectExplorer {
 
         for (let w of workspaceList) {
             let path = w.path.split("/");
-            if(path.length == 1 && path[0] == "") path = [];
+            if (path.length == 1 && path[0] == "") path = [];
             w.panelElement = {
                 name: w.name,
                 externalElement: w,
@@ -546,8 +642,8 @@ export class ProjectExplorer {
         }
     }
 
-    showRepositoryButtonIfNeeded(w: Workspace){
-        if(w.repository_id != null && w.owner_id == this.main.user.id){
+    showRepositoryButtonIfNeeded(w: Workspace) {
+        if (w.repository_id != null && w.owner_id == this.main.user.id) {
             this.$synchronizeAction.show();
 
             if (!this.main.user.settings.helperHistory.repositoryButtonDone) {
@@ -628,9 +724,9 @@ export class ProjectExplorer {
         } else {
             this.main.getMonacoEditor().updateOptions({ readOnly: false });
             this.main.getMonacoEditor().setModel(m.model);
-            if(this.main.getBottomDiv() != null) this.main.getBottomDiv().errorManager.showParenthesisWarning(m.bracketError);
+            if (this.main.getBottomDiv() != null) this.main.getBottomDiv().errorManager.showParenthesisWarning(m.bracketError);
 
-            if(m.file.text_before_revision != null){
+            if (m.file.text_before_revision != null) {
                 this.main.bottomDiv.homeworkManager.showHomeWorkRevisionButton();
             } else {
                 this.main.bottomDiv.homeworkManager.hideHomeworkRevisionButton();

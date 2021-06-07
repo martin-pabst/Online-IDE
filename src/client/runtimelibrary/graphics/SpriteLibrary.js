@@ -42,11 +42,24 @@ var SpriteLibrary = [
     { filename: "Raumschiff_Adrian/Explosion/explosion_0009_..png", name: "Space_Shooter_1", index: 21 },
     { filename: "Raumschiff_Adrian/Explosion/explosion_0010_..png", name: "Space_Shooter_1", index: 22 },
     { filename: "Raumschiff_Adrian/Explosion/explosion_0011_..png", name: "Space_Shooter_1", index: 23 },
-
+    
     {filename: "plattformer/Tiles_gesamt_64x64.png", name: "Plattforms", tilesX: 22, tilesY: 13, spacingX: 2, spacingY: 2, scale: 1.0, index: 0},
-    {filename: "plattformer/male.png", name: "Characters_1", tilesX: 6, tilesY: 2, spacingX: 0, spacingY: 0, scale: 1.0, index: 0}
+    {filename: "plattformer/male.png", name: "Characters_1", tilesX: 6, tilesY: 2, spacingX: 0, spacingY: 0, scale: 1.0, index: 0},
     // {filename: "plattformer/female.png", name: "Characters", tilesX: 6, tilesY: 2, spacingX: 0, spacingY: 0, scale: 1.0, index: 12},
-
+    
+    { filename: "plattformer/background_grass.png", name: "Background", index: 0, scale: 0.2 },
+    { filename: "plattformer/background_mountains.png", name: "Background", index: 1, scale: 0.2 },
+    { filename: "plattformer/background_sky.png", name: "Background", index: 2, scale: 0.2 },
+    { filename: "plattformer/cloud1.png", name: "Background", index: 3, scale: 0.5 },
+    { filename: "plattformer/cloud2.png", name: "Background", index: 4, scale: 0.5 },
+    { filename: "plattformer/cloud3.png", name: "Background", index: 5, scale: 0.5 },
+    { filename: "plattformer/cloud4.png", name: "Background", index: 6, scale: 0.5 },
+    { filename: "plattformer/grass1.png", name: "Background", index: 7 },
+    { filename: "plattformer/grass2.png", name: "Background", index: 8 },
+    { filename: "plattformer/grass3.png", name: "Background", index: 9 },
+    { filename: "plattformer/tree1.png", name: "Background", index: 10, scale: 0.5 },
+    { filename: "plattformer/tree2.png", name: "Background", index: 11, scale: 0.5 },
+    { filename: "plattformer/tree3.png", name: "Background", index: 12, scale: 0.5 },
 ]
 
 function expandDigits(n, digits){

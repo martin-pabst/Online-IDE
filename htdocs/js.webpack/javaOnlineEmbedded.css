@@ -2306,21 +2306,21 @@ svgns|path.dropdown-triangle:active {
 .Ship_1_0{
    width: 128px;
    height: 101px;
-   background-position: -2052px -1152px;
+   background-position: -2182px -1090px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Ship_1_1{
    width: 128px;
    height: 107px;
-   background-position: -1398px -1261px;
+   background-position: -2052px -1090px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Ship_1_2{
    width: 64px;
    height: 112px;
-   background-position: -234px -1857px;
+   background-position: -234px -1810px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -2586,7 +2586,7 @@ svgns|path.dropdown-triangle:active {
 .Bird_6{
    width: 26px;
    height: 135px;
-   background-position: -2433px -858px;
+   background-position: -124px -2000px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -4770,84 +4770,84 @@ svgns|path.dropdown-triangle:active {
 .Characters_1_0{
    width: 80px;
    height: 100px;
-   background-position: -916px -1261px;
+   background-position: 0px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Characters_1_1{
    width: 80px;
    height: 100px;
-   background-position: -996px -1261px;
+   background-position: -80px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Characters_1_2{
    width: 80px;
    height: 100px;
-   background-position: -1076px -1261px;
+   background-position: -160px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Characters_1_3{
    width: 80px;
    height: 100px;
-   background-position: -1156px -1261px;
+   background-position: -240px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Characters_1_4{
    width: 80px;
    height: 100px;
-   background-position: -1236px -1261px;
+   background-position: -320px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Characters_1_5{
    width: 80px;
    height: 100px;
-   background-position: -1316px -1261px;
+   background-position: -400px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Characters_1_6{
    width: 80px;
    height: 100px;
-   background-position: -916px -1361px;
+   background-position: 0px -1361px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Characters_1_7{
    width: 80px;
    height: 100px;
-   background-position: -996px -1361px;
+   background-position: -80px -1361px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Characters_1_8{
    width: 80px;
    height: 100px;
-   background-position: -1076px -1361px;
+   background-position: -160px -1361px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Characters_1_9{
    width: 80px;
    height: 100px;
-   background-position: -1156px -1361px;
+   background-position: -240px -1361px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Characters_1_10{
    width: 80px;
    height: 100px;
-   background-position: -1236px -1361px;
+   background-position: -320px -1361px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Characters_1_11{
    width: 80px;
    height: 100px;
-   background-position: -1316px -1361px;
+   background-position: -400px -1361px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -4873,37 +4873,37 @@ svgns|path.dropdown-triangle:active {
 }
 
 .Background_3{
-   width: 394px;
-   height: 222px;
-   background-position: 0px -1535px;
+   width: 333px;
+   height: 188px;
+   background-position: -482px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Background_4{
-   width: 379px;
-   height: 292px;
-   background-position: -2052px -858px;
+   width: 321px;
+   height: 247px;
+   background-position: 0px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Background_5{
-   width: 419px;
-   height: 258px;
-   background-position: -495px -1261px;
+   width: 354px;
+   height: 218px;
+   background-position: -323px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Background_6{
-   width: 493px;
-   height: 272px;
-   background-position: 0px -1261px;
+   width: 417px;
+   height: 230px;
+   background-position: -2052px -858px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Background_7{
    width: 104px;
    height: 88px;
-   background-position: -1398px -1370px;
+   background-position: -817px -1359px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -4917,420 +4917,420 @@ svgns|path.dropdown-triangle:active {
 .Background_9{
    width: 100px;
    height: 92px;
-   background-position: -430px -1759px;
+   background-position: -528px -1712px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Background_10{
    width: 122px;
    height: 293px;
-   background-position: 0px -2047px;
+   background-position: 0px -2000px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Background_11{
    width: 131px;
    height: 286px;
-   background-position: 0px -1759px;
+   background-position: 0px -1712px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Background_12{
    width: 99px;
    height: 256px;
-   background-position: -133px -1759px;
+   background-position: -133px -1712px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_0{
    width: 96px;
    height: 96px;
-   background-position: -2182px -1152px;
+   background-position: -2312px -1090px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_1{
    width: 96px;
    height: 96px;
-   background-position: -2280px -1152px;
+   background-position: -817px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_2{
    width: 96px;
    height: 96px;
-   background-position: -2378px -1152px;
+   background-position: -915px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_3{
    width: 96px;
    height: 96px;
-   background-position: -1528px -1261px;
+   background-position: -1013px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_4{
    width: 96px;
    height: 96px;
-   background-position: -1626px -1261px;
+   background-position: -1111px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_5{
    width: 96px;
    height: 96px;
-   background-position: -1724px -1261px;
+   background-position: -1209px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_6{
    width: 96px;
    height: 96px;
-   background-position: -1822px -1261px;
+   background-position: -1307px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_7{
    width: 96px;
    height: 96px;
-   background-position: -1920px -1261px;
+   background-position: -1405px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_8{
    width: 96px;
    height: 96px;
-   background-position: -2018px -1261px;
+   background-position: -1503px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_9{
    width: 96px;
    height: 96px;
-   background-position: -2116px -1261px;
+   background-position: -1601px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_10{
    width: 96px;
    height: 96px;
-   background-position: -2214px -1261px;
+   background-position: -1699px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_11{
    width: 96px;
    height: 96px;
-   background-position: -2312px -1261px;
+   background-position: -1797px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_12{
    width: 96px;
    height: 96px;
-   background-position: -396px -1535px;
+   background-position: -1895px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_13{
    width: 96px;
    height: 96px;
-   background-position: -494px -1535px;
+   background-position: -1993px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_14{
    width: 96px;
    height: 96px;
-   background-position: -592px -1535px;
+   background-position: -2091px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_15{
    width: 96px;
    height: 96px;
-   background-position: -690px -1535px;
+   background-position: -2189px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_16{
    width: 96px;
    height: 96px;
-   background-position: -788px -1535px;
+   background-position: -2287px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_17{
    width: 96px;
    height: 96px;
-   background-position: -886px -1535px;
+   background-position: -679px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_18{
    width: 96px;
    height: 96px;
-   background-position: -984px -1535px;
+   background-position: -777px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_19{
    width: 96px;
    height: 96px;
-   background-position: -1082px -1535px;
+   background-position: -875px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_20{
    width: 96px;
    height: 96px;
-   background-position: -1180px -1535px;
+   background-position: -973px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_21{
    width: 96px;
    height: 96px;
-   background-position: -1278px -1535px;
+   background-position: -1071px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_22{
    width: 96px;
    height: 96px;
-   background-position: -1376px -1535px;
+   background-position: -1169px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_23{
    width: 96px;
    height: 96px;
-   background-position: -1474px -1535px;
+   background-position: -1267px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_24{
    width: 96px;
    height: 96px;
-   background-position: -1572px -1535px;
+   background-position: -1365px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_25{
    width: 96px;
    height: 96px;
-   background-position: -1670px -1535px;
+   background-position: -1463px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_26{
    width: 96px;
    height: 96px;
-   background-position: -1768px -1535px;
+   background-position: -1561px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_27{
    width: 96px;
    height: 96px;
-   background-position: -1866px -1535px;
+   background-position: -1659px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_28{
    width: 96px;
    height: 96px;
-   background-position: -1964px -1535px;
+   background-position: -1757px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_29{
    width: 96px;
    height: 96px;
-   background-position: -2062px -1535px;
+   background-position: -1855px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_30{
    width: 96px;
    height: 96px;
-   background-position: -2160px -1535px;
+   background-position: -1953px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_31{
    width: 96px;
    height: 96px;
-   background-position: -2258px -1535px;
+   background-position: -2051px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_32{
    width: 96px;
    height: 96px;
-   background-position: -2356px -1535px;
+   background-position: -2149px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_33{
    width: 96px;
    height: 96px;
-   background-position: -396px -1633px;
+   background-position: -2247px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_34{
    width: 96px;
    height: 96px;
-   background-position: -494px -1633px;
+   background-position: -2345px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_35{
    width: 96px;
    height: 96px;
-   background-position: -592px -1633px;
+   background-position: -679px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_36{
    width: 96px;
    height: 96px;
-   background-position: -690px -1633px;
+   background-position: -777px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_37{
    width: 96px;
    height: 96px;
-   background-position: -788px -1633px;
+   background-position: -875px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_38{
    width: 96px;
    height: 96px;
-   background-position: -886px -1633px;
+   background-position: -973px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_39{
    width: 96px;
    height: 96px;
-   background-position: -984px -1633px;
+   background-position: -1071px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_40{
    width: 96px;
    height: 96px;
-   background-position: -1082px -1633px;
+   background-position: -1169px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_41{
    width: 96px;
    height: 96px;
-   background-position: -1180px -1633px;
+   background-position: -1267px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_42{
    width: 96px;
    height: 96px;
-   background-position: -1278px -1633px;
+   background-position: -1365px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_43{
    width: 96px;
    height: 96px;
-   background-position: -1376px -1633px;
+   background-position: -1463px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_44{
    width: 96px;
    height: 96px;
-   background-position: -1474px -1633px;
+   background-position: -1561px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_45{
    width: 96px;
    height: 96px;
-   background-position: -1572px -1633px;
+   background-position: -1659px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_46{
    width: 96px;
    height: 96px;
-   background-position: -1670px -1633px;
+   background-position: -1757px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_47{
    width: 96px;
    height: 96px;
-   background-position: -1768px -1633px;
+   background-position: -1855px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_48{
    width: 96px;
    height: 96px;
-   background-position: -1866px -1633px;
+   background-position: -1953px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_49{
    width: 96px;
    height: 96px;
-   background-position: -1964px -1633px;
+   background-position: -2051px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_50{
    width: 96px;
    height: 96px;
-   background-position: -2062px -1633px;
+   background-position: -2149px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_51{
    width: 96px;
    height: 96px;
-   background-position: -2160px -1633px;
+   background-position: -2247px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_52{
    width: 96px;
    height: 96px;
-   background-position: -2258px -1633px;
+   background-position: -2345px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_53{
    width: 96px;
    height: 96px;
-   background-position: -2356px -1633px;
+   background-position: -234px -1712px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_54{
    width: 96px;
    height: 96px;
-   background-position: -234px -1759px;
+   background-position: -332px -1712px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_55{
    width: 96px;
    height: 96px;
-   background-position: -332px -1759px;
+   background-position: -430px -1712px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 

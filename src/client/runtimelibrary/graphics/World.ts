@@ -200,7 +200,7 @@ export class WorldClass extends Klass {
                 wh.setAllHitpolygonsDirty();
                 wh.computeCurrentWorldBounds();
                 wh.shapesNotAffectedByWorldTransforms.forEach(
-                    (shape) => { 
+                    (shape) => {
                         shape.rotate(-angle, x, y);
                     });
 
@@ -235,7 +235,7 @@ export class WorldClass extends Klass {
                 wh.stage.transform.onChange();
                 wh.setAllHitpolygonsDirty();
                 wh.computeCurrentWorldBounds();
-                wh.shapesNotAffectedByWorldTransforms.forEach((shape) => shape.scale(1/factor,x, y));
+                wh.shapesNotAffectedByWorldTransforms.forEach((shape) => shape.scale(1 / factor, x, y));
 
             }, false, false, 'Streckt die Welt um den angegebenen Faktor. Zentrum der Streckung ist (x/y).', false));
 
@@ -264,9 +264,9 @@ export class WorldClass extends Klass {
                 wh.setAllHitpolygonsDirty();
                 wh.computeCurrentWorldBounds();
                 wh.shapesNotAffectedByWorldTransforms.forEach((shape) => {
-                    shape.scale(width/wh.initialWidth, left, top);
+                    shape.scale(width / wh.initialWidth, left, top);
                     shape.move(left, top);
-                } );
+                });
 
             }, false, false, 'Streckt die Welt um den angegebenen Faktor. Zentrum der Streckung ist (x/y).', false));
 
@@ -459,7 +459,7 @@ export class WorldHelper {
     }
 
     constructor(public width: number, public height: number, private module: Module, public world: RuntimeObject) {
-        
+
         PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
         PIXI.settings.TARGET_FPMS = 30.0 / 1000.0;
 
@@ -485,14 +485,14 @@ export class WorldHelper {
 
         let $graphicsDiv = this.module.main.getInterpreter().printManager.getGraphicsDiv();
         this.$coordinateDiv = this.module.main.getRightDiv().$rightDiv.find(".jo_coordinates");
-        
+
         let f = () => {
             let $jo_tabs = $graphicsDiv.parents(".jo_tabs");
             let maxWidth: number = $jo_tabs.width();
             let maxHeight: number = $jo_tabs.height();
             // let maxWidth: number = $graphicsDiv.parent().width();
             // let maxHeight: number = $graphicsDiv.parent().height();
-            
+
             if (height / width > maxHeight / maxWidth) {
                 $graphicsDiv.css({
                     'width': width / height * maxHeight + "px",
@@ -505,16 +505,16 @@ export class WorldHelper {
                 })
             }
         };
-        
+
         $graphicsDiv.off('sizeChanged');
         $graphicsDiv.on('sizeChanged', f);
-        
+
         f();
 
         this.$containerOuter = jQuery('<div></div>');
         this.$containerInner = jQuery('<div></div>');
         this.$containerOuter.append(this.$containerInner);
-        
+
         $graphicsDiv.append(this.$containerOuter);
 
         $graphicsDiv.show();
@@ -523,7 +523,7 @@ export class WorldHelper {
             e.preventDefault();
         };
 
-        if(this.module.main.pixiApp){
+        if (this.module.main.pixiApp) {
             this.app = this.module.main.pixiApp;
             this.app.renderer.resize(width, height);
             this.app.renderer.backgroundColor = 0x0;
@@ -782,7 +782,7 @@ export class WorldHelper {
 
     }
 
-    setBackgroundColor(color: string| number) {
+    setBackgroundColor(color: string | number) {
 
         if (typeof color == "string") {
             let c = ColorHelper.parseColorToOpenGL(color);
@@ -858,9 +858,9 @@ export class WorldHelper {
     cacheAsBitmap() {
         this.stage.cacheAsBitmap = true;
         setTimeout(() => {
-            this.stage.children.forEach(c => c.destroy());            
-        }, 100);
-}
+            this.stage.children.forEach(c => c.destroy());
+        }, 200);
+    }
 
 
     destroyWorld() {

@@ -383,7 +383,7 @@ export class AccordionPanel {
         if (this.withFolders) {
             if (element.isFolder) {
                 element.$htmlFirstLine.on('dragover', (event) => {
-                    if (event.originalEvent.dataTransfer.getData("text") == this.kind) {
+                    if (AccordionPanel.currentlyDraggedElementKind == that.kind) {
                         element.$htmlFirstLine.addClass('jo_file_dragover');
                         event.preventDefault();
                     }
@@ -394,7 +394,7 @@ export class AccordionPanel {
                 })
 
                 element.$htmlFirstLine.on('drop', (event) => {
-                    if (event.originalEvent.dataTransfer.getData("text") == this.kind) {
+                    if (AccordionPanel.currentlyDraggedElementKind == that.kind) {
                         event.preventDefault();
                         element.$htmlFirstLine.removeClass('jo_file_dragover');
                         let element1 = AccordionPanel.currentlyDraggedElement;

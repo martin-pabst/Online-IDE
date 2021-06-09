@@ -155,6 +155,7 @@
     /* background-color: lightgreen; */
     overflow-y: scroll;
     user-select: none;
+    max-height: 50vh;
 }
 
 #jo_synchro_fileListHeaderOuter, #jo_synchro_fileListOuter {

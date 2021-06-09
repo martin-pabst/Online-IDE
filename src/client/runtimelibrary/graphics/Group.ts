@@ -394,7 +394,7 @@ export class GroupHelper extends ShapeHelper {
             shapeHelper.belongsToGroup.remove(shape);
         } else {
             let index = this.worldHelper.shapes.indexOf(shapeHelper);
-            this.worldHelper.shapes.splice(index, 1);
+            if(index >= 0) this.worldHelper.shapes.splice(index, 1);
         }
 
         shapeHelper.belongsToGroup = this;

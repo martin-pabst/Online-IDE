@@ -1107,7 +1107,12 @@ export abstract class ShapeHelper extends ActorHelper {
             this.belongsToGroup.remove(this.runtimeObject);
         } else {
             let index = this.worldHelper.shapes.indexOf(this);
-            this.worldHelper.shapes.splice(index, 1);
+            if(index >= 0) this.worldHelper.shapes.splice(index, 1);
+        }
+
+        let index1 = this.worldHelper.shapesNotAffectedByWorldTransforms.indexOf(this);
+        if(index1 >= 0){
+            this.worldHelper.shapesNotAffectedByWorldTransforms.splice(index1, 1);
         }
 
     }
@@ -1157,5 +1162,6 @@ export abstract class ShapeHelper extends ActorHelper {
         }
     }
 
+   
 
 }

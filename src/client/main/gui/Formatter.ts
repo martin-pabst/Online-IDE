@@ -140,7 +140,9 @@ export class Formatter implements monaco.languages.DocumentFormattingEditProvide
                     if (lastNonSpaceToken != null) {
                         let tt = lastNonSpaceToken.tt;
                         if (tt == TokenType.rightBracket || tt == TokenType.identifier || tt == TokenType.leftRightSquareBracket) {
-                            this.replaceBetween(lastNonSpaceToken, t, edits, " ");
+                            if(lastNonSpaceToken.position.line == t.position.line){
+                                this.replaceBetween(lastNonSpaceToken, t, edits, " ");
+                            }
                         }
                     }
                     if (i < tokenlist.length - 1) {

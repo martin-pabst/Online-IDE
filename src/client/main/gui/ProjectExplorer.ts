@@ -110,9 +110,59 @@ export class ProjectExplorer {
                 });
             }
 
+
+
         this.fileListPanel.contextMenuProvider = (accordionElement: AccordionElement) => {
 
             let cmiList: AccordionContextMenuItem[] = [];
+
+            cmiList.push({
+                caption: "Duplizieren",
+                callback: (element: AccordionElement) => {
+
+                    let module: Module = element.externalElement;
+
+                    let f: File = {
+                        name: module.file.name + " - Kopie",
+                        dirty: true,
+                        saved: false,
+                        text: module.file.text,
+                        text_before_revision: null,
+                        submitted_date: null,
+                        student_edited_after_revision: false,
+                        version: module.file.version,
+                        panelElement: null,
+                        identical_to_repository_version: false
+                    };
+
+                    let m = new Module(f, that.main);
+                    let workspace = that.main.currentWorkspace;
+                    let modulStore = workspace.moduleStore;
+                    modulStore.putModule(m);
+                    that.main.networkManager.sendCreateFile(m, workspace, that.main.workspacesOwnerId,
+                        (error: string) => {
+                            if (error == null) {
+                                let element: AccordionElement = {
+                                    isFolder: false,
+                                    name: f.name,
+                                    path: [],
+                                    externalElement: m
+                                }
+                                f.panelElement = element;
+                                that.fileListPanel.addElement(element);
+                                that.fileListPanel.sortElements();
+                                that.setModuleActive(m);
+                                that.fileListPanel.renameElement(element);
+                            } else {
+                                alert('Der Server ist nicht erreichbar!');
+
+                            }
+                        });
+
+
+                }
+            });
+
 
             if (!(that.main.user.is_teacher || that.main.user.is_admin || that.main.user.is_schooladmin)) {
                 let module: Module = <Module>accordionElement.externalElement;
@@ -169,61 +219,6 @@ export class ProjectExplorer {
 
         this.fileListPanel.addAction(this.$synchronizeAction);
         this.$synchronizeAction.hide();
-
-
-        this.fileListPanel.contextMenuProvider = (fileElement: AccordionElement) => {
-
-            let cmiList: AccordionContextMenuItem[] = [];
-
-            cmiList.push({
-                caption: "Duplizieren",
-                callback: (element: AccordionElement) => {
-
-                    let module: Module = element.externalElement;
-
-                    let f: File = {
-                        name: module.file.name + " - Kopie",
-                        dirty: true,
-                        saved: false,
-                        text: module.file.text,
-                        text_before_revision: null,
-                        submitted_date: null,
-                        student_edited_after_revision: false,
-                        version: module.file.version,
-                        panelElement: null,
-                        identical_to_repository_version: false
-                    };
-                
-                    let m = new Module(f, that.main);
-                    let workspace = that.main.currentWorkspace;
-                    let modulStore = workspace.moduleStore;
-                    modulStore.putModule(m);
-                    that.main.networkManager.sendCreateFile(m, workspace, that.main.workspacesOwnerId,
-                        (error: string) => {
-                            if (error == null) {
-                                let element: AccordionElement = {
-                                    isFolder: false,
-                                    name: f.name,
-                                    path: [],
-                                    externalElement: m
-                                }
-                                f.panelElement = element;
-                                that.fileListPanel.addElement(element);
-                                that.fileListPanel.sortElements();
-                                that.setModuleActive(m);
-                                that.fileListPanel.renameElement(element);
-                            } else {
-                                alert('Der Server ist nicht erreichbar!');
-        
-                            }
-                        });
-                        
-
-                }
-            });
-
-            return cmiList;
-        }
 
     }
 

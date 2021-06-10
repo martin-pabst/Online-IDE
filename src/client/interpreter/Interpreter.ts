@@ -661,6 +661,8 @@ export class Interpreter {
         this.gngEreignisbehandlungHelper?.detachEvents();
         this.gngEreignisbehandlungHelper = null;
 
+        this.main.hideProgramPointerPosition();
+
         this.getTimerClass().stopTimer();
         if(this.worldHelper != null){
             this.worldHelper.cacheAsBitmap();
@@ -1308,7 +1310,7 @@ export class Interpreter {
                     break
                 }
 
-                this.setState(InterpreterState.done);
+                // this.setState(InterpreterState.done);
                 this.currentProgram = null;
                 this.currentProgramPosition = -1;
                 this.additionalStepFinishedFlag = true;
@@ -1316,14 +1318,6 @@ export class Interpreter {
                 Helper.showHelper("speedControlHelper", this.main);
 
                 this.printManager.showProgramEnd();
-
-                if (this.worldHelper != null) {
-                    this.worldHelper.spriteAnimations = [];
-                }
-                this.gngEreignisbehandlungHelper?.detachEvents();
-                this.gngEreignisbehandlungHelper = null;
-
-                this.main.hideProgramPointerPosition();
 
                 if (this.steps > 0) {
                     let dt = performance.now() - this.timeWhenProgramStarted;
@@ -1334,7 +1328,21 @@ export class Interpreter {
                     // console.log("Vorgegebene Timerfrequenz: Alle " + this.timerDelayMs + " ms");
                     this.steps = -1;
                 }
+
+                // if (this.worldHelper != null) {
+                //     this.worldHelper.spriteAnimations = [];
+                // }
+                // this.gngEreignisbehandlungHelper?.detachEvents();
+                // this.gngEreignisbehandlungHelper = null;
+
+                // this.main.hideProgramPointerPosition();
+
+                // if(this.worldHelper != null){
+                //     this.worldHelper.cacheAsBitmap();
+                // }
+        
                 this.currentProgramPosition--;
+                this.stop();
                 break;
             case TokenType.print:
             case TokenType.println:

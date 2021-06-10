@@ -463,6 +463,14 @@ export class WorldHelper {
         PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
         PIXI.settings.TARGET_FPMS = 30.0 / 1000.0;
 
+        let scaleFactor: number = 1;
+
+        while(height > 1000 || width > 2000){
+            scaleFactor *= 2;
+            height /= 2;
+            width /= 2;
+        }
+
         this.initialHeight = height;
         this.initialWidth = width;
 
@@ -644,6 +652,16 @@ export class WorldHelper {
         });
 
         this.module.main.getRightDiv()?.adjustWidthToWorld();
+
+        if(scaleFactor != 1){
+            this.stage.localTransform.identity();     // coordinate system (0/0) to (initialWidth/initialHeight)
+            this.stage.localTransform.scale(1/scaleFactor, 1/scaleFactor);
+
+            //@ts-ignore
+            this.stage.transform.onChange();
+            this.computeCurrentWorldBounds();
+
+        }
 
     }
 
@@ -856,9 +874,24 @@ export class WorldHelper {
     }
 
     cacheAsBitmap() {
+
+        let bounds = this.stage.getBounds();
+        let scaleMin = 1.0;
+        if (bounds.width > 1024) scaleMin = Math.min(scaleMin, 1024 / bounds.width);
+        if (bounds.height > 1024) scaleMin = Math.min(scaleMin, 1024 / bounds.height);
+        this.stage.localTransform.scale(scaleMin, scaleMin);
+        //@ts-ignore
+        this.stage.transform.onChange();
+
         this.stage.cacheAsBitmap = true;
+
         setTimeout(() => {
             this.stage.children.forEach(c => c.destroy());
+            this.stage.localTransform.scale(1 / scaleMin, 1 / scaleMin);
+            //@ts-ignore
+            this.stage.transform.onChange();
+            this.stage.removeChildren();
+
         }, 200);
     }
 
@@ -872,6 +905,7 @@ export class WorldHelper {
 
         // this.app.destroy(true, { children: true, texture: false, baseTexture: false});
         this.app.stage.children.forEach(c => c.destroy());
+        this.app.stage.removeChildren();
         jQuery(this.app.view).detach();
 
         this.$containerOuter.remove();

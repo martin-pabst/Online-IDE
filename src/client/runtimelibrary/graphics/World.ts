@@ -12,6 +12,7 @@ import { ColorHelper } from "./ColorHelper.js";
 import { Punkt } from "../../tools/MatheTools.js";
 import { GroupClass, GroupHelper } from "./Group.js";
 import { MouseListenerInterface } from "./MouseListener.js";
+import { RenderTexture } from "@pixi/core";
 
 export class WorldClass extends Klass {
 
@@ -875,28 +876,44 @@ export class WorldHelper {
 
     cacheAsBitmap() {
 
-        let bounds = this.stage.getBounds();
         let scaleMin = 1.0;
-        if (bounds.width > 1024) scaleMin = Math.min(scaleMin, 1024 / bounds.width);
-        if (bounds.height > 1024) scaleMin = Math.min(scaleMin, 1024 / bounds.height);
-        this.stage.localTransform.scale(scaleMin, scaleMin);
-        //@ts-ignore
-        this.stage.transform.onChange();
+        if (this.currentWidth > 2048) scaleMin = Math.min(scaleMin, 1024 / this.currentWidth);
+        if (this.currentHeight > 1200) scaleMin = Math.min(scaleMin, 1024 / this.currentHeight);
 
-        this.stage.cacheAsBitmap = true;
+        const brt = new PIXI.BaseRenderTexture(
+            {
+                scaleMode: PIXI.SCALE_MODES.LINEAR,
+                width: Math.round(this.currentWidth*scaleMin),
+                height: Math.round(this.currentHeight*scaleMin)
+            }
+            );
+        let rt: PIXI.RenderTexture = new PIXI.RenderTexture(brt);
+        
+        let transform = new PIXI.Matrix().scale(scaleMin, scaleMin);
+        
+        this.app.renderer.render(this.stage, {
+            renderTexture: rt,
+            transform: transform
+        });
+        
 
+        
         setTimeout(() => {
             this.stage.children.forEach(c => c.destroy());
-            this.stage.localTransform.scale(1 / scaleMin, 1 / scaleMin);
-            //@ts-ignore
-            this.stage.transform.onChange();
             this.stage.removeChildren();
 
-        }, 200);
+            this.stage.localTransform.identity();
+            let sprite = new PIXI.Sprite(rt);
+            sprite.localTransform.scale(1 / scaleMin, 1 / scaleMin);
+            sprite.localTransform.translate(this.currentLeft, this.currentTop);
+            //@ts-ignore
+            sprite.transform.onChange();
+            this.stage.addChild(sprite);
+
+        }, 100);
     }
 
-
-    destroyWorld() {
+     destroyWorld() {
         for (let listenerType of ["mouseup", "mousedown", "mousemove", "mouseenter", "mouseleave"]) {
             this.$containerInner.off(listenerType);
         }

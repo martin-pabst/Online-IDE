@@ -174,7 +174,33 @@ export class CircleHelper extends FilledShapeHelper {
 
     }
 
+    collidesWith(shapeHelper: ShapeHelper) {
+        if (shapeHelper instanceof CircleHelper) {
 
+            let p1 = new PIXI.Point(this.centerXInitial, this.centerYInitial);
+            this.displayObject.updateTransform();
+            this.displayObject.transform.worldTransform.apply(p1, p1);
+            this.worldHelper.stage.localTransform.applyInverse(p1, p1);
+
+            let radius1 = this.r * this.displayObject.scale.x
+            
+            let p2 = new PIXI.Point(shapeHelper.centerXInitial, shapeHelper.centerYInitial);
+            shapeHelper.displayObject.updateTransform();
+            shapeHelper.displayObject.transform.worldTransform.apply(p2, p2);
+            shapeHelper.worldHelper.stage.localTransform.applyInverse(p2, p2);
+            
+            let radius2 = shapeHelper.r * shapeHelper.displayObject.scale.x
+
+            let d1 = p1.x - p2.x;
+            let d2 = p1.y - p2.y;
+
+            return d1*d1 + d2*d2 <= (radius1 + radius2) * (radius1 + radius2);
+
+
+        } else {
+            return super.collidesWith(shapeHelper);
+        }
+    }
 
 
 }

@@ -590,7 +590,7 @@ export class SpriteHelper extends ShapeHelper {
             let timeIntoPeriod = this.animationTime - numberOfPeriodsDone * period2;
             image = this.imagesPerMillisecond * timeIntoPeriod;
             if (image >= this.animationIndices.length) {
-                image = 2 * this.animationIndices.length - image;
+                image = Math.max(2 * this.animationIndices.length - 0.1 - image, 0);
             }
             image = Math.trunc(image);
         } else
@@ -609,6 +609,8 @@ export class SpriteHelper extends ShapeHelper {
             }
 
         this.animationTime += deltaTime;
+
+        console.log(image);
 
         this.setTexture(null, this.animationIndices[image]);
     }

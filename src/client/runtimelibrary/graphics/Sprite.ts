@@ -610,8 +610,6 @@ export class SpriteHelper extends ShapeHelper {
 
         this.animationTime += deltaTime;
 
-        console.log(image);
-
         this.setTexture(null, this.animationIndices[image]);
     }
 

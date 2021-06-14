@@ -68,7 +68,7 @@ export class NetworkManager {
         
     }
     
-    sendUpdates(callback?: ()=>void, sendIfNothingIsDirty: boolean = false){
+    sendUpdates(callback?: ()=>void, sendIfNothingIsDirty: boolean = false, sendBeacon: boolean = false){
 
         if(this.main.user == null || this.main.user.is_testuser){
             if(callback != null) callback();
@@ -84,7 +84,7 @@ export class NetworkManager {
             
             this.main.userDataDirty = false;
             userSettings.classDiagram = classDiagram?.serialize();
-            this.sendUpdateUserSettings(() => {});
+            this.sendUpdateUserSettings(() => {}, sendBeacon);
             this.forcedUpdatesInARow = 0;
         }
 
@@ -122,22 +122,30 @@ export class NetworkManager {
 
         let that = this;
         if(wdList.length > 0 || fdList.length > 0 || sendIfNothingIsDirty){
-            ajax('sendUpdates', request, (response: SendUpdatesResponse) => {
-                that.errorHappened = !response.success;
-                if(!that.errorHappened){
 
-                    if(this.main.workspacesOwnerId == this.main.user.id){
-                        that.updateWorkspaces(request, response);
-                    }
+            if(sendBeacon){
+                navigator.sendBeacon("sendUpdates", JSON.stringify(request));
+            } else {
 
-                    if(callback != null){
-                        callback();
-                        return;
+                ajax('sendUpdates', request, (response: SendUpdatesResponse) => {
+                    that.errorHappened = !response.success;
+                    if(!that.errorHappened){
+    
+                        if(this.main.workspacesOwnerId == this.main.user.id){
+                            that.updateWorkspaces(request, response);
+                        }
+    
+                        if(callback != null){
+                            callback();
+                            return;
+                        }
                     }
-                }
-            }, () => {
-                that.errorHappened = true;
-            } );
+                }, () => {
+                    that.errorHappened = true;
+                } );
+
+            }
+
         } else {
             if(callback != null){
                 callback();
@@ -298,7 +306,7 @@ export class NetworkManager {
 
     }
 
-    sendUpdateUserSettings(callback: (error: string) => void){
+    sendUpdateUserSettings(callback: (error: string) => void, sendBeacon: boolean = false){
 
         if(this.main.user.is_testuser){
             callback(null);
@@ -310,13 +318,18 @@ export class NetworkManager {
             userId: this.main.user.id
         }
 
-        ajax("updateUserSettings", request, (response: UpdateUserSettingsResponse) => {
-            if(response.success){
-                callback(null);
-            } else {
-                callback("Netzwerkfehler!");
-            }
-        }, callback);
+        if(sendBeacon){
+            navigator.sendBeacon("updateUserSettings", JSON.stringify(request));
+        } else {
+            ajax("updateUserSettings", request, (response: UpdateUserSettingsResponse) => {
+                if(response.success){
+                    callback(null);
+                } else {
+                    callback("Netzwerkfehler!");
+                }
+            }, callback);
+        }
+
 
     }
 

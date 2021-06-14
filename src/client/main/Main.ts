@@ -302,6 +302,15 @@ export class Main implements MainBase {
 
         this.startTimer();
 
+        $(window).on('unload', function() {
+            
+            if(navigator.sendBeacon){
+                that.networkManager.sendUpdates(null, false, true);
+                that.networkManager.sendUpdateUserSettings(() => {});
+            }
+            
+        });
+
     }
 
     startTimer() {

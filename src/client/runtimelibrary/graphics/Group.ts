@@ -394,11 +394,12 @@ export class GroupHelper extends ShapeHelper {
             shapeHelper.belongsToGroup.remove(shape);
         } else {
             let index = this.worldHelper.shapes.indexOf(shapeHelper);
-            if(index >= 0) this.worldHelper.shapes.splice(index, 1);
+            if (index >= 0) this.worldHelper.shapes.splice(index, 1);
         }
 
         shapeHelper.belongsToGroup = this;
 
+        this.displayObject.parent.updateTransform();
         let inverse = new PIXI.Matrix().copyFrom(this.displayObject.transform.worldTransform);
         inverse.invert();
         shapeHelper.displayObject.localTransform.prepend(inverse.prepend(this.worldHelper.stage.localTransform));
@@ -490,14 +491,14 @@ export class GroupHelper extends ShapeHelper {
         if (bb.left > bb1.right || bb1.left > bb.right) return false;
 
         if (bb.top > bb1.bottom || bb1.top > bb.bottom) return false;
-        return true;        
+        return true;
     }
 
 
     collidesWith(shapeHelper: ShapeHelper) {
-        if(!this.hasOverlappingBoundingBoxWith(shapeHelper)){
+        if (!this.hasOverlappingBoundingBoxWith(shapeHelper)) {
             return false;
-        } 
+        }
 
         for (let shape of this.shapes) {
             let sh: ShapeHelper = <ShapeHelper>shape.intrinsicData["Actor"];
@@ -520,7 +521,7 @@ export class GroupHelper extends ShapeHelper {
 
         let bb = this.displayObject.getBounds();
 
-        if(x < bb.left || x > bb.left + bb.width || y < bb.top || y > bb.top + bb.height){
+        if (x < bb.left || x > bb.left + bb.width || y < bb.top || y > bb.top + bb.height) {
             return false;
         }
 
@@ -603,8 +604,8 @@ export class GroupHelper extends ShapeHelper {
     }
 
 
-    tint(color: string){
-        for(let child of this.shapes){
+    tint(color: string) {
+        for (let child of this.shapes) {
             (<ShapeHelper>child.intrinsicData["Actor"]).tint(color);
         }
     }

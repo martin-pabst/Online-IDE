@@ -450,6 +450,8 @@ export class WorldHelper {
 
     shapesNotAffectedByWorldTransforms: ShapeHelper[] = [];
 
+    globalScale: number;
+
     tickerFunction: (t: number) => void;
 
     clearActorLists() {
@@ -464,10 +466,10 @@ export class WorldHelper {
         PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
         PIXI.settings.TARGET_FPMS = 30.0 / 1000.0;
 
-        let scaleFactor: number = 1;
+        this.globalScale = 1;
 
         while(height > 1000 || width > 2000){
-            scaleFactor *= 2;
+            this.globalScale *= 2;
             height /= 2;
             width /= 2;
         }
@@ -654,9 +656,9 @@ export class WorldHelper {
 
         this.module.main.getRightDiv()?.adjustWidthToWorld();
 
-        if(scaleFactor != 1){
+        if(this.globalScale != 1){
             this.stage.localTransform.identity();     // coordinate system (0/0) to (initialWidth/initialHeight)
-            this.stage.localTransform.scale(1/scaleFactor, 1/scaleFactor);
+            this.stage.localTransform.scale(1/this.globalScale, 1/this.globalScale);
 
             //@ts-ignore
             this.stage.transform.onChange();
@@ -877,8 +879,8 @@ export class WorldHelper {
     cacheAsBitmap() {
 
         let scaleMin = 1.0;
-        if (this.currentWidth > 2048) scaleMin = Math.min(scaleMin, 1024 / this.currentWidth);
-        if (this.currentHeight > 1200) scaleMin = Math.min(scaleMin, 1024 / this.currentHeight);
+        if (this.currentWidth * this.currentHeight > 2500000) scaleMin = Math.sqrt(2500000/(this.currentWidth*this.currentHeight));
+        if (this.currentWidth * this.currentHeight < 1024*1024) scaleMin = Math.sqrt(1024*1024/(this.currentWidth*this.currentHeight));
 
         const brt = new PIXI.BaseRenderTexture(
             {
@@ -904,7 +906,7 @@ export class WorldHelper {
 
             this.stage.localTransform.identity();
             let sprite = new PIXI.Sprite(rt);
-            sprite.localTransform.scale(1 / scaleMin, 1 / scaleMin);
+            sprite.localTransform.scale(1 / scaleMin * this.globalScale, 1 / scaleMin * this.globalScale);
             sprite.localTransform.translate(this.currentLeft, this.currentTop);
             //@ts-ignore
             sprite.transform.onChange();

@@ -136,7 +136,7 @@ export class SpriteClass extends Klass {
                 let spriteLibraryEntry: EnumRuntimeObject = parameters[1].value;
                 let sh: SpriteHelper = <SpriteHelper>o.intrinsicData["Actor"];
 
-                if (sh.testdestroyed("setImage")) return;
+                if (sh.isDestroyed) return;
 
                 sh.setTexture(spriteLibraryEntry.enumValue.identifier);
 
@@ -154,7 +154,7 @@ export class SpriteClass extends Klass {
                 let index: number = parameters[2].value;
                 let sh: SpriteHelper = <SpriteHelper>o.intrinsicData["Actor"];
 
-                if (sh.testdestroyed("setImage")) return;
+                if (sh.isDestroyed) return;
 
                 sh.setTexture(spriteLibraryEntry.enumValue.identifier, index);
 
@@ -169,7 +169,8 @@ export class SpriteClass extends Klass {
                 let index: number = parameters[1].value;
                 let sh: SpriteHelper = <SpriteHelper>o.intrinsicData["Actor"];
 
-                if (sh.testdestroyed("setImage")) return;
+                if (sh.isDestroyed) return;
+
 
                 sh.setTexture(sh.textureName, index);
 
@@ -235,7 +236,7 @@ export class SpriteClass extends Klass {
                 let o: RuntimeObject = parameters[0].value;
                 let sh: SpriteHelper = <SpriteHelper>o.intrinsicData["Actor"];
 
-                if (sh.testdestroyed("stopAnimation")) return;
+                if (sh.isDestroyed) return;
 
                 sh.stopAnimation(false);
 
@@ -564,7 +565,7 @@ export class SpriteHelper extends ShapeHelper {
         if (this.animationRuns) {
             let spriteHelperList = this.worldHelper.spriteAnimations;
             let i = spriteHelperList.indexOf(this);
-            spriteHelperList.splice(i, 1);
+            if(i >= 0) spriteHelperList.splice(i, 1);
         }
         this.animationRuns = false;
         if (setInvisible) this.setVisible(false);

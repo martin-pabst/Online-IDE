@@ -26,25 +26,23 @@ export class GamepadTool {
     }
 
     isGamepadButtonPressed(gamepadIndex: number, buttonIndex: number): boolean{
-        // let gp: Gamepad = this.gamepads[gamepadIndex];
-        let gamepads:Gamepad[] = navigator.getGamepads();
-        if(gamepads[gamepadIndex] == null) return false;
-        let gp: Gamepad = gamepads[gamepadIndex];
+        let gp: Gamepad = navigator.getGamepads()[gamepadIndex];
+        if(gp == null) return false;
         let button = gp.buttons[buttonIndex];
         if(button){
-            return typeof(button) == "object" ? button.pressed : (button == 1.0);
+            // return typeof(button) == "object" ? button.pressed : (button == 1.0);
+            return button.pressed;
         } else {return false;}
     }
 
     getGamepadAxisValue(gamepadIndex: number, axisIndex: number): number {
-        let gamepads:Gamepad[] = navigator.getGamepads();
-        if(gamepads[gamepadIndex] == null ) return 0;
-        let gp: Gamepad = gamepads[gamepadIndex];
+        let gp: Gamepad = navigator.getGamepads()[gamepadIndex];
+        if(gp == null) return 0;
         return gp.axes[axisIndex];
     }
 
     isGamepadConnected(gamepadIndex: number){
-        return gamepadIndex < this.gamepads.length;
+        return navigator.getGamepads()[gamepadIndex] != null;
     }
 
 }

@@ -120,7 +120,7 @@ export class Actor extends Klass {
 
             }, false, false, "Gibt true zurück, falls das Gamepad mit dem übergebenen Index angeschlossen ist. VORSICHT: Das erste Gamepad hat Index 0.", false));
 
-        this.addMethod(new Method("getGamepadAxis", new Parameterlist([
+        this.addMethod(new Method("getGamepadAxisValue", new Parameterlist([
             { identifier: "gamepadIndex", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "axisIndex", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), doublePrimitiveType,

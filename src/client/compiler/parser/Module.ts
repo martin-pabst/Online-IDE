@@ -40,6 +40,7 @@ import { SpriteLibraryClass } from "../../runtimelibrary/graphics/SpriteLibraryE
 import { TextClass } from "../../runtimelibrary/graphics/Text.js";
 import { WorldClass } from "../../runtimelibrary/graphics/World.js";
 import { InputClass } from "../../runtimelibrary/Input.js";
+import { GamepadClass } from "../../runtimelibrary/Gamepad.js";
 import { MathClass } from "../../runtimelibrary/Math.js";
 import { MathToolsClass } from "../../runtimelibrary/MathToolsClass.js";
 import { PrintStreamClass, SystemClass } from "../../runtimelibrary/System.js";
@@ -813,6 +814,7 @@ export class BaseModule extends Module {
 
         this.typeStore.addType(new MouseListenerInterface(this));
         this.typeStore.addType(new MouseAdapterClass(this));
+        this.typeStore.addType(new GamepadClass(this));
         this.typeStore.addType(new WorldClass(this));
         this.typeStore.addType(new ProcessingClass(this));
 

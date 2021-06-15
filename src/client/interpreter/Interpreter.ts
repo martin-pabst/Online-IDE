@@ -23,6 +23,7 @@ import { WebSocketRequestKeepAlive } from "../communication/Data.js";
 import { MainEmbedded } from "../embedded/MainEmbedded.js";
 import { ProcessingHelper } from "../runtimelibrary/graphics/Processing.js";
 import { GNGEreignisbehandlungHelper } from "../runtimelibrary/gng/GNGEreignisbehandlung.js";
+import { GamepadTool } from "../tools/GamepadTool.js";
 
 export enum InterpreterState {
     not_initialized, running, paused, error, done, waitingForInput, waitingForTimersToEnd
@@ -90,6 +91,7 @@ export class Interpreter {
     processingHelper: ProcessingHelper;
 
     keyboardTool: KeyboardTool;
+    gamepadTool: GamepadTool;
 
     webSocketsToCloseAfterProgramHalt: WebSocket[] = [];
 
@@ -121,6 +123,8 @@ export class Interpreter {
             this.keyboardTool = new KeyboardTool(jQuery(window), main);
         }
 
+        this.gamepadTool = new GamepadTool();
+        
         this.debugger = debugger_;
 
         controlButtons.setInterpreter(this);

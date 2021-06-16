@@ -1007,7 +1007,6 @@ export abstract class ShapeHelper extends ActorHelper {
 
     rotate(angleInDeg: number, cX?: number, cY?: number) {
 
-        this.displayObject.updateTransform();
         if (cX == null) {
             let p = new PIXI.Point(this.centerXInitial, this.centerYInitial);
             this.displayObject.localTransform.apply(p, p);
@@ -1016,17 +1015,20 @@ export abstract class ShapeHelper extends ActorHelper {
         } else {
             let p = new PIXI.Point(cX, cY);
             this.worldHelper.stage.localTransform.apply(p, p);
+            this.displayObject.updateTransform();       // necessary if world coordinate system is scaled
             this.displayObject.transform.worldTransform.applyInverse(p, p);
             this.displayObject.localTransform.apply(p, p);
             cX = p.x;
             cY = p.y;
+            console.log({cX: cX, cY: cY});
         }
-
+        
         this.displayObject.localTransform.translate(-cX, -cY);
         this.displayObject.localTransform.rotate(-angleInDeg / 180 * Math.PI);
         this.displayObject.localTransform.translate(cX, cY);
         //@ts-ignore
         this.displayObject.transform.onChange();
+        this.displayObject.updateTransform();
         this.setHitPolygonDirty(true);
 
         this.angle += angleInDeg;
@@ -1036,17 +1038,17 @@ export abstract class ShapeHelper extends ActorHelper {
     mirrorXY(scaleX: number, scaleY: number) {
         let cX: number, cY: number;
 
-        this.displayObject.updateTransform();
         let p = new PIXI.Point(this.centerXInitial, this.centerYInitial);
         this.displayObject.localTransform.apply(p, p);
         cX = p.x;
         cY = p.y;
-
+        
         this.displayObject.localTransform.translate(-cX, -cY);
         this.displayObject.localTransform.scale(scaleX, scaleY);
         this.displayObject.localTransform.translate(cX, cY);
         //@ts-ignore
         this.displayObject.transform.onChange();
+        this.displayObject.updateTransform();
 
         this.setHitPolygonDirty(true);
 
@@ -1055,7 +1057,6 @@ export abstract class ShapeHelper extends ActorHelper {
 
     scale(factor: number, cX?: number, cY?: number) {
 
-        this.displayObject.updateTransform();
         if (cX == null) {
             let p = new PIXI.Point(this.centerXInitial, this.centerYInitial);
             this.displayObject.localTransform.apply(p, p);
@@ -1069,12 +1070,13 @@ export abstract class ShapeHelper extends ActorHelper {
             cX = p.x;
             cY = p.y;
         }
-
+        
         this.displayObject.localTransform.translate(-cX, -cY);
         this.displayObject.localTransform.scale(factor, factor);
         this.displayObject.localTransform.translate(cX, cY);
         //@ts-ignore
         this.displayObject.transform.onChange();
+        this.displayObject.updateTransform();
 
         this.setHitPolygonDirty(true);
 

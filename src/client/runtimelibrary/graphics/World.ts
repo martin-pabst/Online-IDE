@@ -662,6 +662,7 @@ export class WorldHelper {
 
             //@ts-ignore
             this.stage.transform.onChange();
+            this.stage.updateTransform();
             this.computeCurrentWorldBounds();
 
         }

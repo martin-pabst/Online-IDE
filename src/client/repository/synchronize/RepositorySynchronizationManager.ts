@@ -346,8 +346,8 @@ export class SynchronizationManager {
         this.$fileListHeaderContainerRight.append(fileListHeaderRight);
 
         let $fileListHeaderCenter = makeDiv(null, "jo_synchro_fileListHeaderCenter");
-        $fileListHeaderCenter.append(this.$updateAllButton = SynchronizationListElement.makeButton("updateAll", "left", () => { that.updateAll() }));
-        $fileListHeaderCenter.append(this.$commitAllButton = SynchronizationListElement.makeButton("commitAll", "right", () => { that.commitAll() }));
+        $fileListHeaderCenter.append(this.$updateAllButton = SynchronizationListElement.makeButton("updateAll", "left", () => { that.updateAll() }, false));
+        $fileListHeaderCenter.append(this.$commitAllButton = SynchronizationListElement.makeButton("commitAll", "right", () => { that.commitAll() }, false));
 
         this.$fileListHeaderDivs.push(makeDiv(null, "jo_synchro_fileListHeader", "", { "flex": "2 0" }), $fileListHeaderCenter, this.$fileListHeaderContainerRight, makeDiv(null, "jo_synchro_scrollbarPlaceholder"));
         this.$fileListDivs.push(makeDiv(null, "jo_synchro_fileList"), makeDiv(null, "jo_synchro_fileListButtonsLeft"), makeDiv(null, "jo_synchro_fileListButtonsRight"), makeDiv(null, "jo_synchro_fileList"));

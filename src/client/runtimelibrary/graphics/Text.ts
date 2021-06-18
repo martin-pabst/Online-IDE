@@ -37,6 +37,27 @@ export class TextClass extends Klass {
 
             }, false, false, 'Instanziert ein neues Textobjekt. (x, y) sind die Koordinaten des Textankers (default: links oben), fontsize die Höhe des Textes in Pixeln.', true));
 
+        this.addMethod(new Method("Text", new Parameterlist([
+            { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "fontsize", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "text", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "font-family", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+        ]), null,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let x: number = parameters[1].value;
+                let y: number = parameters[2].value;
+                let fontsize: number = parameters[3].value;
+                let text: string = parameters[4].value;
+                let fontFamily: string = parameters[5].value;
+
+                let sh = new TextHelper(x, y, fontsize, text, module.main.getInterpreter(), o, fontFamily);
+                o.intrinsicData["Actor"] = sh;
+
+            }, false, false, 'Instanziert ein neues Textobjekt. (x, y) sind die Koordinaten des Textankers (default: links oben), fontsize die Höhe des Textes in Pixeln.', true));
+
         this.addMethod(new Method("setFontsize", new Parameterlist([
             { identifier: "fontsize", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), null,
@@ -140,13 +161,16 @@ export class TextHelper extends FilledShapeHelper {
 
     constructor(public x: number, public y: number, public fontsize: number,
         public text,
-        interpreter: Interpreter, runtimeObject: RuntimeObject) {
+        interpreter: Interpreter, runtimeObject: RuntimeObject, public fontFamily?: string) {
         super(interpreter, runtimeObject);
         this.centerXInitial = x;
         this.centerYInitial = y;
 
         this.borderColor = null;
         this.textStyle.stroke = null;
+        if(fontFamily != null){
+            this.textStyle.fontFamily = fontFamily;
+        }
 
         this.hitPolygonInitial = [];
 

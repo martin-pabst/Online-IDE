@@ -210,11 +210,15 @@ export class ProjectExplorer {
 
         this.$synchronizeAction = jQuery('<div class="img_open-change jo_button jo_active" style="margin-right: 4px"' +
             ' title="Workspace mit Repository synchronisieren">');
-        this.$synchronizeAction.on('mousedown', (e) => {
+
+        
+
+        this.$synchronizeAction.on('pointerdown', (e) => {
+            e.stopPropagation();
+            e.preventDefault();
 
             this.main.getCurrentWorkspace().synchronizeWithRepository();
 
-            e.stopPropagation();
         })
 
         this.fileListPanel.addAction(this.$synchronizeAction);

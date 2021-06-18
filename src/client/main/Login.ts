@@ -123,22 +123,23 @@ export class Login {
                             classDiagram: null
                         }
                     }
+                    
+                    that.main.user = user;
 
                     this.main.waitForGUICallback = () => {
-
+                        
                         that.main.mainMenu.initGUI(user);
-
+                        
                         jQuery('#bitteWarten').hide();
                         $loginSpinner.hide();
                         jQuery('#menupanel-username').html(escapeHtml(user.rufname) + " " + escapeHtml(user.familienname));
-
+                        
                         new UserMenu(that.main).init();
-
+                        
                         if (user.is_teacher) {
                             that.main.initTeacherExplorer(response.classdata);
                         }
-
-                        that.main.user = user;
+                        
 
                         that.main.restoreWorkspaces(response.workspaces);
                         that.main.workspacesOwnerId = user.id;

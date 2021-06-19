@@ -304,7 +304,7 @@ export class Main implements MainBase {
 
         $(window).on('unload', function() {
             
-            if(navigator.sendBeacon){
+            if(navigator.sendBeacon && that.user != null){
                 that.networkManager.sendUpdates(null, false, true);
                 that.networkManager.sendUpdateUserSettings(() => {});
             }

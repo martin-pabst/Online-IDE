@@ -655,8 +655,8 @@ export class WorldHelper {
 
         this.currentLeft = p1.x;
         this.currentTop = p1.y;
-        this.currentWidth = p2.x - p1.x;
-        this.currentHeight = p2.y - p1.y;
+        this.currentWidth = Math.abs(p2.x - p1.x);
+        this.currentHeight = Math.abs(p2.y - p1.y);
     }
 
 

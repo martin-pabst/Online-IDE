@@ -422,8 +422,8 @@ export class GroupHelper extends ShapeHelper {
         let y = ySum / this.shapes.length;
 
         this.displayObject.updateTransform();
-        let p1: PIXI.Point = this.worldHelper.stage.localTransform.apply(new PIXI.Point(x, y));
-        this.displayObject.worldTransform.applyInverse(p1, p1);
+        // let p1: PIXI.Point = this.worldHelper.stage.localTransform.apply(new PIXI.Point(x, y));
+        let p1: PIXI.Point = this.displayObject.worldTransform.applyInverse(new PIXI.Point(x, y));
         this.centerXInitial = p1.x;
         this.centerYInitial = p1.y;
     }

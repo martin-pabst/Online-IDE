@@ -180,14 +180,14 @@ export class CircleHelper extends FilledShapeHelper {
             let p1 = new PIXI.Point(this.centerXInitial, this.centerYInitial);
             this.displayObject.updateTransform();
             this.displayObject.transform.worldTransform.apply(p1, p1);
-            this.worldHelper.stage.localTransform.applyInverse(p1, p1);
+            // this.worldHelper.stage.localTransform.applyInverse(p1, p1);
 
             let radius1 = this.r * this.displayObject.scale.x
             
             let p2 = new PIXI.Point(shapeHelper.centerXInitial, shapeHelper.centerYInitial);
             shapeHelper.displayObject.updateTransform();
             shapeHelper.displayObject.transform.worldTransform.apply(p2, p2);
-            shapeHelper.worldHelper.stage.localTransform.applyInverse(p2, p2);
+            // shapeHelper.worldHelper.stage.localTransform.applyInverse(p2, p2);
             
             let radius2 = shapeHelper.r * shapeHelper.displayObject.scale.x
 

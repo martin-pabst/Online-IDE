@@ -1,19 +1,15 @@
 import { Module } from "../../compiler/parser/Module.js";
-import { Klass, Visibility } from "../../compiler/types/Class.js";
-import { Attribute, Method, Parameterlist, Value } from "../../compiler/types/Types.js";
-import { doublePrimitiveType, floatPrimitiveType, intPrimitiveType, voidPrimitiveType, stringPrimitiveType, booleanPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
+import { Klass } from "../../compiler/types/Class.js";
+import { doublePrimitiveType, intPrimitiveType, stringPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
+import { Method, Parameterlist, Value } from "../../compiler/types/Types.js";
+import { Interpreter, InterpreterState } from "../../interpreter/Interpreter.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { ActorHelper } from "./Actor.js";
-import { InterpreterState, Interpreter } from "../../interpreter/Interpreter.js";
-import { ShapeClass, ShapeHelper } from "./Shape.js";
-import { KeyboardTool } from "../../tools/KeyboardTool.js";
-import { SpriteHelper } from "./Sprite.js";
 import { ColorHelper } from "./ColorHelper.js";
-import { Punkt } from "../../tools/MatheTools.js";
 import { GroupClass, GroupHelper } from "./Group.js";
 import { MouseListenerInterface } from "./MouseListener.js";
-import { RenderTexture } from "@pixi/core";
-import { Rectangle } from "@pixi/math";
+import { ShapeClass, ShapeHelper } from "./Shape.js";
+import { SpriteHelper } from "./Sprite.js";
 
 export class WorldClass extends Klass {
 
@@ -94,16 +90,7 @@ export class WorldClass extends Klass {
                 wh.stage.projectionTransform.identity();
                 wh.stage.projectionTransform.translate(x, y);
                 wh.stage.projectionTransform.prepend(matrix);
-                // let matrix = new PIXI.Matrix().copyFrom(wh.stage.localTransform);
-                // wh.stage.localTransform.identity();
-                // wh.stage.localTransform.translate(x, y);
-                // wh.stage.localTransform.prepend(matrix);
 
-
-                // //@ts-ignore
-                // wh.stage.transform.onChange();
-                // wh.stage.updateTransform();
-                // wh.setAllHitpolygonsDirty();
                 wh.computeCurrentWorldBounds();
                 wh.shapesNotAffectedByWorldTransforms.forEach((shape) => shape.move(-x, -y));
 
@@ -162,16 +149,6 @@ export class WorldClass extends Klass {
                     wh.stage.projectionTransform.translate(moveX, moveY);
                     wh.stage.projectionTransform.prepend(matrix);
 
-                    // let matrix = new PIXI.Matrix().copyFrom(wh.stage.localTransform);
-                    // wh.stage.localTransform.identity();
-                    // wh.stage.localTransform.translate(moveX, moveY);
-                    // wh.stage.localTransform.prepend(matrix);
-
-
-                    // //@ts-ignore
-                    // wh.stage.transform.onChange();
-                    // wh.stage.updateTransform();
-                    // wh.setAllHitpolygonsDirty();
                     wh.computeCurrentWorldBounds();
                     wh.shapesNotAffectedByWorldTransforms.forEach((shape) => shape.move(-moveX, -moveY));
                 }
@@ -201,17 +178,7 @@ export class WorldClass extends Klass {
                 wh.stage.projectionTransform.rotate(angleRad);
                 wh.stage.projectionTransform.translate(x, y);
                 wh.stage.projectionTransform.prepend(matrix);
-                // let angleRad = -angle / 180 * Math.PI;
-                // let matrix = new PIXI.Matrix().copyFrom(wh.stage.localTransform);
-                // wh.stage.localTransform.identity();
-                // wh.stage.localTransform.translate(-x, -y);
-                // wh.stage.localTransform.rotate(angleRad);
-                // wh.stage.localTransform.translate(x, y);
-                // wh.stage.localTransform.prepend(matrix);
 
-                // //@ts-ignore
-                // wh.stage.transform.onChange();
-                // wh.setAllHitpolygonsDirty();
                 wh.computeCurrentWorldBounds();
                 wh.shapesNotAffectedByWorldTransforms.forEach(
                     (shape) => {
@@ -240,16 +207,6 @@ export class WorldClass extends Klass {
                 wh.stage.projectionTransform.scale(factor, factor);
                 wh.stage.projectionTransform.translate(x, y);
                 wh.stage.projectionTransform.prepend(matrix);
-                // let matrix = new PIXI.Matrix().copyFrom(wh.stage.localTransform);
-                // wh.stage.localTransform.identity();
-                // wh.stage.localTransform.translate(-x, -y);
-                // wh.stage.localTransform.scale(factor, factor);
-                // wh.stage.localTransform.translate(x, y);
-                // wh.stage.localTransform.prepend(matrix);
-
-                // //@ts-ignore
-                // wh.stage.transform.onChange();
-                // wh.setAllHitpolygonsDirty();
                 wh.computeCurrentWorldBounds();
                 wh.shapesNotAffectedByWorldTransforms.forEach((shape) => shape.scale(1 / factor, x, y));
 
@@ -274,13 +231,6 @@ export class WorldClass extends Klass {
                 wh.stage.projectionTransform.identity();     // coordinate system (0/0) to (initialWidth/initialHeight)
                 wh.stage.projectionTransform.translate(-left, -top);
                 wh.stage.projectionTransform.scale(wh.initialWidth / width, wh.initialHeight / height);
-                // wh.stage.localTransform.identity();     // coordinate system (0/0) to (initialWidth/initialHeight)
-                // wh.stage.localTransform.translate(-left, -top);
-                // wh.stage.localTransform.scale(wh.initialWidth / width, wh.initialHeight / height);
-
-                // //@ts-ignore
-                // wh.stage.transform.onChange();
-                // wh.setAllHitpolygonsDirty();
                 wh.computeCurrentWorldBounds();
                 wh.shapesNotAffectedByWorldTransforms.forEach((shape) => {
                     shape.scale(width / wh.initialWidth, left, top);
@@ -389,13 +339,7 @@ export class WorldClass extends Klass {
                 let ratio: number = Math.round(höhe / breite * 100);
                 wh.$containerOuter.css('padding-bottom', ratio + "%");
 
-                wh.stage.projectionTransform.scale(wh.width/breite, wh.width/höhe);
-                // wh.stage.localTransform.scale(wh.width / breite, wh.height / höhe);
-                // wh.width = breite;
-                // wh.height = höhe;
-
-                // //@ts-ignore
-                // wh.stage.transform.onChange();
+                wh.stage.projectionTransform.scale(wh.width / breite, wh.width / höhe);
 
                 this.module.main.getRightDiv()?.adjustWidthToWorld();
 
@@ -442,21 +386,17 @@ class WorldContainer extends PIXI.Container {
     }
 
     render(renderer: PIXI.Renderer) {
-        
+
         renderer.projection.projectionMatrix.identity();
         renderer.projection.transform = this.projectionTransform;
         renderer.renderTexture.bind(
             renderer.renderTexture.current,
             this.sourceFrame,
             this.destinationFrame,
-            );
-            super.render(renderer);
-            renderer.batch.flush();
+        );
+        super.render(renderer);
+        renderer.batch.flush();
 
-        //@ts-ignore
-        // this.content.render(renderer);
-
-        // You must flush pending renders before switching back to the previous world!
         renderer.batch.flush();
         renderer.projection.projectionMatrix.identity();
         renderer.projection.transform = null;
@@ -555,8 +495,6 @@ export class WorldHelper {
             let $jo_tabs = $graphicsDiv.parents(".jo_tabs");
             let maxWidth: number = $jo_tabs.width();
             let maxHeight: number = $jo_tabs.height();
-            // let maxWidth: number = $graphicsDiv.parent().width();
-            // let maxHeight: number = $graphicsDiv.parent().height();
 
             if (height / width > maxHeight / maxWidth) {
                 $graphicsDiv.css({
@@ -602,10 +540,8 @@ export class WorldHelper {
         }
 
         let that = this;
-        // let i = 0;
 
         this.tickerFunction = (delta) => {
-            // if (i++ % 2 == 0) 
             that.tick(PIXI.Ticker.shared.elapsedMS);
         };
 
@@ -614,22 +550,14 @@ export class WorldHelper {
 
         this.interpreter.timerExtern = true;
 
-        // this.stage = new PIXI.Container();
         let sourceFrame = new PIXI.Rectangle(0, 0, this.width, this.height);
         let destinationFrame = new PIXI.Rectangle(0, 0, width, height);
         this.stage = new WorldContainer(sourceFrame, destinationFrame);
         this.stage.projectionTransform = new PIXI.Matrix();
-        // this.stage.projectionTransform.scale(1/this.globalScale, 1/this.globalScale);
 
         this.app.stage.addChild(this.stage);
 
         this.$containerInner.append(this.app.view);
-
-
-        // this.stage.localTransform.translate(-400, -300);
-        // this.stage.localTransform.rotate(-45/180*Math.PI);
-        // this.stage.localTransform.translate(400,300);
-        // this.stage.transform.onChange();
 
         this.interpreter.keyboardTool.keyPressedCallbacks.push((key) => {
             for (let kpa of that.keyPressedActors) {
@@ -667,7 +595,7 @@ export class WorldHelper {
                 let x = width * e.offsetX / this.$containerInner.width();
                 let y = height * e.offsetY / this.$containerInner.height();
 
-                let p = new PIXI.Point(x*this.globalScale, y*this.globalScale);
+                let p = new PIXI.Point(x * this.globalScale, y * this.globalScale);
                 this.stage.projectionTransform.applyInverse(p, p);
                 x = p.x;
                 y = p.y;
@@ -698,7 +626,7 @@ export class WorldHelper {
             let x = width * e.offsetX / this.$containerInner.width();
             let y = height * e.offsetY / this.$containerInner.height();
 
-            let p = new PIXI.Point(x*this.globalScale, y*this.globalScale);
+            let p = new PIXI.Point(x * this.globalScale, y * this.globalScale);
             this.stage.projectionTransform.applyInverse(p, p);
             x = Math.round(p.x);
             y = Math.round(p.y);
@@ -714,17 +642,6 @@ export class WorldHelper {
         });
 
         this.module.main.getRightDiv()?.adjustWidthToWorld();
-
-        // if (this.globalScale != 1) {
-        //     this.stage.localTransform.identity();     // coordinate system (0/0) to (initialWidth/initialHeight)
-        //     this.stage.localTransform.scale(1 / this.globalScale, 1 / this.globalScale);
-
-        //     //@ts-ignore
-        //     this.stage.transform.onChange();
-        //     this.stage.updateTransform();
-        //     this.computeCurrentWorldBounds();
-
-        // }
 
     }
 
@@ -824,10 +741,6 @@ export class WorldHelper {
         while (this.actorHelpersToDestroy.length > 0) {
 
             let actorHelper = this.actorHelpersToDestroy.pop();
-
-            // actActors: ActorData[] = [];
-            // keyPressedActors: ActorData[] = [];
-            // actorHelpersToDestroy: ActorHelper[] = [];
 
             for (let actorList of [this.keyPressedActors, this.keyUpActors, this.keyDownActors]) {
                 for (let i = 0; i < actorList.length; i++) {
@@ -964,12 +877,11 @@ export class WorldHelper {
             this.stage.children.forEach(c => c.destroy());
             this.stage.removeChildren();
 
-            // this.stage.localTransform.identity();
             let sprite = new PIXI.Sprite(rt);
             sprite.localTransform.scale(this.globalScale, this.globalScale);
-            sprite.localTransform.translate(this.currentLeft, this.currentTop);
             //@ts-ignore
             sprite.transform.onChange();
+            this.stage.projectionTransform = new PIXI.Matrix();
             this.stage.addChild(sprite);
 
         }, 100);
@@ -982,7 +894,6 @@ export class WorldHelper {
         this.spriteAnimations = [];
         this.app.ticker.remove(this.tickerFunction);
 
-        // this.app.destroy(true, { children: true, texture: false, baseTexture: false});
         this.app.stage.children.forEach(c => c.destroy());
         this.app.stage.removeChildren();
         jQuery(this.app.view).detach();

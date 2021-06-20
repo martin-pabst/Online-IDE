@@ -281,8 +281,6 @@ export class ShapeClass extends Klass {
 
                 if (sh.testdestroyed("containsPoint")) return;
 
-                // let p = sh.worldHelper.stage.localTransform.apply(new PIXI.Point(x, y));
-
                 return sh.containsPoint(x, y);
 
             }, false, false, "Gibt genau dann true zurück, wenn das Grafikobjekt den Punkt (x, y) enthält.", false));
@@ -1016,7 +1014,6 @@ export abstract class ShapeHelper extends ActorHelper {
             cY = p.y;
         } else {
             let p = new PIXI.Point(cX, cY);
-            // this.worldHelper.stage.localTransform.apply(p, p);
             this.displayObject.updateTransform();       // necessary if world coordinate system is scaled
             this.displayObject.transform.worldTransform.applyInverse(p, p);
             this.displayObject.localTransform.apply(p, p);
@@ -1066,7 +1063,6 @@ export abstract class ShapeHelper extends ActorHelper {
             cY = p.y;
         } else {
             let p = new PIXI.Point(cX, cY);
-            // this.worldHelper.stage.localTransform.apply(p, p);
             this.displayObject.transform.worldTransform.applyInverse(p, p);
             this.displayObject.localTransform.apply(p, p);
             cX = p.x;
@@ -1091,7 +1087,6 @@ export abstract class ShapeHelper extends ActorHelper {
         this.displayObject.updateTransform();
         // this.displayObject.localTransform.apply(p, p);
         this.displayObject.transform.worldTransform.apply(p, p);
-        // this.worldHelper.stage.localTransform.applyInverse(p, p);
         return p.x;
     }
 
@@ -1099,7 +1094,6 @@ export abstract class ShapeHelper extends ActorHelper {
         let p = new PIXI.Point(this.centerXInitial, this.centerYInitial);
         this.displayObject.updateTransform();
         this.displayObject.transform.worldTransform.apply(p, p);
-        // this.worldHelper.stage.localTransform.applyInverse(p, p);
         return p.y;
     }
 

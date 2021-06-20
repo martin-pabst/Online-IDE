@@ -281,7 +281,9 @@ export class ShapeClass extends Klass {
 
                 if (sh.testdestroyed("containsPoint")) return;
 
-                return sh.containsPoint(x, y);
+                let p = sh.worldHelper.stage.localTransform.apply(new PIXI.Point(x, y));
+
+                return sh.containsPoint(p.x, p.y);
 
             }, false, false, "Gibt genau dann true zurück, wenn das Grafikobjekt den Punkt (x, y) enthält.", false));
 
@@ -852,19 +854,19 @@ export abstract class ShapeHelper extends ActorHelper {
         let enuminfo = directionType.enumInfoList;
         let pairs: { distance: number, ei: EnumInfo }[] = [];
 
-        if(this.lastMoveDx > 0){
+        if (this.lastMoveDx > 0) {
             pairs.push({ distance: dx1, ei: enuminfo[3] });
-        } else if(this.lastMoveDx < 0) {
+        } else if (this.lastMoveDx < 0) {
             pairs.push({ distance: dx2, ei: enuminfo[1] });
         }
 
-        if(this.lastMoveDy > 0){
+        if (this.lastMoveDy > 0) {
             pairs.push({ distance: dy1, ei: enuminfo[0] });
-        } else if(this.lastMoveDy < 0) {
+        } else if (this.lastMoveDy < 0) {
             pairs.push({ distance: dy2, ei: enuminfo[2] });
         }
 
-        if(pairs.length == 0){
+        if (pairs.length == 0) {
             pairs = [
                 { distance: dx1, ei: enuminfo[3] },
                 { distance: dx2, ei: enuminfo[1] },
@@ -1020,9 +1022,9 @@ export abstract class ShapeHelper extends ActorHelper {
             this.displayObject.localTransform.apply(p, p);
             cX = p.x;
             cY = p.y;
-            console.log({cX: cX, cY: cY});
+            console.log({ cX: cX, cY: cY });
         }
-        
+
         this.displayObject.localTransform.translate(-cX, -cY);
         this.displayObject.localTransform.rotate(-angleInDeg / 180 * Math.PI);
         this.displayObject.localTransform.translate(cX, cY);
@@ -1042,7 +1044,7 @@ export abstract class ShapeHelper extends ActorHelper {
         this.displayObject.localTransform.apply(p, p);
         cX = p.x;
         cY = p.y;
-        
+
         this.displayObject.localTransform.translate(-cX, -cY);
         this.displayObject.localTransform.scale(scaleX, scaleY);
         this.displayObject.localTransform.translate(cX, cY);
@@ -1070,7 +1072,7 @@ export abstract class ShapeHelper extends ActorHelper {
             cX = p.x;
             cY = p.y;
         }
-        
+
         this.displayObject.localTransform.translate(-cX, -cY);
         this.displayObject.localTransform.scale(factor, factor);
         this.displayObject.localTransform.translate(cX, cY);
@@ -1109,11 +1111,11 @@ export abstract class ShapeHelper extends ActorHelper {
             this.belongsToGroup.remove(this.runtimeObject);
         } else {
             let index = this.worldHelper.shapes.indexOf(this);
-            if(index >= 0) this.worldHelper.shapes.splice(index, 1);
+            if (index >= 0) this.worldHelper.shapes.splice(index, 1);
         }
 
         let index1 = this.worldHelper.shapesNotAffectedByWorldTransforms.indexOf(this);
-        if(index1 >= 0){
+        if (index1 >= 0) {
             this.worldHelper.shapesNotAffectedByWorldTransforms.splice(index1, 1);
         }
 
@@ -1154,16 +1156,16 @@ export abstract class ShapeHelper extends ActorHelper {
 
     setStatic(isStatic: boolean) {
         let list = this.worldHelper.shapesNotAffectedByWorldTransforms;
-        if(isStatic){
+        if (isStatic) {
             list.push(this);
         } else {
             let index = list.indexOf(this);
-            if(index >= 0){
+            if (index >= 0) {
                 list.splice(index, 1);
             }
         }
     }
 
-   
+
 
 }

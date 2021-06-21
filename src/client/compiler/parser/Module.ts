@@ -35,7 +35,7 @@ import { RoundedRectangleClass } from "../../runtimelibrary/graphics/RoundedRect
 import { ScaleModeClass } from "../../runtimelibrary/graphics/ScaleMode.js";
 import { ShapeClass } from "../../runtimelibrary/graphics/Shape.js";
 import { SoundKlass as SoundClass } from "../../runtimelibrary/graphics/Sound.js";
-import { SpriteClass } from "../../runtimelibrary/graphics/Sprite.js";
+import { SpriteClass, TileClass } from "../../runtimelibrary/graphics/Sprite.js";
 import { SpriteLibraryClass } from "../../runtimelibrary/graphics/SpriteLibraryEnum.js";
 import { TextClass } from "../../runtimelibrary/graphics/Text.js";
 import { WorldClass } from "../../runtimelibrary/graphics/World.js";
@@ -804,6 +804,7 @@ export class BaseModule extends Module {
         this.typeStore.addType(new ScaleModeClass(this));
         this.typeStore.addType(new SpriteLibraryClass(this));
         this.typeStore.addType(new RepeatTypeClass(this));
+        this.typeStore.addType(new TileClass(this));
         this.typeStore.addType(new SpriteClass(this));
         this.typeStore.addType(new CollisionPairClass(this));
         this.typeStore.addType(new GroupClass(this));

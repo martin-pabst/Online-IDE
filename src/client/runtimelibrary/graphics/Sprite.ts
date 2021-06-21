@@ -60,7 +60,7 @@ export class SpriteClass extends Klass {
                 let shape: RuntimeObject = parameters[1].value;
                 let scaleMode: EnumRuntimeObject = parameters[2].value;
 
-                if(shape == null){
+                if (shape == null) {
                     module.main.getInterpreter().throwException("Die übergebene Figur ist null.");
                     return;
                 }
@@ -78,7 +78,7 @@ export class SpriteClass extends Klass {
                 let o: RuntimeObject = parameters[0].value;
                 let shape: RuntimeObject = parameters[1].value;
 
-                if(shape == null){
+                if (shape == null) {
                     module.main.getInterpreter().throwException("Die übergebene Figur ist null.");
                     return;
                 }
@@ -323,6 +323,45 @@ export class SpriteClass extends Klass {
 
             }, false, false, "Gibt die Höhe zurück.", false));
 
+        this.addMethod(new Method("makeTiling", new Parameterlist([
+            { identifier: "width", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "height", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let width: number = parameters[1].value;
+                let height: number = parameters[2].value;
+                let sh: SpriteHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("makeTiling")) return;
+
+                sh.makeTiling(width, height);
+
+            }, false, false, "Fügt das identische Bild nach rechts und unten kachelartig ('tile'!) so oft hinzu, bis die angegebene Breite erreicht ist. \nTIPP: Mit der Methode getTileImage() erhält man ein Tile-Objekt, dessen Methoden move, scale, mirrorX und mirrorY sich gleichzeitig auf jede einzelne Kachel auswirken.", false));
+
+        this.addMethod(new Method("getTileImage", new Parameterlist([
+        ]), <Klass>module.typeStore.getType("Tile"),
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: SpriteHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("getTileImage")) return;
+
+                if(!sh.isTileSprite){
+                    sh.worldHelper.interpreter.throwException("Das Sprite hat kein TileImage. Sie müssen es zuerst mit der Methode makeTiling in ein Kachel-Sprite umwandeln.")
+                    return;
+                }
+
+                let ret: RuntimeObject = new RuntimeObject(<Klass>module.typeStore.getType("Tile"));
+
+                ret.intrinsicData["Actor"] = new TileHelper(sh);
+
+                return ret;
+
+            }, false, false, "Nachdem das Sprite mittels der Methode 'makeTiling' zum TileSprite gemacht wurde, kann wirken die Methoden move, scale und rotate immer auf den ganzen gekachelten Bereich. Will man das verfielfachte Bild ändern, so bekommt man über diese Methode das Sprite-Objekt, das diesem Bild entspricht. Ruft man für dieses Objekt die Methoden move, rotate oder scale auf, so wirken sie auf jede der einzelnen Kacheln.", false));
+
     }
 
 }
@@ -338,18 +377,20 @@ export class SpriteHelper extends ShapeHelper {
     repeatType = "once";
     textureName: string = "";
 
+    isTileSprite: boolean = false;
+
     constructor(public x: number, public y: number, public name: string, public index: number,
         interpreter: Interpreter, runtimeObject: RuntimeObject, copyFromOtherShape?: ShapeHelper,
         public scaleMode: string = "nearest_neighbour") {
         super(interpreter, runtimeObject);
-        
-        if(copyFromOtherShape == null){
+
+        if (copyFromOtherShape == null) {
             this.setTexture(null, index);
         } else {
             this.copyBitmapFromShape(copyFromOtherShape);
             let bounds = copyFromOtherShape.displayObject.getBounds();
-            this.x = bounds.left + bounds.width/2;
-            this.y = bounds.top + bounds.height/2;
+            this.x = bounds.left + bounds.width / 2;
+            this.y = bounds.top + bounds.height / 2;
         }
 
         let sprite = <PIXI.Sprite>this.displayObject;
@@ -367,6 +408,41 @@ export class SpriteHelper extends ShapeHelper {
 
     }
 
+    makeTiling(width: number, height: number) {
+        width /= this.scaleFactor;
+        height /= this.scaleFactor;
+        let sprite: PIXI.Sprite = <PIXI.Sprite>this.displayObject;
+        let tileSprite = new PIXI.TilingSprite(sprite.texture, width, height);
+        sprite.texture.baseTexture.mipmap = PIXI.MIPMAP_MODES.OFF;
+        tileSprite.setParent(sprite.parent);
+        tileSprite.transform.localTransform.copyFrom(sprite.transform.localTransform);
+        //@ts-ignore
+        tileSprite.transform.onChange();
+        tileSprite.updateTransform();
+        // tileSprite.clampMargin = -0.5;
+        this.displayObject = tileSprite;
+        this.centerXInitial += -sprite.width / 2 + width / 2;
+        this.centerYInitial += -sprite.height / 2 + height / 2;
+        let left = this.centerXInitial - width / 2;
+        let top = this.centerYInitial - height / 2;
+        let right = left + width;
+        let bottom = top + height;
+        this.hitPolygonInitial = [
+            { x: left, y: top }, { x: right, y: top }, { x: right, y: bottom }, { x: left, y: bottom }
+        ];
+        this.setHitPolygonDirty(true);
+        sprite.destroy();
+        this.isTileSprite = true;
+    }
+
+    setTileOffset(x: number, y: number) {
+        if (this.isTileSprite) {
+            let tileSprite: PIXI.TilingSprite = <PIXI.TilingSprite>this.displayObject;
+            tileSprite.tilePosition.set(x, y);
+        }
+    }
+
+
     copyBitmapFromShape(copyFromOtherShape: ShapeHelper) {
 
         let bounds = copyFromOtherShape.displayObject.getBounds();
@@ -380,9 +456,9 @@ export class SpriteHelper extends ShapeHelper {
                 width: width,
                 height: height
             }
-            );
+        );
         let rt: PIXI.RenderTexture = new PIXI.RenderTexture(brt);
-        
+
         let dob = copyFromOtherShape.displayObject;
         this.worldHelper.app.renderer.render(dob, {
             renderTexture: rt,
@@ -392,12 +468,12 @@ export class SpriteHelper extends ShapeHelper {
         let points: convexhull.Point[] = [];
         points = this.extractPoints(copyFromOtherShape, points);
 
-        for(let p of points){
+        for (let p of points) {
             p.x -= bounds.left;
             p.y -= bounds.top;
         }
 
-         this.hitPolygonInitial = points;
+        this.hitPolygonInitial = points;
         this.hitPolygonInitial = convexhull.makeHull(points);
 
         this.hitPolygonDirty = true;
@@ -408,15 +484,15 @@ export class SpriteHelper extends ShapeHelper {
 
     }
 
-    extractPoints(shapeHelper: ShapeHelper, points: convexhull.Point[]): convexhull.Point[]{
-        if(shapeHelper instanceof GroupHelper){
-            for(let sh of shapeHelper.shapes){
+    extractPoints(shapeHelper: ShapeHelper, points: convexhull.Point[]): convexhull.Point[] {
+        if (shapeHelper instanceof GroupHelper) {
+            for (let sh of shapeHelper.shapes) {
                 points = this.extractPoints(sh.intrinsicData["Actor"], points);
             }
             return points;
         } else {
-            if(shapeHelper.hitPolygonDirty) shapeHelper.transformHitPolygon();
-            return points.concat(shapeHelper.hitPolygonTransformed.map(function(punkt){return {x: punkt.x, y: punkt.y}}));
+            if (shapeHelper.hitPolygonDirty) shapeHelper.transformHitPolygon();
+            return points.concat(shapeHelper.hitPolygonTransformed.map(function (punkt) { return { x: punkt.x, y: punkt.y } }));
 
         }
     }
@@ -565,7 +641,7 @@ export class SpriteHelper extends ShapeHelper {
         if (this.animationRuns) {
             let spriteHelperList = this.worldHelper.spriteAnimations;
             let i = spriteHelperList.indexOf(this);
-            if(i >= 0) spriteHelperList.splice(i, 1);
+            if (i >= 0) spriteHelperList.splice(i, 1);
         }
         this.animationRuns = false;
         if (setInvisible) this.setVisible(false);
@@ -613,5 +689,101 @@ export class SpriteHelper extends ShapeHelper {
 
         this.setTexture(null, this.animationIndices[image]);
     }
+
+}
+
+export class TileClass extends Klass {
+
+    constructor(module: Module) {
+
+        super("Tile", module, "Eine Kachel in einem Sprite, das mithilfe der Methode makeTiling zu einer Kachelfläche gemacht wurde.");
+
+        this.setBaseClass(<Klass>module.typeStore.getType("Object"));
+
+        this.addMethod(new Method("move", new Parameterlist([
+            { identifier: "dx", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "dy", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let dx: number = parameters[1].value;
+                let dy: number = parameters[2].value;
+                let sh: TileHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("move")) return;
+
+                sh.move(dx, dy);
+
+            }, false, false, "Verschiebt das Grafikobjekt um dx Pixel nach rechts und um dy Pixel nach unten.", false));
+
+        this.addMethod(new Method("scale", new Parameterlist([
+            { identifier: "factor", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let factor: number = parameters[1].value;
+                let sh: TileHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("scale")) return;
+
+                sh.scale(factor, factor);
+
+            }, false, false, "Streckt das Grafikobjekt um den angegebenen Faktor. Das Zentrum der Streckung ist der 'Mittelpunkt' des Objekts.", false));
+
+        this.addMethod(new Method("mirrorX", new Parameterlist([
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: TileHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("mirrorX")) return;
+
+                sh.scale(-1, 1);
+
+            }, false, false, "Spiegelt das Objekt in X-Richtung.", false));
+
+        this.addMethod(new Method("mirrorY", new Parameterlist([
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: TileHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("mirrorX")) return;
+
+                sh.scale(1, -1);
+
+            }, false, false, "Spiegelt das Objekt in Y-Richtung.", false));
+
+
+
+
+    }
+}
+
+
+export class TileHelper {
+    constructor(public spriteHelper: SpriteHelper) {
+    }
+
+    move(dx: number, dy: number){
+        let tileSprite: PIXI.TilingSprite = <PIXI.TilingSprite>this.spriteHelper.displayObject;
+        tileSprite.tilePosition.x += dx;
+        tileSprite.tilePosition.y += dy;
+    }
+    
+    scale(fx: number, fy: number){
+        let tileSprite: PIXI.TilingSprite = <PIXI.TilingSprite>this.spriteHelper.displayObject;
+        tileSprite.tileScale.x *= fx;
+        tileSprite.tileScale.y *= fy;
+    }
+
+    testdestroyed(method: string) {
+        return this.spriteHelper.testdestroyed(method);
+    }
+
 
 }

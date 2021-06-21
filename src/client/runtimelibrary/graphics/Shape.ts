@@ -513,6 +513,21 @@ export class ShapeClass extends Klass {
 
             }, false, false, 'Überzieht das Grafikobjekt mit einer halbdurchsichtigen Farbschicht.', false));
 
+            this.addMethod(new Method("tint", new Parameterlist([
+            { identifier: "colorAsInt", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let color: number = parameters[1].value;
+                let sh: ShapeHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("tint")) return;
+
+                sh.tint(color);
+
+            }, false, false, 'Überzieht das Grafikobjekt mit einer halbdurchsichtigen Farbschicht. Die Farbe wird als int-Wert angegeben, praktischerweise hexadezimal, also z.B. tint(0x303030).', false));
+
         this.addMethod(new Method("startTrackingEveryMouseMovement", new Parameterlist([
         ]), voidPrimitiveType,
             (parameters) => {
@@ -789,12 +804,17 @@ export abstract class ShapeHelper extends ActorHelper {
         return false;
     }
 
-    tint(color: string) {
-        let c = ColorHelper.parseColorToOpenGL(color);
+    tint(color: string|number) {
+        let c: number;
+        if(typeof color == 'string'){
+            c = ColorHelper.parseColorToOpenGL(color).color;
+        } else {
+            c = color;
+        }
         //@ts-ignore
         if (this.displayObject.tint) {
             //@ts-ignore
-            this.displayObject.tint = c.color;
+            this.displayObject.tint = c;
         }
         this.render();
     }

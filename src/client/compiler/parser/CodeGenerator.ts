@@ -981,7 +981,9 @@ export class CodeGenerator {
 
     removeLastStatement() {
         let lst = this.currentProgram.statements.pop();
-        this.currentProgram.labelManager.removeNode(lst);
+        if(this.currentProgram.labelManager != null){
+            this.currentProgram.labelManager.removeNode(lst);
+        }
     }
 
     initStackFrameNodes: InitStackframeStatement[] = [];

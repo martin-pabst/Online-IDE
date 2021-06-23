@@ -60,15 +60,18 @@ export class AccordionPanel {
 
         if (withFolders) {
             this.$newFolderAction = jQuery('<div class="img_add-folder-dark jo_button jo_active" style="margin-right: 4px"' +
-                ' title="Neuen Ordner anlegen">');
+                ' title="Neuen Ordner auf oberster Ebene anlegen">');
             this.$newFolderAction.on(mousePointer + 'down', (e) => {
                 e.stopPropagation();
                 e.preventDefault();
 
-                let pathArray = this.getCurrentlySelectedPath();
+                let pathArray: string[] = [];
 
                 this.addFolder("Neuer Ordner", pathArray, (newElement: AccordionElement) => {
-                    this.newFolderCallback(newElement, () => { this.sortElements(); });
+                    this.newFolderCallback(newElement, () => { 
+                         this.sortElements();
+                         newElement.$htmlFirstLine[0].scrollIntoView(); 
+                    });
                 });
 
             })
@@ -153,12 +156,13 @@ export class AccordionPanel {
 
     insertElement(ae: AccordionElement) {
         let insertIndex = this.getElementIndex(ae.name, ae.path);
+        if(ae.path.length == 0) insertIndex = this.elements.length;
         this.elements.splice(insertIndex, 0, ae);
 
         if (insertIndex == 0) {
             this.$listElement.prepend(ae.$htmlFirstLine);
         } else {
-            let elementAtIndex = this.$listElement.find('.jo_file').get(insertIndex);
+            let elementAtIndex = this.$listElement.find('.jo_file').get(insertIndex - 1);
             jQuery(elementAtIndex).after(ae.$htmlFirstLine);
         }
 
@@ -490,9 +494,9 @@ export class AccordionPanel {
 
                     for (let e of this.elements) {
                         if (pathIsCollapsed[e.path.join("/")]) {
-                            e.$htmlFirstLine.hide();
+                            e.$htmlFirstLine.slideUp(200);
                         } else {
-                            e.$htmlFirstLine.show();
+                            e.$htmlFirstLine.slideDown(200);
                         }
                     }
 
@@ -519,10 +523,16 @@ export class AccordionPanel {
             if (element.isFolder) {
                 contextMenuItems = contextMenuItems.concat([
                     {
-                        caption: "Neuer Ordner...",
+                        caption: "Neuen Unterordner anlegen (unterhalb '" + element.name + "')...",
                         callback: () => {
                             that.select(element.externalElement);
-                            that.$newFolderAction.trigger(mousePointer + 'down');
+                            // that.$newFolderAction.trigger(mousePointer + 'down');
+                            let pathArray = this.getCurrentlySelectedPath();
+
+                            that.addFolder("Neuer Ordner", pathArray, (newElement: AccordionElement) => {
+                                that.newFolderCallback(newElement, () => { that.sortElements(); });
+                            });
+            
                         }
                     }, {
                         caption: "Neuer Workspace...",

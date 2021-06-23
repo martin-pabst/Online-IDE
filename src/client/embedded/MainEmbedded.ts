@@ -27,6 +27,8 @@ type JavaOnlineConfig = {
     withBottomPanel?: boolean,
     speed?: number | "max",
     id?: string,
+    hideStartPanel?: boolean,
+    hideEditor?: boolean,
     libraries?: string[]
 }
 
@@ -124,14 +126,16 @@ export class MainEmbedded implements MainBase {
 
         this.initScripts();
 
-        this.indexedDB = new EmbeddedIndexedDB();
-        this.indexedDB.open(() => {
-
-            if (this.config.id != null) {
-                this.readScripts();
-            }
-
-        });
+        if(!this.config.hideStartPanel){
+            this.indexedDB = new EmbeddedIndexedDB();
+            this.indexedDB.open(() => {
+    
+                if (this.config.id != null) {
+                    this.readScripts();
+                }
+    
+            });
+        }
 
         this.semicolonAngel = new SemicolonAngel(this);
 
@@ -162,9 +166,19 @@ export class MainEmbedded implements MainBase {
             this.config = {}
         }
 
+        if(this.config.hideEditor == null) this.config.hideEditor = false;
+        if(this.config.hideStartPanel == null) this.config.hideStartPanel = false;
 
         if(this.config.withBottomPanel == null){
             this.config.withBottomPanel = this.config.withConsole || this.config.withPCode || this.config.withFileList || this.config.withErrorList;
+        }
+
+        if(this.config.hideEditor){
+            this.config.withBottomPanel = false;
+            this.config.withFileList = false;
+            this.config.withConsole = false;
+            this.config.withPCode = false;
+            this.config.withErrorList = false;
         }
 
         if(this.config.withBottomPanel){
@@ -423,20 +437,27 @@ export class MainEmbedded implements MainBase {
 
 
         if (!this.config.withBottomPanel) {
-            $centerDiv.prepend($controlsDiv);
-            $controlsDiv.addClass('joe_controlPanel_top');
-            $editorDiv.css({
-                'position': 'relative',
-                'height': '1px'
-            });
+            if(this.config.hideEditor){
+                $rightDiv.prepend($controlsDiv);
+            } else {
+                $centerDiv.prepend($controlsDiv);
+                $controlsDiv.addClass('joe_controlPanel_top');
+                $editorDiv.css({
+                    'position': 'relative',
+                    'height': '1px'
+                });
+            }
         }
 
         $div.addClass('joe_javaOnlineDiv');
         $div.append($centerDiv, $rightDiv);
-        new EmbeddedSlider($rightDiv, true, false, () => {
-            jQuery('.jo_graphics').trigger('sizeChanged');
-            this.editor.editor.layout();
-        });
+
+        if(!this.config.hideEditor){
+            new EmbeddedSlider($rightDiv, true, false, () => {
+                jQuery('.jo_graphics').trigger('sizeChanged');
+                this.editor.editor.layout();
+            });
+        }
 
         this.editor = new Editor(this, false, true);
         this.editor.initGUI(this.$monacoDiv);
@@ -484,6 +505,18 @@ export class MainEmbedded implements MainBase {
             this.interpreter.controlButtons.speedControl.setSpeedInStepsPerSecond(this.config.speed);
             this.startTimer();
         }, 200);
+
+        if(this.config.hideEditor){
+            $centerDiv.hide();
+            $rightDiv.css("flex", "1");
+            if(!this.config.hideStartPanel){
+                $div.find(".joe_rightDivInner").css('height', 'calc(100% - 24px)');
+                $div.find(".joe_controlsDiv").css('padding', '2px');
+                $div.find(".jo_speedcontrol-outer").css('z-index', '10');
+            } else {
+                $div.find(".joe_controlsDiv").hide();
+            }
+        }
 
 
     }
@@ -654,6 +687,9 @@ export class MainEmbedded implements MainBase {
                     this.interpreter.state == InterpreterState.not_initialized) {
                     this.copyExecutableModuleStoreToInterpreter();
                     this.interpreter.setState(InterpreterState.done);
+                    if(this.config.hideStartPanel){
+                        this.actionManager.trigger('interpreter.start');
+                    }        
                     // this.interpreter.init();
                 }
 
@@ -774,71 +810,72 @@ export class MainEmbedded implements MainBase {
         this.$rightDivInner = jQuery('<div class="joe_rightDivInner"></div>');
         $rightDiv.append(this.$rightDivInner);
 
-
-        let $tabheadings = jQuery('<div class="jo_tabheadings"></div>');
-        $tabheadings.css('position', 'relative');
-        let $thRun = jQuery('<div class="jo_tabheading jo_active" data-target="jo_run" style="line-height: 24px">Ausgabe</div>');
-        let $thVariables = jQuery('<div class="jo_tabheading jo_console-tab" data-target="jo_variablesTab" style="line-height: 24px">Variablen</div>');
-        $tabheadings.append($thRun, $thVariables);
-        this.$rightDivInner.append($tabheadings);
-
-        let $tabs = jQuery('<div class="jo_tabs jo_scrollable"></div>');
-        let $vd = jQuery('<div class="jo_scrollable jo_editorFontSize jo_variablesTab"></div>');
         this.$debuggerDiv = jQuery('<div class="joe_debuggerDiv"></div>');
+        this.$runDiv = jQuery(
+            `
+            <div class="jo_tab jo_active jo_run">
+            <div class="jo_run-programend">Programm beendet</div>
+            <div class="jo_run-input">
+            <div>
+            <div>
+        <div class="jo_run-input-message" class="jo_rix">Bitte geben Sie eine Zahl ein!</div>
+        <input class="jo_run-input-input" type="text" class="jo_rix">
+        <div class="jo_run-input-button-outer" class="jo_rix">
+        <div class="jo_run-input-button" class="jo_rix">OK</div>
+        </div>
+        
+        <div class="jo_run-input-error" class="jo_rix"></div>
+    </div>
+    </div>
+    </div> 
+    <div class="jo_run-inner">
+    <div class="jo_graphics"></div>
+    <div class="jo_output jo_scrollable"></div>
+    </div>
+    
+    </div>
+    
+    `);
 
-        let $alternativeText = jQuery(`
+
+        if(!this.config.hideEditor){
+            let $tabheadings = jQuery('<div class="jo_tabheadings"></div>');
+            $tabheadings.css('position', 'relative');
+            let $thRun = jQuery('<div class="jo_tabheading jo_active" data-target="jo_run" style="line-height: 24px">Ausgabe</div>');
+            let $thVariables = jQuery('<div class="jo_tabheading jo_console-tab" data-target="jo_variablesTab" style="line-height: 24px">Variablen</div>');
+            $tabheadings.append($thRun, $thVariables);
+            this.$rightDivInner.append($tabheadings);
+            let $vd = jQuery('<div class="jo_scrollable jo_editorFontSize jo_variablesTab"></div>');
+            
+            let $alternativeText = jQuery(`
             <div class="jo_alternativeText jo_scrollable">
             <div style="font-weight: bold">Tipp:</div>
             Die Variablen sind nur dann sichtbar, wenn das Programm
             <ul>
             <li>im Einzelschrittmodus ausgeführt wird(Klick auf <span class="img_step-over-dark jo_inline-image"></span>),</li>
             <li>an einem Breakpoint hält (Setzen eines Breakpoints mit Mausklick links neben den Zeilennummern und anschließendes Starten des Programms mit 
-            <span class="img_start-dark jo_inline-image"></span>) oder </li>
-            <li>in sehr niedriger Geschwindigkeit ausgeführt wird (weniger als 10 Schritte/s).
-            </ul>
-            </div>
-        `);
-
-        $vd.append(this.$debuggerDiv, $alternativeText);
-
-        this.$runDiv = jQuery(
-            `
-<div class="jo_tab jo_active jo_run">
-<div class="jo_run-programend">Programm beendet</div>
-<div class="jo_run-input">
-    <div>
-        <div>
-            <div class="jo_run-input-message" class="jo_rix">Bitte geben Sie eine Zahl ein!</div>
-            <input class="jo_run-input-input" type="text" class="jo_rix">
-            <div class="jo_run-input-button-outer" class="jo_rix">
-                <div class="jo_run-input-button" class="jo_rix">OK</div>
-            </div>
-
-            <div class="jo_run-input-error" class="jo_rix"></div>
-        </div>
-    </div>
-</div> 
-<div class="jo_run-inner">
-    <div class="jo_graphics"></div>
-    <div class="jo_output jo_scrollable"></div>
-</div>
-
-</div>
-
-`);
-
-        $tabs.append(this.$runDiv, $vd);
-        this.$rightDivInner.append($tabs);
-
-        makeTabs($rightDiv);
-
+                <span class="img_start-dark jo_inline-image"></span>) oder </li>
+                <li>in sehr niedriger Geschwindigkeit ausgeführt wird (weniger als 10 Schritte/s).
+                </ul>
+                </div>
+                `);
+                
+                $vd.append(this.$debuggerDiv, $alternativeText);
+                let $tabs = jQuery('<div class="jo_tabs jo_scrollable"></div>');
+                $tabs.append(this.$runDiv, $vd);
+                this.$rightDivInner.append($tabs);
+                makeTabs($rightDiv);
+            } else {
+                this.$rightDivInner.append(this.$runDiv);
+            }
+        
         return $rightDiv;
     }
-
+    
     getSemicolonAngel(): SemicolonAngel{
         return this.semicolonAngel;
     }
-
+    
 }
 
 

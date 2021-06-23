@@ -493,6 +493,9 @@ export class WorldHelper {
 
         let f = () => {
             let $jo_tabs = $graphicsDiv.parents(".jo_tabs");
+            if($jo_tabs.length == 0){
+                $jo_tabs = $graphicsDiv.parents(".joe_rightDivInner");
+            }
             let maxWidth: number = $jo_tabs.width();
             let maxHeight: number = $jo_tabs.height();
 

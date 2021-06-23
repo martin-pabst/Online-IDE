@@ -37,20 +37,19 @@
 <body>
     <h1>Erstes Beispiel</h1>
 
-    <div class="java-online" style="width: calc(100% - 10px); height: 400px; margin-left: 5px" data-java-online="{
+    <div class="java-online" style="width: calc(80% - 10px); height: 400px; margin-left: 5px" data-java-online="{
         'id': 'abcd',
         'speed': 'max',
         'withFileList': true,
+        'hideEditor': true,
+        'hideStartPanel': true,
         'libraries': ['gng']
     }">
         <script type="text/plain" title="Test1.java" data-type="java">
-new Test();
-class Test extends Polygon {
-    public Test(){
-        super(true);
-        addPoints(new double[]{10, 10, 300, 10, 150, 200});
-    }
-}
+            int anzahl = Input.readInt("Wie oft?");
+            for(int i = 0; i < anzahl; i++){
+                println("Hallo Welt!");
+            }
                     </script>
     </div>
     <!--

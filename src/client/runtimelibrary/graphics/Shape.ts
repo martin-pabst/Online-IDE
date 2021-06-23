@@ -988,9 +988,9 @@ export abstract class ShapeHelper extends ActorHelper {
 
     isOutsideView() {
         let bounds = this.displayObject.getBounds(true);
-        let screen = this.worldHelper.app.screen;
-        return bounds.right < screen.left || bounds.left > screen.right
-            || bounds.bottom < screen.top || bounds.top > screen.bottom;
+        let wh = this.worldHelper;
+        return bounds.right < wh.currentLeft || bounds.left > wh.currentLeft + wh.currentWidth
+            || bounds.bottom < wh.currentTop || bounds.top > wh.currentTop + wh.currentHeight;
     }
 
     defineCenter(x: number, y: number) {

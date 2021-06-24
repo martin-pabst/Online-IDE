@@ -224,7 +224,7 @@ export class AccordionPanel {
         let that = this;
 
         this.$captionElement = jQuery(`<div class="jo_leftpanelcaption jo_expanded">
-        <span>` + this.caption + `</span><div class="jo_actions"></div></div>`);
+        <div class="jo_captiontext">` + this.caption + `</div><div class="jo_actions"></div></div>`);
 
         if (this.newButtonClass != null) {
             this.$buttonNew = jQuery('<div class="jo_button jo_active ' + this.newButtonClass + '" title="' + this.buttonNewTitle + '">');

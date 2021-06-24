@@ -8,10 +8,10 @@ export class NetworkManager {
     
     timerhandle: any;
 
-    ownUpdateFrequencyInSeconds: number = 20;
+    ownUpdateFrequencyInSeconds: number = 25;
     teacherUpdateFrequencyInSeconds: number = 5;
 
-    updateFrequencyInSeconds: number = 20;
+    updateFrequencyInSeconds: number = 25;
     forcedUpdateEvery: number = 2;
     forcedUpdatesInARow: number = 0;
     secondsTillNextUpdate: number = this.updateFrequencyInSeconds;

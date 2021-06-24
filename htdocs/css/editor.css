@@ -353,13 +353,24 @@ body .monaco-editor-hover .monaco-tokenized-source {
     white-space: nowrap;
     -webkit-user-select: none;
     user-select: none;
+
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.jo_leftpanelcaption>.jo_captiontext {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    flex: 1;
 }
 
 .jo_leftpanelcaption>.jo_actions {
     display: flex;
-    position: absolute;
+    position: relative;
     top: 4px;
     right: 10px;
+    margin-left: 10px;
 }
 
 .jo_button:hover {
@@ -667,6 +678,9 @@ body .monaco-editor-hover .monaco-tokenized-source {
     user-select: none;
     cursor: pointer !important;
     -webkit-user-select: none;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .jo_file.jo_java.jo_startable>.jo_fileimage:before {
@@ -728,6 +742,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
 
 .jo_file>.jo_delete {
     display: none;
+    flex-shrink: 0;
 }
 
 .jo_file:hover>.jo_delete, .jo_file>.jo_delete_always {

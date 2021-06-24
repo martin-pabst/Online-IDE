@@ -850,7 +850,7 @@ export class ProjectExplorer {
             color = "transparent";
             caption = "Meine WORKSPACES";
         } else {
-            caption = "Schüler-WORKSPACES";
+            caption = "Schüler-WS";
         }
 
         this.fileListPanel.$listElement.parent().css('background-color', color);

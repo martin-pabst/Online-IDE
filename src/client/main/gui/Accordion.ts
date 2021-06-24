@@ -1,4 +1,4 @@
-import { openContextMenu, makeEditable, ContextMenuItem, jo_mouseDetected } from "../../tools/HtmlTools.js";
+import { openContextMenu, makeEditable, ContextMenuItem, jo_mouseDetected, animateToTransparent } from "../../tools/HtmlTools.js";
 import { Helper } from "./Helper.js";
 import { escapeHtml } from "../../tools/StringTools.js";
 import { isJSDocThisTag, isThisTypeNode } from "typescript";
@@ -71,6 +71,7 @@ export class AccordionPanel {
                     this.newFolderCallback(newElement, () => { 
                          this.sortElements();
                          newElement.$htmlFirstLine[0].scrollIntoView(); 
+                         animateToTransparent(newElement.$htmlFirstLine.find('.jo_filename'), 'background-color', [0, 255, 0], 2000);
                     });
                 });
 
@@ -527,10 +528,14 @@ export class AccordionPanel {
                         callback: () => {
                             that.select(element.externalElement);
                             // that.$newFolderAction.trigger(mousePointer + 'down');
-                            let pathArray = this.getCurrentlySelectedPath();
+                            let pathArray = that.getCurrentlySelectedPath();
 
                             that.addFolder("Neuer Ordner", pathArray, (newElement: AccordionElement) => {
-                                that.newFolderCallback(newElement, () => { that.sortElements(); });
+                                that.newFolderCallback(newElement, () => { 
+                                    that.sortElements();
+                                    newElement.$htmlFirstLine[0].scrollIntoView(); 
+                                    animateToTransparent(newElement.$htmlFirstLine.find('.jo_filename'), 'background-color', [0, 255, 0], 2000);
+                                           });
                             });
             
                         }

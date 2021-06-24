@@ -230,3 +230,21 @@ export function checkIfMousePresent() {
         jo_mouseDetected = true;
     }
 }
+
+export function animateToTransparent($element: JQuery<HTMLElement>, cssProperty: string, startColorRgb: number[], duration: number){
+    let colorPraefix = 'rgba(' + startColorRgb[0] + ", " + startColorRgb[1] + ", " + startColorRgb[2] + ", ";
+    let value = 1.0;
+    let delta = value/(duration/20);
+
+    let animate = () => {
+        $element.css(cssProperty, colorPraefix + value + ")");
+        value -= delta;
+        if(value < 0){
+            $element.css(cssProperty, "");
+        } else {
+            setTimeout(animate, 20);
+        }
+    }
+
+    animate();
+}

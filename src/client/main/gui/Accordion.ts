@@ -59,6 +59,7 @@ export class AccordionPanel {
         let mousePointer = window.PointerEvent ? "pointer" : "mouse";
 
         if (withFolders) {
+            let that = this;
             this.$newFolderAction = jQuery('<div class="img_add-folder-dark jo_button jo_active" style="margin-right: 4px"' +
                 ' title="Neuen Ordner auf oberster Ebene anlegen">');
             this.$newFolderAction.on(mousePointer + 'down', (e) => {
@@ -78,6 +79,29 @@ export class AccordionPanel {
             })
 
             this.addAction(this.$newFolderAction);
+
+            
+            let $collapseAllAction = jQuery('<div class="img_collapse-all-dark jo_button jo_active" style="margin-right: 4px"' +
+                ' title="Alle Ordner zusammenfalten">');
+            $collapseAllAction.on(mousePointer + 'down', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+
+                for(let element of that.elements){
+                    if(element.isFolder){
+                        if (element.$htmlFirstLine.hasClass('jo_expanded')) {
+                            element.$htmlFirstLine.removeClass('jo_expanded');
+                            element.$htmlFirstLine.addClass('jo_collapsed');
+                        }                        
+                    }
+                    if(element.path.length > 0){
+                        element.$htmlFirstLine.slideUp(200);
+                    }
+                }                
+
+            })
+
+            this.addAction($collapseAllAction);
 
         }
 

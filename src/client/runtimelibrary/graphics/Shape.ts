@@ -835,6 +835,8 @@ export abstract class ShapeHelper extends ActorHelper {
             return shapeHelper.collidesWith(this);
         }
 
+        if(this.displayObject == null || shapeHelper.displayObject == null) return;
+
         this.displayObject.updateTransform();
         shapeHelper.displayObject.updateTransform();
 

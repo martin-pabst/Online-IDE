@@ -823,7 +823,7 @@ export class AccordionPanel {
     }
 
     setCaption(text: string) {
-        this.$captionElement.find('span').html(text);
+        this.$captionElement.find('.jo_captiontext').html(text);
     }
 
     getSelectedElement(): AccordionElement {

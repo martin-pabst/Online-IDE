@@ -1041,7 +1041,6 @@ export abstract class ShapeHelper extends ActorHelper {
             this.displayObject.localTransform.apply(p, p);
             cX = p.x;
             cY = p.y;
-            console.log({ cX: cX, cY: cY });
         }
 
         this.displayObject.localTransform.translate(-cX, -cY);

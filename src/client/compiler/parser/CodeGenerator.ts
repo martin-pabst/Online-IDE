@@ -2802,12 +2802,16 @@ export class CodeGenerator {
 
         if (!(
             (objectNode.type instanceof Klass) || (objectNode.type instanceof StaticClass) ||
-            (objectNode.type instanceof Interface) || (objectNode.type instanceof Enum))) {
+            (objectNode.type instanceof Interface && node.object["variable"] != null) || (objectNode.type instanceof Enum))) {
 
             if (objectNode.type == null) {
                 this.pushError("Werte dieses Datentyps besitzen keine Methoden.", node.position);
             } else {
-                this.pushError('Werte des Datentyps ' + objectNode.type.identifier + " besitzen keine Methoden.", node.position);
+                if(objectNode.type instanceof Interface){
+                    this.pushError('Methodendefinitionen eines Interfaces können nicht statisch aufgerufen werden.', node.position);
+                } else {
+                    this.pushError('Werte des Datentyps ' + objectNode.type.identifier + " besitzen keine Methoden.", node.position);
+                }
             }
 
             return null;
@@ -3184,7 +3188,7 @@ export class CodeGenerator {
                     lm.markJumpDestination(1, endLabel);
 
                     let type = firstType.type;
-                    if (type != secondType.type && type.canCastTo(secondType.type)) {
+                    if (secondType != null && type != secondType.type && type.canCastTo(secondType.type)) {
                         type = secondType.type;
                     }
 

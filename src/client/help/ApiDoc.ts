@@ -1,7 +1,7 @@
 import { booleanPrimitiveType, charPrimitiveType, doublePrimitiveType, floatPrimitiveType, intPrimitiveType, stringPrimitiveType, voidPrimitiveType } from "../compiler/types/PrimitiveTypes.js";
 import { BaseModule } from "../compiler/parser/Module.js";
 import { Klass, Interface, Visibility } from "../compiler/types/Class.js";
-import { Type } from "../compiler/types/Types.js";
+import { Method, Type } from "../compiler/types/Types.js";
 import { Enum } from "../compiler/types/Enum.js";
 import { getDeclarationAsString } from "../compiler/types/DeclarationHelper.js";
 import { defineMyJava } from "../main/gui/MyJava.js";
@@ -131,7 +131,12 @@ export class ApiDoc {
     showMethods(t: Klass | Interface | Enum){
         let $main = jQuery('#main');
         $main.append(jQuery('<div class="jo_method-heading">Methoden:</div>'));
-        let methods = t.getMethods(Visibility.protected).filter((m) => !m.isConstructor);
+        let methods: Method[];
+        if(t instanceof Interface){
+            methods = t.methods.slice(0);
+        } else {
+            methods = t.getMethods(Visibility.protected).filter((m) => !m.isConstructor);
+        }
         if(t instanceof Klass && t.staticClass != null){
             methods = methods.concat(t.staticClass.getMethods(Visibility.protected).filter((m) => !m.isConstructor));
         }

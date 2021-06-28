@@ -74,3 +74,9 @@ if (typeof Object.create != 'function') {
   })();
 }
 ```
+
+
+
+### Instantiate Objects by class name
+https://www.stevefenton.co.uk/2014/07/creating-typescript-classes-dynamically/
+

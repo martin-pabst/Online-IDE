@@ -332,6 +332,7 @@ export type IdentifierNode = {
 
     identifier: string,
     variable?: Variable  // CodeGenerator stores found local variables in node to identify variable use before initialization
+    attribute?: Attribute
 }
 
 export type ConstantNode = {

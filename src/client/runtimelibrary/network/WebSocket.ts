@@ -142,7 +142,7 @@ export class WebSocketClass extends Klass {
             null, // no statements!
             false, false, "Wird immer dann aufgerufen, wenn sich ein anderer Client unter Nutzung desselben sessionCodes mit dem Server verbunden hat.", false));
 
-        this.addMethod(new Method("onOtherClientDisConnected", new Parameterlist([
+        this.addMethod(new Method("onOtherClientDisconnected", new Parameterlist([
             { identifier: "otherClient", type: webSocketClientType, declaration: null, usagePositions: null, isFinal: true }
         ]), null,
             null, // no statements!

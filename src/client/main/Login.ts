@@ -188,6 +188,8 @@ export class Login {
                 return;
             }
 
+            this.main.interpreter.closeAllWebsockets();
+
             jQuery('#bitteWartenText').html('Bitte warten, der letzte Bearbeitungsstand wird noch gespeichert ...');
             jQuery('#bitteWarten').css('display', 'flex');
 

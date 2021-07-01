@@ -307,7 +307,7 @@ export class Main implements MainBase {
             if(navigator.sendBeacon && that.user != null){
                 that.networkManager.sendUpdates(null, false, true);
                 that.networkManager.sendUpdateUserSettings(() => {});
-                that.interpreter.webSocketsToCloseAfterProgramHalt.forEach(socket => socket.close());
+                that.interpreter.closeAllWebsockets();
             }
             
         });

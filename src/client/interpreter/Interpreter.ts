@@ -124,7 +124,7 @@ export class Interpreter {
         }
 
         this.gamepadTool = new GamepadTool();
-        
+
         this.debugger = debugger_;
 
         controlButtons.setInterpreter(this);
@@ -473,7 +473,7 @@ export class Interpreter {
 
     }
 
-    getTimerClass():TimerClass{
+    getTimerClass(): TimerClass {
         let baseModule = this.main.getCurrentWorkspace().moduleStore.getModule("Base Module");
         return <TimerClass>baseModule.typeStore.getType("Timer");
     }
@@ -651,7 +651,7 @@ export class Interpreter {
         this.processingHelper?.destroyWorld();
         this.gngEreignisbehandlungHelper?.detachEvents();
         this.gngEreignisbehandlungHelper = null;
-        
+
     }
 
     stop(restart: boolean = false) {
@@ -668,7 +668,7 @@ export class Interpreter {
         this.main.hideProgramPointerPosition();
 
         this.getTimerClass().stopTimer();
-        if(this.worldHelper != null){
+        if (this.worldHelper != null) {
             this.worldHelper.cacheAsBitmap();
         }
 
@@ -1301,7 +1301,7 @@ export class Interpreter {
                     break;
                 }
 
-                if ((this.worldHelper != null && this.worldHelper.hasActors()) || this.processingHelper != null 
+                if ((this.worldHelper != null && this.worldHelper.hasActors()) || this.processingHelper != null
                     || (this.gngEreignisbehandlungHelper != null && this.gngEreignisbehandlungHelper.hasAktionsEmpfaenger())) {
                     this.currentProgramPosition--;
                     break
@@ -1344,7 +1344,7 @@ export class Interpreter {
                 // if(this.worldHelper != null){
                 //     this.worldHelper.cacheAsBitmap();
                 // }
-        
+
                 this.currentProgramPosition--;
                 this.stop();
                 break;
@@ -1508,8 +1508,7 @@ export class Interpreter {
         this.state = state;
 
         if (state == InterpreterState.error || state == InterpreterState.done) {
-            this.webSocketsToCloseAfterProgramHalt.forEach(socket => socket.close());
-            this.webSocketsToCloseAfterProgramHalt = [];
+            this.closeAllWebsockets();
         }
 
         let am = this.main.getActionManager();
@@ -1552,6 +1551,12 @@ export class Interpreter {
         }
 
     }
+
+    closeAllWebsockets() {
+        this.webSocketsToCloseAfterProgramHalt.forEach(socket => socket.close());
+        this.webSocketsToCloseAfterProgramHalt = [];
+    }
+
 
     pushCurrentProgram() {
 

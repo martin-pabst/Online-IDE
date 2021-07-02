@@ -155,6 +155,20 @@ export class WebSocketClass extends Klass {
             null, // no statements!
             false, false, "Wird aufgerufen, wenn die durch die Methoden findClient bzw. findClients zuvor gesuchten Clients gefunden wurden.", false));
 
+        this.addMethod(new Method("getOtherClients", new Parameterlist([]),
+            new ArrayType(webSocketClientType),
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let wh: WebSocketHelper = o.intrinsicData["Helper"];
+
+                let ret = wh.clientList.map(client => {return {type: webSocketClientType, value: client.runtimeObject}});
+                
+                return ret;
+
+            }, // no statements!
+            false, false, "Gibt alle bisher bei der selben Session angemeldeten Clients zurück.", false));
+
     }
 
 

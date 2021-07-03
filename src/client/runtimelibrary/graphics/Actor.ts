@@ -274,5 +274,14 @@ export class ActorHelper {
         this.worldHelper.actorHelpersToDestroy.push(this);
     }
 
+    testdestroyed(method: string) {
+        if (this.isDestroyed) {
+            this.worldHelper.interpreter.throwException("Es wurde die Methode " + method + " eines bereits mit destroy() zerstörten Grafikobjekts aufgerufen.");
+            return true;
+        }
+        return false;
+    }
+
+
 }
 

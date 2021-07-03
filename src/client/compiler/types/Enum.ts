@@ -125,7 +125,7 @@ export class Enum extends Klass {
 
                 }
 
-                return this.valueList;
+                return this.valueList.value;
 
             }, false, true)
         );

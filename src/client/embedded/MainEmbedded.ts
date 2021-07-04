@@ -225,7 +225,9 @@ export class MainEmbedded implements MainBase {
 
     }
 
-
+    eraseDokuwikiSearchMarkup(text: string): string {
+        return text.replace(/<span class="search\whit">(.*?)<\/span>/g, "$1");
+    }
 
     readScripts() {
 
@@ -253,6 +255,8 @@ export class MainEmbedded implements MainBase {
                     let scriptId = this.config.id + name;
                     this.indexedDB.getScript(scriptId, (script) => {
                         if (script != null) {
+
+                            script = this.eraseDokuwikiSearchMarkup(script);
 
                             let module = that.addModule({
                                 title: name,

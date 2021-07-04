@@ -118,6 +118,7 @@ export class EmbeddedStarter {
                     title: $script.attr('title'),
                     text: $script.text().trim()
                 };
+                script.text = this.eraseDokuwikiSearchMarkup(script.text);
                 scriptList.push(script);
             });
 
@@ -125,6 +126,10 @@ export class EmbeddedStarter {
 
         });
 
+    }
+
+    eraseDokuwikiSearchMarkup(text: string): string {
+        return text.replace(/<span class="search\whit">(.*?)<\/span>/g, "$1");
     }
 
     initDiv($div: JQuery<HTMLElement>, scriptList: JOScript[]) {

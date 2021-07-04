@@ -39,7 +39,7 @@ export class Klass extends Type {
     isTypeVariable: boolean = false;
     typeVariablesReady: boolean = true;
 
-    private static dontInheritFrom: string[] = ["Integer", "Float", "Double", "Boolean", "Character", "String", "Shape", "FilledShape", "Actor"];
+    private static dontInheritFrom: string[] = ["Integer", "Float", "Double", "Boolean", "Character", "String", "Shape", "FilledShape"];
 
     baseClass: Klass;
     firstPassBaseClass: string;

@@ -312,8 +312,15 @@ export class CodeGenerator {
 
         let method = methods.methodList[0];
 
+        let destType: Type = null;
         for (let i = 0; i < parameterTypes.length; i++) {
-            let destType = method.getParameterType[i];
+            if (i < method.getParameterCount()) {  // possible ellipsis!
+                destType = method.getParameterType(i);
+                if (i == method.getParameterCount() - 1 && method.hasEllipsis()) {
+                    destType = (<ArrayType>destType).arrayOfType;
+                }
+            }
+
             let srcType = parameterTypes[i];
             if (!srcType.equals(destType)) {
 
@@ -331,13 +338,26 @@ export class CodeGenerator {
             }
         }
 
+        let stackframeDelta = 0;
+        if (method.hasEllipsis()) {
+            let ellipsisParameterCount = parameterTypes.length - method.getParameterCount() + 1; // last parameter and subsequent ones
+            stackframeDelta = - (ellipsisParameterCount - 1);
+            this.pushStatements({
+                type: TokenType.makeEllipsisArray,
+                position: parameterNodes[method.getParameterCount() - 1].position,
+                parameterCount: ellipsisParameterCount,
+                stepFinished: false,
+                arrayType: method.getParameter(method.getParameterCount() - 1).type
+            })
+        }
+
         this.pushStatements({
             type: TokenType.callMethod,
             method: method,
             position: position,
             stepFinished: true,
             isSuperCall: false,
-            stackframeBegin: -(parameterTypes.length + 1) // this-object followed by parameters
+            stackframeBegin: -(parameterTypes.length + 1 + stackframeDelta) // this-object followed by parameters
         });
     }
 

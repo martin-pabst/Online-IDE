@@ -388,6 +388,7 @@ export class AccordionPanel {
         }
 
         let pathHtml = "";
+        if(element.path == null) element.path = [];
         for (let i = 0; i < element.path.length; i++) {
             pathHtml += '<div class="jo_folderline"></div>';
         }

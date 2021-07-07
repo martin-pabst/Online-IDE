@@ -7,6 +7,7 @@ import { ShapeHelper } from "./Shape.js";
 import { ColorHelper } from "./ColorHelper.js";
 import { FilledShapeHelper } from "./FilledShape.js";
 import { WorldHelper, WorldClass } from "./World.js";
+import { param } from "jquery";
 
 export type ColorClassIntrinsicData = {
     red: number,
@@ -284,6 +285,7 @@ export class ColorClass extends Klass {
                 return (rgb.r * 0x10000 + rgb.g * 0x100 + rgb.b);
 
             }, false, true, 'Berechnet Hue (0 - 360), Saturation (0 - 100) und Luminance (0 - 100)die Farbe.', false));
+
 
     }
 

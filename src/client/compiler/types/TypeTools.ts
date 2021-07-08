@@ -20,6 +20,8 @@ export class JsonTool {
     objectToIndexMap: Map<RuntimeObject, number>;
     nextIndex: number;
 
+    primitiveTypes: String[] = ["String", "Integer", "Double", "Boolean", "Float", "Character"];
+
     toJson(value: Value): string {
         this.objectToIndexMap = new Map();
         this.nextIndex = 0;
@@ -33,7 +35,7 @@ export class JsonTool {
         let v = value.value;
         if (v == null) return null;
 
-        if ((type instanceof Klass || type instanceof Interface) && type.identifier != "String") {
+        if ((type instanceof Klass || type instanceof Interface) && this.primitiveTypes.indexOf(type.identifier) < 0) {
 
             if (type instanceof Enum) {
                 let enumObj = <EnumRuntimeObject>v;
@@ -62,12 +64,12 @@ export class JsonTool {
         this.objectToIndexMap.set(rto, index);
         let klass: Klass = <Klass>rto.class;
 
+        let serializedObject: SerializedObject = { "!k": klass.identifier, "!i": index };
         // Don't serialize system classes unless they are explicitely serializable
-        if (klass.module.isSystemModule && klass.getMethodBySignature("String toJson()") == null) {
+        if (klass.module.isSystemModule) {
             return null;
         }
 
-        let serializedObject: SerializedObject = { "!k": klass.identifier, "!i": index };
         while (klass != null) {
             let first: boolean = true;
             let serializedAttributes: any;
@@ -111,7 +113,7 @@ export class JsonTool {
     fromJsonObj(obj: any, type: Type, moduleStore: ModuleStore, interpreter: Interpreter): Value {
         if (obj == null) return { type: type, value: null };
 
-        if ((type instanceof Klass || type instanceof Interface) && type.identifier != "String") {
+        if ((type instanceof Klass || type instanceof Interface) && this.primitiveTypes.indexOf(type.identifier) < 0) {
 
             if (type instanceof Enum) {
                 return {

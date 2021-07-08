@@ -112,6 +112,12 @@ export class PrintStreamClass extends Klass {
                 module.main.getInterpreter().printManager.println(parameters[1].value);
             }, false, true, "Gibt den Text aus, gefolgt von einem Zeilensprung."));
 
+        this.addMethod(new Method("println", new Parameterlist([
+        ]), null,
+            (parameters) => {
+                module.main.getInterpreter().printManager.println("");
+            }, false, true, "Setzt den Cursor in die nächste Zeile."));
+
 
     }
 

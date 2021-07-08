@@ -501,6 +501,30 @@ export class CodeGenerator {
 
     }
 
+    getSuperconstructorCalls(nodes: ASTNode[], superconstructorCallsFound: ASTNode[], isFirstStatement: boolean): boolean {
+        for(let node of nodes){
+            if(node.type == TokenType.superConstructorCall){
+
+                if(!isFirstStatement){
+                    if(superconstructorCallsFound.length > 0){
+                        this.pushError("Ein Konstruktor darf nur einen einzigen Aufruf des Superkonstruktors enthalten.", node.position, "error");
+                    } else {
+                        this.pushError("Vor dem Aufruf des Superkonstruktors darf keine andere Anweisung stehen.", node.position, "error");
+                    }
+                }
+
+                superconstructorCallsFound.push(node);
+                isFirstStatement = false;
+            } else if(node.type == TokenType.scopeNode && node.statements != null){
+                isFirstStatement = isFirstStatement && this.getSuperconstructorCalls(node.statements, superconstructorCallsFound, isFirstStatement);
+            } else {
+                isFirstStatement = false;
+            }
+        }
+        return isFirstStatement;
+    }
+
+
     compileMethod(methodNode: MethodDeclarationNode) {
         // Assumption: methodNode != null
         let method = methodNode.resolvedType;
@@ -528,18 +552,22 @@ export class CodeGenerator {
         // " + 1" is for "this"-object
         this.nextFreeRelativeStackPos = methodNode.parameters.length + 1;
 
-        if (method.isConstructor && this.currentSymbolTable.classContext instanceof Klass && methodNode.statements != null) {
+        if (method.isConstructor && this.currentSymbolTable.classContext instanceof Klass && methodNode.statements != null ) {
             let c: Klass = this.currentSymbolTable.classContext;
 
-            let superconstructorCallEnsured: boolean = false;
-            if (methodNode.statements[0].type == TokenType.scopeNode) {
-                let stm = methodNode.statements[0].statements;
-                if (stm.length > 0 && [TokenType.superConstructorCall, TokenType.constructorCall].indexOf(stm[0].type) >= 0) {
-                    superconstructorCallEnsured = true;
-                }
-            } else if ([TokenType.superConstructorCall, TokenType.constructorCall].indexOf(methodNode.statements[0].type) >= 0) {
-                superconstructorCallEnsured = true;
-            }
+            let superconstructorCalls: ASTNode[] = [];
+            this.getSuperconstructorCalls(methodNode.statements, superconstructorCalls, true);
+
+            let superconstructorCallEnsured: boolean = superconstructorCalls.length > 0;
+
+            // if (methodNode.statements.length > 0 && methodNode.statements[0].type == TokenType.scopeNode) {
+            //     let stm = methodNode.statements[0].statements;
+            //     if (stm.length > 0 && [TokenType.superConstructorCall, TokenType.constructorCall].indexOf(stm[0].type) >= 0) {
+            //         superconstructorCallEnsured = true;
+            //     }
+            // } else if ([TokenType.superConstructorCall, TokenType.constructorCall].indexOf(methodNode.statements[0].type) >= 0) {
+            //     superconstructorCallEnsured = true;
+            // }
 
             if (c != null && c.baseClass?.hasConstructor() && !c.baseClass?.hasParameterlessConstructor()) {
                 let error: boolean = false;

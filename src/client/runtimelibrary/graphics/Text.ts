@@ -160,11 +160,13 @@ export class TextHelper extends FilledShapeHelper {
         });
 
     constructor(public x: number, public y: number, public fontsize: number,
-        public text,
+        public text: string,
         interpreter: Interpreter, runtimeObject: RuntimeObject, public fontFamily?: string) {
         super(interpreter, runtimeObject);
         this.centerXInitial = x;
         this.centerYInitial = y;
+
+        if(this.fontsize == 0) this.fontsize = 10;
 
         this.borderColor = null;
         this.textStyle.stroke = null;
@@ -196,6 +198,10 @@ export class TextHelper extends FilledShapeHelper {
     render(): void {
 
         let g: PIXI.Text = <any>this.displayObject;
+        this.textStyle.fill = this.fillColor;
+        this.textStyle.stroke = this.borderColor;
+        this.textStyle.strokeThickness = this.borderWidth;
+        this.textStyle.fontSize = this.fontsize;
 
         if (this.displayObject == null) {
             g = new PIXI.Text(this.text, this.textStyle);
@@ -206,11 +212,7 @@ export class TextHelper extends FilledShapeHelper {
             this.worldHelper.stage.addChild(g);
         } else {
             g.text = this.text;
-            this.textStyle.fill = this.fillColor;
-            this.textStyle.stroke = this.borderColor;
-            this.textStyle.strokeThickness = this.borderWidth;
             g.alpha = this.fillAlpha;
-            this.textStyle.fontSize = this.fontsize;
             switch (this.alignment) {
                 case "left": g.anchor.x = 0; break;
                 case "center": g.anchor.x = 0.5; break;
@@ -233,6 +235,7 @@ export class TextHelper extends FilledShapeHelper {
 
     setFontsize(fontsize: number) {
         this.fontsize = fontsize;
+        if(this.fontsize == 0) this.fontsize = 10;
         this.render();
     }
 

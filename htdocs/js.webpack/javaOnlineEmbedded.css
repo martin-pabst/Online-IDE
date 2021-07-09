@@ -1213,6 +1213,13 @@ body .monaco-editor-hover .monaco-tokenized-source {
 #jo_moodle_mebis {
     background-color: rgb(214, 214, 214);
 }
+
+.jo_workspaceimport_dropzone {
+    border: 2px dashed gray;
+    border-radius: 8px;
+    padding: 25px;
+    text-align: center;
+}
 :root {
     --bottomdiv-tabheading-hover: white;
     --bottomdiv-tabheading-active: rgb(97,97,255);

@@ -29,6 +29,10 @@ export class Dialog {
         return $div;
     }
 
+    addDiv($div: JQuery<HTMLElement>){
+        this.$dialogMain.append($div);
+    }
+
     subHeading(text: string) {
         let $div = jQuery('<div class="dialog-subheading">' + text + "</div>")
         this.$dialogMain.append($div);

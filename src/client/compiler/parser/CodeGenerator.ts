@@ -407,6 +407,15 @@ export class CodeGenerator {
         for (let methodNode of classNode.methods) {
             if (methodNode != null && !methodNode.isAbstract && !methodNode.isStatic) {
                 this.compileMethod(methodNode);
+                let m: Method = methodNode.resolvedType;
+                if (m.annotation == "@Override") {
+                    if (klass.baseClass != null) {
+                        if (klass.baseClass.getMethodBySignature(m.signature) == null) {
+                            this.pushError("Die Methode " + m.signature + " ist mit @Override annotiert, überschreibt aber keine Methode gleicher Signatur einer Oberklasse.", methodNode.position, "warning");
+                        }
+                    }
+                }
+
             }
         }
 
@@ -446,7 +455,6 @@ export class CodeGenerator {
         }
 
         this.popSymbolTable(null);
-
 
     }
 
@@ -502,11 +510,11 @@ export class CodeGenerator {
     }
 
     getSuperconstructorCalls(nodes: ASTNode[], superconstructorCallsFound: ASTNode[], isFirstStatement: boolean): boolean {
-        for(let node of nodes){
-            if(node.type == TokenType.superConstructorCall){
+        for (let node of nodes) {
+            if (node.type == TokenType.superConstructorCall) {
 
-                if(!isFirstStatement){
-                    if(superconstructorCallsFound.length > 0){
+                if (!isFirstStatement) {
+                    if (superconstructorCallsFound.length > 0) {
                         this.pushError("Ein Konstruktor darf nur einen einzigen Aufruf des Superkonstruktors enthalten.", node.position, "error");
                     } else {
                         this.pushError("Vor dem Aufruf des Superkonstruktors darf keine andere Anweisung stehen.", node.position, "error");
@@ -515,7 +523,7 @@ export class CodeGenerator {
 
                 superconstructorCallsFound.push(node);
                 isFirstStatement = false;
-            } else if(node.type == TokenType.scopeNode && node.statements != null){
+            } else if (node.type == TokenType.scopeNode && node.statements != null) {
                 isFirstStatement = isFirstStatement && this.getSuperconstructorCalls(node.statements, superconstructorCallsFound, isFirstStatement);
             } else {
                 isFirstStatement = false;
@@ -552,7 +560,7 @@ export class CodeGenerator {
         // " + 1" is for "this"-object
         this.nextFreeRelativeStackPos = methodNode.parameters.length + 1;
 
-        if (method.isConstructor && this.currentSymbolTable.classContext instanceof Klass && methodNode.statements != null ) {
+        if (method.isConstructor && this.currentSymbolTable.classContext instanceof Klass && methodNode.statements != null) {
             let c: Klass = this.currentSymbolTable.classContext;
 
             let superconstructorCalls: ASTNode[] = [];
@@ -1029,7 +1037,7 @@ export class CodeGenerator {
 
     removeLastStatement() {
         let lst = this.currentProgram.statements.pop();
-        if(this.currentProgram.labelManager != null){
+        if (this.currentProgram.labelManager != null) {
             this.currentProgram.labelManager.removeNode(lst);
         }
     }
@@ -2246,12 +2254,12 @@ export class CodeGenerator {
                     this.pushError("Der Wert vom Datentyp " + srcType.identifier + " kann nicht als Parameter (Datentyp " + destType.identifier + ") verwendet werden.", node.constructorOperands[i].position);
                 }
 
-                if(allStatements.length > programPosition){
+                if (allStatements.length > programPosition) {
                     let castingStatements = allStatements.splice(programPosition, allStatements.length - programPosition);
                     allStatements.splice(positionsAfterParameterStatements[i], 0, ...castingStatements);
                     this.currentProgram.labelManager.correctPositionsAfterInsert(positionsAfterParameterStatements[i], castingStatements.length);
                 }
-    
+
             }
 
             let stackframeDelta = 0;
@@ -2856,7 +2864,7 @@ export class CodeGenerator {
             if (objectNode.type == null) {
                 this.pushError("Werte dieses Datentyps besitzen keine Methoden.", node.position);
             } else {
-                if(objectNode.type instanceof Interface){
+                if (objectNode.type instanceof Interface) {
                     this.pushError('Methodendefinitionen eines Interfaces können nicht statisch aufgerufen werden.', node.position);
                 } else {
                     this.pushError('Werte des Datentyps ' + objectNode.type.identifier + " besitzen keine Methoden.", node.position);

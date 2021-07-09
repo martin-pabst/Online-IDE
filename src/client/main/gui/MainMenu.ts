@@ -2,6 +2,7 @@ import { Main } from "../Main.js";
 import { UserData } from "../../communication/Data.js";
 import { PasswordChanger } from "./UserMenu.js";
 import { ajax } from "../../communication/AjaxHelper.js";
+import { WorkspaceImporter } from "./WorkspaceImporter.js";
 
 export type Action = (identifier: string) => void;
 
@@ -40,6 +41,10 @@ export class MainMenu {
                     identifier: "Datei", subMenu:
                     {
                         items: [
+                            {
+                                identifier: "Workspace importieren",
+                                action: () => { new WorkspaceImporter(this.main).show(); }
+                            },
                             {
                                 identifier: "Speichern und Beenden",
                                 action: () => { jQuery('#buttonLogout').trigger("click"); }

@@ -1,5 +1,5 @@
 import { WorkspaceData, WorkspaceSettings } from "../communication/Data.js";
-import { Module, ModuleStore } from "../compiler/parser/Module.js";
+import { ExportedWorkspace, Module, ModuleStore } from "../compiler/parser/Module.js";
 import { Evaluator } from "../interpreter/Evaluator.js";
 import { AccordionElement } from "../main/gui/Accordion.js";
 import { Main } from "../main/Main.js";
@@ -40,6 +40,14 @@ export class Workspace {
         this.moduleStore = new ModuleStore(main, true, this.settings.libraries);
         this.evaluator = new Evaluator(this, main);
     }
+
+    toExportedWorkspace(): ExportedWorkspace {
+        return {
+            name: this.name,
+            modules: this.moduleStore.getModules(false).map(m => m.toExportedModule())
+        }
+    }
+
 
     alterAdditionalLibraries() {
         this.moduleStore.setAdditionalLibraries(this.settings.libraries);

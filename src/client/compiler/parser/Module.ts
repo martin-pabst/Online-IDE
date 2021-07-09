@@ -81,6 +81,21 @@ import { RandomClass } from "../../runtimelibrary/Random.js";
 import { DirectionClass } from "../../runtimelibrary/graphics/Direction.js";
 import { Patcher } from "./Patcher.js";
 
+export type ExportedWorkspace = {
+    name: string;
+    modules: ExportedModule[]
+}
+
+export type ExportedModule = {
+    name: string;
+    text: string;
+
+    is_copy_of_id?: number,
+    repository_file_version?: number,
+    identical_to_repository_version: boolean,
+
+}
+
 export type File = {
     name: string,
     id?: number,
@@ -213,6 +228,16 @@ export class Module {
             }
         });
 
+    }
+
+    toExportedModule(): ExportedModule {
+        return {
+            name: this.file.name,
+            text: this.getProgramTextFromMonacoModel(),
+            identical_to_repository_version: this.file.identical_to_repository_version,
+            is_copy_of_id: this.file.is_copy_of_id,
+            repository_file_version: this.file.repository_file_version
+        }
     }
 
     getMethodDeclarationAtPosition(position: { lineNumber: number; column: number; }): MethodDeclarationNode {

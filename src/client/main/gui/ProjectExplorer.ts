@@ -3,7 +3,7 @@ import { TextPosition } from "../../compiler/lexer/Token.js";
 import { File, Module } from "../../compiler/parser/Module.js";
 import { ProgramPrinter } from "../../compiler/parser/ProgramPrinter.js";
 import { InterpreterState } from "../../interpreter/Interpreter.js";
-import { makeEditable, openContextMenu } from "../../tools/HtmlTools.js";
+import { downloadFile, makeEditable, openContextMenu } from "../../tools/HtmlTools.js";
 import { Workspace } from "../../workspace/Workspace.js";
 import { Main } from "../Main.js";
 import { AccordionPanel, Accordion, AccordionElement, AccordionContextMenuItem } from "./Accordion.js";
@@ -450,7 +450,14 @@ export class ProjectExplorer {
                             }
                         })
                 }
-            });
+            },
+            {
+                caption: "Exportieren",
+                callback: (element: AccordionElement) => {
+                    downloadFile((<Workspace>element.externalElement).toExportedWorkspace(), "workspace.json")
+                }
+            } 
+            );
 
             if (this.main.user.is_teacher && this.main.teacherExplorer.classPanel.elements.length > 0) {
                 cmiList.push({

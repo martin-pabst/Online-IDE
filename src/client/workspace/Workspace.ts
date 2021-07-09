@@ -44,7 +44,8 @@ export class Workspace {
     toExportedWorkspace(): ExportedWorkspace {
         return {
             name: this.name,
-            modules: this.moduleStore.getModules(false).map(m => m.toExportedModule())
+            modules: this.moduleStore.getModules(false).map(m => m.toExportedModule()),
+            settings: this.settings
         }
     }
 

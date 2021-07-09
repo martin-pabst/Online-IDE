@@ -1,4 +1,4 @@
-import { FileData } from "../../communication/Data.js";
+import { FileData, WorkspaceSettings } from "../../communication/Data.js";
 import { AccordionElement } from "../../main/gui/Accordion.js";
 import { MainBase } from "../../main/MainBase.js";
 import { ArrayListClass } from "../../runtimelibrary/collections/ArrayList.js";
@@ -83,7 +83,8 @@ import { Patcher } from "./Patcher.js";
 
 export type ExportedWorkspace = {
     name: string;
-    modules: ExportedModule[]
+    modules: ExportedModule[];
+    settings: WorkspaceSettings;
 }
 
 export type ExportedModule = {

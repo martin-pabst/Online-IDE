@@ -32,10 +32,17 @@ export class WorkspaceImporter {
                 reader.onload = (event) => {
                     let text: string = <string>reader.result;
                     if (!text.startsWith("{")) {
-                        $errorDiv.append(jQuery(`<div>Das Format der Datei ${f.name} passt nicht.</div>`))
+                        $errorDiv.append(jQuery(`<div>Das Format der Datei ${f.name} passt nicht.</div>`));
+                        return;
+                    }
+                    
+                    let ew: ExportedWorkspace = JSON.parse(text);
+                    
+                    if(ew.modules == null || ew.name == null || ew.settings == null){
+                        $errorDiv.append(jQuery(`<div>Das Format der Datei ${f.name} passt nicht.</div>`));
+                        return;
                     }
 
-                    let ew: ExportedWorkspace = JSON.parse(text);
                     exportedWorkspaces.push(ew);
                     $workspacePreviewDiv.append(jQuery(`<li>Workspace ${ew.name} mit ${ew.modules.length} Dateien</li>`));
 
@@ -103,6 +110,7 @@ export class WorkspaceImporter {
                         if(firstWorkspace == null) firstWorkspace = ws;
                         ws.isFolder = false;
                         ws.path = "";
+                        ws.settings = wse.settings;
                         this.main.workspaceList.push(ws);
 
                         networkManager.sendCreateWorkspace(ws, owner_id, (error: string) => {

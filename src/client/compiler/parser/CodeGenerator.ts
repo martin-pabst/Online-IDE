@@ -511,6 +511,7 @@ export class CodeGenerator {
 
     getSuperconstructorCalls(nodes: ASTNode[], superconstructorCallsFound: ASTNode[], isFirstStatement: boolean): boolean {
         for (let node of nodes) {
+            if(node == null) continue;
             if (node.type == TokenType.superConstructorCall) {
 
                 if (!isFirstStatement) {

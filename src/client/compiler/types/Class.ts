@@ -1202,6 +1202,7 @@ export class Interface extends Type {
     }
 
     public addMethod(method: Method) {
+        method.isAbstract = true;
         this.methods.push(method);
         this.methodMap.set(method.signature, method);
     }

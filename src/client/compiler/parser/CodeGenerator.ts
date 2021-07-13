@@ -408,7 +408,7 @@ export class CodeGenerator {
             if (methodNode != null && !methodNode.isAbstract && !methodNode.isStatic) {
                 this.compileMethod(methodNode);
                 let m: Method = methodNode.resolvedType;
-                if (m.annotation == "@Override") {
+                if (m != null && m.annotation == "@Override") {
                     if (klass.baseClass != null) {
                         if (klass.baseClass.getMethodBySignature(m.signature) == null) {
                             this.pushError("Die Methode " + m.signature + " ist mit @Override annotiert, überschreibt aber keine Methode gleicher Signatur einer Oberklasse.", methodNode.position, "warning");

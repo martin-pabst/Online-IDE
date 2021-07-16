@@ -48,6 +48,8 @@ export class RectangleClass extends Klass {
                 if (sh.testdestroyed("setWidth")) return;
 
                 sh.width = width / sh.displayObject.scale.x;
+                sh.centerXInitial = sh.left + sh.width/2;
+
                 sh.render();
 
             }, false, false, "Setzt die Breite des Rechtecks.", false));
@@ -64,6 +66,8 @@ export class RectangleClass extends Klass {
                 if (sh.testdestroyed("setHeight")) return;
 
                 sh.height = height / sh.displayObject.scale.y;
+                sh.centerYInitial = sh.top + sh.height/2;
+
                 sh.render();
 
             }, false, false, "Setzt die Höhe des Rechtecks.", false));

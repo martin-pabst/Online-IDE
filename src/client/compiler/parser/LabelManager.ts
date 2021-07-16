@@ -31,6 +31,15 @@ export class LabelManager {
         this.program = program;
     }
 
+    correctPositionsAfterInsert(insertPosition: number, insertedLength: number) {
+        for(let ln of this.labeledNodes){
+            if(ln.position != null && ln.position >= insertPosition){
+                ln.position += insertedLength;
+            }
+        }
+    }
+
+
     registerSwitchStatement(switchStatement: JumpOnSwitchStatement) {
         this.switchStatements.push(switchStatement);
     }
@@ -144,7 +153,7 @@ export class LabelManager {
                         position: null
                     });
                 }
-                ln.node = this.program.statements[this.program.statements.length - 1];
+                ln.node = this.program.statements[ln.position];
             }
 
         }

@@ -43,14 +43,14 @@ export class GNGEreignisbehandlung extends Klass {
 
         //     }, false, false, "Setzt die Größe der Figur.", false));
 
-        this.addMethod(new Method("Starten()", new Parameterlist([
+        this.addMethod(new Method("Starten", new Parameterlist([
         ]), null,
             (parameters) => {
                  GNGEreignisbehandlung.getHelper(module).startTimer();
 
             }, false, false, "Zeitgeber starten.", false));
 
-        this.addMethod(new Method("Anhalten()", new Parameterlist([
+        this.addMethod(new Method("Anhalten", new Parameterlist([
         ]), null,
             (parameters) => {
                 GNGEreignisbehandlung.getHelper(module).stopTimer();
@@ -84,7 +84,7 @@ export class GNGEreignisbehandlung extends Klass {
             null,  // no implementation!
             false, false, "Wird aufgerufen, wenn eine Sondertaste gedrückt wird."));
 
-        this.addMethod(new Method("MausGecklickt", new Parameterlist([
+        this.addMethod(new Method("MausGeklickt", new Parameterlist([
             { identifier: "x", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "anzahl", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -147,7 +147,7 @@ export class GNGEreignisbehandlungHelper {
     // For gng library (Cornelsen-Verlag):
     aktionsempfaengerMap: { [aktionsempfaengerType: string]: GNGAktionsempfaengerData[] } = {};
 
-    timerRunning: boolean;
+    timerRunning: boolean = false;
     taktdauer: number = 300;
     remainingTime: number = 0;
 
@@ -224,7 +224,7 @@ export class GNGEreignisbehandlungHelper {
 
         interpreter.keyboardTool.keyDownCallbacks.push(this.onKeyDownMethod);
 
-        this.startTimer();
+        // this.startTimer();
 
     }
 
@@ -240,6 +240,7 @@ export class GNGEreignisbehandlungHelper {
         let program = method.program;
         let invoke = method.invoke;
 
+        parameters = parameters.slice(0);
         parameters.unshift({ type: runtimeObject.class, value: runtimeObject });
 
         if (program != null) {
@@ -292,7 +293,8 @@ export class GNGEreignisbehandlungHelper {
     handleMouseClickedEvent(x: number, y: number) {
         let parameters: Value[] = [
             { type: intPrimitiveType, value: Math.round(x) },
-            { type: intPrimitiveType, value: Math.round(y) }
+            { type: intPrimitiveType, value: Math.round(y) },
+            { type: intPrimitiveType, value: 1 }
         ]
 
         let liste = this.aktionsempfaengerMap["geklickt"];

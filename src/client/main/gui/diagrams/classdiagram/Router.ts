@@ -363,6 +363,8 @@ class Router {
             if (a == newArrow) return;
             let joinArrow: boolean = a.arrowType == newArrow.arrowType && a.destinationIdentifier == newArrow.destinationIdentifier;
 
+            if(a.points == null) return;
+            
             for (let p of a.points) {
                 if (joinArrow) {
                     this.locks[p.x][p.y] = 0;

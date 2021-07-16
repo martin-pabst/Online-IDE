@@ -12,6 +12,7 @@ import { Interpreter } from "../../interpreter/Interpreter.js";
 import { GroupHelper, GroupClass } from "./Group.js";
 import { CircleHelper } from "./Circle.js";
 import { TurtleHelper } from "./Turtle.js";
+import { Enum, EnumInfo } from "src/client/compiler/types/Enum.js";
 
 export class ShapeClass extends Klass {
 
@@ -24,7 +25,10 @@ export class ShapeClass extends Klass {
 
         // let matrixType = new ArrayType(doublePrimitiveType);
         let shapeType = module.typeStore.getType("Shape");
+        let directionType = <Enum>(<any>module.typeStore.getType("Direction"));
         let shapeArrayType = new ArrayType(shapeType);
+
+        let vector2Class = <Klass>module.typeStore.getType("Vector2");
 
         this.addAttribute(new Attribute("angle", doublePrimitiveType,
             (value) => {
@@ -290,7 +294,7 @@ export class ShapeClass extends Klass {
                 let shape: RuntimeObject = parameters[1].value;
 
                 if (shape == null) {
-                    module.main.getInterpreter().throwException("Der zweite Parameter der Methode collidesWith darf nicht null sein.");
+                    module.main.getInterpreter().throwException("Der Parameter der Methode collidesWith darf nicht null sein.");
                 }
 
                 let sh: ShapeHelper = o.intrinsicData["Actor"];
@@ -306,6 +310,60 @@ export class ShapeClass extends Klass {
                 return sh.collidesWith(sh1);
 
             }, false, false, "Gibt genau dann true zurück, wenn das Grafikobjekt und das andere Grafikobjekt kollidieren.", false));
+
+        this.addMethod(new Method("moveBackFrom", new Parameterlist([
+            { identifier: "otherShape", type: this, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "keepColliding", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let shape: RuntimeObject = parameters[1].value;
+                let keepColliding: boolean = parameters[2].value;
+
+                if (shape == null) {
+                    module.main.getInterpreter().throwException("Der erste Parameter der Methode moveBackFrom darf nicht null sein.");
+                }
+
+                let sh: ShapeHelper = o.intrinsicData["Actor"];
+                let sh1: ShapeHelper = shape.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("moveBackFrom")) return;
+
+                if (sh1.isDestroyed) {
+                    sh.worldHelper.interpreter.throwException("Die der Methode moveBackFrom als Parameter übergebene Figur ist bereits zerstört.");
+                    return;
+                }
+
+                sh.moveBackFrom(sh1, keepColliding);
+
+            }, false, false, "Rückt das Objekt entlang der letzten durch move vorgegebenen Richtung zurück, bis es das übergebene Objekt gerade noch (keepColliding == true) bzw. gerade nicht mehr (keepColliding == false) berührt.", false));
+
+        this.addMethod(new Method("directionRelativeTo", new Parameterlist([
+            { identifier: "otherShape", type: this, declaration: null, usagePositions: null, isFinal: true },
+        ]), directionType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let shape: RuntimeObject = parameters[1].value;
+
+                if (shape == null) {
+                    module.main.getInterpreter().throwException("Der erste Parameter der Methode directionRelativeTo darf nicht null sein.");
+                }
+
+                let sh: ShapeHelper = o.intrinsicData["Actor"];
+                let sh1: ShapeHelper = shape.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("directionRelativeTo")) return;
+
+                if (sh1.isDestroyed) {
+                    sh.worldHelper.interpreter.throwException("Die der Methode directionRelativeTo als Parameter übergebene Figur ist bereits zerstört.");
+                    return;
+                }
+
+                return sh.directionRelativeTo(sh1, directionType);
+
+            }, false, false, "Gibt die Richtung (top, right, bottom oder left) zurück, in der das graphische Objekt relativ zum übergebenen graphischen Objekt steht.", false));
 
         this.addMethod(new Method("moveTo", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -341,6 +399,23 @@ export class ShapeClass extends Klass {
 
             }, false, false, "Setzt fest, wo der 'Mittelpunkt' des Objekts liegen soll. Dieser Punkt wird als Drehpunkt der Methode rotate, als Zentrum der Methode Scale und als Referenzpunkt der Methode moveTo benutzt.", false));
 
+        this.addMethod(new Method("defineCenterRelative", new Parameterlist([
+            { identifier: "xRel", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "yRel", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: ShapeHelper = o.intrinsicData["Actor"];
+                let x: number = parameters[1].value;
+                let y: number = parameters[2].value;
+
+                if (sh.testdestroyed("defineCenterRelative")) return;
+
+                sh.defineCenterRelative(x, y);
+
+            }, false, false, "Setzt fest, wo der 'Mittelpunkt' des Objekts liegen soll. Dabei bedeutet (XRel/YRel) = (0/0) die linke obere Ecke der Bounding Box des Objekts, (XRel/YRel) = (1/1) die rechte untere Ecke. Defaultwert ist (XRel/YRel) = (0.5/0.5), also der Diagonalenschnittpunkt der Bounding Box. Dieser Punkt wird als Drehpunkt der Methode rotate, als Zentrum der Methode Scale und als Referenzpunkt der Methode moveTo benutzt.\n\nVORSICHT: Diese Methode arbeitet nicht mehr korrekt, wenn das Objekt schon gedreht wurde!", false));
+
         this.addMethod(new Method("setAngle", new Parameterlist([
             { identifier: "angleDeg", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), voidPrimitiveType,
@@ -370,6 +445,21 @@ export class ShapeClass extends Klass {
                 sh.setVisible(visible);
 
             }, false, false, "Macht das Grafikobjekt sichtbar (visible == true) bzw. unsichtbar (visible == false).", false));
+
+        this.addMethod(new Method("setStatic", new Parameterlist([
+            { identifier: "isStatic", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: ShapeHelper = o.intrinsicData["Actor"];
+                let isStatic: boolean = parameters[1].value;
+
+                if (sh.testdestroyed("setStatic")) return;
+
+                sh.setStatic(isStatic);
+
+            }, false, false, "setStatic(true) hat zur Folge, dass die Ansicht des Objekts durch Transformationen des World-Objekts nicht verändert wird.", false));
 
         this.addMethod(new Method("onMouseEnter", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -422,6 +512,21 @@ export class ShapeClass extends Klass {
                 sh.tint(color);
 
             }, false, false, 'Überzieht das Grafikobjekt mit einer halbdurchsichtigen Farbschicht.', false));
+
+            this.addMethod(new Method("tint", new Parameterlist([
+            { identifier: "colorAsInt", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let color: number = parameters[1].value;
+                let sh: ShapeHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("tint")) return;
+
+                sh.tint(color);
+
+            }, false, false, 'Überzieht das Grafikobjekt mit einer halbdurchsichtigen Farbschicht. Die Farbe wird als int-Wert angegeben, praktischerweise hexadezimal, also z.B. tint(0x303030).', false));
 
         this.addMethod(new Method("startTrackingEveryMouseMovement", new Parameterlist([
         ]), voidPrimitiveType,
@@ -543,6 +648,19 @@ export class ShapeClass extends Klass {
 
             }, false, false, 'Setzt das Grafikobjekt hinter alle anderen.', false));
 
+        this.addMethod(new Method("getHitPolygon", new Parameterlist([
+        ]), new ArrayType(vector2Class),
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: ShapeHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("getHitPolygon")) return;
+
+                return sh.getHitPolygon(vector2Class);
+
+            }, false, false, "Gibt ein Array zurück, das die vier Eckpunkte des Hit-Polygons in Form von Vector2-Ortsvektoren enthält. Bei den Klassen Rectangle, Triangle und Polygon sind dies die Eckpunkte.", false));
+
 
     }
 
@@ -572,6 +690,9 @@ export abstract class ShapeHelper extends ActorHelper {
     scaleFactor: number = 1.0;
 
     directionRad: number = 0;
+
+    lastMoveDx: number = 0;
+    lastMoveDy: number = 0;
 
     copyFrom(shapeHelper: ShapeHelper) {
 
@@ -628,8 +749,7 @@ export abstract class ShapeHelper extends ActorHelper {
             }
         }
 
-        // if !(this instanceof GroupHelper)
-        if (!this["shapes"]) {
+        if (this.worldHelper.defaultGroup == null) {
             this.worldHelper.shapes.push(this);
         }
 
@@ -676,20 +796,17 @@ export abstract class ShapeHelper extends ActorHelper {
         }
     }
 
-    testdestroyed(method: string) {
-        if (this.isDestroyed) {
-            this.worldHelper.interpreter.throwException("Es wurde die Methode " + method + " eines bereits mit destroy() zerstörten Grafikobjekts aufgerufen.");
-            return true;
+    tint(color: string|number) {
+        let c: number;
+        if(typeof color == 'string'){
+            c = ColorHelper.parseColorToOpenGL(color).color;
+        } else {
+            c = color;
         }
-        return false;
-    }
-
-    tint(color: string) {
-        let c = ColorHelper.parseColorToOpenGL(color);
         //@ts-ignore
         if (this.displayObject.tint) {
             //@ts-ignore
-            this.displayObject.tint = c.color;
+            this.displayObject.tint = c;
         }
         this.render();
     }
@@ -702,9 +819,15 @@ export abstract class ShapeHelper extends ActorHelper {
     collidesWith(shapeHelper: ShapeHelper) {
 
         // if(!(this instanceof TurtleHelper) && (shapeHelper instanceof TurtleHelper)){
-        if (!(this["lineElements"] != null) && (shapeHelper["lineElements"] != null)) {
+        if (this["lineElements"] == null && (shapeHelper["lineElements"] != null)) {
             return shapeHelper.collidesWith(this);
         }
+
+        if (shapeHelper["shapes"]) {
+            return shapeHelper.collidesWith(this);
+        }
+
+        if(this.displayObject == null || shapeHelper.displayObject == null) return;
 
         this.displayObject.updateTransform();
         shapeHelper.displayObject.updateTransform();
@@ -716,10 +839,6 @@ export abstract class ShapeHelper extends ActorHelper {
 
         if (bb.top > bb1.bottom || bb1.top > bb.bottom) return false;
 
-        if (shapeHelper["shapes"]) {
-            return shapeHelper.collidesWith(this);
-        }
-
         if (this.hitPolygonInitial == null || shapeHelper.hitPolygonInitial == null) return true;
 
         // boundig boxes collide, so check further:
@@ -730,6 +849,110 @@ export abstract class ShapeHelper extends ActorHelper {
         return polygonBerührtPolygonExakt(this.hitPolygonTransformed, shapeHelper.hitPolygonTransformed, true, true);
 
     }
+
+    directionRelativeTo(shapeHelper: ShapeHelper, directionType: Enum) {
+        this.displayObject.updateTransform();
+        shapeHelper.displayObject.updateTransform();
+
+        let bb = this.displayObject.getBounds();
+        let bb1 = shapeHelper.displayObject.getBounds();
+
+        let dx1 = bb1.left - bb.right;  // positive if left
+        let dx2 = bb.left - bb1.right;  // positive if right
+
+        let dy1 = bb1.top - bb.bottom;  // positive if top
+        let dy2 = bb.top - bb1.bottom;  // positive if bottom
+
+        let enuminfo = directionType.enumInfoList;
+        let pairs: { distance: number, ei: EnumInfo }[] = [];
+
+        if (this.lastMoveDx > 0) {
+            pairs.push({ distance: dx1, ei: enuminfo[3] });
+        } else if (this.lastMoveDx < 0) {
+            pairs.push({ distance: dx2, ei: enuminfo[1] });
+        }
+
+        if (this.lastMoveDy > 0) {
+            pairs.push({ distance: dy1, ei: enuminfo[0] });
+        } else if (this.lastMoveDy < 0) {
+            pairs.push({ distance: dy2, ei: enuminfo[2] });
+        }
+
+        if (pairs.length == 0) {
+            pairs = [
+                { distance: dx1, ei: enuminfo[3] },
+                { distance: dx2, ei: enuminfo[1] },
+                { distance: dy1, ei: enuminfo[0] },
+                { distance: dy2, ei: enuminfo[2] }
+            ]
+        }
+
+
+        let max = pairs[0].distance;
+        let ei = pairs[0].ei;
+        for (let i = 1; i < pairs.length; i++) {
+            if (pairs[i].distance > max) {
+                max = pairs[i].distance;
+                ei = pairs[i].ei;
+            }
+        }
+
+        return ei.object;
+    }
+
+
+    moveBackFrom(sh1: ShapeHelper, keepColliding: boolean) {
+
+        // subsequent calls to move destroy values in this.lastMoveDx and this.lastMoveDy, so:
+        let lmdx = this.lastMoveDx;
+        let lmdy = this.lastMoveDy;
+
+        let length = Math.sqrt(lmdx * lmdx + lmdy * lmdy);
+        if (length < 0.001) return;
+
+        if (!this.collidesWith(sh1)) return;
+
+        let parameterMax = 0;       // collision with this parameter
+        this.move(-lmdx, -lmdy);
+
+        let currentParameter = -1;  // move to parameterMin
+
+        while (this.collidesWith(sh1)) {
+            parameterMax = currentParameter;    // collision at this parameter
+            let newParameter = currentParameter * 2;
+            this.move(lmdx * (newParameter - currentParameter), lmdy * (newParameter - currentParameter));
+            currentParameter = newParameter;
+            if ((currentParameter + 1) * length < -100) {
+                this.move(lmdx * (-1 - currentParameter), lmdy * (-1 - currentParameter));
+                return;
+            }
+        }
+        let parameterMin = currentParameter;
+
+        let isColliding: boolean = false;
+        // Situation now: no collision at parameterMin == currentParameter, collision at parameterMax
+        while ((parameterMax - parameterMin) * length > 1) {
+            let np = (parameterMax + parameterMin) / 2;
+            this.move(lmdx * (np - currentParameter), lmdy * (np - currentParameter));
+            if (isColliding = this.collidesWith(sh1)) {
+                parameterMax = np;
+            } else {
+                parameterMin = np;
+            }
+            currentParameter = np;
+        }
+
+        if (keepColliding && !isColliding) {
+            this.move(lmdx * (parameterMax - currentParameter), lmdy * (parameterMax - currentParameter));
+        } else if (isColliding && !keepColliding) {
+            this.move(lmdx * (parameterMin - currentParameter), lmdy * (parameterMin - currentParameter));
+        }
+
+        this.lastMoveDx = lmdx;
+        this.lastMoveDy = lmdy;
+    }
+
+
 
     containsPoint(x: number, y: number) {
         if (!this.displayObject.getBounds().contains(x, y)) return false;
@@ -759,19 +982,30 @@ export abstract class ShapeHelper extends ActorHelper {
 
     isOutsideView() {
         let bounds = this.displayObject.getBounds(true);
-        let screen = this.worldHelper.app.screen;
-        return bounds.right < screen.left || bounds.left > screen.right
-            || bounds.bottom < screen.top || bounds.top > screen.bottom;
+        let wh = this.worldHelper;
+        return bounds.right < wh.currentLeft || bounds.left > wh.currentLeft + wh.currentWidth
+            || bounds.bottom < wh.currentTop || bounds.top > wh.currentTop + wh.currentHeight;
     }
 
-    defineCenter(x: number, y: number){
+    defineCenter(x: number, y: number) {
         let p = new PIXI.Point(x, y);
         this.displayObject.transform.worldTransform.applyInverse(p, p);
-        this.centerXInitial = x;
-        this.centerYInitial = y;
+        this.centerXInitial = p.x;
+        this.centerYInitial = p.y;
+    }
+
+    defineCenterRelative(x: number, y: number) {
+        let bounds = this.displayObject.getBounds(false);
+        this.defineCenter(bounds.left + bounds.width * x, bounds.top + bounds.height * y);
     }
 
     move(dx: number, dy: number) {
+
+        if (dx != 0 || dy != 0) {
+            this.lastMoveDx = dx;
+            this.lastMoveDy = dy;
+        }
+
         this.displayObject.localTransform.translate(dx, dy);
         //@ts-ignore
         this.displayObject.transform.onChange();
@@ -787,7 +1021,6 @@ export abstract class ShapeHelper extends ActorHelper {
 
     rotate(angleInDeg: number, cX?: number, cY?: number) {
 
-        this.displayObject.updateTransform();
         if (cX == null) {
             let p = new PIXI.Point(this.centerXInitial, this.centerYInitial);
             this.displayObject.localTransform.apply(p, p);
@@ -795,7 +1028,7 @@ export abstract class ShapeHelper extends ActorHelper {
             cY = p.y;
         } else {
             let p = new PIXI.Point(cX, cY);
-            this.worldHelper.stage.localTransform.apply(p, p);
+            this.displayObject.updateTransform();       // necessary if world coordinate system is scaled
             this.displayObject.transform.worldTransform.applyInverse(p, p);
             this.displayObject.localTransform.apply(p, p);
             cX = p.x;
@@ -807,6 +1040,7 @@ export abstract class ShapeHelper extends ActorHelper {
         this.displayObject.localTransform.translate(cX, cY);
         //@ts-ignore
         this.displayObject.transform.onChange();
+        this.displayObject.updateTransform();
         this.setHitPolygonDirty(true);
 
         this.angle += angleInDeg;
@@ -816,7 +1050,6 @@ export abstract class ShapeHelper extends ActorHelper {
     mirrorXY(scaleX: number, scaleY: number) {
         let cX: number, cY: number;
 
-        this.displayObject.updateTransform();
         let p = new PIXI.Point(this.centerXInitial, this.centerYInitial);
         this.displayObject.localTransform.apply(p, p);
         cX = p.x;
@@ -827,6 +1060,7 @@ export abstract class ShapeHelper extends ActorHelper {
         this.displayObject.localTransform.translate(cX, cY);
         //@ts-ignore
         this.displayObject.transform.onChange();
+        this.displayObject.updateTransform();
 
         this.setHitPolygonDirty(true);
 
@@ -835,7 +1069,6 @@ export abstract class ShapeHelper extends ActorHelper {
 
     scale(factor: number, cX?: number, cY?: number) {
 
-        this.displayObject.updateTransform();
         if (cX == null) {
             let p = new PIXI.Point(this.centerXInitial, this.centerYInitial);
             this.displayObject.localTransform.apply(p, p);
@@ -843,7 +1076,6 @@ export abstract class ShapeHelper extends ActorHelper {
             cY = p.y;
         } else {
             let p = new PIXI.Point(cX, cY);
-            this.worldHelper.stage.localTransform.apply(p, p);
             this.displayObject.transform.worldTransform.applyInverse(p, p);
             this.displayObject.localTransform.apply(p, p);
             cX = p.x;
@@ -855,6 +1087,7 @@ export abstract class ShapeHelper extends ActorHelper {
         this.displayObject.localTransform.translate(cX, cY);
         //@ts-ignore
         this.displayObject.transform.onChange();
+        this.displayObject.updateTransform();
 
         this.setHitPolygonDirty(true);
 
@@ -867,7 +1100,6 @@ export abstract class ShapeHelper extends ActorHelper {
         this.displayObject.updateTransform();
         // this.displayObject.localTransform.apply(p, p);
         this.displayObject.transform.worldTransform.apply(p, p);
-        this.worldHelper.stage.localTransform.applyInverse(p, p);
         return p.x;
     }
 
@@ -875,7 +1107,6 @@ export abstract class ShapeHelper extends ActorHelper {
         let p = new PIXI.Point(this.centerXInitial, this.centerYInitial);
         this.displayObject.updateTransform();
         this.displayObject.transform.worldTransform.apply(p, p);
-        this.worldHelper.stage.localTransform.applyInverse(p, p);
         return p.y;
     }
 
@@ -885,11 +1116,14 @@ export abstract class ShapeHelper extends ActorHelper {
         super.destroy();
         if (this.belongsToGroup != null) {
             this.belongsToGroup.remove(this.runtimeObject);
-        }
-        // if !(this instanceof GroupHelper)
-        if (!this["shapes"]) {
+        } else {
             let index = this.worldHelper.shapes.indexOf(this);
-            this.worldHelper.shapes.splice(index, 1);
+            if (index >= 0) this.worldHelper.shapes.splice(index, 1);
+        }
+
+        let index1 = this.worldHelper.shapesNotAffectedByWorldTransforms.indexOf(this);
+        if (index1 >= 0) {
+            this.worldHelper.shapesNotAffectedByWorldTransforms.splice(index1, 1);
         }
 
     }
@@ -910,5 +1144,35 @@ export abstract class ShapeHelper extends ActorHelper {
     }
 
     abstract getCopy(klass: Klass): RuntimeObject;
+
+    getHitPolygon(vector2Class: Klass): Value[] {
+
+        if (this.hitPolygonDirty) {
+            this.transformHitPolygon();
+        }
+
+        let ret: Value[] = [];
+        for (let p of this.hitPolygonTransformed) {
+            let ro = new RuntimeObject(vector2Class);
+            ro.attributes = [{ type: doublePrimitiveType, value: p.x }, { type: doublePrimitiveType, value: p.y }];
+            ret.push({ type: vector2Class, value: ro });
+        }
+
+        return ret;
+    }
+
+    setStatic(isStatic: boolean) {
+        let list = this.worldHelper.shapesNotAffectedByWorldTransforms;
+        if (isStatic) {
+            list.push(this);
+        } else {
+            let index = list.indexOf(this);
+            if (index >= 0) {
+                list.splice(index, 1);
+            }
+        }
+    }
+
+
 
 }

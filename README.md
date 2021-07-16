@@ -89,7 +89,8 @@ data-java-online="{
     'withFileList': true,
     'withPCode': true,
     'withConsole': true,
-    'withErrorList': true
+    'withErrorList': true,
+    'speed': 'max'
 }">
 
 <script type="text/plain" title="Hauptprogramm.java">
@@ -130,10 +131,11 @@ Im Attribut `data-java-online` kann die Embedded-IDE konfiguriert werden:
 data-java-online="{
     'id': 'Vererbung_Beispiel_1',   // eindeutige id je URL und Embedded-IDE in der IndexedDB des Browsers  
     'withBottomPanel': true,        // mit unterem Panel 
-    'withFileList': true,       // falls mit unterem Panel: mit/ohne Dateiliste links
-    'withPCode': true,          // falls mit unterem Panel: mit/ohne PCode-Tab
-    'withConsole': true,        // falls mit unterem Panel: mit/ohne Console-Tab
-    'withErrorList': true       // falls mit unterem Panel: mit/ohne Fehlerliste
+    'withFileList': true,           // falls mit unterem Panel: mit/ohne Dateiliste links
+    'withPCode': true,              // falls mit unterem Panel: mit/ohne PCode-Tab
+    'withConsole': true,            // falls mit unterem Panel: mit/ohne Console-Tab
+    'withErrorList': true,          // falls mit unterem Panel: mit/ohne Fehlerliste
+    'speed': 20000                  // Geschwindigkeit in Steps/s oder 'max'
 }"
 ```
 Ändert ein Benutzer den angezeigten Quelltext in einer Embedded-IDE, so werden die Änderungen in der IndexedDB des Browsers gespeichert. Ruft der Benutzer dieselbe Seite später mit demselben Browser erneut auf, so erscheinen seine Änderungen wieder. Rechts unten im Editor-Bereich erscheint zusätzlich ein Button "Code-Reset". Ein Klick darauf stellt den ursprünglichen Quelltext wieder her.

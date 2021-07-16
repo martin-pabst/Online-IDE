@@ -138,7 +138,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
 
 /* Login */
 #login, #bitteWarten {
-    z-index: 1000;
+    z-index: 1010;
     position: absolute;
     height: 100%;
     width: 100%;
@@ -343,8 +343,8 @@ body .monaco-editor-hover .monaco-tokenized-source {
     font-weight: 900;
     font-size: 12px;
     width: 100%;
-    height: 28px;
-    line-height: 28px !important;
+    height: 24px;
+    line-height: 24px !important;
     padding-left: 8px;
     box-sizing: border-box;
     cursor: pointer;
@@ -353,13 +353,24 @@ body .monaco-editor-hover .monaco-tokenized-source {
     white-space: nowrap;
     -webkit-user-select: none;
     user-select: none;
+
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.jo_leftpanelcaption>.jo_captiontext {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    flex: 1;
 }
 
 .jo_leftpanelcaption>.jo_actions {
     display: flex;
-    position: absolute;
-    top: 5px;
+    position: relative;
+    top: 4px;
     right: 10px;
+    margin-left: 10px;
 }
 
 .jo_button:hover {
@@ -610,39 +621,53 @@ body .monaco-editor-hover .monaco-tokenized-source {
     content: url('data:image/svg+xml,%3C%3Fxml version="1.0" encoding="UTF-8" standalone="no"%3F%3E%3Csvg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns%23" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns%23" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="16" height="16" viewBox="0 0 16 16" fill="none" version="1.1" id="svg4" sodipodi:docname="class-dark.svg" inkscape:version="0.92.3 (2405546, 2018-03-11)"%3E%3Cmetadata id="metadata10"%3E%3Crdf:RDF%3E%3Ccc:Work rdf:about=""%3E%3Cdc:format%3Eimage/svg+xml%3C/dc:format%3E%3Cdc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" /%3E%3Cdc:title%3E%3C/dc:title%3E%3C/cc:Work%3E%3C/rdf:RDF%3E%3C/metadata%3E%3Cdefs id="defs8" /%3E%3Csodipodi:namedview pagecolor="%23ffffff" bordercolor="%23666666" borderopacity="1" objecttolerance="10" gridtolerance="10" guidetolerance="10" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-width="1403" inkscape:window-height="886" id="namedview6" showgrid="false" inkscape:zoom="20.85965" inkscape:cx="7.1046812" inkscape:cy="4.2816825" inkscape:window-x="0" inkscape:window-y="0" inkscape:window-maximized="0" inkscape:current-layer="svg4" /%3E%3Cg id="g829" transform="matrix(0.68294917,0,0,0.68294917,-2.3313442,5.1728051)" style="stroke-width:1.46423781"%3E%3Cpath style="fill:%23c5c5c5;fill-opacity:1;stroke:none;stroke-width:1.46423781px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" d="m 3.6846944,13.006728 v 1.79661 H 15.17622 l -0.0099,-1.838028 c -2.529213,-2.229562 -4.651293,-2.475775 -5.8545069,-2.433158 -1.2032136,0.04262 -3.3665825,-0.0019 -5.6271187,2.474576 z" id="path825" inkscape:connector-curvature="0" sodipodi:nodetypes="cccczc" /%3E%3Cpath style="opacity:1;vector-effect:none;fill:%23c5c5c5;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.46423781;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:19.99370003;stroke-opacity:1;paint-order:fill markers stroke" d="m 12.396558,6.1931688 a 2.881356,2.881356 0 0 1 -2.8813554,2.881356 2.881356,2.881356 0 0 1 -2.881356,-2.881356 2.881356,2.881356 0 0 1 2.881356,-2.881356 2.881356,2.881356 0 0 1 2.8813554,2.881356 z" id="path827" inkscape:connector-curvature="0" /%3E%3C/g%3E%3Cg style="stroke-width:1.46423781" transform="matrix(0.68294917,0,0,0.68294917,5.2910272,1.9608624)" id="g847"%3E%3Cpath sodipodi:nodetypes="cccczc" inkscape:connector-curvature="0" id="path843" d="m 3.6846944,13.006728 v 1.79661 H 15.17622 l -0.0099,-1.838028 c -2.529213,-2.229562 -4.651293,-2.475775 -5.8545069,-2.433158 -1.2032136,0.04262 -3.3665825,-0.0019 -5.6271187,2.474576 z" style="fill:%23c5c5c5;fill-opacity:1;stroke:none;stroke-width:1.46423781px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" /%3E%3Cpath inkscape:connector-curvature="0" id="path845" d="m 12.396558,6.1931688 a 2.881356,2.881356 0 0 1 -2.8813554,2.881356 2.881356,2.881356 0 0 1 -2.881356,-2.881356 2.881356,2.881356 0 0 1 2.881356,-2.881356 2.881356,2.881356 0 0 1 2.8813554,2.881356 z" style="opacity:1;vector-effect:none;fill:%23c5c5c5;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.46423781;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:19.99370003;stroke-opacity:1;paint-order:fill markers stroke" /%3E%3C/g%3E%3Cpath style="fill:%23c5c5c5;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" d="M 3.9804688,5.2714942 C 3.158735,5.3006015 1.6805501,5.2696402 0.13671875,6.9609473 V 8.1875099 H 1.546875 A 2.6126997,2.6126997 0 0 1 4.0507812,6.3164161 2.6126997,2.6126997 0 0 1 6.5546875,8.1875099 H 7.984375 L 7.9785156,6.9316505 C 6.2511916,5.408973 4.8022027,5.2423889 3.9804688,5.2714942 Z" id="path849" inkscape:connector-curvature="0" /%3E%3Cpath inkscape:connector-curvature="0" id="path851" d="M 6.0869353,2.307387 A 1.9678197,1.9678197 0 0 1 4.119116,4.2752067 1.9678197,1.9678197 0 0 1 2.1512963,2.307387 1.9678197,1.9678197 0 0 1 4.119116,0.33956733 1.9678197,1.9678197 0 0 1 6.0869353,2.307387 Z" style="opacity:1;vector-effect:none;fill:%23c5c5c5;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:19.99370003;stroke-opacity:1;paint-order:fill markers stroke" /%3E%3C/svg%3E%0A'); /*img(class-dark.svg)*/
     position: relative;
     top: 2px;
-    left: -3px;    
+    left: -2px;    
 }
 
 .jo_file.jo_student>.jo_fileimage:before {
     content: url('data:image/svg+xml,%3C%3Fxml version="1.0" encoding="UTF-8" standalone="no"%3F%3E%3Csvg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns%23" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns%23" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="16" height="16" viewBox="0 0 16 16" fill="none" version="1.1" id="svg4" sodipodi:docname="user-dark.svg" inkscape:version="0.92.3 (2405546, 2018-03-11)"%3E%3Cmetadata id="metadata10"%3E%3Crdf:RDF%3E%3Ccc:Work rdf:about=""%3E%3Cdc:format%3Eimage/svg+xml%3C/dc:format%3E%3Cdc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" /%3E%3Cdc:title%3E%3C/dc:title%3E%3C/cc:Work%3E%3C/rdf:RDF%3E%3C/metadata%3E%3Cdefs id="defs8" /%3E%3Csodipodi:namedview pagecolor="%23ffffff" bordercolor="%23666666" borderopacity="1" objecttolerance="10" gridtolerance="10" guidetolerance="10" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-width="1403" inkscape:window-height="886" id="namedview6" showgrid="false" inkscape:zoom="20.85965" inkscape:cx="0.27331058" inkscape:cy="4.2816825" inkscape:window-x="0" inkscape:window-y="0" inkscape:window-maximized="0" inkscape:current-layer="svg4" /%3E%3Cg id="g4542" transform="translate(-1.4304572,-1.0575754)"%3E%3Cpath sodipodi:nodetypes="cccczc" inkscape:connector-curvature="0" id="path4535" d="m 3.6846944,13.006728 v 1.79661 H 15.17622 l -0.0099,-1.838028 c -2.529213,-2.229562 -4.651293,-2.475775 -5.8545069,-2.433158 -1.2032136,0.04262 -3.3665825,-0.0019 -5.6271187,2.474576 z" style="fill:%23c5c5c5;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" /%3E%3Cpath inkscape:connector-curvature="0" id="path4537" d="m 12.396558,6.1931688 a 2.881356,2.881356 0 0 1 -2.8813554,2.881356 2.881356,2.881356 0 0 1 -2.881356,-2.881356 2.881356,2.881356 0 0 1 2.881356,-2.881356 2.881356,2.881356 0 0 1 2.8813554,2.881356 z" style="opacity:1;vector-effect:none;fill:%23c5c5c5;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:19.99370003;stroke-opacity:1;paint-order:fill markers stroke" /%3E%3C/g%3E%3C/svg%3E%0A'); /*img(user-dark.svg)*/
     position: relative;
     top: 2px;
-    left: -3px;    
+    left: -2px;    
 }
 
 .jo_file.jo_hint>.jo_fileimage:before {
     content: url('data:image/svg+xml,%3Csvg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath fill-rule="evenodd" clip-rule="evenodd" d="M11.6708 8.65806C11.3319 8.9916 11.0716 9.36278 10.8886 9.77172C10.7105 10.1792 10.621 10.6219 10.621 11.1009V12.7012C10.621 12.8807 10.5872 13.0503 10.5189 13.2091C10.4513 13.3661 10.3586 13.5038 10.2407 13.6213C10.1228 13.7388 9.98464 13.8311 9.82723 13.8984C9.66806 13.9663 9.49806 14 9.31823 14H7.71205C7.53223 14 7.36223 13.9663 7.20306 13.8984C7.04564 13.8311 6.90753 13.7388 6.78961 13.6213C6.67168 13.5038 6.57895 13.3661 6.51141 13.2091C6.44311 13.0503 6.40927 12.8807 6.40927 12.7012V11.1009C6.40927 10.622 6.31772 10.1795 6.13553 9.77209C5.95683 9.36336 5.69832 8.99156 5.35953 8.65806C4.92468 8.22903 4.58896 7.75003 4.35361 7.22134C4.11756 6.69107 4 6.11672 4 5.49953C4 5.08664 4.05342 4.68802 4.16048 4.30397C4.26728 3.92089 4.41907 3.56286 4.61595 3.23018C4.81257 2.89377 5.04777 2.58911 5.32146 2.31641C5.59503 2.04383 5.89858 1.80953 6.23195 1.61364C6.56979 1.41764 6.93146 1.2662 7.31578 1.15983C7.70106 1.0532 8.10094 1 8.51514 1C8.92934 1 9.32923 1.0532 9.71451 1.15983C10.0988 1.2662 10.458 1.41739 10.7918 1.61351C11.1294 1.80938 11.4351 2.0437 11.7088 2.31641C11.9825 2.5891 12.2177 2.89376 12.4143 3.23016C12.6112 3.56285 12.763 3.92088 12.8698 4.30397C12.9769 4.68802 13.0303 5.08664 13.0303 5.49953C13.0303 6.11672 12.9127 6.69107 12.6767 7.22134C12.4413 7.75003 12.1056 8.22903 11.6708 8.65806ZM9.62162 10.5H7.40867V12.7012C7.40867 12.7823 7.4372 12.8512 7.49888 12.9127C7.56058 12.9741 7.63007 13.0028 7.71205 13.0028H9.31823C9.40022 13.0028 9.46971 12.9741 9.5314 12.9127C9.59309 12.8512 9.62162 12.7823 9.62162 12.7012V10.5Z" fill="%23C2C2C2"/%3E%3C/svg%3E%0A');
     position: relative;
     top: 2px;
-    left: -3px;    
+    left: -2px;    
 }
 
 .jo_file.jo_java>.jo_fileimage:before {
     content: url('data:image/svg+xml,%3C%3Fxml version="1.0" encoding="UTF-8" standalone="no"%3F%3E%3Csvg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns%23" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns%23" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="16" height="16" viewBox="0 0 16 16" fill="none" version="1.1" id="svg4" sodipodi:docname="file.svg" inkscape:version="0.92.3 (2405546, 2018-03-11)"%3E%3Cmetadata id="metadata10"%3E%3Crdf:RDF%3E%3Ccc:Work rdf:about=""%3E%3Cdc:format%3Eimage/svg+xml%3C/dc:format%3E%3Cdc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" /%3E%3Cdc:title%3E%3C/dc:title%3E%3C/cc:Work%3E%3C/rdf:RDF%3E%3C/metadata%3E%3Cdefs id="defs8" /%3E%3Csodipodi:namedview pagecolor="%23ffffff" bordercolor="%23666666" borderopacity="1" objecttolerance="10" gridtolerance="10" guidetolerance="10" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-width="1182" inkscape:window-height="881" id="namedview6" showgrid="false" inkscape:zoom="29.5" inkscape:cx="6.2567878" inkscape:cy="8.4766156" inkscape:window-x="0" inkscape:window-y="0" inkscape:window-maximized="0" inkscape:current-layer="svg4" /%3E%3Cpath fill-rule="evenodd" clip-rule="evenodd" d="M4 1L3 2V14L4 15H13L14 14V5L13.7071 4.29289L10.7071 1.29289L10 1H4ZM4 14V2L9 2V6H13V14H4ZM13 5L10 2V5L13 5Z" fill="%23C5C5C5" id="path2" /%3E%3C/svg%3E%0A'); /*img(file.svg)*/
     position: relative;
     top: 2px;
-    left: -3px;    
+    left: -2px;    
 }
 
 .jo_file.jo_workspace>.jo_fileimage:before {
     content: url('data:image/svg+xml,%3C%3Fxml version="1.0" encoding="UTF-8" standalone="no"%3F%3E%3Csvg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns%23" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns%23" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="16" height="16" viewBox="0 0 16 16" fill="none" version="1.1" id="svg4" sodipodi:docname="project-dark.svg" inkscape:version="0.92.3 (2405546, 2018-03-11)"%3E%3Cmetadata id="metadata10"%3E%3Crdf:RDF%3E%3Ccc:Work rdf:about=""%3E%3Cdc:format%3Eimage/svg+xml%3C/dc:format%3E%3Cdc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" /%3E%3C/cc:Work%3E%3C/rdf:RDF%3E%3C/metadata%3E%3Cdefs id="defs8" /%3E%3Csodipodi:namedview pagecolor="%23ffffff" bordercolor="%23666666" borderopacity="1" objecttolerance="10" gridtolerance="10" guidetolerance="10" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-width="1920" inkscape:window-height="1001" id="namedview6" showgrid="false" inkscape:zoom="41.7193" inkscape:cx="10.059941" inkscape:cy="7.5644339" inkscape:window-x="-9" inkscape:window-y="-9" inkscape:window-maximized="1" inkscape:current-layer="svg4" /%3E%3Cpath transform="rotate(-90)" style="opacity:1;vector-effect:none;fill:%23c5c5c5;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.99999994;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:19.99370003;stroke-opacity:1;paint-order:fill markers stroke" d="m -11.925139,6.519763 h 1.198473 c 4e-6,0 7e-6,2.9e-6 7e-6,6.6e-6 v 2.972232 c 0,3.7e-6 -3e-6,6.6e-6 -7e-6,6.6e-6 h -1.198473 c -3e-6,0 -6e-6,-2.9e-6 -6e-6,-6.6e-6 v -2.972232 c 0,-3.7e-6 3e-6,-6.6e-6 6e-6,-6.6e-6 z" id="rect825" /%3E%3Cpath style="opacity:1;vector-effect:none;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:%23c5c5c5;stroke-width:0.99999994;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:19.99370003;stroke-opacity:1;paint-order:fill markers stroke" d="m 2.271243,1.5179186 h 11.457514 c 4e-6,0 7e-6,2.9e-6 7e-6,6.6e-6 V 14.482075 c 0,3e-6 -3e-6,6e-6 -7e-6,6e-6 H 2.271243 c -3.6e-6,0 -6.6e-6,-3e-6 -6.6e-6,-6e-6 V 1.5179252 c 0,-3.7e-6 3e-6,-6.6e-6 6.6e-6,-6.6e-6 z" id="rect817" /%3E%3Cpath style="opacity:1;vector-effect:none;fill:%23c5c5c5;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.99999994;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:19.99370003;stroke-opacity:1;paint-order:fill markers stroke" d="m 9.8036212,6.5079899 h 1.1984728 c 4e-6,0 7e-6,2.9e-6 7e-6,6.6e-6 v 2.972232 c 0,3.7e-6 -3e-6,6.6e-6 -7e-6,6.6e-6 H 9.8036212 c -3.6e-6,0 -6.6e-6,-2.9e-6 -6.6e-6,-6.6e-6 v -2.972232 c 0,-3.7e-6 3e-6,-6.6e-6 6.6e-6,-6.6e-6 z" id="rect823" /%3E%3Cpath style="opacity:1;vector-effect:none;fill:%23fea78c;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.99999994;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:19.99370003;stroke-opacity:1;paint-order:fill markers stroke" d="M 8.6530751,2.9844408 H 12.22455 c 4e-6,0 7e-6,2.9e-6 7e-6,6.6e-6 v 3.5714752 c 0,3.6e-6 -3e-6,6.6e-6 -7e-6,6.6e-6 H 8.6530751 c -3.6e-6,0 -6.6e-6,-3e-6 -6.6e-6,-6.6e-6 V 2.9844474 c 0,-3.7e-6 3e-6,-6.6e-6 6.6e-6,-6.6e-6 z" id="rect821" /%3E%3Cpath style="opacity:1;vector-effect:none;fill:%238d8cfe;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.99999994;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:19.99370003;stroke-opacity:1;paint-order:fill markers stroke" d="M 8.6530751,9.4322958 H 12.22455 c 4e-6,0 7e-6,2.9e-6 7e-6,6.6e-6 v 3.5714756 c 0,3e-6 -3e-6,6e-6 -7e-6,6e-6 H 8.6530751 c -3.6e-6,0 -6.6e-6,-3e-6 -6.6e-6,-6e-6 V 9.4323024 c 0,-3.7e-6 3e-6,-6.6e-6 6.6e-6,-6.6e-6 z" id="rect819" /%3E%3Cpath style="opacity:1;vector-effect:none;fill:%238cfe97;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.99999994;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:19.99370003;stroke-opacity:1;paint-order:fill markers stroke" d="M 3.8591308,9.4322958 H 7.430606 c 3.6e-6,0 6.6e-6,2.9e-6 6.6e-6,6.6e-6 v 3.5714756 c 0,3e-6 -3e-6,6e-6 -6.6e-6,6e-6 H 3.8591308 c -3.7e-6,0 -6.6e-6,-3e-6 -6.6e-6,-6e-6 V 9.4323024 c 0,-3.7e-6 2.9e-6,-6.6e-6 6.6e-6,-6.6e-6 z" id="rect827" /%3E%3C/svg%3E%0A'); /*img(workspace-dark.svg)*/
     position: relative;
     top: 2px;
-    left: -3px;    
+    left: -2px;    
 }
 
 .jo_file.jo_repository>.jo_fileimage:before {
     content: url('data:image/svg+xml,%3C%3Fxml version="1.0" encoding="UTF-8" standalone="no"%3F%3E%3Csvg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns%23" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns%23" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="16" height="16" viewBox="0 0 16 16" fill="none" version="1.1" id="svg4" sodipodi:docname="workspace-dark-repository.svg" inkscape:version="1.0 (4035a4fb49, 2020-05-01)"%3E%3Cmetadata id="metadata10"%3E%3Crdf:RDF%3E%3Ccc:Work rdf:about=""%3E%3Cdc:format%3Eimage/svg+xml%3C/dc:format%3E%3Cdc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" /%3E%3C/cc:Work%3E%3C/rdf:RDF%3E%3C/metadata%3E%3Cdefs id="defs8" /%3E%3Csodipodi:namedview inkscape:snap-global="false" pagecolor="%23ffffff" bordercolor="%23666666" borderopacity="1" objecttolerance="10" gridtolerance="10" guidetolerance="10" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-width="1920" inkscape:window-height="1001" id="namedview6" showgrid="false" inkscape:zoom="24.542031" inkscape:cx="3.6144558" inkscape:cy="2.6119563" inkscape:window-x="-9" inkscape:window-y="-9" inkscape:window-maximized="1" inkscape:current-layer="svg4" inkscape:snap-bbox="true" inkscape:bbox-paths="true" inkscape:bbox-nodes="true" inkscape:snap-bbox-edge-midpoints="true" inkscape:snap-bbox-midpoints="true" inkscape:document-rotation="0" /%3E%3Cpath style="vector-effect:none;fill:%23c5c5c5;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:19.9937;stroke-opacity:1;paint-order:fill markers stroke" d="m 6.519763,11.925139 v -1.198473 c 0,-4e-6 2.9e-6,-7e-6 6.6e-6,-7e-6 h 2.972232 c 3.7e-6,0 6.6e-6,3e-6 6.6e-6,7e-6 v 1.198473 c 0,3e-6 -2.9e-6,6e-6 -6.6e-6,6e-6 h -2.972232 c -3.7e-6,0 -6.6e-6,-3e-6 -6.6e-6,-6e-6 z" id="rect825" /%3E%3Cpath style="vector-effect:none;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:19.9937;stroke-opacity:1;paint-order:fill markers stroke" d="m 2.271243,1.5179186 h 11.457514 c 4e-6,0 7e-6,2.9e-6 7e-6,6.6e-6 V 14.482075 c 0,3e-6 -3e-6,6e-6 -7e-6,6e-6 H 2.271243 c -3.6e-6,0 -6.6e-6,-3e-6 -6.6e-6,-6e-6 V 1.5179252 c 0,-3.7e-6 3e-6,-6.6e-6 6.6e-6,-6.6e-6 z" id="rect817" /%3E%3Cpath style="vector-effect:none;fill:%23c5c5c5;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:19.9937;stroke-opacity:1;paint-order:fill markers stroke" d="m 9.8036212,6.5079899 h 1.1984728 c 4e-6,0 7e-6,2.9e-6 7e-6,6.6e-6 v 2.972232 c 0,3.7e-6 -3e-6,6.6e-6 -7e-6,6.6e-6 H 9.8036212 c -3.6e-6,0 -6.6e-6,-2.9e-6 -6.6e-6,-6.6e-6 v -2.972232 c 0,-3.7e-6 3e-6,-6.6e-6 6.6e-6,-6.6e-6 z" id="rect823" /%3E%3Cpath style="vector-effect:none;fill:%23fea78c;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:19.9937;stroke-opacity:1;paint-order:fill markers stroke" d="M 8.6530751,2.9844408 H 12.22455 c 4e-6,0 7e-6,2.9e-6 7e-6,6.6e-6 v 3.5714752 c 0,3.6e-6 -3e-6,6.6e-6 -7e-6,6.6e-6 H 8.6530751 c -3.6e-6,0 -6.6e-6,-3e-6 -6.6e-6,-6.6e-6 V 2.9844474 c 0,-3.7e-6 3e-6,-6.6e-6 6.6e-6,-6.6e-6 z" id="rect821" /%3E%3Cpath style="vector-effect:none;fill:%238d8cfe;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:19.9937;stroke-opacity:1;paint-order:fill markers stroke" d="M 8.6530751,9.4322958 H 12.22455 c 4e-6,0 7e-6,2.9e-6 7e-6,6.6e-6 v 3.5714756 c 0,3e-6 -3e-6,6e-6 -7e-6,6e-6 H 8.6530751 c -3.6e-6,0 -6.6e-6,-3e-6 -6.6e-6,-6e-6 V 9.4323024 c 0,-3.7e-6 3e-6,-6.6e-6 6.6e-6,-6.6e-6 z" id="rect819" /%3E%3Cpath style="vector-effect:none;fill:%238cfe97;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:19.9937;stroke-opacity:1;paint-order:fill markers stroke" d="M 3.8591308,9.4322958 H 7.430606 c 3.6e-6,0 6.6e-6,2.9e-6 6.6e-6,6.6e-6 v 3.5714756 c 0,3e-6 -3e-6,6e-6 -6.6e-6,6e-6 H 3.8591308 c -3.7e-6,0 -6.6e-6,-3e-6 -6.6e-6,-6e-6 V 9.4323024 c 0,-3.7e-6 2.9e-6,-6.6e-6 6.6e-6,-6.6e-6 z" id="rect827" /%3E%3Cpath id="rect12963" style="fill:%23c5c5c5;fill-opacity:1;stroke:none;stroke-width:1.21761;stroke-opacity:0" d="m 13.38559,1.0179183 h 0.686923 c 0.08656,0 0.156251,0.069688 0.156251,0.1562512 V 14.82583 c 0,0.08656 -0.06969,0.156251 -0.156251,0.156251 H 13.38559 c -0.08656,0 -0.156251,-0.06969 -0.156251,-0.156251 V 1.1741695 c 0,-0.086563 0.06969,-0.1562512 0.156251,-0.1562512 z" /%3E%3Cpath id="rect12963-0" style="fill:%23c5c5c5;fill-opacity:1;stroke:none;stroke-width:1.01131;stroke-opacity:0" d="m 1.8790255,10.627123 h 0.7838468 c 0.059715,0 0.1077894,0.02173 0.1077894,0.04873 v 4.257496 c 0,0.027 -0.048074,0.04873 -0.1077894,0.04873 H 1.8790255 c -0.059715,0 -0.1077893,-0.02173 -0.1077893,-0.04873 v -4.257497 c 0,-0.027 0.048074,-0.04873 0.1077893,-0.04873 z" /%3E%3Crect rx="0.090976112" style="fill:%23c5c5c5;fill-opacity:1;stroke:none;stroke-width:0.929094;stroke-opacity:0" id="rect12963-05" width="0.99942553" height="4.3885083" x="-2.0173438" y="9.8402576" ry="0.090976112" transform="rotate(-90)" /%3E%3Cpath id="rect12963-05-5" style="fill:%23c5c5c5;fill-opacity:1;stroke:none;stroke-width:1.15005;stroke-opacity:0" d="m 1.7712362,14.842689 v -0.72064 c 0,-0.07722 0.062169,-0.139393 0.1393928,-0.139393 h 12.178743 c 0.07722,0 0.139392,0.06217 0.139392,0.139393 v 0.72064 c 0,0.07722 -0.06217,0.139392 -0.139392,0.139392 H 1.910629 c -0.077224,0 -0.1393928,-0.06217 -0.1393928,-0.139392 z" /%3E%3Cg style="fill:%23fff41c;fill-opacity:1" id="g877"%3E%3Cpath d="m 0.33281831,2.0630498 0.6425487,-0.6132946 c 0.0349787,-0.033386 0.0912972,-0.033385 0.12627499,2e-7 L 6.6179583,6.714916 c 0.034979,0.033386 0.034979,0.08714 2e-7,0.1205257 L 5.9754097,7.4487352 c -0.034978,0.03339 -0.091297,0.03338 -0.126275,0 L 0.33281831,2.1835756 c -0.0349787,-0.033386 -0.0349787,-0.08714 0,-0.1205258 z" style="fill:%23fff41c;fill-opacity:1;stroke:none;stroke-width:0.828919;stroke-opacity:0" id="rect12963-05-8" /%3E%3Cpath d="M 2.685724,7.6992182 V 6.5824203 c 0,-0.024969 0.020925,-0.045071 0.046916,-0.045071 h 4.099082 c 0.025991,0 0.046916,0.020102 0.046916,0.045071 v 1.1167979 c 0,0.02497 -0.020925,0.04507 -0.046916,0.04507 H 2.7326404 c -0.025991,0 -0.046916,-0.0201 -0.046916,-0.04507 z" style="fill:%23fff41c;fill-opacity:1;stroke:none;stroke-width:0.595087;stroke-opacity:0" id="rect12963-05-50" /%3E%3Cpath d="M 6.8317223,7.7442892 H 5.6692064 c -0.025991,0 -0.046916,-0.0201 -0.046916,-0.04507 V 3.7613406 c 0,-0.024969 0.020925,-0.045071 0.046916,-0.045071 h 1.1625159 c 0.025991,0 0.046916,0.020102 0.046916,0.045071 v 3.9378776 c 0,0.02497 -0.020925,0.04507 -0.046916,0.045071 z" style="fill:%23fff41c;fill-opacity:1;stroke:none;stroke-width:0.595087;stroke-opacity:0" id="rect12963-05-50-8" /%3E%3Cpath d="M 1.2094328,5.1641874 H 0.04691696 C 0.02092577,5.1641874 5.6568186e-7,5.1440851 5.6568186e-7,5.1191161 v -3.937879 c 0,-0.02497 0.0209252043181,-0.045071 0.0469163943181,-0.045071 H 1.2094328 c 0.025991,0 0.046916,0.020102 0.046916,0.045071 v 3.937879 c 0,0.024969 -0.020925,0.045071 -0.046916,0.045071 z" style="fill:%23fff41c;fill-opacity:1;stroke:none;stroke-width:0.595087;stroke-opacity:0" id="rect12963-05-50-8-5" /%3E%3Cpath d="M 5.6568186e-7,2.2980363 V 1.1812369 c 0,-0.02497 0.0209252043181,-0.045071 0.0469163943181,-0.045071 H 4.1459986 c 0.025991,0 0.046916,0.020102 0.046916,0.045071 v 1.1167994 c 0,0.024969 -0.020925,0.045071 -0.046916,0.045071 H 0.04691696 C 0.02092577,2.3431076 5.6568186e-7,2.3230053 5.6568186e-7,2.2980363 Z" style="fill:%23fff41c;fill-opacity:1;stroke:none;stroke-width:0.595087;stroke-opacity:0" id="rect12963-05-50-1" /%3E%3C/g%3E%3C/svg%3E%0A');
+    position: relative;
+    top: 2px;
+    left: -2px;    
+}
+
+.jo_file.jo_folder.jo_collapsed>.jo_fileimage:before {
+    content: url('data:image/svg+xml,%3Csvg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath fill-rule="evenodd" clip-rule="evenodd" d="M10.0719 7.99999L5.71461 12.3573L6.33333 12.976L11 8.30935V7.69064L6.33333 3.02397L5.71461 3.64269L10.0719 7.99999Z" fill="%23C5C5C5"/%3E%3C/svg%3E%0A');
+    position: relative;
+    top: 2px;
+    left: -3px;    
+}
+
+.jo_file.jo_folder.jo_expanded>.jo_fileimage:before {
+    content: url('data:image/svg+xml,%3Csvg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath fill-rule="evenodd" clip-rule="evenodd" d="M7.97602 10.0719L12.3333 5.71461L12.952 6.33333L8.28538 11L7.66666 11L3 6.33333L3.61872 5.71461L7.97602 10.0719Z" fill="%23C5C5C5"/%3E%3C/svg%3E%0A');
     position: relative;
     top: 2px;
     left: -3px;    
@@ -651,7 +676,11 @@ body .monaco-editor-hover .monaco-tokenized-source {
 .jo_file>.jo_filename {
     flex-grow: 1;
     user-select: none;
+    cursor: pointer !important;
     -webkit-user-select: none;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .jo_file.jo_java.jo_startable>.jo_fileimage:before {
@@ -665,6 +694,28 @@ body .monaco-editor-hover .monaco-tokenized-source {
     margin-top: 0px;
     margin-right: 2px;
     color: var(--file-errorcount);
+}
+
+.jo_folderlines {
+    display: flex;
+    flex-direction: row;
+}
+
+.jo_active>.jo_folderlines{
+    position: relative;
+    left: -1px;
+}
+
+.jo_active>.jo_filename, .jo_active>.jo_fileimage {
+    position: relative;
+    left: -1px;
+    top: -1px;
+}
+
+.jo_folderline {
+    border-left: 1px solid gray;
+    width: 5px;
+    margin-left: 4px;
 }
 
 .jo_homeworkButton, .jo_startButton {
@@ -691,6 +742,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
 
 .jo_file>.jo_delete {
     display: none;
+    flex-shrink: 0;
 }
 
 .jo_file:hover>.jo_delete, .jo_file>.jo_delete_always {
@@ -714,7 +766,9 @@ body .monaco-editor-hover .monaco-tokenized-source {
     transform: scale(1.jo_2);
 }
 
-
+.jo_file_dragover {
+    background-color: rgba(34, 114, 27, 0.596);
+}
 
 .jo_inplaceeditor {
     z-index: 1000;
@@ -1154,6 +1208,17 @@ body .monaco-editor-hover .monaco-tokenized-source {
 
 #jo_embedded_ide {
     background-color: rgb(194, 150, 70);
+}
+
+#jo_moodle_mebis {
+    background-color: rgb(214, 214, 214);
+}
+
+.jo_workspaceimport_dropzone {
+    border: 2px dashed gray;
+    border-radius: 8px;
+    padding: 25px;
+    text-align: center;
 }
 :root {
     --bottomdiv-tabheading-hover: white;
@@ -1718,7 +1783,7 @@ svgns|path.dropdown-triangle:active {
     /* left: 50px;
     top: 50%; */
     width: 30%;
-    z-index: 1000;
+    z-index: 1001;
 	background: var(--helper-background-color);
     border: 4px solid var(--helper-border-color);
     padding: 8px;
@@ -1867,6 +1932,13 @@ svgns|path.dropdown-triangle:active {
    background-image: url('data:image/svg+xml,%3Csvg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath fill-rule="evenodd" clip-rule="evenodd" d="M7 3H4V0H3V3H0V4H3V7H4V4H7V3ZM13.9 4.6L10.5 1.1L10.2 1H5V2H9V6H13V13H4V8H3V13.5L3.5 14H9H13.5L14 13.5V5L13.9 4.6ZM12.9032 5L10 2V5H12.9032Z" fill="%23C5C5C5"/%3E%3C/svg%3E%0A');
 }
 
+.img_add-folder-dark {
+   width: 16px;
+   height: 16px;
+   background-repeat: no-repeat;
+   background-image: url('data:image/svg+xml,%3Csvg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath fill-rule="evenodd" clip-rule="evenodd" d="M7 3H4V0H3V3H0V4H3V7H4V4H7V3ZM5.5 7H5V6H5.3L6.1 5.1L6.5 5H14V4H8V3H14.5L15 3.5V13.5L14.5 14H1.5L1 13.5V6.5V6V5H2V6V6.5V13H14V7V6H6.7L5.9 6.9L5.5 7Z" fill="%23C5C5C5"/%3E%3C/svg%3E ');
+}
+
 .img_add-user-dark {
    width: 16px;
    height: 16px;
@@ -1893,6 +1965,13 @@ svgns|path.dropdown-triangle:active {
    height: 16px;
    background-repeat: no-repeat;
    background-image: url('data:image/svg+xml,%3Csvg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M10 12.6L10.7 13.3L12.3 11.7L13.9 13.3L14.7 12.6L13 11L14.7 9.40005L13.9 8.60005L12.3 10.3L10.7 8.60005L10 9.40005L11.6 11L10 12.6Z" fill="%23C5C5C5"/%3E%3Cpath d="M1 4L15 4L15 3L1 3L1 4Z" fill="%23C5C5C5"/%3E%3Cpath d="M1 7L15 7L15 6L1 6L1 7Z" fill="%23C5C5C5"/%3E%3Cpath d="M9 9.5L9 9L1 9L1 10L9 10L9 9.5Z" fill="%23C5C5C5"/%3E%3Cpath d="M9 13L9 12.5L9 12L1 12L1 13L9 13Z" fill="%23C5C5C5"/%3E%3C/svg%3E%0A');
+}
+
+.img_collapse-all-dark {
+   width: 16px;
+   height: 16px;
+   background-repeat: no-repeat;
+   background-image: url('data:image/svg+xml,%3Csvg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M9 9H4V10H9V9Z" fill="%23C5C5C5"/%3E%3Cpath fill-rule="evenodd" clip-rule="evenodd" d="M5 3L6 2H13L14 3V10L13 11H11V13L10 14H3L2 13V6L3 5H5V3ZM6 5H10L11 6V10H13V3H6V5ZM10 6H3V13H10V6Z" fill="%23C5C5C5"/%3E%3C/svg%3E%0A');
 }
 
 .img_delete {
@@ -2196,6 +2275,13 @@ svgns|path.dropdown-triangle:active {
    background-image: url('data:image/svg+xml,%3Csvg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath fill-rule="evenodd" clip-rule="evenodd" d="M7.97602 10.0719L12.3333 5.71461L12.952 6.33333L8.28538 11L7.66666 11L3 6.33333L3.61872 5.71461L7.97602 10.0719Z" fill="%23424242"/%3E%3C/svg%3E%0A');
 }
 
+.img_tree-line-dark {
+   width: 16px;
+   height: 16px;
+   background-repeat: no-repeat;
+   background-image: url('data:image/svg+xml,%3C%3Fxml version="1.0" encoding="UTF-8" standalone="no"%3F%3E%3Csvg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns%23" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns%23" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" inkscape:version="1.0 (4035a4fb49, 2020-05-01)" sodipodi:docname="tree-line-dark.svg" id="svg4" version="1.1" fill="none" viewBox="0 0 16 16" height="16" width="16"%3E%3Cmetadata id="metadata10"%3E%3Crdf:RDF%3E%3Ccc:Work rdf:about=""%3E%3Cdc:format%3Eimage/svg+xml%3C/dc:format%3E%3Cdc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" /%3E%3Cdc:title%3E%3C/dc:title%3E%3C/cc:Work%3E%3C/rdf:RDF%3E%3C/metadata%3E%3Cdefs id="defs8" /%3E%3Csodipodi:namedview inkscape:current-layer="svg4" inkscape:window-maximized="1" inkscape:window-y="-9" inkscape:window-x="-9" inkscape:cy="8.648996" inkscape:cx="8" inkscape:zoom="51.875" showgrid="true" id="namedview6" inkscape:window-height="1001" inkscape:window-width="1920" inkscape:pageshadow="2" inkscape:pageopacity="0" guidetolerance="10" gridtolerance="10" objecttolerance="10" borderopacity="1" bordercolor="%23666666" pagecolor="%23ffffff"%3E%3Cinkscape:grid id="grid835" type="xygrid" /%3E%3C/sodipodi:namedview%3E%3Crect y="0" x="7" height="16" width="1" id="rect837" style="fill:%23c5c5c5;fill-opacity:1;stroke:none;stroke-width:1.75748;stop-color:%23000000" /%3E%3C/svg%3E ');
+}
+
 .img_undo {
    width: 16px;
    height: 16px;
@@ -2247,877 +2333,3103 @@ svgns|path.dropdown-triangle:active {
 
 
 .Ship_1_0{
-   width: 536px;
-   height: 423px;
-   background-position: 0px 0px;
+   width: 128px;
+   height: 101px;
+   background-position: -2182px -1090px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Ship_1_1{
-   width: 477px;
-   height: 397px;
-   background-position: -538px 0px;
+   width: 128px;
+   height: 107px;
+   background-position: -2052px -1090px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Ship_1_2{
-   width: 286px;
-   height: 500px;
-   background-position: 0px -425px;
+   width: 64px;
+   height: 112px;
+   background-position: -234px -1810px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Werkzeug_0{
    width: 32px;
    height: 32px;
-   background-position: -949px -425px;
+   background-position: -2393px -708px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_0{
    width: 32px;
    height: 32px;
-   background-position: -288px -425px;
+   background-position: -1452px -674px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_1{
    width: 32px;
    height: 32px;
-   background-position: -321px -425px;
+   background-position: -1485px -674px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_2{
    width: 32px;
    height: 32px;
-   background-position: -354px -425px;
+   background-position: -1518px -674px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_3{
    width: 32px;
    height: 32px;
-   background-position: -387px -425px;
+   background-position: -1551px -674px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_4{
    width: 32px;
    height: 32px;
-   background-position: -420px -425px;
+   background-position: -1584px -674px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_5{
    width: 32px;
    height: 32px;
-   background-position: -453px -425px;
+   background-position: -1617px -674px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_6{
    width: 32px;
    height: 32px;
-   background-position: -486px -425px;
+   background-position: -1650px -674px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_7{
    width: 32px;
    height: 32px;
-   background-position: -519px -425px;
+   background-position: -1683px -674px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_8{
    width: 32px;
    height: 32px;
-   background-position: -552px -425px;
+   background-position: -1716px -674px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_9{
    width: 32px;
    height: 32px;
-   background-position: -585px -425px;
+   background-position: -1749px -674px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_10{
    width: 32px;
    height: 32px;
-   background-position: -618px -425px;
+   background-position: -1782px -674px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_11{
    width: 32px;
    height: 32px;
-   background-position: -651px -425px;
+   background-position: -1815px -674px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_12{
    width: 32px;
    height: 32px;
-   background-position: -684px -425px;
+   background-position: -1848px -674px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_13{
    width: 32px;
    height: 32px;
-   background-position: -717px -425px;
+   background-position: -1881px -674px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_14{
    width: 32px;
    height: 32px;
-   background-position: -750px -425px;
+   background-position: -1914px -674px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_15{
    width: 32px;
    height: 32px;
-   background-position: -783px -425px;
+   background-position: -1947px -674px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_16{
    width: 32px;
    height: 32px;
-   background-position: -816px -425px;
+   background-position: -1980px -674px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_17{
    width: 32px;
    height: 32px;
-   background-position: -849px -425px;
+   background-position: -2013px -674px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_18{
    width: 32px;
    height: 32px;
-   background-position: -882px -425px;
+   background-position: -2046px -674px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_19{
    width: 32px;
    height: 32px;
-   background-position: -915px -425px;
+   background-position: -2079px -674px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_22{
    width: 32px;
    height: 64px;
-   background-position: -288px -459px;
+   background-position: -1452px -708px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_23{
    width: 32px;
    height: 64px;
-   background-position: -320px -459px;
+   background-position: -1484px -708px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_24{
    width: 32px;
    height: 64px;
-   background-position: -352px -459px;
+   background-position: -1516px -708px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_25{
    width: 32px;
    height: 64px;
-   background-position: -384px -459px;
+   background-position: -1548px -708px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_26{
    width: 32px;
    height: 64px;
-   background-position: -416px -459px;
+   background-position: -1580px -708px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_27{
    width: 32px;
    height: 64px;
-   background-position: -448px -459px;
+   background-position: -1612px -708px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_28{
    width: 32px;
    height: 64px;
-   background-position: -480px -459px;
+   background-position: -1644px -708px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_29{
    width: 32px;
    height: 64px;
-   background-position: -512px -459px;
+   background-position: -1676px -708px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_30{
    width: 32px;
    height: 64px;
-   background-position: -544px -459px;
+   background-position: -1708px -708px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_31{
    width: 32px;
    height: 64px;
-   background-position: -576px -459px;
+   background-position: -1740px -708px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Bird_0{
    width: 15px;
    height: 10px;
-   background-position: -1181px -870px;
+   background-position: -2113px -695px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
-.Ship_Adrian_0{
+.Bird_1{
+   width: 15px;
+   height: 10px;
+   background-position: -2130px -695px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Bird_2{
+   width: 15px;
+   height: 10px;
+   background-position: -2147px -695px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Bird_3{
+   width: 69px;
+   height: 9px;
+   background-position: -2184px -674px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Bird_4{
+   width: 69px;
+   height: 19px;
+   background-position: -2113px -674px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Bird_5{
+   width: 28px;
+   height: 7px;
+   background-position: -2255px -674px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Bird_6{
+   width: 26px;
+   height: 135px;
+   background-position: -124px -2000px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Bird_7{
+   width: 173px;
+   height: 47px;
+   background-position: -1774px -708px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Space_Shooter_1_0{
    width: 64px;
    height: 64px;
-   background-position: -1115px -784px;
+   background-position: -1452px -774px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
-.Ship_Adrian_1{
+.Space_Shooter_1_1{
    width: 64px;
    height: 64px;
-   background-position: -1115px -850px;
+   background-position: -1518px -774px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
-.Ship_Adrian_2{
+.Space_Shooter_1_2{
    width: 64px;
    height: 64px;
-   background-position: -1115px -916px;
+   background-position: -1584px -774px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
-.Ship_Adrian_3{
+.Space_Shooter_1_3{
    width: 64px;
    height: 64px;
-   background-position: -610px -459px;
+   background-position: -1650px -774px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
-.Ship_Adrian_4{
+.Space_Shooter_1_4{
    width: 64px;
    height: 64px;
-   background-position: -676px -459px;
+   background-position: -1716px -774px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
-.Asteroid_Adrian_0{
-   width: 64px;
-   height: 64px;
-   background-position: -742px -459px;
-   background-image: url(../assets/graphics/spritesheet.png);
-}
-
-.Gegner_Adrian_0{
-   width: 64px;
-   height: 64px;
-   background-position: -808px -459px;
-   background-image: url(../assets/graphics/spritesheet.png);
-}
-
-.Schuss_Adrian_0{
+.Space_Shooter_1_5{
    width: 20px;
    height: 7px;
-   background-position: -1181px -882px;
+   background-position: -2285px -674px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
-.Schuss_Adrian_1{
+.Space_Shooter_1_6{
    width: 18px;
    height: 18px;
-   background-position: -1181px -784px;
+   background-position: -2282px -774px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
-.Schuss_Adrian_2{
+.Space_Shooter_1_7{
    width: 18px;
    height: 18px;
-   background-position: -1181px -804px;
+   background-position: -2302px -774px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
-.Schuss_Adrian_3{
+.Space_Shooter_1_8{
    width: 18px;
    height: 18px;
-   background-position: -1181px -824px;
+   background-position: -2322px -774px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
-.Schuss_Adrian_4{
+.Space_Shooter_1_9{
    width: 18px;
    height: 18px;
-   background-position: -1181px -850px;
+   background-position: -2342px -774px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
-.Explosion_Adrian_0{
-   width: 35px;
-   height: 35px;
-   background-position: -1115px -982px;
+.Space_Shooter_1_10{
+   width: 64px;
+   height: 64px;
+   background-position: -1782px -774px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
-.Explosion_Adrian_1{
-   width: 35px;
-   height: 35px;
-   background-position: -1152px -982px;
+.Space_Shooter_1_11{
+   width: 64px;
+   height: 64px;
+   background-position: -1848px -774px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
-.Explosion_Adrian_2{
+.Space_Shooter_1_12{
    width: 35px;
    height: 35px;
-   background-position: -1017px -882px;
+   background-position: -1949px -708px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
-.Explosion_Adrian_3{
+.Space_Shooter_1_13{
    width: 35px;
    height: 35px;
-   background-position: -1054px -882px;
+   background-position: -1986px -708px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
-.Explosion_Adrian_4{
+.Space_Shooter_1_14{
    width: 35px;
    height: 35px;
-   background-position: -874px -459px;
+   background-position: -2023px -708px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
-.Explosion_Adrian_5{
+.Space_Shooter_1_15{
    width: 35px;
    height: 35px;
-   background-position: -911px -459px;
+   background-position: -2060px -708px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
-.Explosion_Adrian_6{
+.Space_Shooter_1_16{
    width: 35px;
    height: 35px;
-   background-position: -948px -459px;
+   background-position: -2097px -708px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
-.Explosion_Adrian_7{
+.Space_Shooter_1_17{
    width: 35px;
    height: 35px;
-   background-position: -974px -525px;
+   background-position: -2134px -708px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
-.Explosion_Adrian_8{
+.Space_Shooter_1_18{
    width: 35px;
    height: 35px;
-   background-position: -974px -562px;
+   background-position: -2171px -708px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
-.Explosion_Adrian_9{
+.Space_Shooter_1_19{
    width: 35px;
    height: 35px;
-   background-position: -974px -623px;
+   background-position: -2208px -708px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
-.Explosion_Adrian_10{
+.Space_Shooter_1_20{
    width: 35px;
    height: 35px;
-   background-position: -974px -660px;
+   background-position: -2245px -708px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
-.Explosion_Adrian_11{
+.Space_Shooter_1_21{
    width: 35px;
    height: 35px;
-   background-position: -974px -721px;
+   background-position: -2282px -708px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Space_Shooter_1_22{
+   width: 35px;
+   height: 35px;
+   background-position: -2319px -708px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Space_Shooter_1_23{
+   width: 35px;
+   height: 35px;
+   background-position: -2356px -708px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_0{
+   width: 64px;
+   height: 64px;
+   background-position: 0px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_1{
+   width: 64px;
+   height: 64px;
+   background-position: -66px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_2{
+   width: 64px;
+   height: 64px;
+   background-position: -132px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_3{
+   width: 64px;
+   height: 64px;
+   background-position: -198px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_4{
+   width: 64px;
+   height: 64px;
+   background-position: -264px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_5{
+   width: 64px;
+   height: 64px;
+   background-position: -330px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_6{
+   width: 64px;
+   height: 64px;
+   background-position: -396px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_7{
+   width: 64px;
+   height: 64px;
+   background-position: -462px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_8{
+   width: 64px;
+   height: 64px;
+   background-position: -528px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_9{
+   width: 64px;
+   height: 64px;
+   background-position: -594px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_10{
+   width: 64px;
+   height: 64px;
+   background-position: -660px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_11{
+   width: 64px;
+   height: 64px;
+   background-position: -726px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_12{
+   width: 64px;
+   height: 64px;
+   background-position: -792px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_13{
+   width: 64px;
+   height: 64px;
+   background-position: -858px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_14{
+   width: 64px;
+   height: 64px;
+   background-position: -924px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_15{
+   width: 64px;
+   height: 64px;
+   background-position: -990px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_16{
+   width: 64px;
+   height: 64px;
+   background-position: -1056px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_17{
+   width: 64px;
+   height: 64px;
+   background-position: -1122px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_18{
+   width: 64px;
+   height: 64px;
+   background-position: -1188px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_19{
+   width: 64px;
+   height: 64px;
+   background-position: -1254px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_20{
+   width: 64px;
+   height: 64px;
+   background-position: -1320px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_21{
+   width: 64px;
+   height: 64px;
+   background-position: -1386px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_22{
+   width: 64px;
+   height: 64px;
+   background-position: 0px -66px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_23{
+   width: 64px;
+   height: 64px;
+   background-position: -66px -66px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_24{
+   width: 64px;
+   height: 64px;
+   background-position: -132px -66px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_25{
+   width: 64px;
+   height: 64px;
+   background-position: -198px -66px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_26{
+   width: 64px;
+   height: 64px;
+   background-position: -264px -66px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_27{
+   width: 64px;
+   height: 64px;
+   background-position: -330px -66px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_28{
+   width: 64px;
+   height: 64px;
+   background-position: -396px -66px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_29{
+   width: 64px;
+   height: 64px;
+   background-position: -462px -66px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_30{
+   width: 64px;
+   height: 64px;
+   background-position: -528px -66px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_31{
+   width: 64px;
+   height: 64px;
+   background-position: -594px -66px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_32{
+   width: 64px;
+   height: 64px;
+   background-position: -660px -66px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_33{
+   width: 64px;
+   height: 64px;
+   background-position: -726px -66px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_34{
+   width: 64px;
+   height: 64px;
+   background-position: -792px -66px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_35{
+   width: 64px;
+   height: 64px;
+   background-position: -858px -66px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_36{
+   width: 64px;
+   height: 64px;
+   background-position: -924px -66px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_37{
+   width: 64px;
+   height: 64px;
+   background-position: -990px -66px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_38{
+   width: 64px;
+   height: 64px;
+   background-position: -1056px -66px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_39{
+   width: 64px;
+   height: 64px;
+   background-position: -1122px -66px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_40{
+   width: 64px;
+   height: 64px;
+   background-position: -1188px -66px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_41{
+   width: 64px;
+   height: 64px;
+   background-position: -1254px -66px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_42{
+   width: 64px;
+   height: 64px;
+   background-position: -1320px -66px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_43{
+   width: 64px;
+   height: 64px;
+   background-position: -1386px -66px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_44{
+   width: 64px;
+   height: 64px;
+   background-position: 0px -132px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_45{
+   width: 64px;
+   height: 64px;
+   background-position: -66px -132px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_46{
+   width: 64px;
+   height: 64px;
+   background-position: -132px -132px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_47{
+   width: 64px;
+   height: 64px;
+   background-position: -198px -132px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_48{
+   width: 64px;
+   height: 64px;
+   background-position: -264px -132px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_49{
+   width: 64px;
+   height: 64px;
+   background-position: -330px -132px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_50{
+   width: 64px;
+   height: 64px;
+   background-position: -396px -132px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_51{
+   width: 64px;
+   height: 64px;
+   background-position: -462px -132px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_52{
+   width: 64px;
+   height: 64px;
+   background-position: -528px -132px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_53{
+   width: 64px;
+   height: 64px;
+   background-position: -594px -132px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_54{
+   width: 64px;
+   height: 64px;
+   background-position: -660px -132px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_55{
+   width: 64px;
+   height: 64px;
+   background-position: -726px -132px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_56{
+   width: 64px;
+   height: 64px;
+   background-position: -792px -132px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_57{
+   width: 64px;
+   height: 64px;
+   background-position: -858px -132px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_58{
+   width: 64px;
+   height: 64px;
+   background-position: -924px -132px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_59{
+   width: 64px;
+   height: 64px;
+   background-position: -990px -132px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_60{
+   width: 64px;
+   height: 64px;
+   background-position: -1056px -132px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_61{
+   width: 64px;
+   height: 64px;
+   background-position: -1122px -132px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_62{
+   width: 64px;
+   height: 64px;
+   background-position: -1188px -132px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_63{
+   width: 64px;
+   height: 64px;
+   background-position: -1254px -132px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_64{
+   width: 64px;
+   height: 64px;
+   background-position: -1320px -132px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_65{
+   width: 64px;
+   height: 64px;
+   background-position: -1386px -132px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_66{
+   width: 64px;
+   height: 64px;
+   background-position: 0px -198px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_67{
+   width: 64px;
+   height: 64px;
+   background-position: -66px -198px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_68{
+   width: 64px;
+   height: 64px;
+   background-position: -132px -198px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_69{
+   width: 64px;
+   height: 64px;
+   background-position: -198px -198px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_70{
+   width: 64px;
+   height: 64px;
+   background-position: -264px -198px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_71{
+   width: 64px;
+   height: 64px;
+   background-position: -330px -198px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_72{
+   width: 64px;
+   height: 64px;
+   background-position: -396px -198px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_73{
+   width: 64px;
+   height: 64px;
+   background-position: -462px -198px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_74{
+   width: 64px;
+   height: 64px;
+   background-position: -528px -198px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_75{
+   width: 64px;
+   height: 64px;
+   background-position: -594px -198px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_76{
+   width: 64px;
+   height: 64px;
+   background-position: -660px -198px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_77{
+   width: 64px;
+   height: 64px;
+   background-position: -726px -198px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_78{
+   width: 64px;
+   height: 64px;
+   background-position: -792px -198px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_79{
+   width: 64px;
+   height: 64px;
+   background-position: -858px -198px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_80{
+   width: 64px;
+   height: 64px;
+   background-position: -924px -198px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_81{
+   width: 64px;
+   height: 64px;
+   background-position: -990px -198px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_82{
+   width: 64px;
+   height: 64px;
+   background-position: -1056px -198px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_83{
+   width: 64px;
+   height: 64px;
+   background-position: -1122px -198px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_84{
+   width: 64px;
+   height: 64px;
+   background-position: -1188px -198px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_85{
+   width: 64px;
+   height: 64px;
+   background-position: -1254px -198px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_86{
+   width: 64px;
+   height: 64px;
+   background-position: -1320px -198px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_87{
+   width: 64px;
+   height: 64px;
+   background-position: -1386px -198px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_88{
+   width: 64px;
+   height: 64px;
+   background-position: 0px -264px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_89{
+   width: 64px;
+   height: 64px;
+   background-position: -66px -264px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_90{
+   width: 64px;
+   height: 64px;
+   background-position: -132px -264px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_91{
+   width: 64px;
+   height: 64px;
+   background-position: -198px -264px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_92{
+   width: 64px;
+   height: 64px;
+   background-position: -264px -264px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_93{
+   width: 64px;
+   height: 64px;
+   background-position: -330px -264px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_94{
+   width: 64px;
+   height: 64px;
+   background-position: -396px -264px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_95{
+   width: 64px;
+   height: 64px;
+   background-position: -462px -264px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_96{
+   width: 64px;
+   height: 64px;
+   background-position: -528px -264px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_97{
+   width: 64px;
+   height: 64px;
+   background-position: -594px -264px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_98{
+   width: 64px;
+   height: 64px;
+   background-position: -660px -264px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_99{
+   width: 64px;
+   height: 64px;
+   background-position: -726px -264px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_100{
+   width: 64px;
+   height: 64px;
+   background-position: -792px -264px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_101{
+   width: 64px;
+   height: 64px;
+   background-position: -858px -264px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_102{
+   width: 64px;
+   height: 64px;
+   background-position: -924px -264px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_103{
+   width: 64px;
+   height: 64px;
+   background-position: -990px -264px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_104{
+   width: 64px;
+   height: 64px;
+   background-position: -1056px -264px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_105{
+   width: 64px;
+   height: 64px;
+   background-position: -1122px -264px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_106{
+   width: 64px;
+   height: 64px;
+   background-position: -1188px -264px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_107{
+   width: 64px;
+   height: 64px;
+   background-position: -1254px -264px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_108{
+   width: 64px;
+   height: 64px;
+   background-position: -1320px -264px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_109{
+   width: 64px;
+   height: 64px;
+   background-position: -1386px -264px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_110{
+   width: 64px;
+   height: 64px;
+   background-position: 0px -330px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_111{
+   width: 64px;
+   height: 64px;
+   background-position: -66px -330px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_112{
+   width: 64px;
+   height: 64px;
+   background-position: -132px -330px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_113{
+   width: 64px;
+   height: 64px;
+   background-position: -198px -330px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_114{
+   width: 64px;
+   height: 64px;
+   background-position: -264px -330px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_115{
+   width: 64px;
+   height: 64px;
+   background-position: -330px -330px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_116{
+   width: 64px;
+   height: 64px;
+   background-position: -396px -330px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_117{
+   width: 64px;
+   height: 64px;
+   background-position: -462px -330px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_118{
+   width: 64px;
+   height: 64px;
+   background-position: -528px -330px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_119{
+   width: 64px;
+   height: 64px;
+   background-position: -594px -330px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_120{
+   width: 64px;
+   height: 64px;
+   background-position: -660px -330px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_121{
+   width: 64px;
+   height: 64px;
+   background-position: -726px -330px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_122{
+   width: 64px;
+   height: 64px;
+   background-position: -792px -330px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_123{
+   width: 64px;
+   height: 64px;
+   background-position: -858px -330px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_124{
+   width: 64px;
+   height: 64px;
+   background-position: -924px -330px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_125{
+   width: 64px;
+   height: 64px;
+   background-position: -990px -330px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_126{
+   width: 64px;
+   height: 64px;
+   background-position: -1056px -330px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_127{
+   width: 64px;
+   height: 64px;
+   background-position: -1122px -330px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_128{
+   width: 64px;
+   height: 64px;
+   background-position: -1188px -330px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_129{
+   width: 64px;
+   height: 64px;
+   background-position: -1254px -330px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_130{
+   width: 64px;
+   height: 64px;
+   background-position: -1320px -330px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_131{
+   width: 64px;
+   height: 64px;
+   background-position: -1386px -330px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_132{
+   width: 64px;
+   height: 64px;
+   background-position: 0px -396px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_133{
+   width: 64px;
+   height: 64px;
+   background-position: -66px -396px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_134{
+   width: 64px;
+   height: 64px;
+   background-position: -132px -396px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_135{
+   width: 64px;
+   height: 64px;
+   background-position: -198px -396px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_136{
+   width: 64px;
+   height: 64px;
+   background-position: -264px -396px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_137{
+   width: 64px;
+   height: 64px;
+   background-position: -330px -396px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_138{
+   width: 64px;
+   height: 64px;
+   background-position: -396px -396px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_139{
+   width: 64px;
+   height: 64px;
+   background-position: -462px -396px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_140{
+   width: 64px;
+   height: 64px;
+   background-position: -528px -396px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_141{
+   width: 64px;
+   height: 64px;
+   background-position: -594px -396px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_142{
+   width: 64px;
+   height: 64px;
+   background-position: -660px -396px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_143{
+   width: 64px;
+   height: 64px;
+   background-position: -726px -396px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_144{
+   width: 64px;
+   height: 64px;
+   background-position: -792px -396px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_145{
+   width: 64px;
+   height: 64px;
+   background-position: -858px -396px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_146{
+   width: 64px;
+   height: 64px;
+   background-position: -924px -396px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_147{
+   width: 64px;
+   height: 64px;
+   background-position: -990px -396px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_148{
+   width: 64px;
+   height: 64px;
+   background-position: -1056px -396px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_149{
+   width: 64px;
+   height: 64px;
+   background-position: -1122px -396px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_150{
+   width: 64px;
+   height: 64px;
+   background-position: -1188px -396px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_151{
+   width: 64px;
+   height: 64px;
+   background-position: -1254px -396px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_152{
+   width: 64px;
+   height: 64px;
+   background-position: -1320px -396px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_153{
+   width: 64px;
+   height: 64px;
+   background-position: -1386px -396px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_154{
+   width: 64px;
+   height: 64px;
+   background-position: 0px -462px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_155{
+   width: 64px;
+   height: 64px;
+   background-position: -66px -462px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_156{
+   width: 64px;
+   height: 64px;
+   background-position: -132px -462px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_157{
+   width: 64px;
+   height: 64px;
+   background-position: -198px -462px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_158{
+   width: 64px;
+   height: 64px;
+   background-position: -264px -462px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_159{
+   width: 64px;
+   height: 64px;
+   background-position: -330px -462px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_160{
+   width: 64px;
+   height: 64px;
+   background-position: -396px -462px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_161{
+   width: 64px;
+   height: 64px;
+   background-position: -462px -462px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_162{
+   width: 64px;
+   height: 64px;
+   background-position: -528px -462px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_163{
+   width: 64px;
+   height: 64px;
+   background-position: -594px -462px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_164{
+   width: 64px;
+   height: 64px;
+   background-position: -660px -462px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_165{
+   width: 64px;
+   height: 64px;
+   background-position: -726px -462px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_166{
+   width: 64px;
+   height: 64px;
+   background-position: -792px -462px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_167{
+   width: 64px;
+   height: 64px;
+   background-position: -858px -462px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_168{
+   width: 64px;
+   height: 64px;
+   background-position: -924px -462px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_169{
+   width: 64px;
+   height: 64px;
+   background-position: -990px -462px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_170{
+   width: 64px;
+   height: 64px;
+   background-position: -1056px -462px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_171{
+   width: 64px;
+   height: 64px;
+   background-position: -1122px -462px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_172{
+   width: 64px;
+   height: 64px;
+   background-position: -1188px -462px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_173{
+   width: 64px;
+   height: 64px;
+   background-position: -1254px -462px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_174{
+   width: 64px;
+   height: 64px;
+   background-position: -1320px -462px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_175{
+   width: 64px;
+   height: 64px;
+   background-position: -1386px -462px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_176{
+   width: 64px;
+   height: 64px;
+   background-position: 0px -528px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_177{
+   width: 64px;
+   height: 64px;
+   background-position: -66px -528px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_178{
+   width: 64px;
+   height: 64px;
+   background-position: -132px -528px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_179{
+   width: 64px;
+   height: 64px;
+   background-position: -198px -528px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_180{
+   width: 64px;
+   height: 64px;
+   background-position: -264px -528px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_181{
+   width: 64px;
+   height: 64px;
+   background-position: -330px -528px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_182{
+   width: 64px;
+   height: 64px;
+   background-position: -396px -528px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_183{
+   width: 64px;
+   height: 64px;
+   background-position: -462px -528px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_184{
+   width: 64px;
+   height: 64px;
+   background-position: -528px -528px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_185{
+   width: 64px;
+   height: 64px;
+   background-position: -594px -528px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_186{
+   width: 64px;
+   height: 64px;
+   background-position: -660px -528px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_187{
+   width: 64px;
+   height: 64px;
+   background-position: -726px -528px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_188{
+   width: 64px;
+   height: 64px;
+   background-position: -792px -528px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_189{
+   width: 64px;
+   height: 64px;
+   background-position: -858px -528px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_190{
+   width: 64px;
+   height: 64px;
+   background-position: -924px -528px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_191{
+   width: 64px;
+   height: 64px;
+   background-position: -990px -528px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_192{
+   width: 64px;
+   height: 64px;
+   background-position: -1056px -528px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_193{
+   width: 64px;
+   height: 64px;
+   background-position: -1122px -528px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_194{
+   width: 64px;
+   height: 64px;
+   background-position: -1188px -528px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_195{
+   width: 64px;
+   height: 64px;
+   background-position: -1254px -528px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_196{
+   width: 64px;
+   height: 64px;
+   background-position: -1320px -528px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_197{
+   width: 64px;
+   height: 64px;
+   background-position: -1386px -528px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_198{
+   width: 64px;
+   height: 64px;
+   background-position: 0px -594px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_199{
+   width: 64px;
+   height: 64px;
+   background-position: -66px -594px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_200{
+   width: 64px;
+   height: 64px;
+   background-position: -132px -594px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_201{
+   width: 64px;
+   height: 64px;
+   background-position: -198px -594px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_202{
+   width: 64px;
+   height: 64px;
+   background-position: -264px -594px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_203{
+   width: 64px;
+   height: 64px;
+   background-position: -330px -594px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_204{
+   width: 64px;
+   height: 64px;
+   background-position: -396px -594px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_205{
+   width: 64px;
+   height: 64px;
+   background-position: -462px -594px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_206{
+   width: 64px;
+   height: 64px;
+   background-position: -528px -594px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_207{
+   width: 64px;
+   height: 64px;
+   background-position: -594px -594px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_208{
+   width: 64px;
+   height: 64px;
+   background-position: -660px -594px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_209{
+   width: 64px;
+   height: 64px;
+   background-position: -726px -594px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_210{
+   width: 64px;
+   height: 64px;
+   background-position: -792px -594px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_211{
+   width: 64px;
+   height: 64px;
+   background-position: -858px -594px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_212{
+   width: 64px;
+   height: 64px;
+   background-position: -924px -594px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_213{
+   width: 64px;
+   height: 64px;
+   background-position: -990px -594px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_214{
+   width: 64px;
+   height: 64px;
+   background-position: -1056px -594px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_215{
+   width: 64px;
+   height: 64px;
+   background-position: -1122px -594px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_216{
+   width: 64px;
+   height: 64px;
+   background-position: -1188px -594px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_217{
+   width: 64px;
+   height: 64px;
+   background-position: -1254px -594px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_218{
+   width: 64px;
+   height: 64px;
+   background-position: -1320px -594px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_219{
+   width: 64px;
+   height: 64px;
+   background-position: -1386px -594px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_220{
+   width: 64px;
+   height: 64px;
+   background-position: 0px -660px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_221{
+   width: 64px;
+   height: 64px;
+   background-position: -66px -660px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_222{
+   width: 64px;
+   height: 64px;
+   background-position: -132px -660px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_223{
+   width: 64px;
+   height: 64px;
+   background-position: -198px -660px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_224{
+   width: 64px;
+   height: 64px;
+   background-position: -264px -660px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_225{
+   width: 64px;
+   height: 64px;
+   background-position: -330px -660px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_226{
+   width: 64px;
+   height: 64px;
+   background-position: -396px -660px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_227{
+   width: 64px;
+   height: 64px;
+   background-position: -462px -660px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_228{
+   width: 64px;
+   height: 64px;
+   background-position: -528px -660px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_229{
+   width: 64px;
+   height: 64px;
+   background-position: -594px -660px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_230{
+   width: 64px;
+   height: 64px;
+   background-position: -660px -660px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_231{
+   width: 64px;
+   height: 64px;
+   background-position: -726px -660px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_232{
+   width: 64px;
+   height: 64px;
+   background-position: -792px -660px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_233{
+   width: 64px;
+   height: 64px;
+   background-position: -858px -660px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_234{
+   width: 64px;
+   height: 64px;
+   background-position: -924px -660px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_235{
+   width: 64px;
+   height: 64px;
+   background-position: -990px -660px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_236{
+   width: 64px;
+   height: 64px;
+   background-position: -1056px -660px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_237{
+   width: 64px;
+   height: 64px;
+   background-position: -1122px -660px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_238{
+   width: 64px;
+   height: 64px;
+   background-position: -1188px -660px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_239{
+   width: 64px;
+   height: 64px;
+   background-position: -1254px -660px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_240{
+   width: 64px;
+   height: 64px;
+   background-position: -1320px -660px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_241{
+   width: 64px;
+   height: 64px;
+   background-position: -1386px -660px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_242{
+   width: 64px;
+   height: 64px;
+   background-position: 0px -726px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_243{
+   width: 64px;
+   height: 64px;
+   background-position: -66px -726px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_244{
+   width: 64px;
+   height: 64px;
+   background-position: -132px -726px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_245{
+   width: 64px;
+   height: 64px;
+   background-position: -198px -726px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_246{
+   width: 64px;
+   height: 64px;
+   background-position: -264px -726px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_247{
+   width: 64px;
+   height: 64px;
+   background-position: -330px -726px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_248{
+   width: 64px;
+   height: 64px;
+   background-position: -396px -726px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_249{
+   width: 64px;
+   height: 64px;
+   background-position: -462px -726px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_250{
+   width: 64px;
+   height: 64px;
+   background-position: -528px -726px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_251{
+   width: 64px;
+   height: 64px;
+   background-position: -594px -726px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_252{
+   width: 64px;
+   height: 64px;
+   background-position: -660px -726px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_253{
+   width: 64px;
+   height: 64px;
+   background-position: -726px -726px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_254{
+   width: 64px;
+   height: 64px;
+   background-position: -792px -726px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_255{
+   width: 64px;
+   height: 64px;
+   background-position: -858px -726px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_256{
+   width: 64px;
+   height: 64px;
+   background-position: -924px -726px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_257{
+   width: 64px;
+   height: 64px;
+   background-position: -990px -726px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_258{
+   width: 64px;
+   height: 64px;
+   background-position: -1056px -726px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_259{
+   width: 64px;
+   height: 64px;
+   background-position: -1122px -726px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_260{
+   width: 64px;
+   height: 64px;
+   background-position: -1188px -726px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_261{
+   width: 64px;
+   height: 64px;
+   background-position: -1254px -726px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_262{
+   width: 64px;
+   height: 64px;
+   background-position: -1320px -726px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_263{
+   width: 64px;
+   height: 64px;
+   background-position: -1386px -726px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_264{
+   width: 64px;
+   height: 64px;
+   background-position: 0px -792px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_265{
+   width: 64px;
+   height: 64px;
+   background-position: -66px -792px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_266{
+   width: 64px;
+   height: 64px;
+   background-position: -132px -792px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_267{
+   width: 64px;
+   height: 64px;
+   background-position: -198px -792px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_268{
+   width: 64px;
+   height: 64px;
+   background-position: -264px -792px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_269{
+   width: 64px;
+   height: 64px;
+   background-position: -330px -792px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_270{
+   width: 64px;
+   height: 64px;
+   background-position: -396px -792px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_271{
+   width: 64px;
+   height: 64px;
+   background-position: -462px -792px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_272{
+   width: 64px;
+   height: 64px;
+   background-position: -528px -792px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_273{
+   width: 64px;
+   height: 64px;
+   background-position: -594px -792px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_274{
+   width: 64px;
+   height: 64px;
+   background-position: -660px -792px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_275{
+   width: 64px;
+   height: 64px;
+   background-position: -726px -792px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_276{
+   width: 64px;
+   height: 64px;
+   background-position: -792px -792px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_277{
+   width: 64px;
+   height: 64px;
+   background-position: -858px -792px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_278{
+   width: 64px;
+   height: 64px;
+   background-position: -924px -792px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_279{
+   width: 64px;
+   height: 64px;
+   background-position: -990px -792px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_280{
+   width: 64px;
+   height: 64px;
+   background-position: -1056px -792px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_281{
+   width: 64px;
+   height: 64px;
+   background-position: -1122px -792px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_282{
+   width: 64px;
+   height: 64px;
+   background-position: -1188px -792px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_283{
+   width: 64px;
+   height: 64px;
+   background-position: -1254px -792px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_284{
+   width: 64px;
+   height: 64px;
+   background-position: -1320px -792px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Plattforms_285{
+   width: 64px;
+   height: 64px;
+   background-position: -1386px -792px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Characters_1_0{
+   width: 80px;
+   height: 100px;
+   background-position: 0px -1261px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Characters_1_1{
+   width: 80px;
+   height: 100px;
+   background-position: -80px -1261px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Characters_1_2{
+   width: 80px;
+   height: 100px;
+   background-position: -160px -1261px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Characters_1_3{
+   width: 80px;
+   height: 100px;
+   background-position: -240px -1261px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Characters_1_4{
+   width: 80px;
+   height: 100px;
+   background-position: -320px -1261px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Characters_1_5{
+   width: 80px;
+   height: 100px;
+   background-position: -400px -1261px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Characters_1_6{
+   width: 80px;
+   height: 100px;
+   background-position: 0px -1361px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Characters_1_7{
+   width: 80px;
+   height: 100px;
+   background-position: -80px -1361px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Characters_1_8{
+   width: 80px;
+   height: 100px;
+   background-position: -160px -1361px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Characters_1_9{
+   width: 80px;
+   height: 100px;
+   background-position: -240px -1361px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Characters_1_10{
+   width: 80px;
+   height: 100px;
+   background-position: -320px -1361px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Characters_1_11{
+   width: 80px;
+   height: 100px;
+   background-position: -400px -1361px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Background_0{
+   width: 1024px;
+   height: 400px;
+   background-position: -1026px -858px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Background_1{
+   width: 1024px;
+   height: 401px;
+   background-position: 0px -858px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Background_2{
+   width: 1024px;
+   height: 672px;
+   background-position: -1452px 0px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Background_3{
+   width: 333px;
+   height: 188px;
+   background-position: -482px -1261px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Background_4{
+   width: 321px;
+   height: 247px;
+   background-position: 0px -1463px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Background_5{
+   width: 354px;
+   height: 218px;
+   background-position: -323px -1463px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Background_6{
+   width: 417px;
+   height: 230px;
+   background-position: -2052px -858px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Background_7{
+   width: 104px;
+   height: 88px;
+   background-position: -817px -1359px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Background_8{
+   width: 60px;
+   height: 54px;
+   background-position: -1914px -774px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Background_9{
+   width: 100px;
+   height: 92px;
+   background-position: -528px -1712px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Background_10{
+   width: 122px;
+   height: 293px;
+   background-position: 0px -2000px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Background_11{
+   width: 131px;
+   height: 286px;
+   background-position: 0px -1712px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Background_12{
+   width: 99px;
+   height: 256px;
+   background-position: -133px -1712px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_0{
    width: 96px;
    height: 96px;
-   background-position: -288px -525px;
+   background-position: -2312px -1090px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_1{
    width: 96px;
    height: 96px;
-   background-position: -386px -525px;
+   background-position: -817px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_2{
    width: 96px;
    height: 96px;
-   background-position: -484px -525px;
+   background-position: -915px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_3{
    width: 96px;
    height: 96px;
-   background-position: -582px -525px;
+   background-position: -1013px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_4{
    width: 96px;
    height: 96px;
-   background-position: -680px -525px;
+   background-position: -1111px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_5{
    width: 96px;
    height: 96px;
-   background-position: -778px -525px;
+   background-position: -1209px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_6{
    width: 96px;
    height: 96px;
-   background-position: -876px -525px;
+   background-position: -1307px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_7{
    width: 96px;
    height: 96px;
-   background-position: -288px -623px;
+   background-position: -1405px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_8{
    width: 96px;
    height: 96px;
-   background-position: -386px -623px;
+   background-position: -1503px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_9{
    width: 96px;
    height: 96px;
-   background-position: -484px -623px;
+   background-position: -1601px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_10{
    width: 96px;
    height: 96px;
-   background-position: -582px -623px;
+   background-position: -1699px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_11{
    width: 96px;
    height: 96px;
-   background-position: -680px -623px;
+   background-position: -1797px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_12{
    width: 96px;
    height: 96px;
-   background-position: -778px -623px;
+   background-position: -1895px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_13{
    width: 96px;
    height: 96px;
-   background-position: -876px -623px;
+   background-position: -1993px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_14{
    width: 96px;
    height: 96px;
-   background-position: -288px -721px;
+   background-position: -2091px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_15{
    width: 96px;
    height: 96px;
-   background-position: -386px -721px;
+   background-position: -2189px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_16{
    width: 96px;
    height: 96px;
-   background-position: -484px -721px;
+   background-position: -2287px -1261px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_17{
    width: 96px;
    height: 96px;
-   background-position: -582px -721px;
+   background-position: -679px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_18{
    width: 96px;
    height: 96px;
-   background-position: -680px -721px;
+   background-position: -777px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_19{
    width: 96px;
    height: 96px;
-   background-position: -778px -721px;
+   background-position: -875px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_20{
    width: 96px;
    height: 96px;
-   background-position: -876px -721px;
+   background-position: -973px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_21{
    width: 96px;
    height: 96px;
-   background-position: -288px -819px;
+   background-position: -1071px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_22{
    width: 96px;
    height: 96px;
-   background-position: -386px -819px;
+   background-position: -1169px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_23{
    width: 96px;
    height: 96px;
-   background-position: -484px -819px;
+   background-position: -1267px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_24{
    width: 96px;
    height: 96px;
-   background-position: -582px -819px;
+   background-position: -1365px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_25{
    width: 96px;
    height: 96px;
-   background-position: -680px -819px;
+   background-position: -1463px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_26{
    width: 96px;
    height: 96px;
-   background-position: -778px -819px;
+   background-position: -1561px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_27{
    width: 96px;
    height: 96px;
-   background-position: -876px -819px;
+   background-position: -1659px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_28{
    width: 96px;
    height: 96px;
-   background-position: -1017px 0px;
+   background-position: -1757px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_29{
    width: 96px;
    height: 96px;
-   background-position: -1017px -98px;
+   background-position: -1855px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_30{
    width: 96px;
    height: 96px;
-   background-position: -1017px -196px;
+   background-position: -1953px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_31{
    width: 96px;
    height: 96px;
-   background-position: -1017px -294px;
+   background-position: -2051px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_32{
    width: 96px;
    height: 96px;
-   background-position: -1017px -392px;
+   background-position: -2149px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_33{
    width: 96px;
    height: 96px;
-   background-position: -1017px -490px;
+   background-position: -2247px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_34{
    width: 96px;
    height: 96px;
-   background-position: -1017px -588px;
+   background-position: -2345px -1463px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_35{
    width: 96px;
    height: 96px;
-   background-position: -1017px -686px;
+   background-position: -679px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_36{
    width: 96px;
    height: 96px;
-   background-position: -1017px -784px;
+   background-position: -777px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_37{
    width: 96px;
    height: 96px;
-   background-position: 0px -927px;
+   background-position: -875px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_38{
    width: 96px;
    height: 96px;
-   background-position: -98px -927px;
+   background-position: -973px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_39{
    width: 96px;
    height: 96px;
-   background-position: -196px -927px;
+   background-position: -1071px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_40{
    width: 96px;
    height: 96px;
-   background-position: -294px -927px;
+   background-position: -1169px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_41{
    width: 96px;
    height: 96px;
-   background-position: -392px -927px;
+   background-position: -1267px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_42{
    width: 96px;
    height: 96px;
-   background-position: -490px -927px;
+   background-position: -1365px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_43{
    width: 96px;
    height: 96px;
-   background-position: -588px -927px;
+   background-position: -1463px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_44{
    width: 96px;
    height: 96px;
-   background-position: -686px -927px;
+   background-position: -1561px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_45{
    width: 96px;
    height: 96px;
-   background-position: -784px -927px;
+   background-position: -1659px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_46{
    width: 96px;
    height: 96px;
-   background-position: -882px -927px;
+   background-position: -1757px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_47{
    width: 96px;
    height: 96px;
-   background-position: -980px -927px;
+   background-position: -1855px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_48{
    width: 96px;
    height: 96px;
-   background-position: -1115px 0px;
+   background-position: -1953px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_49{
    width: 96px;
    height: 96px;
-   background-position: -1115px -98px;
+   background-position: -2051px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_50{
    width: 96px;
    height: 96px;
-   background-position: -1115px -196px;
+   background-position: -2149px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_51{
    width: 96px;
    height: 96px;
-   background-position: -1115px -294px;
+   background-position: -2247px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_52{
    width: 96px;
    height: 96px;
-   background-position: -1115px -392px;
+   background-position: -2345px -1561px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_53{
    width: 96px;
    height: 96px;
-   background-position: -1115px -490px;
+   background-position: -234px -1712px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_54{
    width: 96px;
    height: 96px;
-   background-position: -1115px -588px;
+   background-position: -332px -1712px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_55{
    width: 96px;
    height: 96px;
-   background-position: -1115px -686px;
+   background-position: -430px -1712px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_0{
    width: 32px;
    height: 32px;
-   background-position: -983px -425px;
+   background-position: -2427px -708px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_1{
    width: 32px;
    height: 32px;
-   background-position: -974px -758px;
+   background-position: -1976px -774px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_2{
    width: 32px;
    height: 32px;
-   background-position: -974px -819px;
+   background-position: -2010px -774px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_3{
    width: 32px;
    height: 32px;
-   background-position: -974px -853px;
+   background-position: -2044px -774px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_4{
    width: 32px;
    height: 32px;
-   background-position: -1078px -927px;
+   background-position: -2078px -774px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_5{
    width: 32px;
    height: 32px;
-   background-position: -1078px -961px;
+   background-position: -2112px -774px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_6{
    width: 32px;
    height: 32px;
-   background-position: 0px -1025px;
+   background-position: -2146px -774px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_7{
    width: 32px;
    height: 32px;
-   background-position: -34px -1025px;
+   background-position: -2180px -774px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_8{
    width: 32px;
    height: 32px;
-   background-position: -68px -1025px;
+   background-position: -2214px -774px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_9{
    width: 32px;
    height: 32px;
-   background-position: -102px -1025px;
+   background-position: -2248px -774px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 

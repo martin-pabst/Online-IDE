@@ -23,42 +23,51 @@ export class SystemToolsClass extends Klass {
                 module.main.getInterpreter().printManager.clear();
             }, false, true, "Löscht den Bildschirm"));
 
+        this.addMethod(new Method("setSpeed", new Parameterlist([
+            {identifier: "speed", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+        ]), null,
+            (parameters) => {
+                let speed: number = parameters[1].value;
+                module.main.getInterpreter().controlButtons.speedControl.setSpeedInStepsPerSecond(speed >= 1 ? speed : "max");
+
+            }, false, true, "Setzt die Ausführungsgeschwindigkeit. Der Parameter speed wir in Steps/Sekunde angegeben. Eine negative Zahl bedeutet: 'maximal'."));
+
         this.addMethod(new Method("addKeyListener", new Parameterlist([
             { identifier: "keyListener", type: module.typeStore.getType("KeyListener"), declaration: null, usagePositions: null, isFinal: true }
         ]), null,
-        (parameters) => {
-            let r: RuntimeObject = parameters[1].value;
-            let method = (<Klass>r.class).getMethodBySignature("onKeyTyped(String)");
+            (parameters) => {
+                let r: RuntimeObject = parameters[1].value;
+                let method = (<Klass>r.class).getMethodBySignature("onKeyTyped(String)");
 
-            if (method != null) {
+                if (method != null) {
 
-                module.main.getInterpreter().keyboardTool.keyPressedCallbacks.push((key) => {
+                    module.main.getInterpreter().keyboardTool.keyPressedCallbacks.push((key) => {
 
-                    let program = method?.program;
-                    let invoke = method?.invoke;
+                        let program = method?.program;
+                        let invoke = method?.invoke;
 
-                    let stackElements: Value[] = [
-                        {
-                            type: r.class,
-                            value: r
-                        },
-                        {
-                            type: stringPrimitiveType,
-                            value: key
+                        let stackElements: Value[] = [
+                            {
+                                type: r.class,
+                                value: r
+                            },
+                            {
+                                type: stringPrimitiveType,
+                                value: key
+                            }
+                        ];
+
+                        if (program != null) {
+                            module.main.getInterpreter().runTimer(method, stackElements, null, false);
+                        } else if (invoke != null) {
+                            invoke([]);
                         }
-                    ];
-
-                    if (program != null) {
-                        module.main.getInterpreter().runTimer(method, stackElements, null, false);
-                    } else if (invoke != null) {
-                        invoke([]);
-                    }
 
 
-                });
+                    });
+                }
             }
-        }    
-        , false, true, "Fügt einen KeyListener hinzu, dessen Methode keyTyped immer dann aufgerufen wird, wenn eine Taste gedrückt und anschließend losgelassen wird."));
+            , false, true, "Fügt einen KeyListener hinzu, dessen Methode keyTyped immer dann aufgerufen wird, wenn eine Taste gedrückt und anschließend losgelassen wird."));
 
         // this.addMethod(new Method("playSound", new Parameterlist([
         //     { identifier: "sound", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }

@@ -94,6 +94,46 @@ export class Actor extends Klass {
 
             }, false, false, "Gibt genau dann true zurück, wenn der Benutzer die gegebenen Taste gerade drückt. Als Taste kann auch bsw. [shift]+m angegeben werden. Die Angabe von Sondertasten (Enter, ArrowUp, ArrowLeft, ...) ist auch möglich.", false));
 
+        this.addMethod(new Method("isGamepadButtonDown", new Parameterlist([
+            { identifier: "gamepadIndex", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "buttonIndex", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+        ]), booleanPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let gamepadIndex: number = parameters[1].value;
+                let buttonIndex: number = parameters[2].value;
+
+                return module.main.getInterpreter().gamepadTool.isGamepadButtonPressed(gamepadIndex, buttonIndex);
+
+            }, false, false, "Gibt genau dann true zurück, wenn der Button buttonIndex des Gamepads GamepadIndex gedrückt ist.", false));
+
+        this.addMethod(new Method("isGamepadConnected", new Parameterlist([
+            { identifier: "gamepadIndex", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+        ]), booleanPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let gamepadIndex: number = parameters[1].value;
+
+                return module.main.getInterpreter().gamepadTool.isGamepadConnected(gamepadIndex);
+
+            }, false, false, "Gibt true zurück, falls das Gamepad mit dem übergebenen Index angeschlossen ist. VORSICHT: Das erste Gamepad hat Index 0.", false));
+
+        this.addMethod(new Method("getGamepadAxisValue", new Parameterlist([
+            { identifier: "gamepadIndex", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "axisIndex", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+        ]), doublePrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let gamepadIndex: number = parameters[1].value;
+                let axisIndex: number = parameters[2].value;
+
+                return module.main.getInterpreter().gamepadTool.getGamepadAxisValue(gamepadIndex, axisIndex);
+
+            }, false, false, "Gibt den Wert des Gamepad-Steuerknüppels mit Index axisIndex zurück.", false));
+
         this.addMethod(new Method("isDestroyed", new Parameterlist([
         ]), booleanPrimitiveType,
             (parameters) => {
@@ -233,6 +273,15 @@ export class ActorHelper {
         this.isDestroyed = true;
         this.worldHelper.actorHelpersToDestroy.push(this);
     }
+
+    testdestroyed(method: string) {
+        if (this.isDestroyed) {
+            this.worldHelper.interpreter.throwException("Es wurde die Methode " + method + " eines bereits mit destroy() zerstörten Grafikobjekts aufgerufen.");
+            return true;
+        }
+        return false;
+    }
+
 
 }
 

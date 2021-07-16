@@ -132,6 +132,7 @@ export class Editor implements monaco.languages.RenameProvider {
             suggestLineHeight: 22,
             suggest: {
                 localityBonus: true,
+                insertMode: "replace"
                 // snippetsPreventQuickSuggestions: false
             },
             parameterHints: { enabled: true, cycle: true },
@@ -685,6 +686,8 @@ export class Editor implements monaco.languages.RenameProvider {
             }
 
         });
+
+        console.log(resourceEdits);
 
         return {
             edits: resourceEdits

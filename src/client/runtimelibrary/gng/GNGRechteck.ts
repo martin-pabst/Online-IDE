@@ -57,6 +57,10 @@ export class GNGRechteckClass extends Klass {
 
                 sh.height = höhe / sh.displayObject.scale.y;
                 sh.width = breite / sh.displayObject.scale.x;
+
+                sh.centerXInitial = sh.left + sh.width/2;
+                sh.centerYInitial = sh.top + sh.height/2;
+
                 sh.render();
 
             }, false, false, "Setzt die Breite und Höhe des Rechtecks.", false));

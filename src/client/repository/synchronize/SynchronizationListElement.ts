@@ -237,13 +237,13 @@ export class SynchronizationListElement {
                     };
                     that.leftSynchroWorkspace.files.push(that.leftSynchroFile);
                     that.onFileChanged("left");
-                }));
+                }, false));
             }
             if (that.rightSynchroWorkspace.isWritable() && that.rightSynchroFile.state != "deleted") {
                 this.$buttonRightDiv.append(SynchronizationListElement.makeButton("delete", "right", () => {
                     that.rightSynchroFile.state = "deleted";
                     that.onFileChanged("right");
-                }));
+                }, false));
             }
         } else if (this.rightSynchroFile == null) {
             if (this.rightSynchroWorkspace.isWritable() && that.leftSynchroFile.state != "deleted") {
@@ -267,20 +267,24 @@ export class SynchronizationListElement {
                     that.leftSynchroFile.repository_file_version = that.rightSynchroFile.repository_file_version;
                     that.leftSynchroFile.identical_to_repository_version = true;
                     that.onFileChanged("right");
-                }));
+                }, false));
             }
             if (that.leftSynchroWorkspace.isWritable() && that.leftSynchroFile.state != "deleted") {
                 this.$buttonLeftDiv.append(SynchronizationListElement.makeButton("delete", "left", () => {
                     that.leftSynchroFile.state = "deleted";
                     that.onFileChanged("left");
-                }));
+                },false));
             }
         } else {
             // Both SynchroFiles != null
             let isSynchronized: boolean = true;
 
+            let isRename: boolean = this.leftSynchroFile.name != this.rightSynchroFile.name;
+            let isUpdateOrCommit: boolean = this.leftSynchroFile.text != this.rightSynchroFile.text;
+            let onlyRename = isRename && !isUpdateOrCommit;
+
             if (this.leftSynchroFile.repository_file_version == this.rightSynchroFile.repository_file_version) {
-                if (this.leftSynchroFile.text != this.rightSynchroFile.text) {
+                if (isUpdateOrCommit || isRename) {
                     isSynchronized = false;
                 }
             } else {
@@ -296,13 +300,15 @@ export class SynchronizationListElement {
                         that.leftSynchroFile.text = that.rightSynchroFile.text;
                         that.leftSynchroFile.repository_file_version = that.rightSynchroFile.repository_file_version;
                         that.leftSynchroFile.identical_to_repository_version = true;
+                        that.leftSynchroFile.name = that.rightSynchroFile.name;
                         that.leftSynchroFile.state = "changed";
                         that.onFileChanged("left");
-                    }));
+                    }, onlyRename));
                 }
                 if (this.rightSynchroWorkspace.isWritable() && !needsMerge) {
                     this.$buttonRightDiv.append(SynchronizationListElement.makeButton("commit", "right", () => {
                         that.rightSynchroFile.text = that.leftSynchroFile.text;
+                        that.rightSynchroFile.name = that.leftSynchroFile.name;
                         that.rightSynchroFile.repository_file_version++;
                         if (that.leftSynchroWorkspace.isWritable()) that.rightSynchroFile.committedFromFile = that.leftSynchroFile;
                         if (that.leftSynchroWorkspace.isWritable()) {
@@ -311,7 +317,7 @@ export class SynchronizationListElement {
                         }
                         that.rightSynchroFile.state = "changed";
                         that.onFileChanged("right");
-                    }));
+                    }, onlyRename));
                 }
 
             }
@@ -354,18 +360,18 @@ export class SynchronizationListElement {
         this.$buttonRightDiv.empty();
     }
 
-    static makeButton(kind: ButtonKind, arrowDirection: LeftRight, callback: () => void): JQuery<HTMLDivElement> {
+    static makeButton(kind: ButtonKind, arrowDirection: LeftRight, callback: () => void, onlyRename: boolean): JQuery<HTMLDivElement> {
 
         let caption = "";
         let klass = "";
 
         switch (kind) {
             case "commit":
-                caption = "commit"; klass = "jo_synchro_commitButton"; break;
+                caption = onlyRename ? "rename" : "commit"; klass = "jo_synchro_commitButton"; break;
             case "commitAll":
                 caption = "commit all"; klass = "jo_synchro_commitButton"; break;
             case "update":
-                caption = "update"; klass = "jo_synchro_updateButton"; break;
+                caption = onlyRename ? "rename" : "update"; klass = "jo_synchro_updateButton"; break;
             case "updateAll":
                 caption = "update all"; klass = "jo_synchro_updateButton"; break;
             case "create": caption = "create"; klass = "jo_synchro_createButton"; break;

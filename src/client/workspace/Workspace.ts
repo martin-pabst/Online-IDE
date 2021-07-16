@@ -1,5 +1,5 @@
-import { WorkspaceData } from "../communication/Data.js";
-import { Module, ModuleStore } from "../compiler/parser/Module.js";
+import { WorkspaceData, WorkspaceSettings } from "../communication/Data.js";
+import { ExportedWorkspace, Module, ModuleStore } from "../compiler/parser/Module.js";
 import { Evaluator } from "../interpreter/Evaluator.js";
 import { AccordionElement } from "../main/gui/Accordion.js";
 import { Main } from "../main/Main.js";
@@ -9,6 +9,8 @@ import { MainBase } from "../main/MainBase.js";
 export class Workspace {
     
     name: string;
+    path: string;
+    isFolder: boolean;
     id: number;
     owner_id: number;
 
@@ -27,17 +29,37 @@ export class Workspace {
     compilerMessage: string;
 
     evaluator: Evaluator;
+
+    settings: WorkspaceSettings = {
+        libraries: []
+    };
     
     constructor(name: string, private main: MainBase, owner_id: number){
         this.name = name;
         this.owner_id = owner_id;
-        this.moduleStore = new ModuleStore(main, true);
+        this.moduleStore = new ModuleStore(main, true, this.settings.libraries);
         this.evaluator = new Evaluator(this, main);
     }
-    
+
+    toExportedWorkspace(): ExportedWorkspace {
+        return {
+            name: this.name,
+            modules: this.moduleStore.getModules(false).map(m => m.toExportedModule()),
+            settings: this.settings
+        }
+    }
+
+
+    alterAdditionalLibraries() {
+        this.moduleStore.setAdditionalLibraries(this.settings.libraries);
+        this.moduleStore.dirty = true;
+    }
+
     getWorkspaceData(withFiles: boolean): WorkspaceData {
         let wd: WorkspaceData = {
             name: this.name,
+            path: this.path,
+            isFolder: this.isFolder,
             id: this.id,
             owner_id: this.owner_id,
             currentFileId: this.currentlyOpenModule == null ? null : this.currentlyOpenModule.file.id,
@@ -48,7 +70,8 @@ export class Workspace {
             language: 0,
             sql_baseDatabase: "",
             sql_history: "",
-            sql_manipulateDatabaseStatements: ""
+            sql_manipulateDatabaseStatements: "",
+            settings: JSON.stringify(this.settings)
         }
 
         if(withFiles){
@@ -98,12 +121,31 @@ export class Workspace {
 
     static restoreFromData(ws: WorkspaceData, main: Main): Workspace {
 
+        let settings: WorkspaceSettings = (ws.settings != null && ws.settings.startsWith("{")) ? JSON.parse(ws.settings) : {libraries: []}; 
+
+        //@ts-ignore
+        if(settings.libaries){
+            //@ts-ignore
+            settings.libraries = settings.libaries;
+        }
+
         let w = new Workspace(ws.name, main, ws.owner_id);
         w.id = ws.id;
+        w.path = ws.path;
+        w.isFolder = ws.isFolder;
         w.owner_id = ws.owner_id;
         w.version = ws.version;
         w.repository_id = ws.repository_id;
         w.has_write_permission_to_repository = ws.has_write_permission_to_repository;
+        w.settings = settings;
+
+        if(w.settings.libraries == null){
+            w.settings.libraries = [];
+        }
+
+        if(w.settings.libraries.length > 0){
+            w.moduleStore.setAdditionalLibraries(w.settings.libraries);
+        }
 
         for(let f of ws.files){
 

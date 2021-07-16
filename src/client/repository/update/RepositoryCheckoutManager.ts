@@ -79,7 +79,7 @@ export class RepositoryCheckoutManager {
 
         $divBelow.append(makeDiv('', 'updateRepo-minorHeading', 'Repositories:', {'margin-bottom': '10px', 'margin-top': '20px'}));
 
-        this.$repoListDiv = makeDiv('#checkoutRepo-repoListDiv', 'jo-scrollable');
+        this.$repoListDiv = makeDiv('checkoutRepo-repoListDiv', 'jo_scrollable');
         $divBelow.append(this.$repoListDiv);
 
         let $buttonDiv = makeDiv("updateRepo-buttonDiv");
@@ -218,7 +218,11 @@ export class RepositoryCheckoutManager {
 
             if(workspace == null && response.new_workspace != null){
 
-                that.main.networkManager.createNewWorkspaceFromWorkspaceData(response.new_workspace);
+                let newWorkspace = that.main.networkManager.createNewWorkspaceFromWorkspaceData(response.new_workspace);
+                that.main.projectExplorer.workspaceListPanel.sortElements();
+                // that.main.projectExplorer.workspaceListPanel.select(newWorkspace, false, true);
+                that.main.projectExplorer.setWorkspaceActive(newWorkspace, true);
+
                 alert('Der neue Workspace ' + response.new_workspace.name + " wurde erfolgreich angelegt.");
 
             } else {

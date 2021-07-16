@@ -41,7 +41,7 @@ export class Compiler {
             m.errors[0] = lexed.errors;
             m.tokenList = lexed.tokens;
             m.bracketError = lexed.bracketError;
-            if(m.file.name == this.main.getCurrentlyEditedModule().file.name){
+            if(m.file.name == this.main.getCurrentlyEditedModule()?.file?.name){
                 if(this.main.getBottomDiv() != null) this.main.getBottomDiv().errorManager.showParenthesisWarning(lexed.bracketError);
             }
         }

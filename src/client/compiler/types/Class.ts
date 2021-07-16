@@ -39,7 +39,7 @@ export class Klass extends Type {
     isTypeVariable: boolean = false;
     typeVariablesReady: boolean = true;
 
-    private static dontInheritFrom: string[] = ["Integer", "Float", "Double", "Boolean", "Character", "String"];
+    private static dontInheritFrom: string[] = ["Integer", "Float", "Double", "Boolean", "Character", "String", "Shape", "FilledShape"];
 
     baseClass: Klass;
     firstPassBaseClass: string;
@@ -91,12 +91,12 @@ export class Klass extends Type {
     }
 
     setupAttributeIndicesRecursive() {
-        if(this.baseClass != null && this.baseClass.numberOfAttributesIncludingBaseClass == null){
+        if (this.baseClass != null && this.baseClass.numberOfAttributesIncludingBaseClass == null) {
             this.baseClass.setupAttributeIndicesRecursive();
         }
         let numberOfAttributesInBaseClasses = this.baseClass == null ? 0 : this.baseClass.numberOfAttributesIncludingBaseClass;
 
-        for(let a of this.attributes){
+        for (let a of this.attributes) {
             a.index = numberOfAttributesInBaseClasses++;
             // console.log(this.identifier + "." + a.identifier+ ": " + a.index);
         }
@@ -122,7 +122,7 @@ export class Klass extends Type {
         let klass: Klass = this;
         while (klass != null) {
             for (let i1 of klass.implements) {
-                if(i1.getThisOrExtendedInterface(i.getNonGenericIdentifier()) != null) return true;
+                if (i1.getThisOrExtendedInterface(i.getNonGenericIdentifier()) != null) return true;
             }
             klass = klass.baseClass;
         }
@@ -136,7 +136,7 @@ export class Klass extends Type {
         while (klass != null) {
             for (let i1 of klass.implements) {
                 let i2: Interface = i1.getThisOrExtendedInterface(identifier);
-                if(i2 != null) return i2;
+                if (i2 != null) return i2;
             }
             klass = klass.baseClass;
         }
@@ -264,8 +264,8 @@ export class Klass extends Type {
         }
 
         for (let method of this.getMethods(visibilityUpTo)) {
-            if (method.isConstructor){
-                if(currentMethod?.isConstructor && currentMethod != method && this.baseClass.methods.indexOf(method) >= 0){
+            if (method.isConstructor) {
+                if (currentMethod?.isConstructor && currentMethod != method && this.baseClass.methods.indexOf(method) >= 0) {
                     this.pushSuperCompletionItem(itemList, method, leftBracketAlreadyThere, rangeToReplace);
                     continue;
                 } else {
@@ -357,7 +357,7 @@ export class Klass extends Type {
     }
 
     public addMethod(method: Method) {
-        if(method.isConstructor){
+        if (method.isConstructor) {
             method.returnType = null;
         }
         if (method.isStatic) {
@@ -406,7 +406,7 @@ export class Klass extends Type {
 
         if (operation == TokenType.keywordInstanceof) {
             let firstOpClass = firstOperand?.value?.class;
-            if(firstOpClass == null) return false;
+            if (firstOpClass == null) return false;
             let typeLeft: Klass = <Klass>firstOpClass;
             let typeRight = secondOperand.type;
             if (typeRight instanceof StaticClass) {
@@ -512,6 +512,39 @@ export class Klass extends Type {
         return false;
     }
 
+    public hasParameterlessConstructor() {
+        let hasConstructorWithParameters: boolean = false;
+        for (let m of this.methods) {
+            if (m.isConstructor) {
+                if (m.parameterlist.parameters.length == 0) {
+                    return true;
+                } else {
+                    hasConstructorWithParameters = true;
+                }
+            }
+
+        }
+
+        if (!hasConstructorWithParameters && this.baseClass != null) {
+            return this.baseClass.hasParameterlessConstructor();
+        }
+
+        return false;
+    }
+
+    public getParameterlessConstructor(): Method {
+        for (let m of this.methods) {
+            if (m.isConstructor && m.parameterlist.parameters.length == 0) return m;
+        }
+
+        if (this.baseClass != null) {
+            return this.baseClass.getParameterlessConstructor();
+        }
+
+        return null;
+    }
+
+
     public getConstructor(parameterTypes: Type[], upToVisibility: Visibility, classIdentifier: string = this.identifier): { error: string, methodList: Method[] } {
 
         let constructors: Method[] = this.methods.filter((m) => {
@@ -614,7 +647,7 @@ export class Klass extends Type {
         if (type instanceof Interface) {
 
             let klass: Klass = this;
-            while(klass != null){
+            while (klass != null) {
                 for (let i of klass.implements) {
                     if (type.getNonGenericIdentifier() == i.getNonGenericIdentifier()) {
                         return true;
@@ -662,7 +695,7 @@ export class Klass extends Type {
 
         if (message == "") {
 
-            if (this.baseClass != null && !this.isAbstract) {
+            if (this.baseClass != null) {
 
                 let abstractMethods: Method[] = [];
 
@@ -674,13 +707,13 @@ export class Klass extends Type {
                         if (m.isAbstract) {
                             abstractMethods.push(m);
                             let isImplemented: boolean = false;
-                            for(let m1 of implementedMethods){
-                                if(m1.implements(m)){
+                            for (let m1 of implementedMethods) {
+                                if (m1.implements(m)) {
                                     isImplemented = true;
                                     break;
                                 }
                             }
-                            if(!isImplemented){
+                            if (!isImplemented) {
                                 missingAbstractMethods.push(m);
                             }
                         } else {
@@ -692,7 +725,7 @@ export class Klass extends Type {
 
             }
 
-            if (missingAbstractMethods.length > 0) {
+            if (missingAbstractMethods.length > 0 && !this.isAbstract) {
                 message = "Die Klasse " + this.identifier + " muss noch folgende Methoden ihrer abstrakten Basisklassen implementieren: ";
 
                 message += missingAbstractMethods.map((m) => m.getSignatureWithReturnParameter()).join(", ");
@@ -702,13 +735,13 @@ export class Klass extends Type {
             for (let i of this.implements) {
                 for (let m of i.getMethods()) {
                     let isImplemented: boolean = false;
-                    for(let m1 of implementedMethods){
-                        if(m1.implements(m)){
+                    for (let m1 of implementedMethods) {
+                        if (m1.implements(m)) {
                             isImplemented = true;
                             break;
                         }
                     }
-                    if(!isImplemented){
+                    if (!isImplemented) {
                         missingInterfaceMethods.push(m);
                     }
                 }
@@ -823,12 +856,12 @@ export class StaticClass extends Type {
     }
 
     setupAttributeIndicesRecursive() {
-        if(this.baseClass != null && this.baseClass.numberOfAttributesIncludingBaseClass == null){
+        if (this.baseClass != null && this.baseClass.numberOfAttributesIncludingBaseClass == null) {
             this.baseClass.setupAttributeIndicesRecursive();
         }
         let numberOfAttributesInBaseClasses = this.baseClass == null ? 0 : this.baseClass.numberOfAttributesIncludingBaseClass;
 
-        for(let a of this.attributes){
+        for (let a of this.attributes) {
             a.index = numberOfAttributesInBaseClasses++;
             // console.log(this.identifier + "." + a.identifier+ ": " + a.index);
         }
@@ -1021,7 +1054,7 @@ export class StaticClass extends Type {
         return method;
     }
 
-    public getAttribute(identifier: string, upToVisibility: Visibility): { attribute: Attribute, error: string, foundButInvisible: boolean, staticClass: StaticClass} {
+    public getAttribute(identifier: string, upToVisibility: Visibility): { attribute: Attribute, error: string, foundButInvisible: boolean, staticClass: StaticClass } {
 
         let error = "";
         let notFound = false;
@@ -1044,7 +1077,7 @@ export class StaticClass extends Type {
             }
         }
 
-        return { attribute: attribute, error: error, foundButInvisible: !notFound , staticClass: this};
+        return { attribute: attribute, error: error, foundButInvisible: !notFound, staticClass: this };
     }
 
     public canCastTo(type: Type): boolean {
@@ -1095,11 +1128,11 @@ export class Interface extends Type {
         return k.identifier;
     }
 
-    getThisOrExtendedInterface(identifier: String){
-        if(this.getNonGenericIdentifier() == identifier) return this;
-        for(let if1 of this.extends){
+    getThisOrExtendedInterface(identifier: String) {
+        if (this.getNonGenericIdentifier() == identifier) return this;
+        for (let if1 of this.extends) {
             let if2 = if1.getThisOrExtendedInterface(identifier);
-            if(if2 != null) return if2;
+            if (if2 != null) return if2;
         }
         return null;
     }
@@ -1169,6 +1202,7 @@ export class Interface extends Type {
     }
 
     public addMethod(method: Method) {
+        method.isAbstract = true;
         this.methods.push(method);
         this.methodMap.set(method.signature, method);
     }
@@ -1203,13 +1237,44 @@ export class Interface extends Type {
 
     }
 
+    methodsWithSubInterfaces: Method[];
+
     /**
      * returns all methods of this interface
      * @param isStatic is not used in interfaces
      */
     public getMethods(): Method[] {
 
-        return this.methods;
+        if (this.extends.length == 0) return this.methods;
+
+        if (this.methodsWithSubInterfaces != null) return this.methodsWithSubInterfaces;
+
+        let visitedInterfaces: { [key: string]: boolean } = {};
+        let visitedMethods: { [signature: string]: boolean } = {};
+
+        this.methodsWithSubInterfaces = this.methods.slice(0);
+        for (let m of this.methods) visitedMethods[m.signature] = true;
+        visitedInterfaces[this.identifier] = true;
+
+        let todo: Interface[] = this.extends.slice(0);
+
+        while (todo.length > 0) {
+            let interf = todo.pop();
+            for (let m of interf.methods) {
+                if (!visitedMethods[m.signature]) {
+                    this.methodsWithSubInterfaces.push(m);
+                    visitedMethods[m.signature] = true;
+                }
+            }
+            for (let i of interf.extends) {
+                if (!visitedInterfaces[i.identifier]) {
+                    todo.push(i);
+                    visitedInterfaces[i.identifier] = true;
+                }
+            }
+        }
+
+        return this.methodsWithSubInterfaces;
 
     }
 
@@ -1311,31 +1376,31 @@ function findSuitableMethods(methodList: Method[], identifier: string, parameter
                 }
 
                 // Ellipsis!
-                if(suits && isEllipsis){
+                if (suits && isEllipsis) {
                     let mParameterEllipsis = m.getParameter(i);
                     let mParameterTypeEllispsis = (<ArrayType>mParameterEllipsis.type).arrayOfType;
 
-                        
-                        for (let j = i; j < parameterTypes.length; j++) {
-                            let givenType = parameterTypes[i];
-        
-                            if (givenType == null) {
-                                suits = false; break;
-                            }
-        
-                            if (mParameterTypeEllispsis == givenType) {
-                                continue;
-                            }
-        
-                            if (givenType.canCastTo(mParameterTypeEllispsis)) {
-                                howManyCastings++;
-                                continue;
-                            }
-        
-                            suits = false;
-                            break;
+
+                    for (let j = i; j < parameterTypes.length; j++) {
+                        let givenType = parameterTypes[i];
+
+                        if (givenType == null) {
+                            suits = false; break;
                         }
-        
+
+                        if (mParameterTypeEllispsis == givenType) {
+                            continue;
+                        }
+
+                        if (givenType.canCastTo(mParameterTypeEllispsis)) {
+                            howManyCastings++;
+                            continue;
+                        }
+
+                        suits = false;
+                        break;
+                    }
+
                 }
 
                 if (suits && howManyCastings <= howManyCastingsMax) {
@@ -1354,7 +1419,7 @@ function findSuitableMethods(methodList: Method[], identifier: string, parameter
     if (suitableMethods.length == 0) {
 
         if (oneWithCorrectIdentifierFound) {
-            if(parameterTypes.length == 0){
+            if (parameterTypes.length == 0) {
                 error = searchConstructor ? "Es gibt keinen parameterlosen Konstruktor der Klasse " + classIdentifier : "Die vorhandenen Methoden mit dem Bezeichner " + identifier + " haben alle mindestens einen Parameter. Hier wird aber kein Parameterwert übergeben.";
             } else {
                 let typeString = parameterTypes.map(type => type?.identifier).join(", ");
@@ -1362,7 +1427,7 @@ function findSuitableMethods(methodList: Method[], identifier: string, parameter
             }
         } else {
             error = "Der Typ " + classIdentifier + " besitzt keine Methode mit dem Bezeichner " + identifier + ".";
-            if(identifier == 'setCenter'){
+            if (identifier == 'setCenter') {
                 error += ' Tipp: Die Methode setCenter der Klasse Shape wurde umbenannt in "moveTo".'
             }
         }

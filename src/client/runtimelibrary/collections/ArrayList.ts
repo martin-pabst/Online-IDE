@@ -90,7 +90,7 @@ export class ArrayListClass extends Klass {
 
                 return ah.add(r, index);
 
-            }, false, false, "Ändert das Element an der Position index der Liste. Tipp: Das erste Element der Liste hat index == 0."));
+            }, false, false, "Fügt das Element an der Position index der Liste ein. Tipp: Das erste Element der Liste hat index == 0."));
 
         this.addMethod(new Method("get", new Parameterlist([
             { identifier: "index", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
@@ -412,9 +412,9 @@ export class ListHelper {
             this.valueArray.push(r);
             this.objectArray.push(r.value);
         } else {
-            if(index < this.objectArray.length && index >= 0){
-                this.valueArray[index] = r;
-                this.objectArray[index] = r.value;
+            if(index <= this.objectArray.length && index >= 0){
+                this.valueArray.splice(index, 0, r);
+                this.objectArray.splice(index, 0, r.value);
             } else {
                 this.interpreter.throwException("Der ArrayList-Index ist außerhalb des Intervalls von 0 bis " + (this.valueArray.length - 1) + ". ")
             }

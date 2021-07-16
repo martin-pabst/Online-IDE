@@ -4,7 +4,7 @@ import { ArrayType } from "../types/Array.js";
 import { Klass, Interface, StaticClass, Visibility, getVisibilityUpTo } from "../types/Class.js";
 import { booleanPrimitiveType, charPrimitiveType, floatPrimitiveType, intPrimitiveType, stringPrimitiveType, objectType, nullType, voidPrimitiveType, varType, doublePrimitiveType } from "../types/PrimitiveTypes.js";
 import { Attribute, Type, Variable, Value, PrimitiveType, UsagePositions, Method, Heap, getTypeIdentifier, Parameterlist } from "../types/Types.js";
-import { ASTNode, AttributeDeclarationNode, BinaryOpNode, ClassDeclarationNode, ConstantNode, DoWhileNode, ForNode, IdentifierNode, IfNode, IncrementDecrementNode, MethodcallNode, MethodDeclarationNode, NewObjectNode, ReturnNode, SelectArrayElementNode, SelectArributeNode, SuperconstructorCallNode, SuperNode, ThisNode, UnaryOpNode, WhileNode, LocalVariableDeclarationNode, ArrayInitializationNode, NewArrayNode, PrintNode, CastManuallyNode, EnumDeclarationNode, TermNode, SwitchNode, ScopeNode, ParameterNode, ForNodeOverCollecion } from "./AST.js";
+import { ASTNode, AttributeDeclarationNode, BinaryOpNode, ClassDeclarationNode, ConstantNode, DoWhileNode, ForNode, IdentifierNode, IfNode, IncrementDecrementNode, MethodcallNode, MethodDeclarationNode, NewObjectNode, ReturnNode, SelectArrayElementNode, SelectArributeNode, SuperconstructorCallNode, SuperNode, ThisNode, UnaryOpNode, WhileNode, LocalVariableDeclarationNode, ArrayInitializationNode, NewArrayNode, PrintNode, CastManuallyNode, EnumDeclarationNode, TermNode, SwitchNode, ScopeNode, ParameterNode, ForNodeOverCollecion, ConstructorCallNode } from "./AST.js";
 import { LabelManager } from "./LabelManager.js";
 import { Module, ModuleStore, MethodCallPosition } from "./Module.js";
 import { AssignmentStatement, InitStackframeStatement, JumpAlwaysStatement, Program, Statement, BeginArrayStatement, NewObjectStatement, JumpOnSwitchStatement, Breakpoint, ExtendedForLoopCheckCounterAndGetElement } from "./Program.js";
@@ -21,8 +21,8 @@ type StackType = {
 
 export class CodeGenerator {
 
-    static assignmentOperators = [TokenType.assignment, TokenType.plusAssignment, TokenType.minusAssignment, 
-        TokenType.multiplicationAssignment, TokenType.divisionAssignment, TokenType.ANDAssigment, TokenType.ORAssigment,
+    static assignmentOperators = [TokenType.assignment, TokenType.plusAssignment, TokenType.minusAssignment,
+    TokenType.multiplicationAssignment, TokenType.divisionAssignment, TokenType.ANDAssigment, TokenType.ORAssigment,
     TokenType.XORAssigment, TokenType.shiftLeftAssigment, TokenType.shiftRightAssigment, TokenType.shiftRightUnsignedAssigment];
 
     moduleStore: ModuleStore;
@@ -312,8 +312,15 @@ export class CodeGenerator {
 
         let method = methods.methodList[0];
 
+        let destType: Type = null;
         for (let i = 0; i < parameterTypes.length; i++) {
-            let destType = method.getParameterType[i];
+            if (i < method.getParameterCount()) {  // possible ellipsis!
+                destType = method.getParameterType(i);
+                if (i == method.getParameterCount() - 1 && method.hasEllipsis()) {
+                    destType = (<ArrayType>destType).arrayOfType;
+                }
+            }
+
             let srcType = parameterTypes[i];
             if (!srcType.equals(destType)) {
 
@@ -331,13 +338,26 @@ export class CodeGenerator {
             }
         }
 
+        let stackframeDelta = 0;
+        if (method.hasEllipsis()) {
+            let ellipsisParameterCount = parameterTypes.length - method.getParameterCount() + 1; // last parameter and subsequent ones
+            stackframeDelta = - (ellipsisParameterCount - 1);
+            this.pushStatements({
+                type: TokenType.makeEllipsisArray,
+                position: parameterNodes[method.getParameterCount() - 1].position,
+                parameterCount: ellipsisParameterCount,
+                stepFinished: false,
+                arrayType: method.getParameter(method.getParameterCount() - 1).type
+            })
+        }
+
         this.pushStatements({
             type: TokenType.callMethod,
             method: method,
             position: position,
             stepFinished: true,
             isSuperCall: false,
-            stackframeBegin: -(parameterTypes.length + 1) // this-object followed by parameters
+            stackframeBegin: -(parameterTypes.length + 1 + stackframeDelta) // this-object followed by parameters
         });
     }
 
@@ -387,6 +407,15 @@ export class CodeGenerator {
         for (let methodNode of classNode.methods) {
             if (methodNode != null && !methodNode.isAbstract && !methodNode.isStatic) {
                 this.compileMethod(methodNode);
+                let m: Method = methodNode.resolvedType;
+                if (m != null && m.annotation == "@Override") {
+                    if (klass.baseClass != null) {
+                        if (klass.baseClass.getMethodBySignature(m.signature) == null) {
+                            this.pushError("Die Methode " + m.signature + " ist mit @Override annotiert, überschreibt aber keine Methode gleicher Signatur einer Oberklasse.", methodNode.position, "warning");
+                        }
+                    }
+                }
+
             }
         }
 
@@ -426,7 +455,6 @@ export class CodeGenerator {
         }
 
         this.popSymbolTable(null);
-
 
     }
 
@@ -481,6 +509,31 @@ export class CodeGenerator {
 
     }
 
+    getSuperconstructorCalls(nodes: ASTNode[], superconstructorCallsFound: ASTNode[], isFirstStatement: boolean): boolean {
+        for (let node of nodes) {
+            if(node == null) continue;
+            if (node.type == TokenType.superConstructorCall) {
+
+                if (!isFirstStatement) {
+                    if (superconstructorCallsFound.length > 0) {
+                        this.pushError("Ein Konstruktor darf nur einen einzigen Aufruf des Superkonstruktors enthalten.", node.position, "error");
+                    } else {
+                        this.pushError("Vor dem Aufruf des Superkonstruktors darf keine andere Anweisung stehen.", node.position, "error");
+                    }
+                }
+
+                superconstructorCallsFound.push(node);
+                isFirstStatement = false;
+            } else if (node.type == TokenType.scopeNode && node.statements != null) {
+                isFirstStatement = isFirstStatement && this.getSuperconstructorCalls(node.statements, superconstructorCallsFound, isFirstStatement);
+            } else {
+                isFirstStatement = false;
+            }
+        }
+        return isFirstStatement;
+    }
+
+
     compileMethod(methodNode: MethodDeclarationNode) {
         // Assumption: methodNode != null
         let method = methodNode.resolvedType;
@@ -508,21 +561,28 @@ export class CodeGenerator {
         // " + 1" is for "this"-object
         this.nextFreeRelativeStackPos = methodNode.parameters.length + 1;
 
-        if (method.isConstructor && this.currentSymbolTable.classContext instanceof Klass) {
+        if (method.isConstructor && this.currentSymbolTable.classContext instanceof Klass && methodNode.statements != null) {
             let c: Klass = this.currentSymbolTable.classContext;
-            if (c != null && c.baseClass?.hasConstructor()) {
+
+            let superconstructorCalls: ASTNode[] = [];
+            this.getSuperconstructorCalls(methodNode.statements, superconstructorCalls, true);
+
+            let superconstructorCallEnsured: boolean = superconstructorCalls.length > 0;
+
+            // if (methodNode.statements.length > 0 && methodNode.statements[0].type == TokenType.scopeNode) {
+            //     let stm = methodNode.statements[0].statements;
+            //     if (stm.length > 0 && [TokenType.superConstructorCall, TokenType.constructorCall].indexOf(stm[0].type) >= 0) {
+            //         superconstructorCallEnsured = true;
+            //     }
+            // } else if ([TokenType.superConstructorCall, TokenType.constructorCall].indexOf(methodNode.statements[0].type) >= 0) {
+            //     superconstructorCallEnsured = true;
+            // }
+
+            if (c != null && c.baseClass?.hasConstructor() && !c.baseClass?.hasParameterlessConstructor()) {
                 let error: boolean = false;
                 if (methodNode.statements == null || methodNode.statements.length == 0) error = true;
                 if (!error) {
-                    error = true;
-                    if (methodNode.statements[0].type == TokenType.scopeNode) {
-                        let stm = methodNode.statements[0].statements;
-                        if (stm.length > 0 && stm[0].type == TokenType.superConstructorCall) {
-                            error = false;
-                        }
-                    } else if (methodNode.statements[0].type == TokenType.superConstructorCall) {
-                        error = false;
-                    }
+                    error = !superconstructorCallEnsured;
                 }
                 if (error) {
                     let quickFix: QuickFix = null;
@@ -549,9 +609,28 @@ export class CodeGenerator {
                             }
                         }
                     }
-                    this.pushError("Die Basisklasse der Klasse " + c.identifier + " besitzt Konstruktoren, daher muss diese Konstruktordefinition mit einem Aufruf eines Konstruktors der Basisklasse (super(...)) beginnen.",
+                    this.pushError("Die Basisklasse der Klasse " + c.identifier + " besitzt keinen parameterlosen Konstruktor, daher muss diese Konstruktordefinition mit einem Aufruf eines Konstruktors der Basisklasse (super(...)) beginnen.",
                         methodNode.position, "error", quickFix);
                 }
+            } else if (!superconstructorCallEnsured && c.baseClass?.hasParameterlessConstructor()) {
+                // invoke parameterless constructor
+                let baseClassConstructor = c.baseClass.getParameterlessConstructor();
+                this.pushStatements([
+                    // Push this-object to stack:
+                    {
+                        type: TokenType.pushLocalVariableToStack,
+                        position: methodNode.position,
+                        stackposOfVariable: 0
+                    },
+                    {
+                        type: TokenType.callMethod,
+                        method: baseClassConstructor,
+                        isSuperCall: true,
+                        position: methodNode.position,
+                        stackframeBegin: -1 // this-object followed by parameters
+                    }
+
+                ])
             }
         }
 
@@ -560,6 +639,7 @@ export class CodeGenerator {
             "onMouseDown", "onMouseUp", "onMouseMove", "onMouseEnter", "onMouseLeave"];
         if (methodIdentifiers.indexOf(method.identifier) >= 0 && this.currentSymbolTable.classContext.hasAncestorOrIs(actorClass)) {
             this.pushStatements([
+
                 {
                     type: TokenType.returnIfDestroyed,
                     position: methodNode.position
@@ -815,12 +895,12 @@ export class CodeGenerator {
     }
 
     checkIfAssignmentInstedOfEqual(nodeFrom: ASTNode, conditionType?: Type) {
-        if(nodeFrom == null) return;
+        if (nodeFrom == null) return;
 
         if (nodeFrom.type == TokenType.binaryOp && nodeFrom.operator == TokenType.assignment) {
             let pos = nodeFrom.position;
             this.pushError("= ist der Zuweisungsoperator. Du willst sicher zwei Werte vergleichen. Dazu benötigst Du den Vergleichsoperator ==.",
-                pos,  conditionType == booleanPrimitiveType ? "warning" : "error", {
+                pos, conditionType == booleanPrimitiveType ? "warning" : "error", {
                 title: '= durch == ersetzen',
                 editsProvider: (uri) => {
                     return [{
@@ -958,7 +1038,9 @@ export class CodeGenerator {
 
     removeLastStatement() {
         let lst = this.currentProgram.statements.pop();
-        this.currentProgram.labelManager.removeNode(lst);
+        if (this.currentProgram.labelManager != null) {
+            this.currentProgram.labelManager.removeNode(lst);
+        }
     }
 
     initStackFrameNodes: InitStackframeStatement[] = [];
@@ -1139,6 +1221,8 @@ export class CodeGenerator {
             case TokenType.incrementDecrementAfter:
                 return this.incrementDecrementBeforeOrAfter(node);
             case TokenType.superConstructorCall:
+                return this.superconstructorCall(node);
+            case TokenType.constructorCall:
                 return this.superconstructorCall(node);
             case TokenType.keywordThis:
                 return this.pushThisOrSuper(node, false);
@@ -2102,14 +2186,18 @@ export class CodeGenerator {
         this.pushTypePosition(node.rightBracketPosition, resolvedType); // to enable code completion when typing a point after the closing bracket
 
         let parameterTypes: Type[] = [];
-        let parameterStatements: Statement[][] = [];
+        // let parameterStatements: Statement[][] = [];
+        let positionsAfterParameterStatements: number[] = []
         let allStatements = this.currentProgram.statements;
 
         if (node.constructorOperands?.length > 0) {
-            for (let p of node.constructorOperands) {
-                let programPointer = allStatements.length;
+            // for (let p of node.constructorOperands) {
+            for (let j = 0; j < node.constructorOperands.length; j++) {
+                let p = node.constructorOperands[j];
+                // let programPointer = allStatements.length;
                 let typeNode = this.processNode(p);
-                parameterStatements.push(allStatements.splice(programPointer, allStatements.length - programPointer));
+                // parameterStatements.push(allStatements.splice(programPointer, allStatements.length - programPointer));
+                positionsAfterParameterStatements.push(allStatements.length);
                 if (typeNode == null) {
                     parameterTypes.push(voidPrimitiveType);
                 } else {
@@ -2157,12 +2245,20 @@ export class CodeGenerator {
                         destType = (<ArrayType>destType).arrayOfType;
                     }
                 }
+
                 let srcType = parameterTypes[i];
-                for (let st of parameterStatements[i]) {
-                    this.currentProgram.statements.push(st);
-                }
+                // for (let st of parameterStatements[i]) {
+                //     this.currentProgram.statements.push(st);
+                // }
+                let programPosition = allStatements.length;
                 if (!this.ensureAutomaticCasting(srcType, destType, node.constructorOperands[i].position, node.constructorOperands[i])) {
                     this.pushError("Der Wert vom Datentyp " + srcType.identifier + " kann nicht als Parameter (Datentyp " + destType.identifier + ") verwendet werden.", node.constructorOperands[i].position);
+                }
+
+                if (allStatements.length > programPosition) {
+                    let castingStatements = allStatements.splice(programPosition, allStatements.length - programPosition);
+                    allStatements.splice(positionsAfterParameterStatements[i], 0, ...castingStatements);
+                    this.currentProgram.labelManager.correctPositionsAfterInsert(positionsAfterParameterStatements[i], castingStatements.length);
                 }
 
             }
@@ -2234,8 +2330,8 @@ export class CodeGenerator {
 
             let attributeWithError = objectType.getAttribute(node.identifier, visibilityUpTo);
 
-            let staticAttributeWithError: { attribute: Attribute, error: string, foundButInvisible: boolean, staticClass: StaticClass} 
-               = null;
+            let staticAttributeWithError: { attribute: Attribute, error: string, foundButInvisible: boolean, staticClass: StaticClass }
+                = null;
             if (attributeWithError.attribute == null) {
                 staticAttributeWithError = objectType.staticClass.getAttribute(node.identifier, visibilityUpTo);
             }
@@ -2397,27 +2493,42 @@ export class CodeGenerator {
 
     }
 
-    superconstructorCall(node: SuperconstructorCallNode): StackType {
+    superconstructorCall(node: SuperconstructorCallNode | ConstructorCallNode): StackType {
 
         let classContext = this.currentSymbolTable.classContext;
 
-        if (classContext?.baseClass == null || classContext.baseClass.identifier == "Object") {
-            this.pushError("Die Klasse ist nur Kindklasse der Klasse Object, daher ist der Aufruf des Superkonstruktors nicht möglich.", node.position);
+        let isSuperConstructorCall: boolean = node.type == TokenType.superConstructorCall;
+
+        if (isSuperConstructorCall) {
+            if (classContext?.baseClass == null || classContext.baseClass.identifier == "Object") {
+                this.pushError("Die Klasse ist nur Kindklasse der Klasse Object, daher ist der Aufruf des Superkonstruktors nicht möglich.", node.position);
+            }
         }
 
         let methodContext = this.currentSymbolTable.method;
 
         if (classContext == null || methodContext == null || !methodContext.isConstructor) {
-            this.pushError("Ein Aufruf des Superkonstructors ist nur innerhalb des Konstruktors einer Klasse möglich.", node.position);
+            this.pushError("Ein Aufruf des Konstruktors oder des Superkonstructors ist nur innerhalb des Konstruktors einer Klasse möglich.", node.position);
             return null;
         }
 
-        let superclassType: Klass = <Klass>classContext.baseClass;
-        if (superclassType instanceof StaticClass) {
-            this.pushError("Statische Methoden haben keine super-Methoden.", node.position);
-            return { type: null, isAssignable: false };
+
+        let superclassType: Klass | StaticClass;
+
+        if (isSuperConstructorCall) {
+            superclassType = <Klass>classContext.baseClass;
+            if (superclassType instanceof StaticClass) {
+                this.pushError("Statische Methoden haben keine super-Methodenaufrufe.", node.position);
+                return { type: null, isAssignable: false };
+            }
+            if (superclassType == null) superclassType = <Klass>this.moduleStore.getType("Object").type;
+        } else {
+            superclassType = <Klass>classContext;
+            if (superclassType instanceof StaticClass) {
+                this.pushError("Statische Methoden haben keine this-Methodenaufrufe.", node.position);
+                return { type: null, isAssignable: false };
+            }
         }
-        if (superclassType == null) superclassType = <Klass>this.moduleStore.getType("Object").type;
 
         // Push this-object to stack:
         this.pushStatements({
@@ -2473,12 +2584,12 @@ export class CodeGenerator {
         this.pushStatements({
             type: TokenType.callMethod,
             method: method,
-            isSuperCall: true,
+            isSuperCall: isSuperConstructorCall,
             position: node.position,
             stackframeBegin: -(parameterTypes.length + 1 + stackframeDelta) // this-object followed by parameters
         });
         // Pabst, 21.10.2020:
-        // super method is constructor => returns nothing even iv method.getReturnType() is class object
+        // super method is constructor => returns nothing even if method.getReturnType() is class object
         // return { type: method.getReturnType(), isAssignable: false };
         return { type: null, isAssignable: false };
 
@@ -2618,7 +2729,7 @@ export class CodeGenerator {
                 let cc = this.currentSymbolTable.classContext;
                 let scc = (cc instanceof StaticClass) ? cc : cc.staticClass;
 
-                while(scc != null && scc.attributes.indexOf(attribute) == -1){
+                while (scc != null && scc.attributes.indexOf(attribute) == -1) {
                     scc = scc.baseClass;
                 }
 
@@ -2637,6 +2748,7 @@ export class CodeGenerator {
                     attributeIdentifier: attribute.identifier,
                     useThisObject: true
                 });
+                node.attribute = attribute;
             }
 
 
@@ -2748,12 +2860,16 @@ export class CodeGenerator {
 
         if (!(
             (objectNode.type instanceof Klass) || (objectNode.type instanceof StaticClass) ||
-            (objectNode.type instanceof Interface) || (objectNode.type instanceof Enum))) {
+            (objectNode.type instanceof Interface && (node.object["variable"] != null || node.object["attribute"] != null)) || (objectNode.type instanceof Enum))) {
 
             if (objectNode.type == null) {
                 this.pushError("Werte dieses Datentyps besitzen keine Methoden.", node.position);
             } else {
-                this.pushError('Werte des Datentyps ' + objectNode.type.identifier + " besitzen keine Methoden.", node.position);
+                if (objectNode.type instanceof Interface) {
+                    this.pushError('Methodendefinitionen eines Interfaces können nicht statisch aufgerufen werden.', node.position);
+                } else {
+                    this.pushError('Werte des Datentyps ' + objectNode.type.identifier + " besitzen keine Methoden.", node.position);
+                }
             }
 
             return null;
@@ -2764,14 +2880,18 @@ export class CodeGenerator {
         let posBeforeParameterEvaluation = this.currentProgram.statements.length;
 
         let parameterTypes: Type[] = [];
-        let parameterStatements: Statement[][] = [];
+        // let parameterStatements: Statement[][] = [];
+        let positionsAfterParameterStatements: number[] = []
 
         let allStatements = this.currentProgram.statements;
         if (node.operands != null) {
-            for (let p of node.operands) {
-                let programPointer = allStatements.length;
+            // for (let p of node.operands) {
+            for (let j = 0; j < node.operands.length; j++) {
+                let p = node.operands[j];
+                // let programPointer = allStatements.length;
                 let typeNode = this.processNode(p);
-                parameterStatements.push(allStatements.splice(programPointer, allStatements.length - programPointer));
+                // parameterStatements.push(allStatements.splice(programPointer, allStatements.length - programPointer));
+                positionsAfterParameterStatements.push(allStatements.length);
                 if (typeNode == null) {
                     parameterTypes.push(voidPrimitiveType);
                 } else {
@@ -2828,13 +2948,24 @@ export class CodeGenerator {
                     destType = (<ArrayType>destType).arrayOfType;
                 }
             }
+
+            // Marker 1
             let srcType = parameterTypes[i];
-            for (let st of parameterStatements[i]) {
-                this.currentProgram.statements.push(st);
-            }
+            // for (let st of parameterStatements[i]) {
+            //     this.currentProgram.statements.push(st);
+            // }
+            let programPosition = allStatements.length;
+
             if (!this.ensureAutomaticCasting(srcType, destType, node.operands[i].position, node.operands[i])) {
                 this.pushError("Der Wert vom Datentyp " + srcType.identifier + " kann nicht als Parameter (Datentyp " + destType.identifier + ") verwendet werden.", node.operands[i].position);
             }
+
+            if (allStatements.length > programPosition) {
+                let castingStatements = allStatements.splice(programPosition, allStatements.length - programPosition);
+                allStatements.splice(positionsAfterParameterStatements[i], 0, ...castingStatements);
+                this.currentProgram.labelManager.correctPositionsAfterInsert(positionsAfterParameterStatements[i], castingStatements.length);
+            }
+
 
             // if (srcType instanceof PrimitiveType && destType instanceof PrimitiveType) {
             //     if (srcType.getCastInformation(destType).needsStatement) {
@@ -3051,23 +3182,23 @@ export class CodeGenerator {
                 let booleanOperators = ["&& (boolescher UND-Operator)", "|| (boolescher ODER-Operator)"];
                 let betterOperators = ["& &", "||"];
                 let opIndex = bitOperators.indexOf(node.operator);
-                if(opIndex >= 0 && leftType.type == booleanPrimitiveType && rightType.type == booleanPrimitiveType){
+                if (opIndex >= 0 && leftType.type == booleanPrimitiveType && rightType.type == booleanPrimitiveType) {
                     this.pushError("Die Operation " + TokenTypeReadable[node.operator] + " ist für die Operanden der Typen " + leftType.type.identifier + " und " + rightType.type.identifier + " nicht definiert. Du meintest wahrscheinlich den Operator " + booleanOperators[opIndex] + ".", node.position, "error",
-                    {
-                        title: "Operator " + betterOperators[opIndex] + " verwenden statt " + TokenTypeReadable[node.operator],
-                        editsProvider: (uri) => {
-                            return [
-                                {
-                                    resource: uri,
-                                    edit: {
-                                        range: { startLineNumber: node.position.line, startColumn: node.position.column, endLineNumber: node.position.line, endColumn: node.position.column },
-                                        text: TokenTypeReadable[node.operator]
+                        {
+                            title: "Operator " + betterOperators[opIndex] + " verwenden statt " + TokenTypeReadable[node.operator],
+                            editsProvider: (uri) => {
+                                return [
+                                    {
+                                        resource: uri,
+                                        edit: {
+                                            range: { startLineNumber: node.position.line, startColumn: node.position.column, endLineNumber: node.position.line, endColumn: node.position.column },
+                                            text: TokenTypeReadable[node.operator]
+                                        }
                                     }
-                                }
-                            ]
-                        }
-                    
-                    });
+                                ]
+                            }
+
+                        });
                 } else {
                     this.pushError("Die Operation " + TokenTypeReadable[node.operator] + " ist für die Operanden der Typen " + leftType.type.identifier + " und " + rightType.type.identifier + " nicht definiert.", node.position);
                 }
@@ -3108,13 +3239,14 @@ export class CodeGenerator {
                     let lm = this.currentProgram.labelManager;
                     let variantFalseLabel = lm.insertJumpNode(TokenType.jumpIfFalse, node.position, this);
                     let firstType = this.processNode(secondOperand.firstOperand);
+
                     let endLabel = lm.insertJumpNode(TokenType.jumpAlways, secondOperand.firstOperand.position, this);
                     lm.markJumpDestination(1, variantFalseLabel);
                     let secondType = this.processNode(secondOperand.secondOperand);
                     lm.markJumpDestination(1, endLabel);
 
                     let type = firstType.type;
-                    if (type != secondType.type && type.canCastTo(secondType.type)) {
+                    if (secondType != null && type != secondType.type && type.canCastTo(secondType.type)) {
                         type = secondType.type;
                     }
 

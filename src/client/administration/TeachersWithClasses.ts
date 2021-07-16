@@ -34,8 +34,8 @@ export class TeachersWithClassesMI extends AdminMenuItem {
             $tableLeft.w2grid({
                 name: this.teachersGridName,
                 header: 'Lehrkräfte',
-                selectType: "cell",
-                multiSelect: true,
+                // selectType: "cell",
+                multiSelect: false,
                 show: {
                     header: true,
                     toolbar: true,
@@ -71,7 +71,7 @@ export class TeachersWithClassesMI extends AdminMenuItem {
                     },
                     {
                         field: 'id', caption: 'PW', size: '40px', sortable: false, render: (e) => {
-                            return '<div class="pw_button" title="Passwort ändern" data-recid="' + e.recid + '">PW!</div>';
+                            return '<div class="pw_button" title="Passwort ändern" data-recid=" style="visibility: hidden"' + e.recid + '">PW!</div>';
                         }
                     }
                 ],
@@ -81,8 +81,8 @@ export class TeachersWithClassesMI extends AdminMenuItem {
                     { field: 'familienname', label: 'Familienname', type: 'text' }
                 ],
                 sortData: [{ field: 'familienname', direction: 'asc' }, { field: 'rufname', direction: 'asc' }],
-                onSelect: (event) => { that.onSelectTeacher(event) },
-                onUnselect: (event) => { that.onSelectTeacher(event) },
+                onSelect: (event) => { event.done(() => { that.onSelectTeacher(event) }) },
+                onUnselect: (event) => { that.onUnSelectTeacher(event) },
                 onAdd: (event) => { that.onAddTeacher() },
                 onChange: (event) => { that.onUpdateTeacher(event) },
                 onDelete: (event) => { that.onDeleteTeacher(event) },
@@ -102,7 +102,8 @@ export class TeachersWithClassesMI extends AdminMenuItem {
             $tableRight.w2grid({
                 name: this.classesGridName,
                 header: 'Klassen',
-                selectType: "cell",
+                // selectType: "cell",
+                multiSelect: true,
                 show: {
                     header: true,
                     toolbar: true,
@@ -144,17 +145,17 @@ export class TeachersWithClassesMI extends AdminMenuItem {
                 e.preventDefault();
                 e.stopPropagation();
                 that.changePassword([recid]);
-            });
-        }, 1500);
+            }).css('visibility', 'visible');
+        }, 1000);
 
     }
 
     changePassword(recIds: number[] = []) {
-        let that = this;
 
         if (recIds.length == 0) {
+            recIds = <number[]>this.teachersGrid.getSelection();
             //@ts-ignore
-            recIds = <any>this.teachersGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
+            //recIds = <any>this.teachersGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
         }
 
         if (recIds.length != 1) {
@@ -178,47 +179,13 @@ export class TeachersWithClassesMI extends AdminMenuItem {
                     //@ts-ignore
                     w2utils.unlock(jQuery('body'));
                     w2alert('Das Passwort für ' + teacher.rufname + " " + teacher.familienname + " (" + teacher.username + ") wurde erfolgreich geändert.");
-            }, () => {
-                //@ts-ignore
-                w2utils.unlock(jQuery('body'));
-                w2alert('Fehler beim Ändern des Passworts!');
+                }, () => {
+                    //@ts-ignore
+                    w2utils.unlock(jQuery('body'));
+                    w2alert('Fehler beim Ändern des Passworts!');
                 });
             });
 
-
-            // w2prompt({
-            //     label: 'Neues Passwort',
-            //     value: '',
-            //     attrs: 'style="width: 200px" type="password"',
-            //     title: "Passwort für " + admin.rufname + " " + admin.familienname + " (" + admin.username + ")",
-            //     ok_text: "OK",
-            //     cancel_text: "Abbrechen",
-            //     width: 600,
-            //     height: 200
-            // })
-            //     .change(function (event) {
-
-            //     })
-            //     .ok(function (password) {
-            //         admin.password = password;
-
-            //         let request: CRUDUserRequest = {
-            //             type: "update",
-            //             data: admin,
-            //         }
-
-            //         ajax("CRUDUser", request, (response: CRUDResponse) => {
-
-            //             w2alert('Das Passwort für ' + admin.rufname + " " + admin.familienname + " (" + admin.username + ") wurde erfolgreich geändert.");
-
-            //         }, () => {
-            //             w2alert('Fehler beim Ändern des Passworts!');
-            //         });
-
-
-            //     });
-
-            // jQuery('#w2prompt').attr("type", "password");
         }
 
     }
@@ -267,50 +234,44 @@ export class TeachersWithClassesMI extends AdminMenuItem {
         });
     }
 
-    // lastRecId: number = -1;
+    onUnSelectTeacher(event) {
+        this.classesGrid.clear();
+    }
 
     onSelectTeacher(event: any) {
 
-        // if (event.recid == this.lastRecId) {
-        //     return;
-        // }
+        let recIds: number[] = <number[]>this.teachersGrid.getSelection();
 
-        // this.lastRecId = event.recid;
+        if(recIds.length != 1) return;
 
-        event.done(() => {
-            let recIds: number[];
+        // //@ts-ignore
+        // recIds = <any>this.teachersGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
 
+        if (recIds.length == 1) {
             //@ts-ignore
-            recIds = <any>this.teachersGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
+            this.teachersGrid.toolbar.enable('passwordButton');
+        } else {
+            //@ts-ignore
+            this.teachersGrid.toolbar.disable('passwordButton');
+        }
 
-            if (recIds.length == 1) {
-                //@ts-ignore
-                this.teachersGrid.toolbar.enable('passwordButton');
-            } else {
-                //@ts-ignore
-                this.teachersGrid.toolbar.disable('passwordButton');
+        let selectedTeachers: TeacherData[] = <TeacherData[]>this.teacherDataList.filter(
+            (cd: TeacherData) => recIds.indexOf(cd.userData.id) >= 0);
+
+
+        let classesList: ClassData[] = [];
+
+        for (let sc of selectedTeachers) {
+            for (let sd of sc.classes) {
+                sd["teacher"] = sc.userData.rufname + " " + sc.userData.familienname;
+                classesList.push(sd);
             }
-
-            let selectedTeachers: TeacherData[] = <TeacherData[]>this.teacherDataList.filter(
-                (cd: TeacherData) => recIds.indexOf(cd.userData.id) >= 0);
+        }
 
 
-            let classesList: ClassData[] = [];
-
-            for (let sc of selectedTeachers) {
-                for (let sd of sc.classes) {
-                    sd["teacher"] = sc.userData.rufname + " " + sc.userData.familienname;
-                    classesList.push(sd);
-                }
-            }
-
-
-            setTimeout(() => {
-                this.classesGrid.clear();
-                this.classesGrid.add(classesList);
-                this.classesGrid.refresh();
-            }, 5);
-        });
+        this.classesGrid.clear();
+        this.classesGrid.add(classesList);
+        this.classesGrid.refresh();
 
     }
 
@@ -353,12 +314,13 @@ export class TeachersWithClassesMI extends AdminMenuItem {
 
         let recIds: number[];
 
+        recIds = <number[]>this.teachersGrid.getSelection();
 
         //@ts-ignore
-        recIds = <any>this.teachersGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
+        // recIds = <any>this.teachersGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
 
-        let selectedteachers: TeacherData[] = <TeacherData[]>this.teachersGrid.records.filter(
-            (cd: TeacherData) => recIds.indexOf(cd.userData.id) >= 0 && this.administration.userData.id != cd.userData.id);
+        // let selectedteachers: TeacherData[] = <TeacherData[]>this.teachersGrid.records.filter(
+        //     (cd: TeacherData) => recIds.indexOf(cd.userData.id) >= 0 && this.administration.userData.id != cd.userData.id);
 
         let request: CRUDUserRequest = {
             type: "delete",
@@ -386,8 +348,10 @@ export class TeachersWithClassesMI extends AdminMenuItem {
 
         let data: TeacherData = <TeacherData>this.teachersGrid.records[event.index];
 
-        data.userData[this.teachersGrid.columns[event.column]["field"]] = event.value_new;
-        data[this.teachersGrid.columns[event.column]["field"]] = event.value_new;
+        let field = this.teachersGrid.columns[event.column]["field"];       
+
+        data.userData[field] = event.value_new;
+        data[field] = event.value_new;
 
         data.userData.password = null;
 
@@ -398,19 +362,24 @@ export class TeachersWithClassesMI extends AdminMenuItem {
 
         ajax("CRUDUser", request, (response: CRUDResponse) => {
             // console.log(data);
-            for (let key in data["w2ui"]["changes"]) {
-                delete data["w2ui"]["changes"][key];
-            }
+            // for (let key in data["w2ui"]["changes"]) {
+                delete data["w2ui"]["changes"][field];
+            // }
+            this.teachersGrid.refreshCell(data["recid"], field);
         }, () => {
-            data.userData[this.teachersGrid.columns[event.column]["field"]] = event.value_original;
-            data[this.teachersGrid.columns[event.column]["field"]] = event.value_original;
+            data.userData[field] = event.value_original;
+            data[field] = event.value_original;
+            delete data["w2ui"]["changes"][field];
+            this.teachersGrid.refreshCell(data["recid"], field);
         });
 
     }
 
     onAddClass() {
 
-        let selectedTeachers = <number[]>this.teachersGrid.getSelection().map((d: { recid: number }) => d.recid).filter((value, index, array) => array.indexOf(value) === index);
+        let selectedTeachers = <number[]>this.teachersGrid.getSelection();
+
+        // let selectedTeachers = <number[]>this.teachersGrid.getSelection().map((d: { recid: number }) => d.recid).filter((value, index, array) => array.indexOf(value) === index);
         if (selectedTeachers.length != 1) {
             this.classesGrid.error("Wenn Sie Klassen hinzufügen möchten muss links genau eine Lehrkraft ausgewählt sein.");
             return;
@@ -444,15 +413,13 @@ export class TeachersWithClassesMI extends AdminMenuItem {
     onDeleteClass(event: any) {
         if (!event.force || event.isStopped) return;
 
-        let recIds: number[];
-
+        let recIds: number[] = <number[]>this.classesGrid.getSelection();
 
         //@ts-ignore
-        recIds = <any>this.classesGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
+        // recIds = <any>this.classesGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
 
-        let selectedClasss: ClassData[] = <ClassData[]>this.classesGrid.records.filter(
-            (cd: ClassData) => recIds.indexOf(cd.id) >= 0);
-
+        // let selectedClasss: ClassData[] = <ClassData[]>this.classesGrid.records.filter(
+        //     (cd: ClassData) => recIds.indexOf(cd.id) >= 0);
 
         let request: CRUDClassRequest = {
             type: "delete",
@@ -498,7 +465,8 @@ export class TeachersWithClassesMI extends AdminMenuItem {
             }
         }
 
-        data[this.classesGrid.columns[event.column]["field"]] = event.value_new;
+        let field = this.classesGrid.columns[event.column]["field"];
+        data[field] = event.value_new;
 
         let request: CRUDClassRequest = {
             type: "update",
@@ -507,11 +475,12 @@ export class TeachersWithClassesMI extends AdminMenuItem {
 
         ajax("CRUDClass", request, (response: CRUDResponse) => {
             // console.log(data);
-            if (event.column != 2) delete data["w2ui"]["changes"];
-            this.classesGrid.refresh();
+            delete data["w2ui"]["changes"][field];
+            this.classesGrid.refreshCell(data["recid"], field);
         }, () => {
-            data[this.classesGrid.columns[event.column]["field"]] = event.value_original;
-            this.classesGrid.refresh();
+            data[field] = event.value_original;
+            delete data["w2ui"]["changes"][field];
+            this.classesGrid.refreshCell(data["recid"], field);
         });
     }
 

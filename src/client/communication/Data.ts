@@ -9,7 +9,8 @@ export type UserSettings = {
         consoleHelperDone: boolean,
         homeButtonHelperDone: boolean,
         stepButtonHelperDone: boolean,
-        repositoryButtonDone: boolean
+        repositoryButtonDone: boolean,
+        folderButtonDone: boolean
     },
     //    theme: string,  // old!
     viewModes: ViewModes,
@@ -30,6 +31,7 @@ export type ViewMode = {
 
 
 export type WorkspaceSettings = {
+    libraries: string[]
 }
 
 export type FileData = {
@@ -50,11 +52,13 @@ export type FileData = {
 
 export type WorkspaceData = {
     name: string,
+    path: string,
+    isFolder: boolean,
     id: number,
     owner_id: number,
     files: FileData[],
     currentFileId: number,
-    settings?: WorkspaceSettings,
+    settings?: string,       // serialized WorkspaceSettings
 
     version: number,
     repository_id: number,    // id of repository-workspace

@@ -492,7 +492,7 @@ export class TurtleHelper extends FilledShapeHelper {
         let y = lastLineElement.y;
 
         for (let sh of this.worldHelper.shapes) {
-            if (sh.containsPoint(x, y) && sh != this) {
+            if (sh != this && sh.containsPoint(x, y)) {
                 return true;
             }
         }
@@ -504,7 +504,7 @@ export class TurtleHelper extends FilledShapeHelper {
         let y = lastLineElement.y;
 
         for (let sh of this.worldHelper.shapes) {
-            if (sh.containsPoint(x, y) && sh != this) {
+            if (sh != this && sh.containsPoint(x, y)) {
                 if (sh instanceof FilledShapeHelper && sh.fillColor == farbe) return true;
                 // if(sh instanceof TurtleHelper) TODO
             }

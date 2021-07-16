@@ -4,6 +4,8 @@ export type DialogButton = {
     callback: () => void
 }
 
+export type CheckboxState = () => boolean;
+
 export class Dialog {
 
     $dialog: JQuery<HTMLElement>;
@@ -23,6 +25,16 @@ export class Dialog {
 
     heading(text: string) {
         let $div = jQuery('<div class="dialog-heading">' + text + "</div>")
+        this.$dialogMain.append($div);
+        return $div;
+    }
+
+    addDiv($div: JQuery<HTMLElement>){
+        this.$dialogMain.append($div);
+    }
+
+    subHeading(text: string) {
+        let $div = jQuery('<div class="dialog-subheading">' + text + "</div>")
         this.$dialogMain.append($div);
         return $div;
     }
@@ -69,6 +81,22 @@ export class Dialog {
         this.$dialog.css('visibility', 'hidden');
         this.$dialog.empty();
         jQuery('#main').css('visibility', 'visible');
+    }
+
+    addCheckbox(description: string, ischecked: boolean, name: string): CheckboxState {
+        let cb: string = '<input type="checkbox" name="' + name + '"' + (ischecked ? ' checked' : '') + '>';
+        let $checkbox = jQuery(cb);
+        let $description = jQuery('<label for="' + name + '">' + description + "</label>");
+        
+        let $div = jQuery('<div class="jo_checkbox_div"></div>')
+        $div.append($checkbox, $description);
+
+        $description.on('click', () => {$checkbox.prop("checked", !$checkbox.prop("checked"))})
+
+        this.$dialogMain.append($div);
+        return () => {
+            return $checkbox.is(':checked');
+        }
     }
 
 

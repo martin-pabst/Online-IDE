@@ -140,6 +140,14 @@ export class RepositorySettingsManager {
         let request: DeleteRepositoryRequest = { repository_id: repInfo.id };
         ajax('deleteRepository', request, () => {
             that.showRepositoryList();
+            let workspaces = that.main.workspaceList.filter((ws) => {return ws.repository_id == repInfo.id});
+            for(let ws of workspaces){
+                ws.repository_id = null;
+                ws.panelElement.iconClass = "workspace";
+                ws.panelElement.$htmlFirstLine.removeClass("jo_repository");
+                ws.panelElement.$htmlFirstLine.addClass("jo_workspace");
+                ws.panelElement.$htmlFirstLine.find(".jo_additionalButtonRepository").empty();
+            }
         });
 
     }

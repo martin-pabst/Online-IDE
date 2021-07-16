@@ -312,6 +312,10 @@ export class SynchroWorkspace {
                 module.model.setValue(synchroFile.text);
                 module.file.identical_to_repository_version = synchroFile.identical_to_repository_version;
                 module.file.saved = false;
+                module.file.name = synchroFile.name;
+                if(module.file.panelElement != null){
+                    module.file.panelElement.$htmlFirstLine.find('.jo_filename');
+                }
             } else {
 
                 main.networkManager.sendDeleteWorkspaceOrFile("file", module.file.id, (error: string) => {

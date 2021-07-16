@@ -155,6 +155,7 @@
     /* background-color: lightgreen; */
     overflow-y: scroll;
     user-select: none;
+    max-height: 50vh;
 }
 
 #jo_synchro_fileListHeaderOuter, #jo_synchro_fileListOuter {
@@ -380,6 +381,8 @@ div.jo_synchro_activeLine.jo_synchro_hoverLine {
 #historyScrollDiv {
     flex: 1;
     width: 100%;
+    overflow: auto;
+    max-height: calc(100vh - 90px);
 }
 
 .jo_synchro_historyElement {

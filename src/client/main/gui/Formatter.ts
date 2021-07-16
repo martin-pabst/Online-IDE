@@ -123,6 +123,7 @@ export class Formatter implements monaco.languages.DocumentFormattingEditProvide
                     switchHappend = true;
                     break;
                 case TokenType.keywordCase:
+                case TokenType.keywordDefault:
                     // outdent: line with case:
                     if (t.position.column > 3) {
                         this.deleteSpaces(edits, t.position.line, 1, 3);
@@ -139,7 +140,9 @@ export class Formatter implements monaco.languages.DocumentFormattingEditProvide
                     if (lastNonSpaceToken != null) {
                         let tt = lastNonSpaceToken.tt;
                         if (tt == TokenType.rightBracket || tt == TokenType.identifier || tt == TokenType.leftRightSquareBracket) {
-                            this.replaceBetween(lastNonSpaceToken, t, edits, " ");
+                            if(lastNonSpaceToken.position.line == t.position.line){
+                                this.replaceBetween(lastNonSpaceToken, t, edits, " ");
+                            }
                         }
                     }
                     if (i < tokenlist.length - 1) {
@@ -210,14 +213,17 @@ export class Formatter implements monaco.languages.DocumentFormattingEditProvide
                     lastTokenWasNewLine = 2;
                     if (i < tokenlist.length - 2) {
 
-                        let lastTokenIsOperator = this.isBinaryOperator(lastNonSpaceToken?.tt);
-                        let nextTokenIsOperator = this.isBinaryOperator(this.getNextNonSpaceToken(i, tokenlist).tt);
+                        let nextNonSpaceToken = this.getNextNonSpaceToken(i, tokenlist);
+
+                        // no additional indent after "case 12 :"
+                        let lastTokenIsOperator = this.isBinaryOperator(lastNonSpaceToken?.tt) && lastNonSpaceToken?.tt != TokenType.colon;
+                        let nextTokenIsOperator = this.isBinaryOperator(nextNonSpaceToken.tt);
 
                         let beginNextLine = tokenlist[i + 1];
                         let token2 = tokenlist[i + 2];
                         let currentIndentation = 0;
 
-                        if (beginNextLine.tt == TokenType.newline) {
+                        if (beginNextLine.tt == TokenType.newline || nextNonSpaceToken.tt == TokenType.comment) {
                             break;
                         }
 

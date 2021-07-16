@@ -142,7 +142,7 @@ export class WebSocketClass extends Klass {
             null, // no statements!
             false, false, "Wird immer dann aufgerufen, wenn sich ein anderer Client unter Nutzung desselben sessionCodes mit dem Server verbunden hat.", false));
 
-        this.addMethod(new Method("onOtherClientDisConnected", new Parameterlist([
+        this.addMethod(new Method("onOtherClientDisconnected", new Parameterlist([
             { identifier: "otherClient", type: webSocketClientType, declaration: null, usagePositions: null, isFinal: true }
         ]), null,
             null, // no statements!
@@ -154,6 +154,20 @@ export class WebSocketClass extends Klass {
         ]), null,
             null, // no statements!
             false, false, "Wird aufgerufen, wenn die durch die Methoden findClient bzw. findClients zuvor gesuchten Clients gefunden wurden.", false));
+
+        this.addMethod(new Method("getOtherClients", new Parameterlist([]),
+            new ArrayType(webSocketClientType),
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let wh: WebSocketHelper = o.intrinsicData["Helper"];
+
+                let ret = wh.clientList.map(client => {return {type: webSocketClientType, value: client.runtimeObject}});
+                
+                return ret;
+
+            }, // no statements!
+            false, false, "Gibt alle bisher bei der selben Session angemeldeten Clients zurück.", false));
 
     }
 

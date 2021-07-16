@@ -119,7 +119,7 @@ export function getDeclarationAsString(element: Klass | Interface | Method | Att
 
             decl += "{\n";
 
-            for (let m of element.getMethods()) {
+            for (let m of element.methods) {
                 decl += indent + "\n" + getDeclarationAsString(m, "  ") + ";\n";
             }
 

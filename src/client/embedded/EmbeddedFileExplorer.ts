@@ -25,23 +25,24 @@ export class EmbeddedFileExplorer {
 
         }
 
-        let $filesDiv = $fileListDiv.parent();
-        let $addButton = jQuery('<div class="joe_addFileButton jo_button img_add-dark jo_active" title="Datei hinzufügen"></div>');
-        $filesDiv.append($addButton);
-
-        $addButton.on("click", () => {
-
-            let module = this.main.addModule({ text: "", title: "Neue Datei.java", type: "java" });
-            let fileData = this.addModule(module);
-
-            this.renameElement(fileData, () => {
-                // if there's no file yet and then one is added and subsequently renamed: select it!
-                if (that.currentFile != fileData) {
-                    that.selectFile(fileData);
-                }
+        if($fileListDiv != null){
+            let $filesDiv = $fileListDiv.parent();
+            let $addButton = jQuery('<div class="joe_addFileButton jo_button img_add-dark jo_active" title="Datei hinzufügen"></div>');
+            $filesDiv.append($addButton);
+    
+            $addButton.on("click", () => {
+    
+                let module = this.main.addModule({ text: "", title: "Neue Datei.java", type: "java" });
+                let fileData = this.addModule(module);
+    
+                this.renameElement(fileData, () => {
+                    // if there's no file yet and then one is added and subsequently renamed: select it!
+                    if (that.currentFile != fileData) {
+                        that.selectFile(fileData);
+                    }
+                });
             });
-        });
-
+        }
 
     }
 
@@ -79,7 +80,9 @@ export class EmbeddedFileExplorer {
         <div class="jo_filename" style="line-height: 22px">${module.file.name}</div>
         <div class="jo_additionalButtonStart"></div>
         <div class="jo_delete img_delete jo_button jo_active" title="Datei löschen"></div></div></div>`);
-        this.$fileListDiv.append($fileDiv);
+        if(this.$fileListDiv != null){
+            this.$fileListDiv.append($fileDiv);
+        }
 
         let fileData: FileData = {
             module: module,
@@ -91,7 +94,9 @@ export class EmbeddedFileExplorer {
 
         module.file.panelElement = {
             name: module.file.name,
-            $htmlFirstLine: $fileDiv
+            $htmlFirstLine: $fileDiv,
+            isFolder: false,
+            path: []
         }
 
         $fileDiv.find('.jo_delete').on("mousedown", (e: JQuery.MouseDownEvent) => {
@@ -259,6 +264,7 @@ export class EmbeddedFileExplorer {
 
 
     markFile(module: Module) {
+        if(this.$fileListDiv == null) return;
         this.$fileListDiv.find('.jo_file').removeClass('jo_active');
 
         this.currentFile = this.files.find((fileData) => fileData.module == module);

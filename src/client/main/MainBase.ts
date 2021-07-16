@@ -10,12 +10,14 @@ import { TextPosition } from "../compiler/lexer/Token.js";
 import { ErrorManager } from "./gui/ErrorManager.js";
 import { SemicolonAngel } from "../compiler/parser/SemicolonAngel.js";
 import { TextPositionWithModule } from "../compiler/types/Types.js";
+import {GamepadTool} from "../tools/GamepadTool.js";
 
 export interface MainBase {
     printProgram();
     compileIfDirty();
 
     version: number;
+    pixiApp: PIXI.Application;
 
     getCurrentlyEditedModule(): import("../compiler/parser/Module").Module;
     drawClassDiagrams(onlyUpdateIdentifiers: boolean);
@@ -35,5 +37,6 @@ export interface MainBase {
     isEmbedded(): boolean;
     jumpToDeclaration(module: Module, declaration: TextPositionWithModule);
 
+    
 
 }

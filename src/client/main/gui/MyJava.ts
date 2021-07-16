@@ -29,7 +29,8 @@ export function defineMyJava() {
             },
             {
                 // e.g.  * ...|
-                beforeText: /^(\t|(\ \ ))*\ \*(\ ([^\*]|\*(?!\/))*)?$/,
+                // beforeText: /^(\t|(\ \ ))*\ \*(\ ([^\*]|\*(?!\/))*)?$/,
+                beforeText: /^(\t|(\ ))*\ \*(\ ([^\*]|\*(?!\/))*)?$/,
                 action: { indentAction: monaco.languages.IndentAction.None, appendText: '* ' }
             },
             {

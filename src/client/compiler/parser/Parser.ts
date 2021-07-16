@@ -721,7 +721,7 @@ export class Parser {
 
                 let caseTerm = null;
                 if (!isDefault) {
-                    caseTerm = this.parseTerm();
+                    caseTerm = this.parseUnary();
                 }
 
                 this.expect(TokenType.colon, true);
@@ -904,9 +904,16 @@ export class Parser {
 
         let first = true;
 
-        if (this.tt == TokenType.colon) {
-            return left;
-        }
+        // 28.05.2021: This broke evalation of ternery operator, so i commented it out.
+        // Don't know why it was there in the first place, so i expect some havoc to come...
+        // 15 Minutes later:
+        // This if-clause was here to make terms aber case possible, e.g. switch(a){ case 7 + 2: println("Here!")}
+        // -> Bad idea. I changed this to only parse unary Terms left of the colon so i can comment out this if-clause here
+        // and fix the ternary operator.
+        //
+        // if (this.tt == TokenType.colon) {
+        //     return left;
+        // }
 
         while (first || operators.indexOf(this.tt) >= 0) {
 
@@ -1103,10 +1110,23 @@ export class Parser {
                 this.nextToken();
                 return this.parseDotOrArrayChains(term);
             case TokenType.keywordThis:
-                term = {
-                    type: TokenType.keywordThis,
-                    position: position
-                };
+                if (this.ct[1].tt == TokenType.leftBracket) {
+                    this.nextToken(); // skip "super"
+                    let parameters = this.parseMethodCallParameters();
+                    term = {
+                        type: TokenType.constructorCall,
+                        position: position,
+                        operands: parameters.nodes,
+                        commaPositions: parameters.commaPositions,
+                        rightBracketPosition: parameters.rightBracketPosition
+                    };
+                    return term;
+                } else {
+                    term = {
+                        type: TokenType.keywordThis,
+                        position: position
+                    };
+                }
                 this.nextToken();
                 return this.parseDotOrArrayChains(term);
             case TokenType.keywordNew:
@@ -1861,6 +1881,7 @@ export class Parser {
             let annotation = null;
             if(this.tt == TokenType.at){
                 annotation = this.cct.value;
+                this.nextToken();
             }
             let modifiers = this.collectModifiers();
 

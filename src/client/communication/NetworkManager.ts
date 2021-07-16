@@ -8,10 +8,10 @@ export class NetworkManager {
     
     timerhandle: any;
 
-    ownUpdateFrequencyInSeconds: number = 20;
+    ownUpdateFrequencyInSeconds: number = 25;
     teacherUpdateFrequencyInSeconds: number = 5;
 
-    updateFrequencyInSeconds: number = 20;
+    updateFrequencyInSeconds: number = 25;
     forcedUpdateEvery: number = 2;
     forcedUpdatesInARow: number = 0;
     secondsTillNextUpdate: number = this.updateFrequencyInSeconds;
@@ -68,7 +68,7 @@ export class NetworkManager {
         
     }
     
-    sendUpdates(callback?: ()=>void, sendIfNothingIsDirty: boolean = false){
+    sendUpdates(callback?: ()=>void, sendIfNothingIsDirty: boolean = false, sendBeacon: boolean = false){
 
         if(this.main.user == null || this.main.user.is_testuser){
             if(callback != null) callback();
@@ -84,7 +84,7 @@ export class NetworkManager {
             
             this.main.userDataDirty = false;
             userSettings.classDiagram = classDiagram?.serialize();
-            this.sendUpdateUserSettings(() => {});
+            this.sendUpdateUserSettings(() => {}, sendBeacon);
             this.forcedUpdatesInARow = 0;
         }
 
@@ -122,20 +122,30 @@ export class NetworkManager {
 
         let that = this;
         if(wdList.length > 0 || fdList.length > 0 || sendIfNothingIsDirty){
-            ajax('sendUpdates', request, (response: SendUpdatesResponse) => {
-                that.errorHappened = !response.success;
-                if(!that.errorHappened){
 
-                    that.updateWorkspaces(request, response);
+            if(sendBeacon){
+                navigator.sendBeacon("sendUpdates", JSON.stringify(request));
+            } else {
 
-                    if(callback != null){
-                        callback();
-                        return;
+                ajax('sendUpdates', request, (response: SendUpdatesResponse) => {
+                    that.errorHappened = !response.success;
+                    if(!that.errorHappened){
+    
+                        if(this.main.workspacesOwnerId == this.main.user.id){
+                            that.updateWorkspaces(request, response);
+                        }
+    
+                        if(callback != null){
+                            callback();
+                            return;
+                        }
                     }
-                }
-            }, () => {
-                that.errorHappened = true;
-            } );
+                }, () => {
+                    that.errorHappened = true;
+                } );
+
+            }
+
         } else {
             if(callback != null){
                 callback();
@@ -296,7 +306,7 @@ export class NetworkManager {
 
     }
 
-    sendUpdateUserSettings(callback: (error: string) => void){
+    sendUpdateUserSettings(callback: (error: string) => void, sendBeacon: boolean = false){
 
         if(this.main.user.is_testuser){
             callback(null);
@@ -308,13 +318,18 @@ export class NetworkManager {
             userId: this.main.user.id
         }
 
-        ajax("updateUserSettings", request, (response: UpdateUserSettingsResponse) => {
-            if(response.success){
-                callback(null);
-            } else {
-                callback("Netzwerkfehler!");
-            }
-        }, callback);
+        if(sendBeacon){
+            navigator.sendBeacon("updateUserSettings", JSON.stringify(request));
+        } else {
+            ajax("updateUserSettings", request, (response: UpdateUserSettingsResponse) => {
+                if(response.success){
+                    callback(null);
+                } else {
+                    callback("Netzwerkfehler!");
+                }
+            }, callback);
+        }
+
 
     }
 
@@ -391,17 +406,23 @@ export class NetworkManager {
 
     }
 
-    public createNewWorkspaceFromWorkspaceData(remoteWorkspace: WorkspaceData, withSort: boolean = false) {
+    public createNewWorkspaceFromWorkspaceData(remoteWorkspace: WorkspaceData, withSort: boolean = false):Workspace {
         let w = this.main.createNewWorkspace(remoteWorkspace.name, remoteWorkspace.owner_id);
         w.id = remoteWorkspace.id;
         w.repository_id = remoteWorkspace.repository_id;
         w.has_write_permission_to_repository = remoteWorkspace.has_write_permission_to_repository;
+        w.path = remoteWorkspace.path;
+        w.isFolder = remoteWorkspace.isFolder;
 
         this.main.workspaceList.push(w);
+        let path = remoteWorkspace.path.split("/");
+        if(path.length == 1 && path[0] == "") path = [];
         this.main.projectExplorer.workspaceListPanel.addElement({
             name: remoteWorkspace.name,
             externalElement: w,
-            iconClass: remoteWorkspace.repository_id == null ? "workspace" : "repository"
+            iconClass: remoteWorkspace.repository_id == null ? "workspace" : "repository",
+            isFolder: remoteWorkspace.isFolder,
+            path: path
         });
 
         for (let fileData of remoteWorkspace.files) {
@@ -412,6 +433,7 @@ export class NetworkManager {
             this.main.projectExplorer.workspaceListPanel.sortElements();
             this.main.projectExplorer.fileListPanel.sortElements();
         }
+        return w;
     }
 
     private createFile(workspace: Workspace, remoteFile: FileData) {

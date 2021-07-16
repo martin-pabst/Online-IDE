@@ -23,6 +23,7 @@ import { WebSocketRequestKeepAlive } from "../communication/Data.js";
 import { MainEmbedded } from "../embedded/MainEmbedded.js";
 import { ProcessingHelper } from "../runtimelibrary/graphics/Processing.js";
 import { GNGEreignisbehandlungHelper } from "../runtimelibrary/gng/GNGEreignisbehandlung.js";
+import { GamepadTool } from "../tools/GamepadTool.js";
 
 export enum InterpreterState {
     not_initialized, running, paused, error, done, waitingForInput, waitingForTimersToEnd
@@ -90,6 +91,7 @@ export class Interpreter {
     processingHelper: ProcessingHelper;
 
     keyboardTool: KeyboardTool;
+    gamepadTool: GamepadTool;
 
     webSocketsToCloseAfterProgramHalt: WebSocket[] = [];
 
@@ -120,6 +122,8 @@ export class Interpreter {
         } else {
             this.keyboardTool = new KeyboardTool(jQuery(window), main);
         }
+
+        this.gamepadTool = new GamepadTool();
 
         this.debugger = debugger_;
 
@@ -465,8 +469,14 @@ export class Interpreter {
         this.timeWhenProgramStarted = performance.now();
         this.timerStopped = false;
 
+        this.getTimerClass().startTimer();
+
     }
 
+    getTimerClass(): TimerClass {
+        let baseModule = this.main.getCurrentWorkspace().moduleStore.getModule("Base Module");
+        return <TimerClass>baseModule.typeStore.getType("Timer");
+    }
 
     lastStepTime: number = 0;
     lastTimeBetweenEvents: number = 0;
@@ -533,7 +543,7 @@ export class Interpreter {
         }
 
         if (this.timerStopped) {
-            if (this.state == InterpreterState.paused) {
+            if (this.state == InterpreterState.paused || this.state == InterpreterState.waitingForInput) {
                 this.showProgramPointerAndVariables();
             }
             if (this.callbackAfterExecution != null) {
@@ -641,17 +651,32 @@ export class Interpreter {
         this.processingHelper?.destroyWorld();
         this.gngEreignisbehandlungHelper?.detachEvents();
         this.gngEreignisbehandlungHelper = null;
+
     }
 
     stop(restart: boolean = false) {
         this.inputManager.hide();
-        this.pause();
+        this.setState(InterpreterState.paused);
+        this.timerStopped = true;
 
         if (this.worldHelper != null) {
             this.worldHelper.spriteAnimations = [];
         }
         this.gngEreignisbehandlungHelper?.detachEvents();
         this.gngEreignisbehandlungHelper = null;
+
+        this.main.hideProgramPointerPosition();
+
+        this.getTimerClass().stopTimer();
+        if (this.worldHelper != null) {
+            this.worldHelper.cacheAsBitmap();
+        }
+
+        this.heap = {};
+        this.programStack = [];
+        this.stack = [];
+        this.stackframes = [];
+
 
         setTimeout(() => {
             this.setState(InterpreterState.done);
@@ -664,6 +689,7 @@ export class Interpreter {
 
     pause() {
         this.setState(InterpreterState.paused);
+        this.showProgramPointerAndVariables();
         this.timerStopped = true;
     }
 
@@ -1275,7 +1301,7 @@ export class Interpreter {
                     break;
                 }
 
-                if ((this.worldHelper != null && this.worldHelper.actActors.length > 0) || this.processingHelper != null 
+                if ((this.worldHelper != null && this.worldHelper.hasActors()) || this.processingHelper != null
                     || (this.gngEreignisbehandlungHelper != null && this.gngEreignisbehandlungHelper.hasAktionsEmpfaenger())) {
                     this.currentProgramPosition--;
                     break
@@ -1288,7 +1314,7 @@ export class Interpreter {
                     break
                 }
 
-                this.setState(InterpreterState.done);
+                // this.setState(InterpreterState.done);
                 this.currentProgram = null;
                 this.currentProgramPosition = -1;
                 this.additionalStepFinishedFlag = true;
@@ -1296,14 +1322,6 @@ export class Interpreter {
                 Helper.showHelper("speedControlHelper", this.main);
 
                 this.printManager.showProgramEnd();
-
-                if (this.worldHelper != null) {
-                    this.worldHelper.spriteAnimations = [];
-                }
-                this.gngEreignisbehandlungHelper?.detachEvents();
-                this.gngEreignisbehandlungHelper = null;
-
-                this.main.hideProgramPointerPosition();
 
                 if (this.steps > 0) {
                     let dt = performance.now() - this.timeWhenProgramStarted;
@@ -1314,7 +1332,21 @@ export class Interpreter {
                     // console.log("Vorgegebene Timerfrequenz: Alle " + this.timerDelayMs + " ms");
                     this.steps = -1;
                 }
+
+                // if (this.worldHelper != null) {
+                //     this.worldHelper.spriteAnimations = [];
+                // }
+                // this.gngEreignisbehandlungHelper?.detachEvents();
+                // this.gngEreignisbehandlungHelper = null;
+
+                // this.main.hideProgramPointerPosition();
+
+                // if(this.worldHelper != null){
+                //     this.worldHelper.cacheAsBitmap();
+                // }
+
                 this.currentProgramPosition--;
+                this.stop();
                 break;
             case TokenType.print:
             case TokenType.println:
@@ -1476,8 +1508,7 @@ export class Interpreter {
         this.state = state;
 
         if (state == InterpreterState.error || state == InterpreterState.done) {
-            this.webSocketsToCloseAfterProgramHalt.forEach(socket => socket.close());
-            this.webSocketsToCloseAfterProgramHalt = [];
+            this.closeAllWebsockets();
         }
 
         let am = this.main.getActionManager();
@@ -1520,6 +1551,12 @@ export class Interpreter {
         }
 
     }
+
+    closeAllWebsockets() {
+        this.webSocketsToCloseAfterProgramHalt.forEach(socket => socket.close());
+        this.webSocketsToCloseAfterProgramHalt = [];
+    }
+
 
     pushCurrentProgram() {
 

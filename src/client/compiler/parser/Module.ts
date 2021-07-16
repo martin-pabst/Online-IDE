@@ -1,4 +1,4 @@
-import { FileData } from "../../communication/Data.js";
+import { FileData, WorkspaceSettings } from "../../communication/Data.js";
 import { AccordionElement } from "../../main/gui/Accordion.js";
 import { MainBase } from "../../main/MainBase.js";
 import { ArrayListClass } from "../../runtimelibrary/collections/ArrayList.js";
@@ -35,12 +35,14 @@ import { RoundedRectangleClass } from "../../runtimelibrary/graphics/RoundedRect
 import { ScaleModeClass } from "../../runtimelibrary/graphics/ScaleMode.js";
 import { ShapeClass } from "../../runtimelibrary/graphics/Shape.js";
 import { SoundKlass as SoundClass } from "../../runtimelibrary/graphics/Sound.js";
-import { SpriteClass } from "../../runtimelibrary/graphics/Sprite.js";
+import { SpriteClass, TileClass } from "../../runtimelibrary/graphics/Sprite.js";
 import { SpriteLibraryClass } from "../../runtimelibrary/graphics/SpriteLibraryEnum.js";
 import { TextClass } from "../../runtimelibrary/graphics/Text.js";
 import { WorldClass } from "../../runtimelibrary/graphics/World.js";
 import { InputClass } from "../../runtimelibrary/Input.js";
+import { GamepadClass } from "../../runtimelibrary/Gamepad.js";
 import { MathClass } from "../../runtimelibrary/Math.js";
+import { MathToolsClass } from "../../runtimelibrary/MathToolsClass.js";
 import { PrintStreamClass, SystemClass } from "../../runtimelibrary/System.js";
 import { KeyListener, SystemToolsClass } from "../../runtimelibrary/SystemTools.js";
 import { Runnable, TimerClass } from "../../runtimelibrary/Timer.js";
@@ -75,6 +77,25 @@ import { GNGTurtleClass } from "../../runtimelibrary/gng/GNGTurtle.js";
 import { GNGTextClass } from "../../runtimelibrary/gng/GNGText.js";
 import { GNGEreignisbehandlung } from "../../runtimelibrary/gng/GNGEreignisbehandlung.js";
 import { GNGFigurClass } from "../../runtimelibrary/gng/GNGFigur.js";
+import { RandomClass } from "../../runtimelibrary/Random.js";
+import { DirectionClass } from "../../runtimelibrary/graphics/Direction.js";
+import { Patcher } from "./Patcher.js";
+
+export type ExportedWorkspace = {
+    name: string;
+    modules: ExportedModule[];
+    settings: WorkspaceSettings;
+}
+
+export type ExportedModule = {
+    name: string;
+    text: string;
+
+    is_copy_of_id?: number,
+    repository_file_version?: number,
+    identical_to_repository_version: boolean,
+
+}
 
 export type File = {
     name: string,
@@ -210,6 +231,16 @@ export class Module {
 
     }
 
+    toExportedModule(): ExportedModule {
+        return {
+            name: this.file.name,
+            text: this.getProgramTextFromMonacoModel(),
+            identical_to_repository_version: this.file.identical_to_repository_version,
+            is_copy_of_id: this.file.is_copy_of_id,
+            repository_file_version: this.file.repository_file_version
+        }
+    }
+
     getMethodDeclarationAtPosition(position: { lineNumber: number; column: number; }): MethodDeclarationNode {
 
         if(this.classDefinitionsAST == null) return null;
@@ -233,14 +264,16 @@ export class Module {
 
     static restoreFromData(f: FileData, main: MainBase): Module {
 
+        let patched = Patcher.patch(f.text);
+
         let f1: File = {
             name: f.name,
-            text: f.text,
+            text: patched.patchedText,
             text_before_revision: f.text_before_revision,
             submitted_date: f.submitted_date,
             student_edited_after_revision: false,
             dirty: true,
-            saved: true,
+            saved: !patched.modified,
             version: f.version,
             id: f.id,
             is_copy_of_id: f.is_copy_of_id,
@@ -772,7 +805,9 @@ export class BaseModule extends Module {
 
         this.typeStore.addType(new ConsoleClass(this));
         this.typeStore.addType(new MathClass(this));
+        this.typeStore.addType(new RandomClass(this));
         this.typeStore.addType(new Vector2Class(this));
+        this.typeStore.addType(new MathToolsClass(this));
         this.typeStore.addType(new KeyClass(this));
         this.typeStore.addType(new SoundClass(this));
         this.typeStore.addType(new InputClass(this));
@@ -780,6 +815,7 @@ export class BaseModule extends Module {
         this.typeStore.addType(new TimerClass(this));
         this.typeStore.addType(new ColorClass(this));
         this.typeStore.addType(new ActorClass(this));
+        this.typeStore.addType(new DirectionClass(this));
         this.typeStore.addType(new ShapeClass(this));
         this.typeStore.addType(new FilledShapeClass(this));
         this.typeStore.addType(new RectangleClass(this));
@@ -794,6 +830,7 @@ export class BaseModule extends Module {
         this.typeStore.addType(new ScaleModeClass(this));
         this.typeStore.addType(new SpriteLibraryClass(this));
         this.typeStore.addType(new RepeatTypeClass(this));
+        this.typeStore.addType(new TileClass(this));
         this.typeStore.addType(new SpriteClass(this));
         this.typeStore.addType(new CollisionPairClass(this));
         this.typeStore.addType(new GroupClass(this));
@@ -804,6 +841,7 @@ export class BaseModule extends Module {
 
         this.typeStore.addType(new MouseListenerInterface(this));
         this.typeStore.addType(new MouseAdapterClass(this));
+        this.typeStore.addType(new GamepadClass(this));
         this.typeStore.addType(new WorldClass(this));
         this.typeStore.addType(new ProcessingClass(this));
 
@@ -881,12 +919,12 @@ export class GNGModule extends Module {
 export class ModuleStore {
 
     private modules: Module[] = [];
-    private moduleMap: Map<string, Module> = new Map();
+    private moduleMap: {[name: string]: Module} = {};
     private baseModule: BaseModule;
 
     dirty: boolean = false;
 
-    constructor(private main: MainBase, withBaseModule: boolean, additionalLibraries: string[] = []) {
+    constructor(private main: MainBase, withBaseModule: boolean, private additionalLibraries: string[] = []) {
         if (withBaseModule) {
             this.baseModule = new BaseModule(main);
             this.putModule(this.baseModule);
@@ -904,6 +942,23 @@ export class ModuleStore {
             case "gng": this.putModule(new GNGModule(this.main, this));
             break;
         }
+    }
+
+    setAdditionalLibraries(additionalLibraries: string[]){
+
+        this.modules = this.modules.filter( m => (!m.isSystemModule) || m instanceof BaseModule);
+        this.moduleMap = {};
+
+        for(let m of this.modules){
+            this.moduleMap[m.file.name] =  m;
+        }
+
+        if(additionalLibraries != null){
+            for(let lib of additionalLibraries){
+                this.addLibraryModule(lib);
+            }
+        }
+
     }
 
     findModuleById(module_id: number): Module {

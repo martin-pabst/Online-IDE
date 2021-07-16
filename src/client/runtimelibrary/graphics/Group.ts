@@ -37,7 +37,7 @@ export class CollisionPairClass extends Klass {
 
             }, false, Visibility.public, true, "Zweites an der Kollision beteiligtes Shape"));
 
-            this.setupAttributeIndicesRecursive();
+        this.setupAttributeIndicesRecursive();
 
     }
 }
@@ -146,6 +146,7 @@ export class GroupClass extends Klass {
                 if (sh.testdestroyed("remove")) return;
 
                 sh.remove(shape);
+                sh.worldHelper.shapes.push(shape.intrinsicData["Actor"]);
 
             }, false, false, 'Entfernt das übergebene Grafikelement aus der Gruppe, zerstört es jedoch nicht.', false));
 
@@ -233,7 +234,7 @@ export class GroupClass extends Klass {
                 let o: RuntimeObject = parameters[0].value;
                 let sh: GroupHelper = <GroupHelper>o.intrinsicData["Actor"];
 
-                if (sh.testdestroyed("empty")) return;
+                if (sh.testdestroyed("destroyAllChildren")) return;
 
                 sh.destroyChildren();
 
@@ -269,7 +270,7 @@ export class GroupClass extends Klass {
 
             }, false, false, 'Erstellt eine Kopie des Group-Objekts (und aller seiner enthaltenen Grafikobjekte!) und git sie zurück.', false));
 
-            this.addMethod(new Method("renderAsStaticBitmap", new Parameterlist([
+        this.addMethod(new Method("renderAsStaticBitmap", new Parameterlist([
             { identifier: "renderAsStaticBitmap", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), this,
             (parameters) => {
@@ -306,10 +307,10 @@ export class GroupHelper extends ShapeHelper {
 
     cacheAsBitmap(doCache: boolean) {
         let container = <PIXI.Container>this.displayObject;
-        
+
         // If you set doCache to false and shortly afterwards to true: 
         // make shure there's at least one rendercycle in between.
-        if(doCache){
+        if (doCache) {
             setTimeout(() => {
                 container.cacheAsBitmap = true;
             }, 300);
@@ -391,10 +392,14 @@ export class GroupHelper extends ShapeHelper {
 
         if (shapeHelper.belongsToGroup != null) {
             shapeHelper.belongsToGroup.remove(shape);
+        } else {
+            let index = this.worldHelper.shapes.indexOf(shapeHelper);
+            if (index >= 0) this.worldHelper.shapes.splice(index, 1);
         }
 
         shapeHelper.belongsToGroup = this;
 
+        this.displayObject.parent.updateTransform();
         let inverse = new PIXI.Matrix().copyFrom(this.displayObject.transform.worldTransform);
         inverse.invert();
         shapeHelper.displayObject.localTransform.prepend(inverse.prepend(this.worldHelper.stage.localTransform));
@@ -418,7 +423,6 @@ export class GroupHelper extends ShapeHelper {
 
         this.displayObject.updateTransform();
         let p1: PIXI.Point = this.displayObject.worldTransform.applyInverse(new PIXI.Point(x, y));
-
         this.centerXInitial = p1.x;
         this.centerYInitial = p1.y;
     }
@@ -476,8 +480,25 @@ export class GroupHelper extends ShapeHelper {
         this.shapes = [];
     }
 
+    hasOverlappingBoundingBoxWith(shapeHelper: ShapeHelper): boolean {
+        this.displayObject.updateTransform();
+        shapeHelper.displayObject.updateTransform();
+
+        let bb = this.displayObject.getBounds();
+        let bb1 = shapeHelper.displayObject.getBounds();
+
+        if (bb.left > bb1.right || bb1.left > bb.right) return false;
+
+        if (bb.top > bb1.bottom || bb1.top > bb.bottom) return false;
+        return true;
+    }
+
 
     collidesWith(shapeHelper: ShapeHelper) {
+        if (!this.hasOverlappingBoundingBoxWith(shapeHelper)) {
+            return false;
+        }
+
         for (let shape of this.shapes) {
             let sh: ShapeHelper = <ShapeHelper>shape.intrinsicData["Actor"];
             if (sh.collidesWith(shapeHelper)) {
@@ -495,6 +516,14 @@ export class GroupHelper extends ShapeHelper {
     }
 
     containsPoint(x: number, y: number) {
+        this.displayObject.updateTransform();
+
+        let bb = this.displayObject.getBounds();
+
+        if (x < bb.left || x > bb.left + bb.width || y < bb.top || y > bb.top + bb.height) {
+            return false;
+        }
+
         for (let shape of this.shapes) {
             let sh: ShapeHelper = <ShapeHelper>shape.intrinsicData["Actor"];
             if (sh.containsPoint(x, y)) {
@@ -572,5 +601,13 @@ export class GroupHelper extends ShapeHelper {
         }
         return false;
     }
+
+
+    tint(color: string) {
+        for (let child of this.shapes) {
+            (<ShapeHelper>child.intrinsicData["Actor"]).tint(color);
+        }
+    }
+
 
 }

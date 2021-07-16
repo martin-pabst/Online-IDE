@@ -16,7 +16,7 @@ export type ASTNode =
 
     export type TermNode = BinaryOpNode | UnaryOpNode | MethodcallNode | 
     ConstantNode | IdentifierNode |
-    SelectArrayElementNode | IncrementDecrementNode | SuperconstructorCallNode |
+    SelectArrayElementNode | IncrementDecrementNode | SuperconstructorCallNode | ConstructorCallNode |
     ThisNode | SuperNode | SelectArributeNode | NewObjectNode | 
     ArrayInitializationNode | NewArrayNode | CastManuallyNode | BracketsNode;
 
@@ -299,6 +299,15 @@ export type AttributeDeclarationNode = {
         commaPositions: TextPosition[]
     }
     
+    export type ConstructorCallNode = {
+        type: TokenType.constructorCall,
+        position: TextPosition,
+        rightBracketPosition: TextPosition,
+    
+        operands: TermNode[],
+        commaPositions: TextPosition[]
+    }
+    
     export type ThisNode = {
         type: TokenType.keywordThis,
         position: TextPosition,
@@ -323,6 +332,7 @@ export type IdentifierNode = {
 
     identifier: string,
     variable?: Variable  // CodeGenerator stores found local variables in node to identify variable use before initialization
+    attribute?: Attribute
 }
 
 export type ConstantNode = {

@@ -6,6 +6,9 @@ import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { FilledShapeHelper } from "./FilledShape.js";
 import { ArrayType } from "../../compiler/types/Array.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
+import { ShapeHelper } from "./Shape.js";
+import { convexhull } from "../../tools/ConvexHull.js";
+import { GroupHelper } from "./Group.js";
 
 export class PolygonClass extends Klass {
 
@@ -14,6 +17,7 @@ export class PolygonClass extends Klass {
         super("Polygon", module, "Wahlweise geschlossenes Polygon (mit Füllung und Rand) oder offener Streckenzug");
 
         this.setBaseClass(<Klass>module.typeStore.getType("FilledShape"));
+        let shapeClass = <Klass>module.typeStore.getType("Shape");
 
         // this.addAttribute(new Attribute("PI", doublePrimitiveType, (object) => { return Math.PI }, true, Visibility.public, true, "Die Kreiszahl Pi (3.1415...)"));
 
@@ -67,6 +71,42 @@ export class PolygonClass extends Klass {
                 o.intrinsicData["Actor"] = ph;
 
             }, false, false, 'Instanziert ein neues Polygon ohne Punkte.', true));
+
+        this.addMethod(new Method("Polygon", new Parameterlist([
+            { identifier: "shape", type: shapeClass, declaration: null, usagePositions: null, isFinal: true },
+        ]), null,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let shape: RuntimeObject = parameters[1].value;
+
+                if(shape == null){
+                    module.main.getInterpreter().throwException("Die übergebene Figur ist null.");
+                    return;
+                }
+
+                let shapeHelper: ShapeHelper = shape.intrinsicData["Actor"];
+                shapeHelper.displayObject.getBounds();  // seems to work magic in updating transforms of children...
+                
+                let points: convexhull.Point[] = [];
+                points = this.extractPoints(shapeHelper, points);
+                points = convexhull.makeHull(points);
+
+
+                let pointsNumber: number[] = [];
+                for(let p of points){
+                    pointsNumber.push(p.x);
+                    pointsNumber.push(p.y);
+                }
+
+                if(pointsNumber.length > 0){
+                    pointsNumber = pointsNumber.concat(pointsNumber.slice(0, 2))
+                }
+
+                let ph = new PolygonHelper(pointsNumber, false, module.main.getInterpreter(), o, true);
+                o.intrinsicData["Actor"] = ph;
+
+            }, false, false, 'Instanziert ein neues Polygon. Seine Punkte sind die Punkte des Hitpolygons der übergebenen Figur.', true));
 
 
         this.addMethod(new Method("addPoint", new Parameterlist([
@@ -143,6 +183,34 @@ export class PolygonClass extends Klass {
 
             }, false, false, 'schiebt den index-ten Punkt nach (x, y). index == 0 => erster Punkt, index == 1 => zweiter Punkt usw.', false));
 
+        this.addMethod(new Method("close", new Parameterlist([
+        ]), null,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: PolygonHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("close")) return;
+
+                sh.isClosed = true;
+                sh.render();
+
+            }, false, false, 'Schließt das Polygon. Diese Methode hat bei gefüllten Polygonen keinen Effekt.', false));
+
+        this.addMethod(new Method("open", new Parameterlist([
+        ]), null,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: PolygonHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("open")) return;
+
+                sh.isClosed = false;
+                sh.render();
+
+            }, false, false, 'Öffnet das Polygon. Diese Methode hat bei gefüllten Polygonen keinen Effekt.', false));
+
         this.addMethod(new Method("copy", new Parameterlist([
         ]), this,
             (parameters) => {
@@ -159,14 +227,33 @@ export class PolygonClass extends Klass {
 
     }
 
+
+    extractPoints(shapeHelper: ShapeHelper, points: convexhull.Point[]): convexhull.Point[]{
+        if(shapeHelper instanceof GroupHelper){
+            let points1: convexhull.Point[] = [];
+            for(let sh of shapeHelper.shapes){
+                points1 = this.extractPoints(sh.intrinsicData["Actor"], points1);
+            }
+            return points.concat(points1);
+        } else {
+            if(shapeHelper.hitPolygonDirty) shapeHelper.transformHitPolygon();
+            return points.concat(shapeHelper.hitPolygonTransformed.map(function(punkt){return {x: punkt.x, y: punkt.y}}));
+        }
+    }
+
+
+
 }
 
 export class PolygonHelper extends FilledShapeHelper {
 
+    isClosed: boolean = false;
+
     constructor(points: number[], private closeAndFill: boolean,
-        interpreter: Interpreter, runtimeObject: RuntimeObject) {
+        interpreter: Interpreter, runtimeObject: RuntimeObject, isClosed: boolean = false) {
         super(interpreter, runtimeObject);
 
+        this.isClosed = isClosed;
         let xSum = 0; let ySum = 0;
         this.hitPolygonInitial = [];
 
@@ -232,7 +319,7 @@ export class PolygonHelper extends FilledShapeHelper {
             }
         }
 
-        if (this.closeAndFill) {
+        if (this.closeAndFill || this.isClosed) {
             g.closePath();
         }
 

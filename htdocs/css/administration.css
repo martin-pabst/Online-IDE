@@ -105,6 +105,10 @@ body {
     font-weight: bold;
 }
 
+.jo_belowAdminMenu {
+    font-size: 8pt;
+}
+
 .pw_button {
     border: 1px solid gray;
     background-color: rgb(175, 175, 175);

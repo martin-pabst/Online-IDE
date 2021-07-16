@@ -116,28 +116,30 @@ export class Login {
                                 speedControlHelperDone: false,
                                 homeButtonHelperDone: false,
                                 stepButtonHelperDone: false,
-                                repositoryButtonDone: false
+                                repositoryButtonDone: false,
+                                folderButtonDone: false
                             },
                             viewModes: null,
                             classDiagram: null
                         }
                     }
+                    
+                    that.main.user = user;
 
                     this.main.waitForGUICallback = () => {
-
+                        
                         that.main.mainMenu.initGUI(user);
-
+                        
                         jQuery('#bitteWarten').hide();
                         $loginSpinner.hide();
                         jQuery('#menupanel-username').html(escapeHtml(user.rufname) + " " + escapeHtml(user.familienname));
-
+                        
                         new UserMenu(that.main).init();
-
+                        
                         if (user.is_teacher) {
                             that.main.initTeacherExplorer(response.classdata);
                         }
-
-                        that.main.user = user;
+                        
 
                         that.main.restoreWorkspaces(response.workspaces);
                         that.main.workspacesOwnerId = user.id;
@@ -155,6 +157,13 @@ export class Login {
 
                         that.main.viewModeController.initViewMode();
                         that.main.bottomDiv.hideHomeworkTab();
+                        
+                        if (!this.main.user.settings.helperHistory.folderButtonDone && that.main.projectExplorer.workspaceListPanel.elements.length > 5) {
+                            
+                            Helper.showHelper("folderButton", this.main, jQuery('.img_add-folder-dark'));
+            
+                        }
+            
 
                     }
 
@@ -178,6 +187,8 @@ export class Login {
                 that.showLoginForm();
                 return;
             }
+
+            this.main.interpreter.closeAllWebsockets();
 
             jQuery('#bitteWartenText').html('Bitte warten, der letzte Bearbeitungsstand wird noch gespeichert ...');
             jQuery('#bitteWarten').css('display', 'flex');

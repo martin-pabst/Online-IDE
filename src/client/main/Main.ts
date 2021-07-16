@@ -34,6 +34,8 @@ import { checkIfMousePresent } from "../tools/HtmlTools.js";
 
 export class Main implements MainBase {
 
+    pixiApp: PIXI.Application;
+
     repositoryOn: boolean = true;
 
     isEmbedded(): boolean { return false; }
@@ -299,6 +301,16 @@ export class Main implements MainBase {
         this.compiler = new Compiler(this);
 
         this.startTimer();
+
+        $(window).on('unload', function() {
+            
+            if(navigator.sendBeacon && that.user != null){
+                that.networkManager.sendUpdates(null, false, true);
+                that.networkManager.sendUpdateUserSettings(() => {});
+                that.interpreter.closeAllWebsockets();
+            }
+            
+        });
 
     }
 

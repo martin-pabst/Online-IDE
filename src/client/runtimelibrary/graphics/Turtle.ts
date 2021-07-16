@@ -165,7 +165,7 @@ type LineElement = {
 export class TurtleHelper extends FilledShapeHelper {
 
     lineElements: LineElement[] = [];
-    angle: number = 0;
+    angle: number = 0; // in Rad
 
     isFilled: boolean = false;
 
@@ -185,8 +185,9 @@ export class TurtleHelper extends FilledShapeHelper {
     lastColor: number = 0;
     lastAlpha: number = 0;
 
-    lastPosX: number = -1;
-    lastPosY: number = -1;
+    turtleX: number = -1;
+    turtleY: number = -1;
+    lastTurtleAngle: number = 0; // angle in Rad
 
     renderJobPresent: boolean = false;
 
@@ -214,13 +215,13 @@ export class TurtleHelper extends FilledShapeHelper {
         container.addChild(this.lineGraphic);
         this.lineGraphic.moveTo(xStart, yStart);
         console.log("MoveTo: " + xStart + ", " + yStart);
-        this.lastPosX = xStart;
-        this.lastPosY = yStart;
+        this.turtleX = xStart;
+        this.turtleY = yStart;
 
         this.turtle = new PIXI.Graphics();
         container.addChild(this.turtle);
         this.turtle.visible = this.showTurtle;
-        this.drawTurtle(xStart, yStart, this.angle);
+        this.initTurtle(xStart, yStart, this.angle);
 
 
         // let g: PIXI.Graphics = <any>this.displayObject;
@@ -255,13 +256,13 @@ export class TurtleHelper extends FilledShapeHelper {
     turn(angle: number) {
         this.angle -= angle / 180 * Math.PI;
         let lastLineElement: LineElement = this.lineElements[this.lineElements.length - 1];
-        this.drawTurtle(lastLineElement.x, lastLineElement.y, this.angle);
+        this.moveTurtleTo(lastLineElement.x, lastLineElement.y, this.angle);
     }
 
     rotate(angleInDegrees: number, cx?: number, cy?: number) {
         this.turn(this.angle);
         let lastLineElement = this.lineElements[this.lineElements.length - 1];
-        this.drawTurtle(lastLineElement.x, lastLineElement.y, this.angle);
+        this.moveTurtleTo(lastLineElement.x, lastLineElement.y, this.angle);
         super.rotate(angleInDegrees, cx, cy);
     }
 
@@ -315,7 +316,7 @@ export class TurtleHelper extends FilledShapeHelper {
             setTimeout(() => {
                 this.renderJobPresent = false;
                 this.render();
-                this.drawTurtle(newLineElement.x, newLineElement.y, this.angle);
+                this.moveTurtleTo(newLineElement.x, newLineElement.y, this.angle);
             }, 100);
         }
 
@@ -335,11 +336,11 @@ export class TurtleHelper extends FilledShapeHelper {
         this.hitPolygonDirty = true;
         this.initialHitPolygonDirty = true;
         this.calculateCenter();
-        this.drawTurtle(newLineElement.x, newLineElement.y, this.angle);
+        this.moveTurtleTo(newLineElement.x, newLineElement.y, this.angle);
     }
 
 
-    drawTurtle(x: number, y: number, angle: number): void {
+    initTurtle(x: number, y: number, angle: number): void {
         this.turtle.clear();
         this.turtle.lineStyle(3, 0xff0000, 1, 0.5);
         this.turtle.moveTo(x, y);
@@ -358,6 +359,19 @@ export class TurtleHelper extends FilledShapeHelper {
         this.turtle.lineTo(x - vx * lengthBackward + vxp * lengthBackwardP, y - vy * lengthBackward + vyp * lengthBackwardP);
         this.turtle.lineTo(x - vx * lengthBackward - vxp * lengthBackwardP, y - vy * lengthBackward - vyp * lengthBackwardP);
         this.turtle.lineTo(x + vx * lengthForward, y + vy * lengthForward);
+    }
+
+    moveTurtleTo(x: number, y: number, angle: number){
+        this.turtle.localTransform.translate(-this.turtleX, -this.turtleY);
+        this.turtle.localTransform.rotate(angle - this.lastTurtleAngle);
+        this.turtle.localTransform.translate(x, y);
+        //@ts-ignore
+        this.turtle.transform.onChange();
+        this.turtle.updateTransform();
+
+        this.lastTurtleAngle = this.angle;
+        this.turtleX = x;
+        this.turtleY = y;
     }
 
     render(): void {
@@ -468,7 +482,7 @@ export class TurtleHelper extends FilledShapeHelper {
         this.borderColor = 0;
         this.turtleSize = 40;
         this.render();
-        this.drawTurtle(100, 200, 0);
+        this.moveTurtleTo(100, 200, 0);
     }
 
 

@@ -869,10 +869,12 @@ export class WorldHelper {
 
         let transform = new PIXI.Matrix().scale(scaleMin, scaleMin);
 
-        this.app.renderer.render(this.stage, {
-            renderTexture: rt,
-            transform: transform
-        });
+        setTimeout(() => {
+            this.app.renderer.render(this.stage, {
+                renderTexture: rt,
+                transform: transform
+            });            
+        }, 150);   // necessary to await Turtle's deferred rendering
 
 
 
@@ -887,7 +889,7 @@ export class WorldHelper {
             this.stage.projectionTransform = new PIXI.Matrix();
             this.stage.addChild(sprite);
 
-        }, 100);
+        }, 300);
     }
 
     destroyWorld() {

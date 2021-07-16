@@ -279,6 +279,10 @@ export class TurtleHelper extends FilledShapeHelper {
         return ro;
     }
 
+    newTurtleX: number;
+    newTurtleY: number;
+    newAngle: number;
+
     forward(length: number) {
 
         let lastLineElement: LineElement = this.lineElements[this.lineElements.length - 1];
@@ -310,13 +314,17 @@ export class TurtleHelper extends FilledShapeHelper {
         this.initialHitPolygonDirty = true;
         this.calculateCenter();
 
+        this.newTurtleX = newLineElement.x;
+        this.newTurtleY = newLineElement.y;
+        this.newAngle = this.angle;
+
         // don't render more frequent than every 1/100 s
         if (!this.renderJobPresent) {
             this.renderJobPresent = true;
             setTimeout(() => {
                 this.renderJobPresent = false;
                 this.render();
-                this.moveTurtleTo(newLineElement.x, newLineElement.y, this.angle);
+                this.moveTurtleTo(this.newTurtleX, this.newTurtleY, this.newAngle);
             }, 100);
         }
 
@@ -397,7 +405,6 @@ export class TurtleHelper extends FilledShapeHelper {
 
         let firstPoint = this.lineElements[0];
         g.moveTo(firstPoint.x, firstPoint.y);
-        // console.log("MoveTo: " + firstPoint.x + ", " + firstPoint.y);
 
         if (this.isFilled) {
             g.lineStyle(this.borderWidth, this.borderColor, this.borderAlpha, 0.5);

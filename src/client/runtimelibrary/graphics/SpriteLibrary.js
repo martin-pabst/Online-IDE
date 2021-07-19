@@ -44,6 +44,7 @@ var SpriteLibrary = [
     { filename: "Raumschiff_Adrian/Explosion/explosion_0011_..png", name: "Space_Shooter_1", index: 23 },
     
     {filename: "plattformer/Tiles_and_enemies_64x64.png", name: "Plattforms", tilesX: 22, tilesY: 16, spacingX: 2, spacingY: 2, scale: 1.0, index: 0},
+    {filename: "tower-defense/tower-defense.png", name: "TowerDefense", tilesX: 18, tilesY: 10, spacingX: 2, spacingY: 2, scale: 1.0, index: 0},
     {filename: "plattformer/male.png", name: "Characters_1", tilesX: 6, tilesY: 2, spacingX: 0, spacingY: 0, scale: 1.0, index: 0},
     // {filename: "plattformer/female.png", name: "Characters", tilesX: 6, tilesY: 2, spacingX: 0, spacingY: 0, scale: 1.0, index: 12},
     

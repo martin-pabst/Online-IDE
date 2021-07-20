@@ -51,7 +51,7 @@ export class InputManager {
 
         printManager.$outputDiv.on('mousedown.inputmanager', (e) => {
             setTimeout(() => {
-                that.$input.focus();
+                that.$input?.focus();
             }, 200);
         })
 

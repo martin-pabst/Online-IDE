@@ -5,6 +5,7 @@ import { GetUserDataResponse, UserData, ClassData } from "../communication/Data.
 import { TeachersWithClassesMI } from "./TeachersWithClasses.js";
 import { ClassesWithStudentsMI } from "./ClassesWithStudentsMI.js";
 import { StudentBulkImportMI } from "./StudentBulkImortMI.js";
+import { ExportImportMI } from "./ExportImportMI.js";
 
 export class Administration {
 
@@ -12,7 +13,8 @@ export class Administration {
         new SchoolsWithAdminsMI(this),
         new TeachersWithClassesMI(this),
         new ClassesWithStudentsMI(this),
-        new StudentBulkImportMI(this)
+        new StudentBulkImportMI(this),
+        new ExportImportMI(this)
     ]
 
     userData: UserData;

@@ -197,5 +197,7 @@ body {
     color: red;
 }
 
-
+#jo_exportschools {
+    visibility: hidden;
+}
 

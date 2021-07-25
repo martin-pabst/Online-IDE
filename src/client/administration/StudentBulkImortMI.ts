@@ -44,6 +44,9 @@ export class StudentBulkImportMI extends AdminMenuItem {
     onMenuButtonPressed($mainHeading: JQuery<HTMLElement>, $tableLeft: JQuery<HTMLElement>,
         $tableRight: JQuery<HTMLElement>, $mainFooter: JQuery<HTMLElement>) {
 
+        jQuery('#jo_exportschools').css('visibility', 'hidden');
+
+
         this.$tableLeft = $tableLeft;
         this.$tableRight = $tableRight;
 
@@ -148,7 +151,7 @@ export class StudentBulkImportMI extends AdminMenuItem {
 
         let $printDiv = $('#print');
         $printDiv.empty();
-        this.usersToWrite.forEach( (user) => {
+        this.usersToWrite.forEach((user) => {
             $printDiv.append(`<div style="page-break-inside: avoid;">
             <div><b>URL:</b> https://www.mathe-pabst.de/java</div>
             <div><b>Name:</b> ${user.rufname} ${user.familienname}</div>
@@ -291,7 +294,7 @@ export class StudentBulkImportMI extends AdminMenuItem {
         ajax('bulkCreateUsers', request, (response: BulkCreateUsersResponse) => {
             if (response.namesAlreadyUsed.length == 0) {
 
-                for(let user of this.usersToWrite){
+                for (let user of this.usersToWrite) {
                     user.schule_id = this.administration.userData.schule_id;
                     user.klasse_id = classData.id;
                     user.is_admin = false;
@@ -365,7 +368,7 @@ export class StudentBulkImportMI extends AdminMenuItem {
         let columnMapping: ColumnMapping = cm.columnMapping;
 
         let userData: UserData[] = this.makeUserData(lines, columnMapping);
-        if(userData.length > 0){
+        if (userData.length > 0) {
             let studentsGrid: W2UI.W2Grid = w2ui[this.studentGridName];
             studentsGrid.clear();
             studentsGrid.add(userData);
@@ -456,9 +459,9 @@ export class StudentBulkImportMI extends AdminMenuItem {
 
     }
 
-    enableGrid(enabled: boolean){
+    enableGrid(enabled: boolean) {
         let studentGrid: W2UI.W2Grid = w2ui[this.studentGridName];
-        if(enabled){
+        if (enabled) {
             studentGrid.unlock();
         } else {
             studentGrid.lock("", false);

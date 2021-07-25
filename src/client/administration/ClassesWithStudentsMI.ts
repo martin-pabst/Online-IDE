@@ -31,6 +31,8 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
     onMenuButtonPressed($mainHeading: JQuery<HTMLElement>, $tableLeft: JQuery<HTMLElement>,
         $tableRight: JQuery<HTMLElement>, $mainFooter: JQuery<HTMLElement>) {
 
+        jQuery('#jo_exportschools').css('visibility', 'hidden');
+
         $tableRight.css('flex', '2');
 
         let that = this;

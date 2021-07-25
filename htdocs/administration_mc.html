@@ -36,6 +36,17 @@
                 <div class="jo_belowAdminMenu">
                     <b>Doppelklick</b> => Zelle editieren<br>
                     <b>Tabulatortaste</b> => nächste Zelle bearbeiten
+                    <div id="jo_exportschools">
+                        <div>
+                            <a href="exportSchools">Schule exportieren</a>
+                        </div>
+                        <div>
+                            <form action="importSchools" method="POST" enctype="multipart/form-data">
+                                <input type="file" name="files" multiple>
+                                <input type="submit">
+                              </form>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="main">

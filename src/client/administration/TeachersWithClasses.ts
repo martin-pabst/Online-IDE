@@ -27,6 +27,7 @@ export class TeachersWithClassesMI extends AdminMenuItem {
     onMenuButtonPressed($mainHeading: JQuery<HTMLElement>, $tableLeft: JQuery<HTMLElement>,
         $tableRight: JQuery<HTMLElement>, $mainFooter: JQuery<HTMLElement>) {
         let that = this;
+        jQuery('#jo_exportschools').css('visibility', 'hidden');
 
         if (this.teachersGrid != null) {
             this.teachersGrid.render();

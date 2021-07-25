@@ -28,6 +28,9 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
         $tableRight: JQuery<HTMLElement>, $mainFooter: JQuery<HTMLElement>) {
         let that = this;
 
+        jQuery('#jo_exportschools').css('visibility', 'visible');
+
+
         if (this.schoolGrid != null) {
             this.schoolGrid.render();
         } else {
@@ -271,6 +274,8 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
         if (recIds.length == 0){
             return;
         } 
+
+        jQuery('#jo_exportschools a').attr('href', 'exportSchools?ids=' + recIds.join(','));
 
         // event.done(() => {
 

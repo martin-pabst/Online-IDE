@@ -1,5 +1,6 @@
 import { TokenList, specialCharList, TokenType, Token, EscapeSequenceList, keywordList, TextPosition, TokenTypeReadable } from "./Token.js";
 import { text } from "express";
+import { escapeHtml } from "../../tools/StringTools.js"
 
 enum LexerState {
     number, identifier, stringConstant, characterConstant, multilineComment, EndoflineComment
@@ -509,7 +510,8 @@ export class Lexer {
         } else {
             this.next();
         }
-
+        // Sanitize chars (XSS)
+        char = escapeHtml(char)
         this.pushToken(TokenType.charConstant, char, line, column);
 
     }
@@ -546,6 +548,8 @@ export class Lexer {
             text += char;
             this.next();
         }
+	// Sanitize Strings (XSS)
+        text = escapeHtml(text);
 
         this.pushToken(TokenType.stringConstant, text, line, column, text.length + 2);
 
@@ -670,7 +674,7 @@ export class Lexer {
         let exponent: number = 0;
 
         let hasExponential: boolean = false;
-        //@ts-ignore
+        
         if (this.currentChar == "e") {
             hasExponential = true;
             this.next();

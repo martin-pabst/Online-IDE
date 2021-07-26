@@ -1,5 +1,5 @@
 import { AdminMenuItem } from "./AdminMenuItem.js";
-import { UserData, CRUDUserRequest, CRUDSchoolRequest, CRUDResponse, SchoolData, GetSchoolDataRequest, GetSchoolDataResponse } from "../communication/Data.js";
+import { UserData, CRUDUserRequest, CRUDSchoolRequest, CRUDResponse, SchoolData, GetSchoolDataRequest, GetSchoolDataResponse, ImportSchoolsResponse, GetMessagesResponse, GetMessagesRequest } from "../communication/Data.js";
 import { ajax } from "../communication/AjaxHelper.js";
 import { PasswordPopup } from "./PasswordPopup.js";
 
@@ -60,7 +60,7 @@ export class ExportImportMI extends AdminMenuItem {
                 onUnSelect: (event) => { event.done(() => { that.onChangeSelection(event) }) },
                 onAdd: (event) => { that.onAddSchool() },
                 onChange: (event) => { that.onUpdateSchool(event) },
-                onDelete: (event) => { that.onDeleteSchool(event) },
+                onDelete: (event) => { that.onDeleteSchools(event) },
             })
 
             this.schoolGrid = w2ui[this.schoolGridName];
@@ -84,6 +84,7 @@ export class ExportImportMI extends AdminMenuItem {
                 <input id="jo_upload_school_button" type="button" value="Upload">
               </form>
         </div>
+        <div class="jo_importSchoolsLoggingDiv"></div>
     </div>
         `))
 
@@ -94,11 +95,40 @@ export class ExportImportMI extends AdminMenuItem {
                 type: 'POST',
                 data: new FormData(<HTMLFormElement>jQuery('#jo_exportschools form')[0]), // The form with the file inputs.
                 processData: false,
-                contentType: false                    // Using FormData, no need to process data.
-              }).done(function(response){
+                enctype: 'multipart/form-data',
+                contentType: false,
+                cache: false       
+              }).done(function(response: ImportSchoolsResponse){
                 console.log(response);
-                console.log("Success: Files sent!");
-              }).fail(function(){
+                let fetchLog = () => {
+                    let request: GetMessagesRequest = {type: response.messageType}
+                    ajax("getMessages", request, (response: GetMessagesResponse) => {
+                        if(response.messages.length > 0){
+                            let done = false;
+                            for(let message of response.messages){
+                                let loggingDiv = jQuery('.jo_importSchoolsLoggingDiv');
+                                loggingDiv.append(jQuery('<div>' + message.text + "</div>"));
+                                loggingDiv[0].scrollTop = loggingDiv[0].scrollHeight;
+                                done = done || message.done;
+                                if(message.text.indexOf("abgeschlossen!") >= 0){
+                                    that.loadTablesFromSchoolObject();
+                                }
+                            }
+                            if (done) {
+                                that.loadTablesFromSchoolObject();
+                            } else {
+                                setTimeout(fetchLog, 1000);
+                            }
+
+                        } else {
+                            setTimeout(fetchLog, 1000);
+                        }
+                    })
+                }
+
+                fetchLog();
+
+            }).fail(function(){
                 console.log("An error occurred, the files couldn't be sent!");
               });
         })
@@ -106,7 +136,7 @@ export class ExportImportMI extends AdminMenuItem {
     }
 
 
-    onDeleteSchool(event: any) {
+    onDeleteSchools(event: any) {
         if (!event.force || event.isStopped) return;
 
         let recIds: number[] = <number[]>this.schoolGrid.getSelection();
@@ -118,19 +148,31 @@ export class ExportImportMI extends AdminMenuItem {
         // let selectedSchools: SchoolData[] = <SchoolData[]>this.schoolGrid.records.filter(
         //     (cd: SchoolData) => recIds.indexOf(cd.id) >= 0);
 
+    let that = this;
 
-        let request: CRUDSchoolRequest = {
-            type: "delete",
-            data: null,
-            id: recIds[0],
+    let deleteOneSchool = () => {
+
+        if(recIds.length > 0){
+            let id = recIds.pop();
+            let request: CRUDSchoolRequest = {
+                type: "delete",
+                data: null,
+                id: id,
+            }
+        
+            ajax("CRUDSchool", request, (response: CRUDResponse) => {
+                this.schoolGrid.remove("" + id);
+                this.schoolGrid.refresh();
+                deleteOneSchool();
+            }, () => {
+                this.schoolGrid.refresh();
+            });
+
         }
 
-        ajax("CRUDSchool", request, (response: CRUDResponse) => {
-            this.schoolGrid.remove("" + recIds[0]);
-            this.schoolGrid.refresh();
-        }, () => {
-            this.schoolGrid.refresh();
-        });
+    }
+
+    deleteOneSchool();
 
     }
 

@@ -573,3 +573,25 @@ export type WebSocketResponsePairingFound = {
     command: 6,
     clients: PairingClient[]
 }
+
+export type GetMessagesRequest = {
+    type: string;
+}
+
+export type Message = {
+    text: string, 
+    type: string,
+    done: boolean,
+    time: number,
+    user_id: number
+}
+
+export type GetMessagesResponse = {
+    success: boolean;
+    messages: Message[];
+}
+
+export type ImportSchoolsResponse = {
+    success: boolean, 
+    messageType: string
+}

@@ -201,3 +201,10 @@ body {
     padding: 10px;
 }
 
+.jo_importSchoolsLoggingDiv{
+    margin-top: 10px;
+    height: 60vh;
+    overflow: auto;
+    border: 1px solid gray;
+    padding: 5px;
+}

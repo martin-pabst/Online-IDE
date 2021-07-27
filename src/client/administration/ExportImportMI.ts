@@ -90,6 +90,10 @@ export class ExportImportMI extends AdminMenuItem {
 
 
         jQuery('#jo_upload_school_button').on('click', () => {
+            let loggingDiv = jQuery('.jo_importSchoolsLoggingDiv');
+            loggingDiv.empty();
+            loggingDiv.append(jQuery('<div style="color: green; font-weight: bold; margin-bottom: 5px;">Die Daten werden hochgeladen. Bitte warten...</div>'));
+
             jQuery.ajax({
                 url: 'importSchools', 
                 type: 'POST',
@@ -106,7 +110,7 @@ export class ExportImportMI extends AdminMenuItem {
                         if(response.messages.length > 0){
                             let done = false;
                             for(let message of response.messages){
-                                let loggingDiv = jQuery('.jo_importSchoolsLoggingDiv');
+                                
                                 loggingDiv.append(jQuery('<div>' + message.text + "</div>"));
                                 loggingDiv[0].scrollTop = loggingDiv[0].scrollHeight;
                                 done = done || message.done;

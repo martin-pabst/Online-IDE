@@ -454,7 +454,9 @@ export class ProjectExplorer {
             {
                 caption: "Exportieren",
                 callback: (element: AccordionElement) => {
-                    downloadFile((<Workspace>element.externalElement).toExportedWorkspace(), "workspace.json")
+                    let ws: Workspace = <Workspace>element.externalElement;
+                    let name: string = ws.name.replace(/\//g, "_");
+                    downloadFile((ws).toExportedWorkspace(), name + ".json")
                 }
             } 
             );

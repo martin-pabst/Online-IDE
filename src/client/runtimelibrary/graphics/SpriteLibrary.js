@@ -43,8 +43,78 @@ var SpriteLibrary = [
     { filename: "Raumschiff_Adrian/Explosion/explosion_0010_..png", name: "Space_Shooter_1", index: 22 },
     { filename: "Raumschiff_Adrian/Explosion/explosion_0011_..png", name: "Space_Shooter_1", index: 23 },
     
+    // Spaceshooter 2
+    { filename: "classics/spaceship_1.png", name: "Space_Shooter_2", index: 0 },
+    { filename: "classics/spaceship_2.png", name: "Space_Shooter_2", index: 1 },
+    { filename: "classics/spaceship_3.png", name: "Space_Shooter_2", index: 2 },
+    { filename: "classics/spaceship_4.png", name: "Space_Shooter_2", index: 3 },
+    { filename: "classics/spaceship_5.png", name: "Space_Shooter_2", index: 4 },
+    { filename: "classics/spaceship_6.png", name: "Space_Shooter_2", index: 5 },
+    { filename: "classics/spaceship_7.png", name: "Space_Shooter_2", index: 6 },
+    { filename: "classics/spaceship_8.png", name: "Space_Shooter_2", index: 7 },
+    { filename: "classics/spaceship_9.png", name: "Space_Shooter_2", index: 8 },
+    { filename: "classics/missile_1.png", name: "Space_Shooter_2", index: 9 },
+    { filename: "classics/missile_2.png", name: "Space_Shooter_2", index: 10 },
+    { filename: "classics/missile_3.png", name: "Space_Shooter_2", index: 11 },
+    { filename: "classics/missile_4.png", name: "Space_Shooter_2", index: 12 },
+    { filename: "classics/missile_5.png", name: "Space_Shooter_2", index: 13 },
+    { filename: "classics/missile_6.png", name: "Space_Shooter_2", index: 14 },
+    { filename: "classics/missile_7.png", name: "Space_Shooter_2", index: 15 },
+    { filename: "classics/missile_8.png", name: "Space_Shooter_2", index: 16 },
+    { filename: "classics/missile_9.png", name: "Space_Shooter_2", index: 17 },
+    { filename: "classics/missile_10.png", name: "Space_Shooter_2", index: 18 },
+    { filename: "classics/missile_11.png", name: "Space_Shooter_2", index: 19 },
+    { filename: "classics/missile_12.png", name: "Space_Shooter_2", index: 20 },
+    { filename: "classics/satellite_1.png", name: "Space_Shooter_2", index: 21 },
+    { filename: "classics/satellite_2.png", name: "Space_Shooter_2", index: 22 },
+    
+    // Soko
+    {filename: "classics/sokoban_man_horizontal.png", name: "Soko", tilesX: 3, tilesY: 1, spacingX: 2, spacingY: 0, scale: 1.0, index: 0},
+    {filename: "classics/sokoban_man_vertical.png", name: "Soko", tilesX: 6, tilesY: 1, spacingX: 2, spacingY: 0, scale: 1.0, index: 3},
+    { filename: "classics/sokoban_box_1.png", name: "Soko", index: 9 },
+    { filename: "classics/sokoban_box_2.png", name: "Soko", index: 10 },
+    { filename: "classics/sokoban_empty.png", name: "Soko", index: 11 },
+    { filename: "classics/sokoban_wall.png", name: "Soko", index: 12 },
+    { filename: "classics/sokoban_target.png", name: "Soko", index: 13 },
+    
+    // P-Man
+    {filename: "classics/pacman_characters.png", name: "PMan", tilesX: 22, tilesY: 1, spacingX: 2, spacingY: 0, scale: 1.0, index: 0},
+    {filename: "classics/pacman_maze.png", name: "PMan", tilesX: 15, tilesY: 1, spacingX: 2, spacingY: 0, scale: 1.0, index: 22},
+    
+    // Breakin
+    { filename: "classics/bo_bat_long.png", name: "Breakin", index: 0 },
+    { filename: "classics/bo_bat_short.png", name: "Breakin", index: 1 },
+    { filename: "classics/bo_ball_blue.png", name: "Breakin", index: 2 },
+    { filename: "classics/bo_ball_gray.png", name: "Breakin", index: 3 },
+    { filename: "classics/bo_rechteck.png", name: "Breakin", index: 4 },
+    { filename: "classics/bo_rechteck_active.png", name: "Breakin", index: 5 },
+    { filename: "classics/bo_quadrat.png", name: "Breakin", index: 6 },
+    { filename: "classics/bo_quadrat_active.png", name: "Breakin", index: 7 },
+    { filename: "classics/bo_fuenfeck.png", name: "Breakin", index: 8 },
+    { filename: "classics/bo_fuenfeck_active.png", name: "Breakin", index: 9 },
+    { filename: "classics/bo_raute.png", name: "Breakin", index: 10 },
+    { filename: "classics/bo_raute_active.png", name: "Breakin", index: 11 },
+    { filename: "classics/bo_star1.png", name: "Breakin", index: 12 },
+    { filename: "classics/bo_star2.png", name: "Breakin", index: 13 },
+    
+    // Chess
+    // Source: https://commons.wikimedia.org/wiki/Category:SVG_chess_pieces
+    { filename: "classics/Chess.png", name: "Boardgames", tilesX: 6, tilesY: 2, spacingX: 2, spacingY: 2, scale: 1.0, index: 0},
+    { filename: "classics/Spielstein.png", name: "Boardgames", index: 12 },
+    { filename: "classics/wuerfel_1.png", name: "Boardgames", index: 13 },
+    { filename: "classics/wuerfel_2.png", name: "Boardgames", index: 14 },
+    { filename: "classics/wuerfel_3.png", name: "Boardgames", index: 15 },
+    { filename: "classics/wuerfel_4.png", name: "Boardgames", index: 16 },
+    { filename: "classics/wuerfel_5.png", name: "Boardgames", index: 17 },
+    { filename: "classics/wuerfel_6.png", name: "Boardgames", index: 18 },
+    
+    // Platformer
     {filename: "plattformer/Tiles_and_enemies_64x64.png", name: "Plattforms", tilesX: 22, tilesY: 16, spacingX: 2, spacingY: 2, scale: 1.0, index: 0},
+    
+    // Tower defense
     {filename: "tower-defense/tower-defense.png", name: "TowerDefense", tilesX: 18, tilesY: 10, spacingX: 2, spacingY: 2, scale: 1.0, index: 0},
+    
+    // Platformer character
     {filename: "plattformer/male.png", name: "Characters_1", tilesX: 6, tilesY: 2, spacingX: 0, spacingY: 0, scale: 1.0, index: 0},
     // {filename: "plattformer/female.png", name: "Characters", tilesX: 6, tilesY: 2, spacingX: 0, spacingY: 0, scale: 1.0, index: 12},
     
@@ -61,6 +131,10 @@ var SpriteLibrary = [
     { filename: "plattformer/tree1.png", name: "Background", index: 10, scale: 0.5 },
     { filename: "plattformer/tree2.png", name: "Background", index: 11, scale: 0.5 },
     { filename: "plattformer/tree3.png", name: "Background", index: 12, scale: 0.5 },
+    
+    
+    
+    
 ]
 
 function expandDigits(n, digits){

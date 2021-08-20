@@ -196,7 +196,7 @@ export class DebuggerElement {
                 v.updateValue(v);
             }
 
-            s = v.type.debugOutput(v);
+            s = v.type?.debugOutput(v);
 
             if (this.type instanceof Klass) {
 
@@ -215,7 +215,7 @@ export class DebuggerElement {
             
         }
 
-        this.$debuggerElement.find('.jo_deValue').first().html(s);
+        this.$debuggerElement.find('.jo_deValue').first().html(s == null ? "" : s);
 
 
         for (let child of this.children) {

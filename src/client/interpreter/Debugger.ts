@@ -127,7 +127,7 @@ export class Debugger {
 
                     // Reuse old Debugger Element vor variable, if present
                     for (let oldDe of oldDebuggerElements) {
-                        if (oldDe.variable == variable) {
+                        if (oldDe.variable == variable && oldDe.$debuggerElement != null) {
                             de = oldDe;
                             elementsToKeep.push(de.$debuggerElement[0]);
 

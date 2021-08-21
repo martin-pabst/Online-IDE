@@ -47,8 +47,8 @@ export class MyHoverProvider {
         "class": "```\nclass\n```  \nMit dem Schlüsselwort ```class``` werden Klassen definiert.",
         "extends": "```\nextends\n```  \n```class A extends B { ... }``` bedeutet, dass die Klasse A Unterklasse der Klasse B ist.",
         "implements": "```\nimplements\n```  \n```class A implements B { ... }``` bedeutet, dass die Klasse A das Interface B implementiert, d.h., dass sie alle Methoden besitzen muss, die in B definiert sind.",
-        "this": "```\nthis\n```  \nInnerhalb einer Methodendefinition bezeichnet das Schlüsselwor ```this``` immer dasjenige Objekt, für das die Methode gerade ausgeführt wird.",
-
+        "this": "```\nthis\n```  \nInnerhalb einer Methodendefinition bezeichnet das Schlüsselwort ```this``` immer dasjenige Objekt, für das die Methode gerade ausgeführt wird.",
+        "var": "```\nvar\n```  \nWird einer Variable beim Deklarieren sofort ein Startwert zugewiesen (z.B. Circle c = new Circle(100, 100, 10)), so kann statt des Datentyps das Schlüsselwort ```var``` verwendet werden (also var c = new Circle(100, 100, 10)).",
     }
 
     constructor(private editor: Editor) {
@@ -93,7 +93,7 @@ export class MyHoverProvider {
 
         let declarationAsString = "";
 
-        if (element != null) {
+        if (element != null && element.identifier != "var") {
             if (element instanceof Klass || element instanceof Method || element instanceof Interface
                 || element instanceof Attribute) {
                 declarationAsString = getDeclarationAsString(element);

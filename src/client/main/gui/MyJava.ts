@@ -93,7 +93,7 @@ export function defineMyJava() {
         print: ['print', 'println'],
         statements: ['for', 'while', 'if', 'then', 'else', 'do', 'break', 'continue'],
         types: ['int', 'boolean', 'char', 'float', 'double', 'long', 'void', 'byte', 'short',
-        'class', 'enum', 'interface'],
+        'class', 'enum', 'interface', 'var'],
         operators: [
             '=', '>', '<', '!', '~', '?', ':',
             '==', '<=', '>=', '!=', '&&', '||', '++', '--',

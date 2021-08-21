@@ -11,7 +11,7 @@ export function ajax(url: string, request: any, successCallback: (response: any)
         async: true,
         data: JSON.stringify(request),
         contentType: 'application/json',
-        url: url,
+        url: "servlet/" + url,
         success: function (response: any) {
             showNetworkBusy(false);
             if (response.success != null && response.success == false || typeof (response) == "string" && response == '') {

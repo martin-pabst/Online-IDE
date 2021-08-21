@@ -230,7 +230,7 @@ export class ExportImportMI extends AdminMenuItem {
             return;
         } 
 
-        jQuery('#jo_exportschools a').attr('href', 'exportSchools?ids=' + recIds.join(','));
+        jQuery('#jo_exportschools a').attr('href', 'servlet/exportSchools?ids=' + recIds.join(','));
 
 
     }

@@ -220,7 +220,7 @@ export class WebSocketHelper {
 
         ajax('getWebSocketToken', {}, (response: GetWebSocketTokenResponse) => {
 
-            let url: string = (window.location.protocol.startsWith("https") ? "wss://" : "ws://") + window.location.host + "/websocket";
+            let url: string = (window.location.protocol.startsWith("https") ? "wss://" : "ws://") + window.location.host + "/servlet/websocket";
             this.connection = new WebSocket(url);
 
             this.connection.onerror = (error: Event) => { this.onError(error); }

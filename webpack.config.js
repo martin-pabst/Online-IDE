@@ -8,6 +8,7 @@ const ideConfig = {
         home: [
             './js/main/IDEStarter.js',
             './css/editor.css',
+            './css/editorStatic.css',
             './css/bottomdiv.css',
             './css/debugger.css',
             './css/diagram.css',
@@ -16,6 +17,8 @@ const ideConfig = {
             './css/imagesprites.css',
             './css/run.css',
             './css/dialog.css',
+            './css/synchronize-repo.css',
+            './css/updatecreate-repo.css',
             './assets/fonts/fonts.css',
         ],
         // style: [

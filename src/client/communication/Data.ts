@@ -157,11 +157,17 @@ export type LoginRequest = {
     language: number
 }
 
+export type TicketLoginRequest = {
+    ticket: string,
+    language: number
+}
+
 export type LoginResponse = {
     success: boolean,
     user: UserData,
     classdata: ClassData[], // null if !is_teacher
     workspaces: Workspaces,
+    isTestuser: boolean
 }
 
 export type LogoutRequest = {

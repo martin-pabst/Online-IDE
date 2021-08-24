@@ -1,7 +1,13 @@
 $(()=>{
 
     $('#login-button').on('click', () => {
-        
+        ajax('servlet/login', {
+            'username': $('#login-username').val(),
+            'password': $('#login-password').val(),
+            'language': 0
+        }, (response) => {
+            window.location.href = response.server + "#" + response.ticket
+        })
     })
 
 

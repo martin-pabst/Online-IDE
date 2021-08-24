@@ -149,9 +149,19 @@ export class Main implements MainBase {
     initGUI() {
 
         checkIfMousePresent();
-
+        
         this.login = new Login(this);
-        this.login.initGUI();
+        let hashIndex: number = window.location.href.indexOf('#');
+        if(hashIndex > 0){
+    
+            var ticket = window.location.href.substr(hashIndex + 1);
+            this.login.loginWithTicket(ticket);
+    
+        } else {
+            this.login.initGUI();
+        }
+    
+
 
         this.actionManager = new ActionManager(null, this);
         this.actionManager.init();

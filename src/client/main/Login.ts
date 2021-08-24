@@ -1,5 +1,5 @@
 import { ajax } from "../communication/AjaxHelper.js";
-import { LoginRequest, LoginResponse, LogoutRequest, UserData } from "../communication/Data.js";
+import { LoginRequest, LoginResponse, LogoutRequest, TicketLoginRequest, UserData } from "../communication/Data.js";
 import { Main } from "./Main.js";
 import { Helper } from "./gui/Helper.js";
 import { InterpreterState } from "../interpreter/Interpreter.js";
@@ -81,103 +81,7 @@ export class Login {
                 loginHappened = false;
             }, 1000);
 
-            let loginRequest: LoginRequest = {
-                username: <string>jQuery('#login-username').val(),
-                password: <string>jQuery('#login-password').val(),
-                language: 0
-            }
-
-            ajax('login', loginRequest, (response: LoginResponse) => {
-
-                if (!response.success) {
-                    jQuery('#login-message').html('Fehler: Benutzername und/oder Passwort ist falsch.');
-                } else {
-
-                    // We don't do this anymore for security reasons - see AjaxHelper.ts
-                    // Alternatively we now set a long expiry interval for cookie.
-                    // credentials.username = loginRequest.username;
-                    // credentials.password = loginRequest.password;
-
-                    jQuery('#login').hide();
-                    jQuery('#main').css('visibility', 'visible');
-
-                    jQuery('#bitteWartenText').html('Bitte warten ...');
-                    jQuery('#bitteWarten').css('display', 'flex');
-
-                    let user: UserData = response.user;
-                    user.is_testuser = loginRequest.username == "Testuser" && loginRequest.password == "";
-
-                    if (user.settings == null || user.settings.helperHistory == null) {
-                        user.settings = {
-                            helperHistory: {
-                                consoleHelperDone: false,
-                                newFileHelperDone: false,
-                                newWorkspaceHelperDone: false,
-                                speedControlHelperDone: false,
-                                homeButtonHelperDone: false,
-                                stepButtonHelperDone: false,
-                                repositoryButtonDone: false,
-                                folderButtonDone: false
-                            },
-                            viewModes: null,
-                            classDiagram: null
-                        }
-                    }
-                    
-                    that.main.user = user;
-
-                    this.main.waitForGUICallback = () => {
-                        
-                        that.main.mainMenu.initGUI(user);
-                        
-                        jQuery('#bitteWarten').hide();
-                        $loginSpinner.hide();
-                        jQuery('#menupanel-username').html(escapeHtml(user.rufname) + " " + escapeHtml(user.familienname));
-                        
-                        new UserMenu(that.main).init();
-                        
-                        if (user.is_teacher) {
-                            that.main.initTeacherExplorer(response.classdata);
-                        }
-                        
-
-                        that.main.restoreWorkspaces(response.workspaces);
-                        that.main.workspacesOwnerId = user.id;
-
-                        that.main.networkManager.initializeTimer();
-
-                        that.main.projectExplorer.fileListPanel.setFixed(!user.is_teacher);
-                        that.main.projectExplorer.workspaceListPanel.setFixed(!user.is_teacher);
-
-                        that.main.rightDiv?.classDiagram?.clear();
-
-                        if (user.settings.classDiagram != null) {
-                            that.main.rightDiv?.classDiagram?.deserialize(user.settings.classDiagram);
-                        }
-
-                        that.main.viewModeController.initViewMode();
-                        that.main.bottomDiv.hideHomeworkTab();
-                        
-                        if (!this.main.user.settings.helperHistory.folderButtonDone && that.main.projectExplorer.workspaceListPanel.elements.length > 5) {
-                            
-                            Helper.showHelper("folderButton", this.main, jQuery('.img_add-folder-dark'));
-            
-                        }
-            
-
-                    }
-
-                    if (this.main.startupComplete == 0) {
-                        this.main.waitForGUICallback();
-                        this.main.waitForGUICallback = null;
-                    }
-
-                }
-
-            }, (errorMessage: string) => {
-                jQuery('#login-message').html('Login gescheitert: ' + errorMessage);
-            }
-            );
+            this.sendLoginRequest(null);
 
         });
 
@@ -217,6 +121,130 @@ export class Login {
 
 
     }
+
+    sendLoginRequest(ticket: string){
+        let that = this;
+
+        let servlet = "login";
+
+        let loginRequest: LoginRequest|TicketLoginRequest = {
+            username: <string>jQuery('#login-username').val(),
+            password: <string>jQuery('#login-password').val(),
+            language: 0
+        }
+
+        if(ticket != null){
+            servlet = "ticketLogin";
+            loginRequest = {
+                ticket: ticket,
+                language: 0
+            }
+        }
+
+        ajax(servlet, loginRequest, (response: LoginResponse) => {
+
+            if (!response.success) {
+                jQuery('#login-message').html('Fehler: Benutzername und/oder Passwort ist falsch.');
+            } else {
+
+                // We don't do this anymore for security reasons - see AjaxHelper.ts
+                // Alternatively we now set a long expiry interval for cookie.
+                // credentials.username = loginRequest.username;
+                // credentials.password = loginRequest.password;
+
+                jQuery('#login').hide();
+                jQuery('#main').css('visibility', 'visible');
+
+                jQuery('#bitteWartenText').html('Bitte warten ...');
+                jQuery('#bitteWarten').css('display', 'flex');
+
+                let user: UserData = response.user;
+                user.is_testuser = response.isTestuser;
+
+                if (user.settings == null || user.settings.helperHistory == null) {
+                    user.settings = {
+                        helperHistory: {
+                            consoleHelperDone: false,
+                            newFileHelperDone: false,
+                            newWorkspaceHelperDone: false,
+                            speedControlHelperDone: false,
+                            homeButtonHelperDone: false,
+                            stepButtonHelperDone: false,
+                            repositoryButtonDone: false,
+                            folderButtonDone: false
+                        },
+                        viewModes: null,
+                        classDiagram: null
+                    }
+                }
+                
+                that.main.user = user;
+
+                this.main.waitForGUICallback = () => {
+                    
+                    that.main.mainMenu.initGUI(user);
+                    
+                    jQuery('#bitteWarten').hide();
+                    let $loginSpinner = jQuery('#login-spinner>img');
+                    $loginSpinner.hide();
+                    jQuery('#menupanel-username').html(escapeHtml(user.rufname) + " " + escapeHtml(user.familienname));
+                    
+                    new UserMenu(that.main).init();
+                    
+                    if (user.is_teacher) {
+                        that.main.initTeacherExplorer(response.classdata);
+                    }
+                    
+
+                    that.main.restoreWorkspaces(response.workspaces);
+                    that.main.workspacesOwnerId = user.id;
+
+                    that.main.networkManager.initializeTimer();
+
+                    that.main.projectExplorer.fileListPanel.setFixed(!user.is_teacher);
+                    that.main.projectExplorer.workspaceListPanel.setFixed(!user.is_teacher);
+
+                    that.main.rightDiv?.classDiagram?.clear();
+
+                    if (user.settings.classDiagram != null) {
+                        that.main.rightDiv?.classDiagram?.deserialize(user.settings.classDiagram);
+                    }
+
+                    that.main.viewModeController.initViewMode();
+                    that.main.bottomDiv.hideHomeworkTab();
+                    
+                    if (!this.main.user.settings.helperHistory.folderButtonDone && that.main.projectExplorer.workspaceListPanel.elements.length > 5) {
+                        
+                        Helper.showHelper("folderButton", this.main, jQuery('.img_add-folder-dark'));
+        
+                    }
+        
+
+                }
+
+                if (this.main.startupComplete == 0) {
+                    this.main.waitForGUICallback();
+                    this.main.waitForGUICallback = null;
+                }
+
+            }
+
+        }, (errorMessage: string) => {
+            jQuery('#login-message').html('Login gescheitert: ' + errorMessage);
+        }
+        );
+
+    }
+
+    loginWithTicket(ticket: string) {
+        jQuery('#login').hide();
+        jQuery('#main').css('visibility', 'visible');
+
+        jQuery('#bitteWartenText').html('Bitte warten ...');
+        jQuery('#bitteWarten').css('display', 'flex');
+
+    }
+
 
     private showLoginForm(){
         jQuery('#login').show();

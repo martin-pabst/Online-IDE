@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Online-IDE</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1.0, minimal-ui'>
+
+    <link rel='stylesheet' type='text/css' media='screen' href='portal.css'>
+
+    <script src="jquery-3.3.1.js"></script>
+    <script src="portal.js"></script>
+
+
+</head>
+
+<body>
+
+    <!-- Bitte-Warten-Text nach dem Logout (bis die Einstellungen gespeichert sind)-->
+    <div id="bitteWarten">
+        <div class="jo_login_div">
+            <div id="bitteWartenText"></div>
+        </div>
+    </div>
+
+    <!-- Login-Seite -->
+    <div id="login">
+        <div id="jo_login_animations"></div>
+        <div id="login-heading" class="jo_login_div">Online-IDE</div>
+        <div style="flex-grow: 1" class="jo_login_div"></div>
+        <div class="jo_login_div">
+            <div id="login-center">
+                <input id="login-username" type="text" placeholder="Benutzername" spellcheck="false" tabindex="1">
+                <input id="login-password" type="password" placeholder="Passwort" spellcheck="false" tabindex="2">
+                <div id="login-message"></div>
+                <div id="login-button" tabindex="3">Login</div>
+            </div>
+        </div>
+        <div id="login-spinner" class="jo_login_div">
+            <img src="assets/ball-triangle.svg">
+        </div>
+        <div class="jo_infodiv">
+            <div class="jo_infodiv_line">
+                <a href="https://www.learnj.de/doku.php?id=api:ide_manual:start" target="_blank">
+                    <div class="jo_infodiv_box" id="jo_video_button">
+                        <img src="assets/film.png" class="jo_infobox_leftimage" alt="">
+                        <div>Video-Tutorials zur Online-IDE</div>
+                    </div>
+                </a>
+                <div class="jo_infodiv_box" id="jo_testuser-login-button">
+                    <img src="assets/test.png" class="jo_infobox_leftimage" alt="">
+                    <div>Login als Testuser (*)</div>
+                </div>
+                <a href="https://www.learnj.de/doku.php?id=ide:testlogins:start" target="_blank">
+                    <div class="jo_infodiv_box" id="jo_testlogins">
+                        <img src="assets/rocket.png" class="jo_infobox_leftimage" alt="">
+                        <div>Interesse?<br>(Test-)logins für Schulen</div>
+                    </div>
+                </a>
+            </div>
+            <div class="jo_infodiv_line">
+                <a href="https://www.learnj.de" target="_blank">
+                    <div class="jo_infodiv_box" id="jo_learnj">
+                        <img src="assets/learnj.png" class="jo_infobox_leftimage" alt="">
+                        <div>Interaktives Java-Tutorial</div>
+                    </div>
+                </a>
+                <a href="https://github.com/martin-pabst/Online-IDE" target="_blank">
+                    <div class="jo_infodiv_box" id="jo_embedded_ide">
+                        <img src="assets/forkme_left_green_007200.png" class="jo_infobox_forkme" alt="">
+                        <div style="font-size: 16pt;">Embedded<br> Java-IDE - auch für deine Homepage!</div>
+                    </div>
+                </a>
+                <a href="https://www.embed.learnj.de/createwrapper.html" target="_blank">
+                    <div class="jo_infodiv_box" id="jo_moodle_mebis">
+                        <img src="assets/moodle_mebis.png" class="jo_infobox_leftimage" alt="">
+                        <div style="font-size: 12pt;">Java programmieren innerhalb von Moodle-/Mebis-Kursen</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div style="flex-grow: 4" class="jo_login_div">
+        </div>
+        <div id="login-footer">
+            <div>
+                (*) Ohne Repository und Lehrkraft-Funktionen
+            </div>
+            <div id="login-datenschutz">
+                <a href="https://www.learnj.de/doku.php?id=ide:datenschutzerklaerung" target="_blank">Datenschutzerklärung</a>  - 
+                <a href="https://www.learnj.de/doku.php?id=ide:impressum" target="_blank">Impressum</a>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>

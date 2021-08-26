@@ -1,12 +1,21 @@
 $(()=>{
 
     $('#login-button').on('click', () => {
+        jQuery('#login').hide();
+
+        jQuery('#bitteWartenText').html('Bitte warten ...');
+        jQuery('#bitteWarten').css('display', 'flex');
+
         ajax('servlet/login', {
             'username': $('#login-username').val(),
             'password': $('#login-password').val(),
             'language': 0
         }, (response) => {
             window.location.href = response.server + "#" + response.ticket
+        }, (errorMessage) => {            
+            jQuery('#bitteWarten').css('display', 'none');
+            jQuery('#login').show();
+            jQuery('#login-message').html('Login gescheitert: ' + errorMessage);
         })
     })
 
@@ -27,6 +36,9 @@ function ajax(url, request, successCallback, errorCallback) {
                 let error = "Fehler bei der Bearbeitung der Anfrage";
                 if (response.message != null)
                     error = response.message;
+                if(errorCallback){
+                    errorCallback(error);
+                }
             }
             else {
                 successCallback(response);

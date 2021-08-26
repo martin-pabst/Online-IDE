@@ -15,11 +15,14 @@ export class Login {
 
     }
 
-    initGUI() {
+    initGUI(isLoginWithTicket: boolean) {
 
         let that = this;
-
-        this.startAnimations();
+        if(!isLoginWithTicket){
+            jQuery('#login').css('display','flex');
+            jQuery('#bitteWarten').css('display','none');
+            this.startAnimations();
+        }
 
         let $loginSpinner = jQuery('#login-spinner>img');
 
@@ -242,6 +245,7 @@ export class Login {
 
         jQuery('#bitteWartenText').html('Bitte warten ...');
         jQuery('#bitteWarten').css('display', 'flex');
+        this.sendLoginRequest(ticket);
 
     }
 

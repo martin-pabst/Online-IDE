@@ -28,6 +28,7 @@ jQuery(function () {
         main.getMonacoEditor().updateOptions({ readOnly: true });
 
         main.bottomDiv.initGUI();
+        main.checkStartupComplete();
 
         if(main.repositoryOn){
             main.synchronizationManager = new SynchronizationManager(main);
@@ -42,14 +43,14 @@ jQuery(function () {
         }
         // main.loadWorkspace();
 
-
+        
     });
-
+    
     PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
     PIXI.Loader
-        .shared.add("assets/graphics/spritesheet.json")
-        .load(() => { });
-
+    .shared.add("assets/graphics/spritesheet.json")
+    .load(() => { });
+    
     main.initGUI();
 
 });

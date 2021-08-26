@@ -155,10 +155,12 @@ export class Main implements MainBase {
         if(hashIndex > 0){
     
             var ticket = window.location.href.substr(hashIndex + 1);
+            window.history.replaceState({}, "Online-IDE", window.location.href.substr(0, hashIndex));
+            this.login.initGUI(true);
             this.login.loginWithTicket(ticket);
     
         } else {
-            this.login.initGUI();
+            this.login.initGUI(false);
         }
     
 
@@ -256,7 +258,7 @@ export class Main implements MainBase {
 
         jQuery(window).trigger('resize');
 
-        this.checkStartupComplete();
+//        this.checkStartupComplete();
     }
 
     initTeacherExplorer(classdata: ClassData[]) {

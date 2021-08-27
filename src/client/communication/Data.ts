@@ -183,7 +183,8 @@ export type SendUpdatesRequest = {
     files: FileData[],
     owner_id: number,
     userId: number,
-    language: number
+    language: number,
+    currentWorkspaceId: number
 }
 
 export type SendUpdatesResponse = {
@@ -328,7 +329,18 @@ export type StatisticData = {
     userlist?: string[],
     webSocketSessionCount: number,
     webSocketClientCount: number,
-    webSocketRequestPerSecond: number
+    webSocketRequestPerSecond: number,
+    performanceDataList: PerformanceData[]
+}
+
+export type PerformanceData = {
+    url: string;
+    sumTime: number;
+    count: number;
+}
+
+export type CollectPerformanceDataRequest = {
+    data: PerformanceData[]
 }
 
 export type GetStatisticsResponse = {

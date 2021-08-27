@@ -37,7 +37,7 @@ class Statistics {
             ajax("getStatistics", request, (response: GetStatisticsResponse) => {
 
                 let d = response.data[0];
-                let text: string = d.users + " User, " + Math.round(d.memory/1000) + " kB, Requests pro Minute: " + d.requestsPerMinute;
+                let text: string = d.users + " User, " + Math.round(d.memory/1000) + " kB, Requests pro Minute: " + d.requestsPerMinute + ", " + that.getMsPerRequest(d) + " ms/Request.";
                 text += "<br>WebSockets: " + d.webSocketSessionCount + " Sessions with " + d.webSocketClientCount + " Clients, ";
                 text += d.webSocketRequestPerSecond + " Requests pro Sekunde";
                 $('#current').html(text);
@@ -86,12 +86,14 @@ class Statistics {
             }
             
             for(let d of newData){
+
                 //@ts-ignore
                 optionsData.labels.push(moment(d.time, this.timeFormat));
                 optionsData.datasets[0].data.push(d.users);
                 optionsData.datasets[1].data.push(d.memory/1000000);
                 optionsData.datasets[2].data.push(d.requestsPerMinute);
                 optionsData.datasets[3].data.push(d.webSocketRequestPerSecond);
+                optionsData.datasets[4].data.push(this.getMsPerRequest(d));
                 that.rawLabels.push(d.time);
             }
 
@@ -100,6 +102,19 @@ class Statistics {
         }, (message: string) => {
             // alert("Es ist ein Fehler aufgetreten: " + message);
         });
+
+    }
+
+    getMsPerRequest(data: StatisticData){
+
+        let count = 0;
+        let sumTime = 0;
+        data.performanceDataList.forEach(pd => {
+            count += pd.count;
+            sumTime += pd.sumTime;
+        })
+
+        return Math.round(sumTime/count);
 
     }
 
@@ -160,6 +175,17 @@ class Statistics {
                     lineTension: 0
 
                 },
+                {
+                    label: 'ms per Request',
+                    fill: false,
+                    backgroundColor: 'rgba(0, 0, 0, 0)',
+                    borderColor: 'rgb(255, 255, 0)',
+                    data: data.map((d) => this.getMsPerRequest(d)),
+                    yAxisID: 'y-axis-2',
+                    lineTension: 0
+
+                },
+
             ]
             },
         

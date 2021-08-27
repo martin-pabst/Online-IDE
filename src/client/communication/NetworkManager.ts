@@ -1,6 +1,6 @@
 import { Main } from "../main/Main.js";
-import { ajax } from "./AjaxHelper.js";
-import { WorkspaceData, FileData, SendUpdatesRequest, SendUpdatesResponse, CreateOrDeleteFileOrWorkspaceRequest, CRUDResponse, UpdateUserSettingsRequest, UpdateUserSettingsResponse, DuplicateWorkspaceRequest, DuplicateWorkspaceResponse, ClassData, DistributeWorkspaceRequest, DistributeWorkspaceResponse } from "./Data.js";
+import { ajax, PerformanceCollector } from "./AjaxHelper.js";
+import { WorkspaceData, FileData, SendUpdatesRequest, SendUpdatesResponse, CreateOrDeleteFileOrWorkspaceRequest, CRUDResponse, UpdateUserSettingsRequest, UpdateUserSettingsResponse, DuplicateWorkspaceRequest, DuplicateWorkspaceResponse, ClassData, DistributeWorkspaceRequest, DistributeWorkspaceResponse, CollectPerformanceDataRequest } from "./Data.js";
 import { Workspace } from "../workspace/Workspace.js";
 import { Module } from "../compiler/parser/Module.js";
 
@@ -64,10 +64,13 @@ export class NetworkManager {
                 this.$updateTimerDiv.attr('title',that.secondsTillNextUpdate + " Sekunden bis zum nächsten Speichern");
             }
 
+            PerformanceCollector.sendDataToServer();    
+
         }, 1000);
         
     }
     
+
     sendUpdates(callback?: ()=>void, sendIfNothingIsDirty: boolean = false, sendBeacon: boolean = false){
 
         if(this.main.user == null || this.main.user.is_testuser){
@@ -117,7 +120,8 @@ export class NetworkManager {
             files: fdList, 
             owner_id: this.main.workspacesOwnerId,
             userId: this.main.user.id,
-            language: 0
+            language: 0,
+            currentWorkspaceId: this.main.currentWorkspace?.id
         }
 
         let that = this;

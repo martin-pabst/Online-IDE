@@ -12,8 +12,12 @@ export class NetworkManager {
     teacherUpdateFrequencyInSeconds: number = 5;
 
     updateFrequencyInSeconds: number = 25;
-    forcedUpdateEvery: number = 2;
+    forcedUpdateEvery: number = 25;
     forcedUpdatesInARow: number = 0;
+
+    getModifiedWorkspacesEvery: number = 10;
+    getModifiedWorkspacesCounter: number = 10;
+
     secondsTillNextUpdate: number = this.updateFrequencyInSeconds;
     errorHappened: boolean = false;
 
@@ -46,10 +50,15 @@ export class NetworkManager {
                     this.forcedUpdatesInARow++;
                     counterTillForcedUpdate = this.forcedUpdateEvery;
                     if(this.forcedUpdatesInARow > 50){
-                        counterTillForcedUpdate = this.forcedUpdateEvery * 50;
+                        counterTillForcedUpdate = this.forcedUpdateEvery * 10;
                     }
                 } 
-                that.sendUpdates(() => {}, forceUpdate);
+
+                this.getModifiedWorkspacesCounter--;
+
+                that.sendUpdates(() => {}, forceUpdate, this.getModifiedWorkspacesCounter == 0);
+                if(this.getModifiedWorkspacesCounter == 0) this.getModifiedWorkspacesCounter = this.getModifiedWorkspacesEvery;
+
             }
 
             let $rect = this.$updateTimerDiv.find('.jo_updateTimerRect');
@@ -71,7 +80,7 @@ export class NetworkManager {
     }
     
 
-    sendUpdates(callback?: ()=>void, sendIfNothingIsDirty: boolean = false, sendBeacon: boolean = false){
+    sendUpdates(callback?: ()=>void, sendIfNothingIsDirty: boolean = false, sendBeacon: boolean = false, getModifiedWorkspaces: boolean = false){
 
         if(this.main.user == null || this.main.user.is_testuser){
             if(callback != null) callback();
@@ -121,7 +130,8 @@ export class NetworkManager {
             owner_id: this.main.workspacesOwnerId,
             userId: this.main.user.id,
             language: 0,
-            currentWorkspaceId: this.main.currentWorkspace?.id
+            currentWorkspaceId: this.main.currentWorkspace?.id,
+            getModifiedWorkspaces: getModifiedWorkspaces
         }
 
         let that = this;
@@ -135,7 +145,7 @@ export class NetworkManager {
                     that.errorHappened = !response.success;
                     if(!that.errorHappened){
     
-                        if(this.main.workspacesOwnerId == this.main.user.id){
+                        if(this.main.workspacesOwnerId == this.main.user.id && response.workspaces != null){
                             that.updateWorkspaces(request, response);
                         }
     

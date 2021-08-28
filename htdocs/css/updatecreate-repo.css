@@ -1,9 +1,7 @@
 :root {
     --cancelButtonBackground: #b0b0b0;
     --cancelButtonColor: #000;
-
 }
-
 
 #createRepo-div, #updateRepo-div, #checkoutRepo-div {
     visibility: hidden;
@@ -18,15 +16,15 @@
     height: 100%;
 }
 
-.createUpdateRepo-mainHeading{
-        font-size: 20pt;
-        width: 100%;
-        color: var(--fontColorNormal);
-        user-select: none;
-        background-color: var(--backgroundLight);
-        padding: 2px;
-        margin: 0 2px;
-        border-bottom: 2px solid blue;
+.createUpdateRepo-mainHeading {
+    box-sizing: border-box;
+    font-size: 20pt;
+    width: 100%;
+    color: var(--fontColorNormal);
+    user-select: none;
+    background-color: var(--backgroundLight);
+    padding: 2px;
+    border-bottom: 2px solid blue;
 }
 
 #updateRepo-mainHeading, #checkoutRepo-mainHeading {
@@ -45,7 +43,6 @@
     grid-template-columns: fit-content(400px) auto;
     margin-bottom: 15px;
     padding: 10px;
-
 }
 
 .createUpdateRepo-settingsLabel {
@@ -157,7 +154,6 @@
     border-top: 1px solid blue;
     margin-top: 10px;
     align-items: center;
-
 }
 
 .updateRepo-minorHeading {
@@ -188,7 +184,7 @@
     margin-right: 10px;
 }
 
-#checkoutRepo-repoListDiv{
+#checkoutRepo-repoListDiv {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -231,10 +227,10 @@
     overflow: auto;
 }
 
-.checkoutRepo-repoListName{
+.checkoutRepo-repoListName {
     color: var(--fontColorLight);
 }
 
-.checkoutRepo-repoListOwner{
+.checkoutRepo-repoListOwner {
     color: var(--fontColorNormal);
 }

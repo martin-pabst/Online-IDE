@@ -140,7 +140,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
 #login, #bitteWarten {
     z-index: 1010;
     position: absolute;
-    height: 100%;
+    min-height: 100%;
     width: 100%;
     background-color: var(--backgroundDark);
     display: flex;
@@ -158,7 +158,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
 #login-footer {
     font-size: 12pt;
     z-index: 10;
-    margin-bottom: 40px;
+    margin-bottom: 10px;
     display: flex;
     flex-direction: row; 
     justify-content: space-between;
@@ -1127,8 +1127,9 @@ body .monaco-editor-hover .monaco-tokenized-source {
 */
 
 .jo_infodiv {
+    box-sizing: border-box;
     width: 100%;
-    padding: 20px;
+    padding: 0 20px 20px 20px;
     display: flex;
     flex-direction: column;
 }

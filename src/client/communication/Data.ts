@@ -184,7 +184,8 @@ export type SendUpdatesRequest = {
     owner_id: number,
     userId: number,
     language: number,
-    currentWorkspaceId: number
+    currentWorkspaceId: number,
+    getModifiedWorkspaces: boolean
 }
 
 export type SendUpdatesResponse = {

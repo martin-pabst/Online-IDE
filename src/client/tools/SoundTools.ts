@@ -93,12 +93,16 @@ export class SoundTools {
 
     static soundMap: Map<string, SoundType> = new Map();
 
-    public static init(){
+    private static isInitialized: boolean = false;
 
-        for(let sound of SoundTools.sounds){
-            //@ts-ignore
-            sound.player = new Howl({src: [sound.url], preload: true})
-            SoundTools.soundMap.set(sound.name, sound);
+    public static init(){
+        if(!SoundTools.isInitialized){
+            SoundTools.isInitialized = true;
+            for(let sound of SoundTools.sounds){
+                //@ts-ignore
+                sound.player = new Howl({src: [sound.url], preload: true})
+                SoundTools.soundMap.set(sound.name, sound);
+            }
         }
 
     }

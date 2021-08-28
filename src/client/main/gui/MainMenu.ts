@@ -26,11 +26,10 @@ export class MainMenu {
 
     }
 
-
     currentSubmenu: { [level: number]: JQuery<HTMLElement> } = {};
     openSubmenusOnMousemove: boolean = false;
 
-    initGUI(user: UserData) {
+    initGUI(user: UserData, serverURL: string) {
 
         let that = this;
         let editor = this.main.getMonacoEditor();
@@ -168,17 +167,17 @@ export class MainMenu {
                             {
                                 identifier: "API-Verzeichnis",
                                 //link: "https://www.learnj.de/doku.php?id=api:documentation:start"
-                                link: "api_documentation.html"
+                                link: serverURL + "api_documentation.html"
                             },
                             { identifier: "-" },
                             {
                                 identifier: "Sprite-Bilderübersicht",
-                                link: "spriteLibrary.html"
+                                link: serverURL + "spriteLibrary.html"
                             },
                             { identifier: "-" },
                             {
                                 identifier: "Tastaturkommandos (Shortcuts)",
-                                link: "shortcuts.html"
+                                link: serverURL + "shortcuts.html"
                             },
                             { identifier: "-" },
                             {
@@ -235,7 +234,7 @@ export class MainMenu {
             mainMenu.items[0].subMenu.items.push(
                         {
                             identifier: "Schulen/Klassen/Benutzer ...",
-                            link: "administration_mc.html"
+                            link: serverURL + "administration_mc.html"
                         }
             )
         }
@@ -244,7 +243,7 @@ export class MainMenu {
             mainMenu.items[0].subMenu.items.push(
                         {
                             identifier: "Serverauslastung ...",
-                            link: "statistics.html"
+                            link: serverURL + "statistics.html"
                         },{
                             identifier:"Shutdown server...",
                             action: () => {

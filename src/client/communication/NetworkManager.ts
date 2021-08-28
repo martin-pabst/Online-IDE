@@ -56,7 +56,7 @@ export class NetworkManager {
 
                 this.getModifiedWorkspacesCounter--;
 
-                that.sendUpdates(() => {}, forceUpdate, this.getModifiedWorkspacesCounter == 0);
+                that.sendUpdates(() => {}, forceUpdate, false, this.getModifiedWorkspacesCounter == 0);
                 if(this.getModifiedWorkspacesCounter == 0) this.getModifiedWorkspacesCounter = this.getModifiedWorkspacesEvery;
 
             }

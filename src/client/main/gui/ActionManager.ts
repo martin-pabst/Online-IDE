@@ -97,7 +97,7 @@ export class ActionManager {
                 if(ae.active){
                     action(identifier, null, "mousedown");
                 }
-                if(identifier == "interpreter.start" && this.main.isEmbedded()){
+                if(identifier == "interpreter.start"){
                     SoundTools.init();
                 }
             });

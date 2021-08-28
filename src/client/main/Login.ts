@@ -185,7 +185,7 @@ export class Login {
 
                 this.main.waitForGUICallback = () => {
                     
-                    that.main.mainMenu.initGUI(user);
+                    that.main.mainMenu.initGUI(user, "");
                     
                     jQuery('#bitteWarten').hide();
                     let $loginSpinner = jQuery('#login-spinner>img');

@@ -71,6 +71,7 @@ html, body {
     width: 100%;
     height: 100%;
     color: var(--fontColorNormal);
+    background-color: var(--backgroundDark);
     font-family: 'Roboto', sans-serif;
     /* font-weight: 500; */
     overflow-y: auto;

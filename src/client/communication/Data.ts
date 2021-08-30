@@ -189,8 +189,9 @@ export type SendUpdatesRequest = {
 }
 
 export type SendUpdatesResponse = {
-    workspaces: Workspaces;
-    success: boolean;
+    workspaces: Workspaces,
+    filesToForceUpdate: FileData[],
+    success: boolean
 }
 
 export type UpdateUserSettingsRequest = {

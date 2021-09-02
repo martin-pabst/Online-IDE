@@ -79,7 +79,7 @@ export class ExportImportMI extends AdminMenuItem {
         </div>
         <div style="margin-top: 10px">
             <b>Schulen importieren:</b>
-            <form action="importSchools" method="POST" enctype="multipart/form-data">
+            <form action="servlet/importSchools" method="POST" enctype="multipart/form-data">
                 <input type="file" name="files" multiple>
                 <input id="jo_upload_school_button" type="button" value="Upload">
               </form>
@@ -95,7 +95,7 @@ export class ExportImportMI extends AdminMenuItem {
             loggingDiv.append(jQuery('<div style="color: green; font-weight: bold; margin-bottom: 5px;">Die Daten werden hochgeladen. Bitte warten...</div>'));
 
             jQuery.ajax({
-                url: 'importSchools', 
+                url: 'servlet/importSchools', 
                 type: 'POST',
                 data: new FormData(<HTMLFormElement>jQuery('#jo_exportschools form')[0]), // The form with the file inputs.
                 processData: false,

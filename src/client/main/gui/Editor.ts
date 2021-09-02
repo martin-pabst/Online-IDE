@@ -226,7 +226,8 @@ export class Editor implements monaco.languages.RenameProvider {
 
         this.editor.onDidChangeCursorPosition((event) => {
 
-            let currentModelId = this.main.getCurrentlyEditedModule().file.id;
+            let currentModelId = this.main.getCurrentlyEditedModule()?.file?.id;
+            if(currentModelId == null) return;
             let pushNeeded = this.lastPosition == null
                 || event.source == "api"
                 || currentModelId != this.lastPosition.module_id

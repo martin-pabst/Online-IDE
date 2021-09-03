@@ -15,9 +15,6 @@ export class NetworkManager {
     forcedUpdateEvery: number = 25;
     forcedUpdatesInARow: number = 0;
 
-    getModifiedWorkspacesEvery: number = 10;
-    getModifiedWorkspacesCounter: number = 10;
-
     secondsTillNextUpdate: number = this.updateFrequencyInSeconds;
     errorHappened: boolean = false;
 
@@ -54,10 +51,8 @@ export class NetworkManager {
                     }
                 }
 
-                this.getModifiedWorkspacesCounter--;
 
-                that.sendUpdates(() => { }, doForceUpdate, false, this.getModifiedWorkspacesCounter == 0);
-                if (this.getModifiedWorkspacesCounter == 0) this.getModifiedWorkspacesCounter = this.getModifiedWorkspacesEvery;
+                that.sendUpdates(() => { }, doForceUpdate, false);
 
             }
 
@@ -80,7 +75,7 @@ export class NetworkManager {
     }
 
 
-    sendUpdates(callback?: () => void, sendIfNothingIsDirty: boolean = false, sendBeacon: boolean = false, getModifiedWorkspaces: boolean = false) {
+    sendUpdates(callback?: () => void, sendIfNothingIsDirty: boolean = false, sendBeacon: boolean = false) {
 
         if (this.main.user == null || this.main.user.is_testuser) {
             if (callback != null) callback();
@@ -131,7 +126,7 @@ export class NetworkManager {
             userId: this.main.user.id,
             language: 0,
             currentWorkspaceId: this.main.currentWorkspace?.id,
-            getModifiedWorkspaces: getModifiedWorkspaces
+            getModifiedWorkspaces: sendIfNothingIsDirty
         }
 
         let that = this;
@@ -145,7 +140,7 @@ export class NetworkManager {
                     that.errorHappened = !response.success;
                     if (!that.errorHappened) {
 
-                        if (this.main.workspacesOwnerId == this.main.user.id) {
+                        // if (this.main.workspacesOwnerId == this.main.user.id) {
                             if (response.workspaces != null) {
                                 that.updateWorkspaces(request, response);
                             }
@@ -157,7 +152,7 @@ export class NetworkManager {
                                 callback();
                                 return;
                             }
-                        }
+                        // }
                     }
                 }, () => {
                     that.errorHappened = true;
@@ -393,17 +388,16 @@ export class NetworkManager {
                     if (remoteFileData == null) {
                         this.main.projectExplorer.fileListPanel.removeElement(module);
                         this.main.currentWorkspace.moduleStore.removeModule(module);
-                    } else if (remoteFileData.version > module.file.version) {
-                        if (fileIdsSended.indexOf(fileId) < 0 || remoteFileData.forceUpdate) {
-                            module.file.text = remoteFileData.text;
-                            module.model.setValue(remoteFileData.text);
+                    } else if (fileIdsSended.indexOf(fileId) < 0 && module.file.text != remoteFileData.text) {
+                        module.file.text = remoteFileData.text;
+                        module.model.setValue(remoteFileData.text);
 
-                            module.file.saved = true;
-                            module.lastSavedVersionId = module.model.getAlternativeVersionId()
-                        }
-                        module.file.version = remoteFileData.version;
+                        module.file.saved = true;
+                        module.lastSavedVersionId = module.model.getAlternativeVersionId()
                     }
+                    module.file.version = remoteFileData.version;
                 }
+
 
                 // add files if necessary
                 for (let remoteFile of remoteWorkspace.files) {
@@ -436,7 +430,7 @@ export class NetworkManager {
 
         for (let remoteFile of filesFromServer) {
             let module = fileIdToLocalModuleMap[remoteFile.id];
-            if (module != null) {
+            if (module != null && module.file.text != remoteFile.text) {
                 module.file.text = remoteFile.text;
                 module.model.setValue(remoteFile.text);
                 module.file.saved = true;

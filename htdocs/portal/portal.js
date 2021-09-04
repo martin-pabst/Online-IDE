@@ -1,5 +1,38 @@
 $(()=>{
 
+    jQuery('#login-username').on('keydown', (e) => {
+        if (e.key == "Enter") {
+            jQuery('#login-password').focus();
+        }
+    });
+
+    jQuery('#login-password').on('keydown', (e) => {
+        if (e.key == "Enter") {
+            jQuery('#login-button').trigger('click');
+        }
+    });
+
+    jQuery('#login-password').on('keydown', (e) => {
+        if (e.key == "Tab") {
+            e.preventDefault();
+            jQuery('#login-button').focus();
+            jQuery('#login-button').addClass('jo_active');
+        }
+        if (e.key == "Enter") {
+            jQuery('#login-button').trigger('click');
+        }
+    });
+
+    jQuery('#login-button').on('keydown', (e) => {
+        if (e.key == "Tab") {
+            e.preventDefault();
+            jQuery('#login-username').focus();
+            jQuery('#login-button').removeClass('jo_active');
+        } else {
+            jQuery('#login-button').trigger('click');
+        }
+    });
+
     $('#login-button').on('click', () => {
         jQuery('#login').hide();
 

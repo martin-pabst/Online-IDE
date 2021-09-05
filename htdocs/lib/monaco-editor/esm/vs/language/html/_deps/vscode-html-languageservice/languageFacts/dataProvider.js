@@ -14,20 +14,11 @@ var HTMLDataProvider = /** @class */ (function () {
         this.id = id;
         this._tags = [];
         this._tagMap = {};
-        this._attributeMap = {};
         this._valueSetMap = {};
         this._tags = customData.tags || [];
         this._globalAttributes = customData.globalAttributes || [];
         this._tags.forEach(function (t) {
-            _this._tagMap[t.name] = t;
-            if (t.attributes) {
-                t.attributes.forEach(function (a) {
-                    _this._attributeMap[a.name] = a;
-                });
-            }
-        });
-        this._globalAttributes.forEach(function (a) {
-            _this._attributeMap[a.name] = a;
+            _this._tagMap[t.name.toLowerCase()] = t;
         });
         if (customData.valueSets) {
             customData.valueSets.forEach(function (vs) {
@@ -49,22 +40,20 @@ var HTMLDataProvider = /** @class */ (function () {
         var processAttribute = function (a) {
             attributes.push(a);
         };
-        if (this._tagMap[tag]) {
-            this._tagMap[tag].attributes.forEach(function (a) {
-                processAttribute(a);
-            });
+        var tagEntry = this._tagMap[tag.toLowerCase()];
+        if (tagEntry) {
+            tagEntry.attributes.forEach(processAttribute);
         }
-        this._globalAttributes.forEach(function (ga) {
-            processAttribute(ga);
-        });
+        this._globalAttributes.forEach(processAttribute);
         return attributes;
     };
     HTMLDataProvider.prototype.provideValues = function (tag, attribute) {
         var _this = this;
         var values = [];
+        attribute = attribute.toLowerCase();
         var processAttributes = function (attributes) {
             attributes.forEach(function (a) {
-                if (a.name === attribute) {
+                if (a.name.toLowerCase() === attribute) {
                     if (a.values) {
                         a.values.forEach(function (v) {
                             values.push(v);
@@ -80,10 +69,10 @@ var HTMLDataProvider = /** @class */ (function () {
                 }
             });
         };
-        if (!this._tagMap[tag]) {
-            return [];
+        var tagEntry = this._tagMap[tag.toLowerCase()];
+        if (tagEntry) {
+            processAttributes(tagEntry.attributes);
         }
-        processAttributes(this._tagMap[tag].attributes);
         processAttributes(this._globalAttributes);
         return values;
     };
@@ -94,19 +83,22 @@ export { HTMLDataProvider };
  * Generate Documentation used in hover/complete
  * From `documentation` and `references`
  */
-export function generateDocumentation(item, doesSupportMarkdown) {
+export function generateDocumentation(item, settings, doesSupportMarkdown) {
+    if (settings === void 0) { settings = {}; }
     var result = {
         kind: doesSupportMarkdown ? 'markdown' : 'plaintext',
         value: ''
     };
-    if (item.description) {
+    if (item.description && settings.documentation !== false) {
         var normalizedDescription = normalizeMarkupContent(item.description);
         if (normalizedDescription) {
             result.value += normalizedDescription.value;
         }
     }
-    if (item.references && item.references.length > 0) {
-        result.value += "\n\n";
+    if (item.references && item.references.length > 0 && settings.references !== false) {
+        if (result.value.length) {
+            result.value += "\n\n";
+        }
         if (doesSupportMarkdown) {
             result.value += item.references.map(function (r) {
                 return "[" + r.name + "](" + r.url + ")";
@@ -117,6 +109,9 @@ export function generateDocumentation(item, doesSupportMarkdown) {
                 return r.name + ": " + r.url;
             }).join('\n');
         }
+    }
+    if (result.value === '') {
+        return undefined;
     }
     return result;
 }

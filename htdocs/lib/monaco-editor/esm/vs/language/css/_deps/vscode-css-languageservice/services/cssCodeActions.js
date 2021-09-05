@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 import * as nodes from '../parser/cssNodes.js';
-import * as languageFacts from '../languageFacts/facts.js';
 import { difference } from '../utils/strings.js';
 import { Rules } from '../services/lintRules.js';
 import { Command, TextEdit, CodeAction, CodeActionKind, TextDocumentEdit, VersionedTextDocumentIdentifier } from '../cssLanguageTypes.js';
 import * as nls from './../../../fillers/vscode-nls.js';
 var localize = nls.loadMessageBundle();
 var CSSCodeActions = /** @class */ (function () {
-    function CSSCodeActions() {
+    function CSSCodeActions(cssDataManager) {
+        this.cssDataManager = cssDataManager;
     }
     CSSCodeActions.prototype.doCodeActions = function (document, range, context, stylesheet) {
         return this.doCodeActions2(document, range, context, stylesheet).map(function (ca) {
@@ -32,7 +32,7 @@ var CSSCodeActions = /** @class */ (function () {
     CSSCodeActions.prototype.getFixesForUnknownProperty = function (document, property, marker, result) {
         var propertyName = property.getName();
         var candidates = [];
-        languageFacts.cssDataManager.getProperties().forEach(function (p) {
+        this.cssDataManager.getProperties().forEach(function (p) {
             var score = difference(propertyName, p.name);
             if (score >= propertyName.length / 2 /*score_lim*/) {
                 candidates.push({ property: p.name, score: score });
@@ -40,7 +40,7 @@ var CSSCodeActions = /** @class */ (function () {
         });
         // Sort in descending order.
         candidates.sort(function (a, b) {
-            return b.score - a.score;
+            return b.score - a.score || a.property.localeCompare(b.property);
         });
         var maxActions = 3;
         for (var _i = 0, candidates_1 = candidates; _i < candidates_1.length; _i++) {

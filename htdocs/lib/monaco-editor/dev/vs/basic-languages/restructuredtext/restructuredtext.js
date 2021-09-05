@@ -2,9 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports"], function (require, exports) {
-    'use strict';
+define('vs/basic-languages/restructuredtext/restructuredtext',["require", "exports"], function (require, exports) {
+    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.language = exports.conf = void 0;
     exports.conf = {
         brackets: [
             ['{', '}'],
@@ -20,12 +21,12 @@ define(["require", "exports"], function (require, exports) {
         surroundingPairs: [
             { open: '(', close: ')' },
             { open: '[', close: ']' },
-            { open: '`', close: '`' },
+            { open: '`', close: '`' }
         ],
         folding: {
             markers: {
-                start: new RegExp("^\\s*<!--\\s*#?region\\b.*-->"),
-                end: new RegExp("^\\s*<!--\\s*#?endregion\\b.*-->")
+                start: new RegExp('^\\s*<!--\\s*#?region\\b.*-->'),
+                end: new RegExp('^\\s*<!--\\s*#?endregion\\b.*-->')
             }
         }
     };
@@ -35,14 +36,24 @@ define(["require", "exports"], function (require, exports) {
         control: /[\\`*_\[\]{}()#+\-\.!]/,
         escapes: /\\(?:@control)/,
         empty: [
-            'area', 'base', 'basefont', 'br', 'col', 'frame',
-            'hr', 'img', 'input', 'isindex', 'link', 'meta', 'param'
+            'area',
+            'base',
+            'basefont',
+            'br',
+            'col',
+            'frame',
+            'hr',
+            'img',
+            'input',
+            'isindex',
+            'link',
+            'meta',
+            'param'
         ],
         alphanumerics: /[A-Za-z0-9]/,
-        alphanumericsplus: /[A-Za-z0-9-_+:.]/,
-        simpleRefNameWithoutBq: /(?:@alphanumerics@alphanumericsplus*@alphanumerics)+|(?:@alphanumerics+)/,
-        simpleRefName: /(?:`@simpleRefNameWithoutBq`|@simpleRefNameWithoutBq)/,
-        phrase: /@simpleRefName(?:\s@simpleRefName)*/,
+        simpleRefNameWithoutBq: /(?:@alphanumerics[-_+:.]*@alphanumerics)+|(?:@alphanumerics+)/,
+        simpleRefName: /(?:`@phrase`|@simpleRefNameWithoutBq)/,
+        phrase: /@simpleRefNameWithoutBq(?:\s@simpleRefNameWithoutBq)*/,
         citationName: /[A-Za-z][A-Za-z0-9-_.]*/,
         blockLiteralStart: /(?:[!"#$%&'()*+,-./:;<=>?@\[\]^_`{|}~]|[\s])/,
         precedingChars: /(?:[ -:/'"<([{])/,
@@ -61,7 +72,7 @@ define(["require", "exports"], function (require, exports) {
                 [/(::)\s*$/, 'keyword', '@blankLineOfLiteralBlocks'],
                 { include: '@tables' },
                 { include: '@explicitMarkupBlocks' },
-                { include: '@inlineMarkup' },
+                { include: '@inlineMarkup' }
             ],
             explicitMarkupBlocks: [
                 //citations
@@ -69,17 +80,30 @@ define(["require", "exports"], function (require, exports) {
                 //footnotes
                 { include: '@footnotes' },
                 //directives
-                [/^(\.\.\s)(@simpleRefName)(::\s)(.*)$/, [{ token: '', next: 'subsequentLines' }, 'keyword', '', '']],
+                [
+                    /^(\.\.\s)(@simpleRefName)(::\s)(.*)$/,
+                    [{ token: '', next: 'subsequentLines' }, 'keyword', '', '']
+                ],
                 //hyperlink-targets
-                [/^(\.\.)(\s+)(_)(@simpleRefName)(:)(\s+)(.*)/, [{ token: '', next: 'hyperlinks' }, '', '', 'string.link', '', '', 'string.link']],
+                [
+                    /^(\.\.)(\s+)(_)(@simpleRefName)(:)(\s+)(.*)/,
+                    [{ token: '', next: 'hyperlinks' }, '', '', 'string.link', '', '', 'string.link']
+                ],
                 //anonymous-hyperlinks
-                [/^((?:(?:\.\.)(?:\s+))?)(__)(:)(\s+)(.*)/, [{ token: '', next: 'subsequentLines' }, '', '', '', 'string.link']],
+                [
+                    /^((?:(?:\.\.)(?:\s+))?)(__)(:)(\s+)(.*)/,
+                    [{ token: '', next: 'subsequentLines' }, '', '', '', 'string.link']
+                ],
                 [/^(__\s+)(.+)/, ['', 'string.link']],
                 //substitution-definitions
-                [/^(\.\.)( \|)([^| ]+[^|]*[^| ]*)(\| )(@simpleRefName)(:: .*)/, [{ token: '', next: 'subsequentLines' }, '', 'string.link', '', 'keyword', ''], '@rawBlocks'],
+                [
+                    /^(\.\.)( \|)([^| ]+[^|]*[^| ]*)(\| )(@simpleRefName)(:: .*)/,
+                    [{ token: '', next: 'subsequentLines' }, '', 'string.link', '', 'keyword', ''],
+                    '@rawBlocks'
+                ],
                 [/(\|)([^| ]+[^|]*[^| ]*)(\|_{0,2})/, ['', 'string.link', '']],
                 //comments
-                [/^(\.\.)([ ].*)$/, [{ token: '', next: '@comments' }, 'comment']],
+                [/^(\.\.)([ ].*)$/, [{ token: '', next: '@comments' }, 'comment']]
             ],
             inlineMarkup: [
                 { include: '@citationsReference' },
@@ -99,18 +123,28 @@ define(["require", "exports"], function (require, exports) {
                 [/(`)([^`]+)(`:)((?:@simpleRefNameWithoutBq)?)(:)/, ['', '', '', 'keyword', '']],
                 [/(`)([^`]+)(`)/, ''],
                 //inline-internal-targets
-                [/(_`)(@phrase)(`)/, ['', 'string.link', '']],
+                [/(_`)(@phrase)(`)/, ['', 'string.link', '']]
             ],
             citations: [
-                [/^(\.\.\s+\[)((?:@citationName))(\]\s+)(.*)/, [{ token: '', next: '@subsequentLines' }, 'string.link', '', '']],
+                [
+                    /^(\.\.\s+\[)((?:@citationName))(\]\s+)(.*)/,
+                    [{ token: '', next: '@subsequentLines' }, 'string.link', '', '']
+                ]
             ],
-            citationsReference: [
-                [/(\[)(@citationName)(\]_)/, ['', 'string.link', '']],
-            ],
+            citationsReference: [[/(\[)(@citationName)(\]_)/, ['', 'string.link', '']]],
             footnotes: [
-                [/^(\.\.\s+\[)((?:[0-9]+))(\]\s+.*)/, [{ token: '', next: '@subsequentLines' }, 'string.link', '']],
-                [/^(\.\.\s+\[)((?:#@simpleRefName?))(\]\s+)(.*)/, [{ token: '', next: '@subsequentLines' }, 'string.link', '', '']],
-                [/^(\.\.\s+\[)((?:\*))(\]\s+)(.*)/, [{ token: '', next: '@subsequentLines' }, 'string.link', '', '']],
+                [
+                    /^(\.\.\s+\[)((?:[0-9]+))(\]\s+.*)/,
+                    [{ token: '', next: '@subsequentLines' }, 'string.link', '']
+                ],
+                [
+                    /^(\.\.\s+\[)((?:#@simpleRefName?))(\]\s+)(.*)/,
+                    [{ token: '', next: '@subsequentLines' }, 'string.link', '', '']
+                ],
+                [
+                    /^(\.\.\s+\[)((?:\*))(\]\s+)(.*)/,
+                    [{ token: '', next: '@subsequentLines' }, 'string.link', '', '']
+                ]
             ],
             footnotesReference: [
                 [/(\[)([0-9]+)(\])(_)/, ['', 'string.link', '', '']],
@@ -119,7 +153,7 @@ define(["require", "exports"], function (require, exports) {
             ],
             blankLineOfLiteralBlocks: [
                 [/^$/, '', '@subsequentLinesOfLiteralBlocks'],
-                [/^.*$/, '', '@pop'],
+                [/^.*$/, '', '@pop']
             ],
             subsequentLinesOfLiteralBlocks: [
                 [/(@blockLiteralStart+)(.*)/, ['keyword', '']],
@@ -127,20 +161,21 @@ define(["require", "exports"], function (require, exports) {
             ],
             subsequentLines: [
                 [/^[\s]+.*/, ''],
-                [/^(?!\s)/, '', '@pop'],
+                [/^(?!\s)/, '', '@pop']
             ],
             hyperlinks: [
                 [/^[\s]+.*/, 'string.link'],
-                [/^(?!\s)/, '', '@pop'],
+                [/^(?!\s)/, '', '@pop']
             ],
             comments: [
                 [/^[\s]+.*/, 'comment'],
-                [/^(?!\s)/, '', '@pop'],
+                [/^(?!\s)/, '', '@pop']
             ],
             tables: [
                 [/\+-[+-]+/, 'keyword'],
-                [/\+=[+=]+/, 'keyword'],
-            ],
+                [/\+=[+=]+/, 'keyword']
+            ]
         }
     };
 });
+

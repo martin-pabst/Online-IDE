@@ -2,13 +2,14 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports"], function (require, exports) {
-    'use strict';
+define('vs/basic-languages/sql/sql',["require", "exports"], function (require, exports) {
+    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.language = exports.conf = void 0;
     exports.conf = {
         comments: {
             lineComment: '--',
-            blockComment: ['/*', '*/'],
+            blockComment: ['/*', '*/']
         },
         brackets: [
             ['{', '}'],
@@ -20,14 +21,14 @@ define(["require", "exports"], function (require, exports) {
             { open: '[', close: ']' },
             { open: '(', close: ')' },
             { open: '"', close: '"' },
-            { open: '\'', close: '\'' },
+            { open: "'", close: "'" }
         ],
         surroundingPairs: [
             { open: '{', close: '}' },
             { open: '[', close: ']' },
             { open: '(', close: ')' },
             { open: '"', close: '"' },
-            { open: '\'', close: '\'' },
+            { open: "'", close: "'" }
         ]
     };
     exports.language = {
@@ -951,105 +952,363 @@ define(["require", "exports"], function (require, exports) {
         ],
         operators: [
             // Logical
-            'ALL', 'AND', 'ANY', 'BETWEEN', 'EXISTS', 'IN', 'LIKE', 'NOT', 'OR', 'SOME',
+            'ALL',
+            'AND',
+            'ANY',
+            'BETWEEN',
+            'EXISTS',
+            'IN',
+            'LIKE',
+            'NOT',
+            'OR',
+            'SOME',
             // Set
-            'EXCEPT', 'INTERSECT', 'UNION',
+            'EXCEPT',
+            'INTERSECT',
+            'UNION',
             // Join
-            'APPLY', 'CROSS', 'FULL', 'INNER', 'JOIN', 'LEFT', 'OUTER', 'RIGHT',
+            'APPLY',
+            'CROSS',
+            'FULL',
+            'INNER',
+            'JOIN',
+            'LEFT',
+            'OUTER',
+            'RIGHT',
             // Predicates
-            'CONTAINS', 'FREETEXT', 'IS', 'NULL',
+            'CONTAINS',
+            'FREETEXT',
+            'IS',
+            'NULL',
             // Pivoting
-            'PIVOT', 'UNPIVOT',
+            'PIVOT',
+            'UNPIVOT',
             // Merging
             'MATCHED'
         ],
         builtinFunctions: [
             // Aggregate
-            'AVG', 'CHECKSUM_AGG', 'COUNT', 'COUNT_BIG', 'GROUPING', 'GROUPING_ID', 'MAX', 'MIN', 'SUM', 'STDEV', 'STDEVP', 'VAR', 'VARP',
+            'AVG',
+            'CHECKSUM_AGG',
+            'COUNT',
+            'COUNT_BIG',
+            'GROUPING',
+            'GROUPING_ID',
+            'MAX',
+            'MIN',
+            'SUM',
+            'STDEV',
+            'STDEVP',
+            'VAR',
+            'VARP',
             // Analytic
-            'CUME_DIST', 'FIRST_VALUE', 'LAG', 'LAST_VALUE', 'LEAD', 'PERCENTILE_CONT', 'PERCENTILE_DISC', 'PERCENT_RANK',
+            'CUME_DIST',
+            'FIRST_VALUE',
+            'LAG',
+            'LAST_VALUE',
+            'LEAD',
+            'PERCENTILE_CONT',
+            'PERCENTILE_DISC',
+            'PERCENT_RANK',
             // Collation
-            'COLLATE', 'COLLATIONPROPERTY', 'TERTIARY_WEIGHTS',
+            'COLLATE',
+            'COLLATIONPROPERTY',
+            'TERTIARY_WEIGHTS',
             // Azure
             'FEDERATION_FILTERING_VALUE',
             // Conversion
-            'CAST', 'CONVERT', 'PARSE', 'TRY_CAST', 'TRY_CONVERT', 'TRY_PARSE',
+            'CAST',
+            'CONVERT',
+            'PARSE',
+            'TRY_CAST',
+            'TRY_CONVERT',
+            'TRY_PARSE',
             // Cryptographic
-            'ASYMKEY_ID', 'ASYMKEYPROPERTY', 'CERTPROPERTY', 'CERT_ID', 'CRYPT_GEN_RANDOM',
-            'DECRYPTBYASYMKEY', 'DECRYPTBYCERT', 'DECRYPTBYKEY', 'DECRYPTBYKEYAUTOASYMKEY', 'DECRYPTBYKEYAUTOCERT', 'DECRYPTBYPASSPHRASE',
-            'ENCRYPTBYASYMKEY', 'ENCRYPTBYCERT', 'ENCRYPTBYKEY', 'ENCRYPTBYPASSPHRASE', 'HASHBYTES', 'IS_OBJECTSIGNED',
-            'KEY_GUID', 'KEY_ID', 'KEY_NAME', 'SIGNBYASYMKEY', 'SIGNBYCERT', 'SYMKEYPROPERTY', 'VERIFYSIGNEDBYCERT', 'VERIFYSIGNEDBYASYMKEY',
+            'ASYMKEY_ID',
+            'ASYMKEYPROPERTY',
+            'CERTPROPERTY',
+            'CERT_ID',
+            'CRYPT_GEN_RANDOM',
+            'DECRYPTBYASYMKEY',
+            'DECRYPTBYCERT',
+            'DECRYPTBYKEY',
+            'DECRYPTBYKEYAUTOASYMKEY',
+            'DECRYPTBYKEYAUTOCERT',
+            'DECRYPTBYPASSPHRASE',
+            'ENCRYPTBYASYMKEY',
+            'ENCRYPTBYCERT',
+            'ENCRYPTBYKEY',
+            'ENCRYPTBYPASSPHRASE',
+            'HASHBYTES',
+            'IS_OBJECTSIGNED',
+            'KEY_GUID',
+            'KEY_ID',
+            'KEY_NAME',
+            'SIGNBYASYMKEY',
+            'SIGNBYCERT',
+            'SYMKEYPROPERTY',
+            'VERIFYSIGNEDBYCERT',
+            'VERIFYSIGNEDBYASYMKEY',
             // Cursor
             'CURSOR_STATUS',
             // Datatype
-            'DATALENGTH', 'IDENT_CURRENT', 'IDENT_INCR', 'IDENT_SEED', 'IDENTITY', 'SQL_VARIANT_PROPERTY',
+            'DATALENGTH',
+            'IDENT_CURRENT',
+            'IDENT_INCR',
+            'IDENT_SEED',
+            'IDENTITY',
+            'SQL_VARIANT_PROPERTY',
             // Datetime
-            'CURRENT_TIMESTAMP', 'DATEADD', 'DATEDIFF', 'DATEFROMPARTS', 'DATENAME', 'DATEPART', 'DATETIME2FROMPARTS', 'DATETIMEFROMPARTS',
-            'DATETIMEOFFSETFROMPARTS', 'DAY', 'EOMONTH', 'GETDATE', 'GETUTCDATE', 'ISDATE', 'MONTH', 'SMALLDATETIMEFROMPARTS', 'SWITCHOFFSET',
-            'SYSDATETIME', 'SYSDATETIMEOFFSET', 'SYSUTCDATETIME', 'TIMEFROMPARTS', 'TODATETIMEOFFSET', 'YEAR',
+            'CURRENT_TIMESTAMP',
+            'DATEADD',
+            'DATEDIFF',
+            'DATEFROMPARTS',
+            'DATENAME',
+            'DATEPART',
+            'DATETIME2FROMPARTS',
+            'DATETIMEFROMPARTS',
+            'DATETIMEOFFSETFROMPARTS',
+            'DAY',
+            'EOMONTH',
+            'GETDATE',
+            'GETUTCDATE',
+            'ISDATE',
+            'MONTH',
+            'SMALLDATETIMEFROMPARTS',
+            'SWITCHOFFSET',
+            'SYSDATETIME',
+            'SYSDATETIMEOFFSET',
+            'SYSUTCDATETIME',
+            'TIMEFROMPARTS',
+            'TODATETIMEOFFSET',
+            'YEAR',
             // Logical
-            'CHOOSE', 'COALESCE', 'IIF', 'NULLIF',
+            'CHOOSE',
+            'COALESCE',
+            'IIF',
+            'NULLIF',
             // Mathematical
-            'ABS', 'ACOS', 'ASIN', 'ATAN', 'ATN2', 'CEILING', 'COS', 'COT', 'DEGREES', 'EXP', 'FLOOR', 'LOG', 'LOG10',
-            'PI', 'POWER', 'RADIANS', 'RAND', 'ROUND', 'SIGN', 'SIN', 'SQRT', 'SQUARE', 'TAN',
+            'ABS',
+            'ACOS',
+            'ASIN',
+            'ATAN',
+            'ATN2',
+            'CEILING',
+            'COS',
+            'COT',
+            'DEGREES',
+            'EXP',
+            'FLOOR',
+            'LOG',
+            'LOG10',
+            'PI',
+            'POWER',
+            'RADIANS',
+            'RAND',
+            'ROUND',
+            'SIGN',
+            'SIN',
+            'SQRT',
+            'SQUARE',
+            'TAN',
             // Metadata
-            'APP_NAME', 'APPLOCK_MODE', 'APPLOCK_TEST', 'ASSEMBLYPROPERTY', 'COL_LENGTH', 'COL_NAME', 'COLUMNPROPERTY',
-            'DATABASE_PRINCIPAL_ID', 'DATABASEPROPERTYEX', 'DB_ID', 'DB_NAME', 'FILE_ID', 'FILE_IDEX', 'FILE_NAME', 'FILEGROUP_ID',
-            'FILEGROUP_NAME', 'FILEGROUPPROPERTY', 'FILEPROPERTY', 'FULLTEXTCATALOGPROPERTY', 'FULLTEXTSERVICEPROPERTY',
-            'INDEX_COL', 'INDEXKEY_PROPERTY', 'INDEXPROPERTY', 'OBJECT_DEFINITION', 'OBJECT_ID',
-            'OBJECT_NAME', 'OBJECT_SCHEMA_NAME', 'OBJECTPROPERTY', 'OBJECTPROPERTYEX', 'ORIGINAL_DB_NAME', 'PARSENAME',
-            'SCHEMA_ID', 'SCHEMA_NAME', 'SCOPE_IDENTITY', 'SERVERPROPERTY', 'STATS_DATE', 'TYPE_ID', 'TYPE_NAME', 'TYPEPROPERTY',
+            'APP_NAME',
+            'APPLOCK_MODE',
+            'APPLOCK_TEST',
+            'ASSEMBLYPROPERTY',
+            'COL_LENGTH',
+            'COL_NAME',
+            'COLUMNPROPERTY',
+            'DATABASE_PRINCIPAL_ID',
+            'DATABASEPROPERTYEX',
+            'DB_ID',
+            'DB_NAME',
+            'FILE_ID',
+            'FILE_IDEX',
+            'FILE_NAME',
+            'FILEGROUP_ID',
+            'FILEGROUP_NAME',
+            'FILEGROUPPROPERTY',
+            'FILEPROPERTY',
+            'FULLTEXTCATALOGPROPERTY',
+            'FULLTEXTSERVICEPROPERTY',
+            'INDEX_COL',
+            'INDEXKEY_PROPERTY',
+            'INDEXPROPERTY',
+            'OBJECT_DEFINITION',
+            'OBJECT_ID',
+            'OBJECT_NAME',
+            'OBJECT_SCHEMA_NAME',
+            'OBJECTPROPERTY',
+            'OBJECTPROPERTYEX',
+            'ORIGINAL_DB_NAME',
+            'PARSENAME',
+            'SCHEMA_ID',
+            'SCHEMA_NAME',
+            'SCOPE_IDENTITY',
+            'SERVERPROPERTY',
+            'STATS_DATE',
+            'TYPE_ID',
+            'TYPE_NAME',
+            'TYPEPROPERTY',
             // Ranking
-            'DENSE_RANK', 'NTILE', 'RANK', 'ROW_NUMBER',
+            'DENSE_RANK',
+            'NTILE',
+            'RANK',
+            'ROW_NUMBER',
             // Replication
             'PUBLISHINGSERVERNAME',
             // Rowset
-            'OPENDATASOURCE', 'OPENQUERY', 'OPENROWSET', 'OPENXML',
+            'OPENDATASOURCE',
+            'OPENQUERY',
+            'OPENROWSET',
+            'OPENXML',
             // Security
-            'CERTENCODED', 'CERTPRIVATEKEY', 'CURRENT_USER', 'HAS_DBACCESS', 'HAS_PERMS_BY_NAME', 'IS_MEMBER', 'IS_ROLEMEMBER', 'IS_SRVROLEMEMBER',
-            'LOGINPROPERTY', 'ORIGINAL_LOGIN', 'PERMISSIONS', 'PWDENCRYPT', 'PWDCOMPARE', 'SESSION_USER', 'SESSIONPROPERTY', 'SUSER_ID', 'SUSER_NAME',
-            'SUSER_SID', 'SUSER_SNAME', 'SYSTEM_USER', 'USER', 'USER_ID', 'USER_NAME',
+            'CERTENCODED',
+            'CERTPRIVATEKEY',
+            'CURRENT_USER',
+            'HAS_DBACCESS',
+            'HAS_PERMS_BY_NAME',
+            'IS_MEMBER',
+            'IS_ROLEMEMBER',
+            'IS_SRVROLEMEMBER',
+            'LOGINPROPERTY',
+            'ORIGINAL_LOGIN',
+            'PERMISSIONS',
+            'PWDENCRYPT',
+            'PWDCOMPARE',
+            'SESSION_USER',
+            'SESSIONPROPERTY',
+            'SUSER_ID',
+            'SUSER_NAME',
+            'SUSER_SID',
+            'SUSER_SNAME',
+            'SYSTEM_USER',
+            'USER',
+            'USER_ID',
+            'USER_NAME',
             // String
-            'ASCII', 'CHAR', 'CHARINDEX', 'CONCAT', 'DIFFERENCE', 'FORMAT', 'LEFT', 'LEN', 'LOWER', 'LTRIM', 'NCHAR', 'PATINDEX',
-            'QUOTENAME', 'REPLACE', 'REPLICATE', 'REVERSE', 'RIGHT', 'RTRIM', 'SOUNDEX', 'SPACE', 'STR', 'STUFF', 'SUBSTRING', 'UNICODE', 'UPPER',
+            'ASCII',
+            'CHAR',
+            'CHARINDEX',
+            'CONCAT',
+            'DIFFERENCE',
+            'FORMAT',
+            'LEFT',
+            'LEN',
+            'LOWER',
+            'LTRIM',
+            'NCHAR',
+            'PATINDEX',
+            'QUOTENAME',
+            'REPLACE',
+            'REPLICATE',
+            'REVERSE',
+            'RIGHT',
+            'RTRIM',
+            'SOUNDEX',
+            'SPACE',
+            'STR',
+            'STUFF',
+            'SUBSTRING',
+            'UNICODE',
+            'UPPER',
             // System
-            'BINARY_CHECKSUM', 'CHECKSUM', 'CONNECTIONPROPERTY', 'CONTEXT_INFO', 'CURRENT_REQUEST_ID', 'ERROR_LINE', 'ERROR_NUMBER', 'ERROR_MESSAGE',
-            'ERROR_PROCEDURE', 'ERROR_SEVERITY', 'ERROR_STATE', 'FORMATMESSAGE', 'GETANSINULL', 'GET_FILESTREAM_TRANSACTION_CONTEXT', 'HOST_ID',
-            'HOST_NAME', 'ISNULL', 'ISNUMERIC', 'MIN_ACTIVE_ROWVERSION', 'NEWID', 'NEWSEQUENTIALID', 'ROWCOUNT_BIG', 'XACT_STATE',
+            'BINARY_CHECKSUM',
+            'CHECKSUM',
+            'CONNECTIONPROPERTY',
+            'CONTEXT_INFO',
+            'CURRENT_REQUEST_ID',
+            'ERROR_LINE',
+            'ERROR_NUMBER',
+            'ERROR_MESSAGE',
+            'ERROR_PROCEDURE',
+            'ERROR_SEVERITY',
+            'ERROR_STATE',
+            'FORMATMESSAGE',
+            'GETANSINULL',
+            'GET_FILESTREAM_TRANSACTION_CONTEXT',
+            'HOST_ID',
+            'HOST_NAME',
+            'ISNULL',
+            'ISNUMERIC',
+            'MIN_ACTIVE_ROWVERSION',
+            'NEWID',
+            'NEWSEQUENTIALID',
+            'ROWCOUNT_BIG',
+            'XACT_STATE',
             // TextImage
-            'TEXTPTR', 'TEXTVALID',
+            'TEXTPTR',
+            'TEXTVALID',
             // Trigger
-            'COLUMNS_UPDATED', 'EVENTDATA', 'TRIGGER_NESTLEVEL', 'UPDATE',
+            'COLUMNS_UPDATED',
+            'EVENTDATA',
+            'TRIGGER_NESTLEVEL',
+            'UPDATE',
             // ChangeTracking
-            'CHANGETABLE', 'CHANGE_TRACKING_CONTEXT', 'CHANGE_TRACKING_CURRENT_VERSION', 'CHANGE_TRACKING_IS_COLUMN_IN_MASK', 'CHANGE_TRACKING_MIN_VALID_VERSION',
+            'CHANGETABLE',
+            'CHANGE_TRACKING_CONTEXT',
+            'CHANGE_TRACKING_CURRENT_VERSION',
+            'CHANGE_TRACKING_IS_COLUMN_IN_MASK',
+            'CHANGE_TRACKING_MIN_VALID_VERSION',
             // FullTextSearch
-            'CONTAINSTABLE', 'FREETEXTTABLE',
+            'CONTAINSTABLE',
+            'FREETEXTTABLE',
             // SemanticTextSearch
-            'SEMANTICKEYPHRASETABLE', 'SEMANTICSIMILARITYDETAILSTABLE', 'SEMANTICSIMILARITYTABLE',
+            'SEMANTICKEYPHRASETABLE',
+            'SEMANTICSIMILARITYDETAILSTABLE',
+            'SEMANTICSIMILARITYTABLE',
             // FileStream
-            'FILETABLEROOTPATH', 'GETFILENAMESPACEPATH', 'GETPATHLOCATOR', 'PATHNAME',
+            'FILETABLEROOTPATH',
+            'GETFILENAMESPACEPATH',
+            'GETPATHLOCATOR',
+            'PATHNAME',
             // ServiceBroker
             'GET_TRANSMISSION_STATUS'
         ],
         builtinVariables: [
             // Configuration
-            '@@DATEFIRST', '@@DBTS', '@@LANGID', '@@LANGUAGE', '@@LOCK_TIMEOUT', '@@MAX_CONNECTIONS', '@@MAX_PRECISION', '@@NESTLEVEL',
-            '@@OPTIONS', '@@REMSERVER', '@@SERVERNAME', '@@SERVICENAME', '@@SPID', '@@TEXTSIZE', '@@VERSION',
+            '@@DATEFIRST',
+            '@@DBTS',
+            '@@LANGID',
+            '@@LANGUAGE',
+            '@@LOCK_TIMEOUT',
+            '@@MAX_CONNECTIONS',
+            '@@MAX_PRECISION',
+            '@@NESTLEVEL',
+            '@@OPTIONS',
+            '@@REMSERVER',
+            '@@SERVERNAME',
+            '@@SERVICENAME',
+            '@@SPID',
+            '@@TEXTSIZE',
+            '@@VERSION',
             // Cursor
-            '@@CURSOR_ROWS', '@@FETCH_STATUS',
+            '@@CURSOR_ROWS',
+            '@@FETCH_STATUS',
             // Datetime
             '@@DATEFIRST',
             // Metadata
             '@@PROCID',
             // System
-            '@@ERROR', '@@IDENTITY', '@@ROWCOUNT', '@@TRANCOUNT',
+            '@@ERROR',
+            '@@IDENTITY',
+            '@@ROWCOUNT',
+            '@@TRANCOUNT',
             // Stats
-            '@@CONNECTIONS', '@@CPU_BUSY', '@@IDLE', '@@IO_BUSY', '@@PACKET_ERRORS', '@@PACK_RECEIVED', '@@PACK_SENT',
-            '@@TIMETICKS', '@@TOTAL_ERRORS', '@@TOTAL_READ', '@@TOTAL_WRITE'
+            '@@CONNECTIONS',
+            '@@CPU_BUSY',
+            '@@IDLE',
+            '@@IO_BUSY',
+            '@@PACKET_ERRORS',
+            '@@PACK_RECEIVED',
+            '@@PACK_SENT',
+            '@@TIMETICKS',
+            '@@TOTAL_ERRORS',
+            '@@TOTAL_READ',
+            '@@TOTAL_WRITE'
         ],
-        pseudoColumns: [
-            '$ACTION', '$IDENTITY', '$ROWGUID', '$PARTITION'
-        ],
+        pseudoColumns: ['$ACTION', '$IDENTITY', '$ROWGUID', '$PARTITION'],
         tokenizer: {
             root: [
                 { include: '@comments' },
@@ -1061,7 +1320,9 @@ define(["require", "exports"], function (require, exports) {
                 { include: '@scopes' },
                 [/[;,.]/, 'delimiter'],
                 [/[()]/, '@brackets'],
-                [/[\w@#$]+/, {
+                [
+                    /[\w@#$]+/,
+                    {
                         cases: {
                             '@keywords': 'keyword',
                             '@operators': 'operator',
@@ -1069,12 +1330,11 @@ define(["require", "exports"], function (require, exports) {
                             '@builtinFunctions': 'predefined',
                             '@default': 'identifier'
                         }
-                    }],
-                [/[<>=!%&+\-*/|~^]/, 'operator'],
+                    }
+                ],
+                [/[<>=!%&+\-*/|~^]/, 'operator']
             ],
-            whitespace: [
-                [/\s+/, 'white']
-            ],
+            whitespace: [[/\s+/, 'white']],
             comments: [
                 [/--+.*/, 'comment'],
                 [/\/\*/, { token: 'comment.quote', next: '@comment' }]
@@ -1088,12 +1348,15 @@ define(["require", "exports"], function (require, exports) {
                 [/./, 'comment']
             ],
             pseudoColumns: [
-                [/[$][A-Za-z_][\w@#$]*/, {
+                [
+                    /[$][A-Za-z_][\w@#$]*/,
+                    {
                         cases: {
                             '@pseudoColumns': 'predefined',
                             '@default': 'identifier'
                         }
-                    }],
+                    }
+                ]
             ],
             numbers: [
                 [/0[xX][0-9a-fA-F]*/, 'number'],
@@ -1137,3 +1400,4 @@ define(["require", "exports"], function (require, exports) {
         }
     };
 });
+

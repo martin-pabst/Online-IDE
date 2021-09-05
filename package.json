@@ -28,7 +28,7 @@
     "jquery": "^3.5.1",
     "lz-string": "^1.4.4",
     "moment": "^2.29.1",
-    "monaco-editor": "^0.18.1",
+    "monaco-editor": "^0.27.0",
     "mysql": "^2.18.1",
     "pixi.js": "^6.0.2",
     "spritesmith": "^3.4.0",

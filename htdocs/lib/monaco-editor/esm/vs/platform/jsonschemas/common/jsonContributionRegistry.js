@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as platform from '../../registry/common/platform.js';
 import { Emitter } from '../../../base/common/event.js';
-export var Extensions = {
+export const Extensions = {
     JSONContribution: 'base.contributions.json'
 };
 function normalizeId(id) {
@@ -13,19 +13,18 @@ function normalizeId(id) {
     }
     return id;
 }
-var JSONContributionRegistry = /** @class */ (function () {
-    function JSONContributionRegistry() {
+class JSONContributionRegistry {
+    constructor() {
         this._onDidChangeSchema = new Emitter();
         this.schemasById = {};
     }
-    JSONContributionRegistry.prototype.registerSchema = function (uri, unresolvedSchemaContent) {
+    registerSchema(uri, unresolvedSchemaContent) {
         this.schemasById[normalizeId(uri)] = unresolvedSchemaContent;
         this._onDidChangeSchema.fire(uri);
-    };
-    JSONContributionRegistry.prototype.notifySchemaChanged = function (uri) {
+    }
+    notifySchemaChanged(uri) {
         this._onDidChangeSchema.fire(uri);
-    };
-    return JSONContributionRegistry;
-}());
-var jsonContributionRegistry = new JSONContributionRegistry();
+    }
+}
+const jsonContributionRegistry = new JSONContributionRegistry();
 platform.Registry.add(Extensions.JSONContribution, jsonContributionRegistry);

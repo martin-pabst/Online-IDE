@@ -2,13 +2,12 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 export var conf = {
     // the default separators except `$-`
     wordPattern: /(-?\d*\.\d\w*)|([^\`\~\!\@\#%\^\&\*\(\)\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s]+)/g,
     comments: {
         lineComment: '#',
-        blockComment: ['<#', '#>'],
+        blockComment: ['<#', '#>']
     },
     brackets: [
         ['{', '}'],
@@ -20,19 +19,19 @@ export var conf = {
         { open: '[', close: ']' },
         { open: '(', close: ')' },
         { open: '"', close: '"', notIn: ['string'] },
-        { open: '\'', close: '\'', notIn: ['string', 'comment'] },
+        { open: "'", close: "'", notIn: ['string', 'comment'] }
     ],
     surroundingPairs: [
         { open: '{', close: '}' },
         { open: '[', close: ']' },
         { open: '(', close: ')' },
         { open: '"', close: '"' },
-        { open: '\'', close: '\'' },
+        { open: "'", close: "'" }
     ],
     folding: {
         markers: {
-            start: new RegExp("^\\s*#region\\b"),
-            end: new RegExp("^\\s*#endregion\\b")
+            start: new RegExp('^\\s*#region\\b'),
+            end: new RegExp('^\\s*#endregion\\b')
         }
     }
 };
@@ -46,12 +45,43 @@ export var language = {
         { token: 'delimiter.parenthesis', open: '(', close: ')' }
     ],
     keywords: [
-        'begin', 'break', 'catch', 'class', 'continue', 'data',
-        'define', 'do', 'dynamicparam', 'else', 'elseif', 'end',
-        'exit', 'filter', 'finally', 'for', 'foreach', 'from',
-        'function', 'if', 'in', 'param', 'process', 'return',
-        'switch', 'throw', 'trap', 'try', 'until', 'using',
-        'var', 'while', 'workflow', 'parallel', 'sequence', 'inlinescript', 'configuration'
+        'begin',
+        'break',
+        'catch',
+        'class',
+        'continue',
+        'data',
+        'define',
+        'do',
+        'dynamicparam',
+        'else',
+        'elseif',
+        'end',
+        'exit',
+        'filter',
+        'finally',
+        'for',
+        'foreach',
+        'from',
+        'function',
+        'if',
+        'in',
+        'param',
+        'process',
+        'return',
+        'switch',
+        'throw',
+        'trap',
+        'try',
+        'until',
+        'using',
+        'var',
+        'while',
+        'workflow',
+        'parallel',
+        'sequence',
+        'inlinescript',
+        'configuration'
     ],
     helpKeywords: /SYNOPSIS|DESCRIPTION|PARAMETER|EXAMPLE|INPUTS|OUTPUTS|NOTES|LINK|COMPONENT|ROLE|FUNCTIONALITY|FORWARDHELPTARGETNAME|FORWARDHELPCATEGORY|REMOTEHELPRUNSPACE|EXTERNALHELP/,
     // we include these common regular expressions
@@ -61,18 +91,24 @@ export var language = {
     tokenizer: {
         root: [
             // commands and keywords
-            [/[a-zA-Z_][\w-]*/, {
+            [
+                /[a-zA-Z_][\w-]*/,
+                {
                     cases: {
                         '@keywords': { token: 'keyword.$0' },
                         '@default': ''
                     }
-                }],
+                }
+            ],
             // whitespace
             [/[ \t\r\n]+/, ''],
             // labels
             [/^:\w*/, 'metatag'],
             // variables
-            [/\$(\{((global|local|private|script|using):)?[\w]+\}|((global|local|private|script|using):)?[\w]+)/, 'variable'],
+            [
+                /\$(\{((global|local|private|script|using):)?[\w]+\}|((global|local|private|script|using):)?[\w]+)/,
+                'variable'
+            ],
             // Comments
             [/<#/, 'comment', '@comment'],
             [/#.*$/, 'comment'],
@@ -87,52 +123,78 @@ export var language = {
             [/[;,.]/, 'delimiter'],
             // strings:
             [/\@"/, 'string', '@herestring."'],
-            [/\@'/, 'string', '@herestring.\''],
-            [/"/, {
+            [/\@'/, 'string', "@herestring.'"],
+            [
+                /"/,
+                {
                     cases: {
                         '@eos': 'string',
                         '@default': { token: 'string', next: '@string."' }
                     }
-                }],
-            [/'/, {
+                }
+            ],
+            [
+                /'/,
+                {
                     cases: {
                         '@eos': 'string',
-                        '@default': { token: 'string', next: '@string.\'' }
+                        '@default': { token: 'string', next: "@string.'" }
                     }
-                }],
+                }
+            ]
         ],
         string: [
-            [/[^"'\$`]+/, {
+            [
+                /[^"'\$`]+/,
+                {
                     cases: {
                         '@eos': { token: 'string', next: '@popall' },
                         '@default': 'string'
                     }
-                }],
-            [/@escapes/, {
+                }
+            ],
+            [
+                /@escapes/,
+                {
                     cases: {
                         '@eos': { token: 'string.escape', next: '@popall' },
                         '@default': 'string.escape'
                     }
-                }],
-            [/`./, {
+                }
+            ],
+            [
+                /`./,
+                {
                     cases: {
-                        '@eos': { token: 'string.escape.invalid', next: '@popall' },
+                        '@eos': {
+                            token: 'string.escape.invalid',
+                            next: '@popall'
+                        },
                         '@default': 'string.escape.invalid'
                     }
-                }],
-            [/\$[\w]+$/, {
+                }
+            ],
+            [
+                /\$[\w]+$/,
+                {
                     cases: {
                         '$S2=="': { token: 'variable', next: '@popall' },
                         '@default': { token: 'string', next: '@popall' }
                     }
-                }],
-            [/\$[\w]+/, {
+                }
+            ],
+            [
+                /\$[\w]+/,
+                {
                     cases: {
                         '$S2=="': 'variable',
                         '@default': 'string'
                     }
-                }],
-            [/["']/, {
+                }
+            ],
+            [
+                /["']/,
+                {
                     cases: {
                         '$#==$S2': { token: 'string', next: '@pop' },
                         '@default': {
@@ -142,30 +204,37 @@ export var language = {
                             }
                         }
                     }
-                }],
+                }
+            ]
         ],
         herestring: [
-            [/^\s*(["'])@/, {
+            [
+                /^\s*(["'])@/,
+                {
                     cases: {
                         '$1==$S2': { token: 'string', next: '@pop' },
                         '@default': 'string'
                     }
-                }],
+                }
+            ],
             [/[^\$`]+/, 'string'],
             [/@escapes/, 'string.escape'],
             [/`./, 'string.escape.invalid'],
-            [/\$[\w]+/, {
+            [
+                /\$[\w]+/,
+                {
                     cases: {
                         '$S2=="': 'variable',
                         '@default': 'string'
                     }
-                }],
+                }
+            ]
         ],
         comment: [
             [/[^#\.]+/, 'comment'],
             [/#>/, 'comment', '@pop'],
             [/(\.)(@helpKeywords)(?!\w)/, { token: 'comment.keyword.$2' }],
             [/[\.#]/, 'comment']
-        ],
-    },
+        ]
+    }
 };

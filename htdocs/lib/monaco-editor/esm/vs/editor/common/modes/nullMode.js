@@ -4,25 +4,22 @@
  *--------------------------------------------------------------------------------------------*/
 import { Token, TokenizationResult, TokenizationResult2 } from '../core/token.js';
 import { LanguageIdentifier } from '../modes.js';
-var NullStateImpl = /** @class */ (function () {
-    function NullStateImpl() {
-    }
-    NullStateImpl.prototype.clone = function () {
+class NullStateImpl {
+    clone() {
         return this;
-    };
-    NullStateImpl.prototype.equals = function (other) {
+    }
+    equals(other) {
         return (this === other);
-    };
-    return NullStateImpl;
-}());
-export var NULL_STATE = new NullStateImpl();
-export var NULL_MODE_ID = 'vs.editor.nullMode';
-export var NULL_LANGUAGE_IDENTIFIER = new LanguageIdentifier(NULL_MODE_ID, 0 /* Null */);
+    }
+}
+export const NULL_STATE = new NullStateImpl();
+export const NULL_MODE_ID = 'vs.editor.nullMode';
+export const NULL_LANGUAGE_IDENTIFIER = new LanguageIdentifier(NULL_MODE_ID, 0 /* Null */);
 export function nullTokenize(modeId, buffer, state, deltaOffset) {
     return new TokenizationResult([new Token(deltaOffset, '', modeId)], state);
 }
 export function nullTokenize2(languageId, buffer, state, deltaOffset) {
-    var tokens = new Uint32Array(2);
+    let tokens = new Uint32Array(2);
     tokens[0] = deltaOffset;
     tokens[1] = ((languageId << 0 /* LANGUAGEID_OFFSET */)
         | (0 /* Other */ << 8 /* TOKEN_TYPE_OFFSET */)

@@ -2,19 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -32,117 +19,126 @@ import { AbstractCodeEditorService } from './abstractCodeEditorService.js';
 import { isThemeColor } from '../../common/editorCommon.js';
 import { OverviewRulerLane } from '../../common/model.js';
 import { IThemeService } from '../../../platform/theme/common/themeService.js';
-var RefCountedStyleSheet = /** @class */ (function () {
-    function RefCountedStyleSheet(parent, editorId, styleSheet) {
+export class RefCountedStyleSheet {
+    constructor(parent, editorId, styleSheet) {
         this._parent = parent;
         this._editorId = editorId;
-        this.styleSheet = styleSheet;
+        this._styleSheet = styleSheet;
         this._refCount = 0;
     }
-    RefCountedStyleSheet.prototype.ref = function () {
+    ref() {
         this._refCount++;
-    };
-    RefCountedStyleSheet.prototype.unref = function () {
+    }
+    unref() {
         var _a;
         this._refCount--;
         if (this._refCount === 0) {
-            (_a = this.styleSheet.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(this.styleSheet);
+            (_a = this._styleSheet.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(this._styleSheet);
             this._parent._removeEditorStyleSheets(this._editorId);
         }
-    };
-    return RefCountedStyleSheet;
-}());
-var GlobalStyleSheet = /** @class */ (function () {
-    function GlobalStyleSheet(styleSheet) {
-        this.styleSheet = styleSheet;
     }
-    GlobalStyleSheet.prototype.ref = function () {
-    };
-    GlobalStyleSheet.prototype.unref = function () {
-    };
-    return GlobalStyleSheet;
-}());
-var CodeEditorServiceImpl = /** @class */ (function (_super) {
-    __extends(CodeEditorServiceImpl, _super);
-    function CodeEditorServiceImpl(themeService, styleSheet) {
-        if (styleSheet === void 0) { styleSheet = null; }
-        var _this = _super.call(this) || this;
-        _this._decorationOptionProviders = new Map();
-        _this._editorStyleSheets = new Map();
-        _this._globalStyleSheet = styleSheet ? new GlobalStyleSheet(styleSheet) : null;
-        _this._themeService = themeService;
-        return _this;
+    insertRule(rule, index) {
+        const sheet = this._styleSheet.sheet;
+        sheet.insertRule(rule, index);
     }
-    CodeEditorServiceImpl.prototype._getOrCreateGlobalStyleSheet = function () {
+    removeRulesContainingSelector(ruleName) {
+        dom.removeCSSRulesContainingSelector(ruleName, this._styleSheet);
+    }
+}
+export class GlobalStyleSheet {
+    constructor(styleSheet) {
+        this._styleSheet = styleSheet;
+    }
+    ref() {
+    }
+    unref() {
+    }
+    insertRule(rule, index) {
+        const sheet = this._styleSheet.sheet;
+        sheet.insertRule(rule, index);
+    }
+    removeRulesContainingSelector(ruleName) {
+        dom.removeCSSRulesContainingSelector(ruleName, this._styleSheet);
+    }
+}
+let CodeEditorServiceImpl = class CodeEditorServiceImpl extends AbstractCodeEditorService {
+    constructor(styleSheet, themeService) {
+        super();
+        this._decorationOptionProviders = new Map();
+        this._editorStyleSheets = new Map();
+        this._globalStyleSheet = styleSheet ? styleSheet : null;
+        this._themeService = themeService;
+    }
+    _getOrCreateGlobalStyleSheet() {
         if (!this._globalStyleSheet) {
             this._globalStyleSheet = new GlobalStyleSheet(dom.createStyleSheet());
         }
         return this._globalStyleSheet;
-    };
-    CodeEditorServiceImpl.prototype._getOrCreateStyleSheet = function (editor) {
+    }
+    _getOrCreateStyleSheet(editor) {
         if (!editor) {
             return this._getOrCreateGlobalStyleSheet();
         }
-        var domNode = editor.getContainerDomNode();
+        const domNode = editor.getContainerDomNode();
         if (!dom.isInShadowDOM(domNode)) {
             return this._getOrCreateGlobalStyleSheet();
         }
-        var editorId = editor.getId();
+        const editorId = editor.getId();
         if (!this._editorStyleSheets.has(editorId)) {
-            var refCountedStyleSheet = new RefCountedStyleSheet(this, editorId, dom.createStyleSheet(domNode));
+            const refCountedStyleSheet = new RefCountedStyleSheet(this, editorId, dom.createStyleSheet(domNode));
             this._editorStyleSheets.set(editorId, refCountedStyleSheet);
         }
         return this._editorStyleSheets.get(editorId);
-    };
-    CodeEditorServiceImpl.prototype._removeEditorStyleSheets = function (editorId) {
+    }
+    _removeEditorStyleSheets(editorId) {
         this._editorStyleSheets.delete(editorId);
-    };
-    CodeEditorServiceImpl.prototype.registerDecorationType = function (key, options, parentTypeKey, editor) {
-        var provider = this._decorationOptionProviders.get(key);
+    }
+    registerDecorationType(description, key, options, parentTypeKey, editor) {
+        let provider = this._decorationOptionProviders.get(key);
         if (!provider) {
-            var styleSheet = this._getOrCreateStyleSheet(editor);
-            var providerArgs = {
-                styleSheet: styleSheet.styleSheet,
+            const styleSheet = this._getOrCreateStyleSheet(editor);
+            const providerArgs = {
+                styleSheet: styleSheet,
                 key: key,
                 parentTypeKey: parentTypeKey,
                 options: options || Object.create(null)
             };
             if (!parentTypeKey) {
-                provider = new DecorationTypeOptionsProvider(this._themeService, styleSheet, providerArgs);
+                provider = new DecorationTypeOptionsProvider(description, this._themeService, styleSheet, providerArgs);
             }
             else {
                 provider = new DecorationSubTypeOptionsProvider(this._themeService, styleSheet, providerArgs);
             }
             this._decorationOptionProviders.set(key, provider);
+            this._onDecorationTypeRegistered.fire(key);
         }
         provider.refCount++;
-    };
-    CodeEditorServiceImpl.prototype.removeDecorationType = function (key) {
-        var provider = this._decorationOptionProviders.get(key);
+    }
+    removeDecorationType(key) {
+        const provider = this._decorationOptionProviders.get(key);
         if (provider) {
             provider.refCount--;
             if (provider.refCount <= 0) {
                 this._decorationOptionProviders.delete(key);
                 provider.dispose();
-                this.listCodeEditors().forEach(function (ed) { return ed.removeDecorations(key); });
+                this.listCodeEditors().forEach((ed) => ed.removeDecorations(key));
             }
         }
-    };
-    CodeEditorServiceImpl.prototype.resolveDecorationOptions = function (decorationTypeKey, writable) {
-        var provider = this._decorationOptionProviders.get(decorationTypeKey);
+    }
+    resolveDecorationOptions(decorationTypeKey, writable) {
+        const provider = this._decorationOptionProviders.get(decorationTypeKey);
         if (!provider) {
             throw new Error('Unknown decoration type key: ' + decorationTypeKey);
         }
         return provider.getOptions(this, writable);
-    };
-    CodeEditorServiceImpl = __decorate([
-        __param(0, IThemeService)
-    ], CodeEditorServiceImpl);
-    return CodeEditorServiceImpl;
-}(AbstractCodeEditorService));
+    }
+};
+CodeEditorServiceImpl = __decorate([
+    __param(1, IThemeService)
+], CodeEditorServiceImpl);
 export { CodeEditorServiceImpl };
-var DecorationSubTypeOptionsProvider = /** @class */ (function () {
-    function DecorationSubTypeOptionsProvider(themeService, styleSheet, providerArgs) {
+export class DecorationSubTypeOptionsProvider {
+    constructor(themeService, styleSheet, providerArgs) {
         this._styleSheet = styleSheet;
         this._styleSheet.ref();
         this._parentTypeKey = providerArgs.parentTypeKey;
@@ -150,8 +146,8 @@ var DecorationSubTypeOptionsProvider = /** @class */ (function () {
         this._beforeContentRules = new DecorationCSSRules(3 /* BeforeContentClassName */, providerArgs, themeService);
         this._afterContentRules = new DecorationCSSRules(4 /* AfterContentClassName */, providerArgs, themeService);
     }
-    DecorationSubTypeOptionsProvider.prototype.getOptions = function (codeEditorService, writable) {
-        var options = codeEditorService.resolveDecorationOptions(this._parentTypeKey, true);
+    getOptions(codeEditorService, writable) {
+        const options = codeEditorService.resolveDecorationOptions(this._parentTypeKey, true);
         if (this._beforeContentRules) {
             options.beforeContentClassName = this._beforeContentRules.className;
         }
@@ -159,8 +155,8 @@ var DecorationSubTypeOptionsProvider = /** @class */ (function () {
             options.afterContentClassName = this._afterContentRules.className;
         }
         return options;
-    };
-    DecorationSubTypeOptionsProvider.prototype.dispose = function () {
+    }
+    dispose() {
         if (this._beforeContentRules) {
             this._beforeContentRules.dispose();
             this._beforeContentRules = null;
@@ -170,46 +166,61 @@ var DecorationSubTypeOptionsProvider = /** @class */ (function () {
             this._afterContentRules = null;
         }
         this._styleSheet.unref();
-    };
-    return DecorationSubTypeOptionsProvider;
-}());
-var DecorationTypeOptionsProvider = /** @class */ (function () {
-    function DecorationTypeOptionsProvider(themeService, styleSheet, providerArgs) {
-        var _this = this;
+    }
+}
+export class DecorationTypeOptionsProvider {
+    constructor(description, themeService, styleSheet, providerArgs) {
         this._disposables = new DisposableStore();
+        this.description = description;
         this._styleSheet = styleSheet;
         this._styleSheet.ref();
         this.refCount = 0;
-        var createCSSRules = function (type) {
-            var rules = new DecorationCSSRules(type, providerArgs, themeService);
-            _this._disposables.add(rules);
+        const createCSSRules = (type) => {
+            const rules = new DecorationCSSRules(type, providerArgs, themeService);
+            this._disposables.add(rules);
             if (rules.hasContent) {
                 return rules.className;
             }
             return undefined;
         };
-        var createInlineCSSRules = function (type) {
-            var rules = new DecorationCSSRules(type, providerArgs, themeService);
-            _this._disposables.add(rules);
+        const createInlineCSSRules = (type) => {
+            const rules = new DecorationCSSRules(type, providerArgs, themeService);
+            this._disposables.add(rules);
             if (rules.hasContent) {
                 return { className: rules.className, hasLetterSpacing: rules.hasLetterSpacing };
             }
             return null;
         };
         this.className = createCSSRules(0 /* ClassName */);
-        var inlineData = createInlineCSSRules(1 /* InlineClassName */);
+        const inlineData = createInlineCSSRules(1 /* InlineClassName */);
         if (inlineData) {
             this.inlineClassName = inlineData.className;
             this.inlineClassNameAffectsLetterSpacing = inlineData.hasLetterSpacing;
         }
         this.beforeContentClassName = createCSSRules(3 /* BeforeContentClassName */);
         this.afterContentClassName = createCSSRules(4 /* AfterContentClassName */);
+        if (providerArgs.options.beforeInjectedText && providerArgs.options.beforeInjectedText.contentText) {
+            const beforeInlineData = createInlineCSSRules(5 /* BeforeInjectedTextClassName */);
+            this.beforeInjectedText = {
+                content: providerArgs.options.beforeInjectedText.contentText,
+                inlineClassName: beforeInlineData === null || beforeInlineData === void 0 ? void 0 : beforeInlineData.className,
+                inlineClassNameAffectsLetterSpacing: (beforeInlineData === null || beforeInlineData === void 0 ? void 0 : beforeInlineData.hasLetterSpacing) || providerArgs.options.beforeInjectedText.affectsLetterSpacing
+            };
+        }
+        if (providerArgs.options.afterInjectedText && providerArgs.options.afterInjectedText.contentText) {
+            const afterInlineData = createInlineCSSRules(6 /* AfterInjectedTextClassName */);
+            this.afterInjectedText = {
+                content: providerArgs.options.afterInjectedText.contentText,
+                inlineClassName: afterInlineData === null || afterInlineData === void 0 ? void 0 : afterInlineData.className,
+                inlineClassNameAffectsLetterSpacing: (afterInlineData === null || afterInlineData === void 0 ? void 0 : afterInlineData.hasLetterSpacing) || providerArgs.options.afterInjectedText.affectsLetterSpacing
+            };
+        }
         this.glyphMarginClassName = createCSSRules(2 /* GlyphMarginClassName */);
-        var options = providerArgs.options;
+        const options = providerArgs.options;
         this.isWholeLine = Boolean(options.isWholeLine);
         this.stickiness = options.rangeBehavior;
-        var lightOverviewRulerColor = options.light && options.light.overviewRulerColor || options.overviewRulerColor;
-        var darkOverviewRulerColor = options.dark && options.dark.overviewRulerColor || options.overviewRulerColor;
+        const lightOverviewRulerColor = options.light && options.light.overviewRulerColor || options.overviewRulerColor;
+        const darkOverviewRulerColor = options.dark && options.dark.overviewRulerColor || options.overviewRulerColor;
         if (typeof lightOverviewRulerColor !== 'undefined'
             || typeof darkOverviewRulerColor !== 'undefined') {
             this.overviewRuler = {
@@ -219,11 +230,12 @@ var DecorationTypeOptionsProvider = /** @class */ (function () {
             };
         }
     }
-    DecorationTypeOptionsProvider.prototype.getOptions = function (codeEditorService, writable) {
+    getOptions(codeEditorService, writable) {
         if (!writable) {
             return this;
         }
         return {
+            description: this.description,
             inlineClassName: this.inlineClassName,
             beforeContentClassName: this.beforeContentClassName,
             afterContentClassName: this.afterContentClassName,
@@ -231,16 +243,16 @@ var DecorationTypeOptionsProvider = /** @class */ (function () {
             glyphMarginClassName: this.glyphMarginClassName,
             isWholeLine: this.isWholeLine,
             overviewRuler: this.overviewRuler,
-            stickiness: this.stickiness
+            stickiness: this.stickiness,
+            before: this.beforeInjectedText
         };
-    };
-    DecorationTypeOptionsProvider.prototype.dispose = function () {
+    }
+    dispose() {
         this._disposables.dispose();
         this._styleSheet.unref();
-    };
-    return DecorationTypeOptionsProvider;
-}());
-var _CSS_MAP = {
+    }
+}
+export const _CSS_MAP = {
     color: 'color:{0} !important;',
     opacity: 'opacity:{0};',
     backgroundColor: 'background-color:{0};',
@@ -256,6 +268,8 @@ var _CSS_MAP = {
     borderWidth: 'border-width:{0};',
     fontStyle: 'font-style:{0};',
     fontWeight: 'font-weight:{0};',
+    fontSize: 'font-size:{0};',
+    fontFamily: 'font-family:{0};',
     textDecoration: 'text-decoration:{0};',
     cursor: 'cursor:{0};',
     letterSpacing: 'letter-spacing:{0};',
@@ -264,19 +278,19 @@ var _CSS_MAP = {
     contentText: 'content:\'{0}\';',
     contentIconPath: 'content:{0};',
     margin: 'margin:{0};',
+    padding: 'padding:{0};',
     width: 'width:{0};',
     height: 'height:{0};'
 };
-var DecorationCSSRules = /** @class */ (function () {
-    function DecorationCSSRules(ruleType, providerArgs, themeService) {
-        var _this = this;
-        this._theme = themeService.getTheme();
+class DecorationCSSRules {
+    constructor(ruleType, providerArgs, themeService) {
+        this._theme = themeService.getColorTheme();
         this._ruleType = ruleType;
         this._providerArgs = providerArgs;
         this._usesThemeColors = false;
         this._hasContent = false;
         this._hasLetterSpacing = false;
-        var className = CSSNameHelper.getClassName(this._providerArgs.key, ruleType);
+        let className = CSSNameHelper.getClassName(this._providerArgs.key, ruleType);
         if (this._providerArgs.parentTypeKey) {
             className = className + ' ' + CSSNameHelper.getClassName(this._providerArgs.parentTypeKey, ruleType);
         }
@@ -284,17 +298,17 @@ var DecorationCSSRules = /** @class */ (function () {
         this._unThemedSelector = CSSNameHelper.getSelector(this._providerArgs.key, this._providerArgs.parentTypeKey, ruleType);
         this._buildCSS();
         if (this._usesThemeColors) {
-            this._themeListener = themeService.onThemeChange(function (theme) {
-                _this._theme = themeService.getTheme();
-                _this._removeCSS();
-                _this._buildCSS();
+            this._themeListener = themeService.onDidColorThemeChange(theme => {
+                this._theme = themeService.getColorTheme();
+                this._removeCSS();
+                this._buildCSS();
             });
         }
         else {
             this._themeListener = null;
         }
     }
-    DecorationCSSRules.prototype.dispose = function () {
+    dispose() {
         if (this._hasContent) {
             this._removeCSS();
             this._hasContent = false;
@@ -303,31 +317,19 @@ var DecorationCSSRules = /** @class */ (function () {
             this._themeListener.dispose();
             this._themeListener = null;
         }
-    };
-    Object.defineProperty(DecorationCSSRules.prototype, "hasContent", {
-        get: function () {
-            return this._hasContent;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(DecorationCSSRules.prototype, "hasLetterSpacing", {
-        get: function () {
-            return this._hasLetterSpacing;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(DecorationCSSRules.prototype, "className", {
-        get: function () {
-            return this._className;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    DecorationCSSRules.prototype._buildCSS = function () {
-        var options = this._providerArgs.options;
-        var unthemedCSS, lightCSS, darkCSS;
+    }
+    get hasContent() {
+        return this._hasContent;
+    }
+    get hasLetterSpacing() {
+        return this._hasLetterSpacing;
+    }
+    get className() {
+        return this._className;
+    }
+    _buildCSS() {
+        const options = this._providerArgs.options;
+        let unthemedCSS, lightCSS, darkCSS;
         switch (this._ruleType) {
             case 0 /* ClassName */:
                 unthemedCSS = this.getCSSTextForModelDecorationClassName(options);
@@ -354,88 +356,98 @@ var DecorationCSSRules = /** @class */ (function () {
                 lightCSS = this.getCSSTextForModelDecorationContentClassName(options.light && options.light.after);
                 darkCSS = this.getCSSTextForModelDecorationContentClassName(options.dark && options.dark.after);
                 break;
+            case 5 /* BeforeInjectedTextClassName */:
+                unthemedCSS = this.getCSSTextForModelDecorationContentClassName(options.beforeInjectedText);
+                lightCSS = this.getCSSTextForModelDecorationContentClassName(options.light && options.light.beforeInjectedText);
+                darkCSS = this.getCSSTextForModelDecorationContentClassName(options.dark && options.dark.beforeInjectedText);
+                break;
+            case 6 /* AfterInjectedTextClassName */:
+                unthemedCSS = this.getCSSTextForModelDecorationContentClassName(options.afterInjectedText);
+                lightCSS = this.getCSSTextForModelDecorationContentClassName(options.light && options.light.afterInjectedText);
+                darkCSS = this.getCSSTextForModelDecorationContentClassName(options.dark && options.dark.afterInjectedText);
+                break;
             default:
                 throw new Error('Unknown rule type: ' + this._ruleType);
         }
-        var sheet = this._providerArgs.styleSheet.sheet;
-        var hasContent = false;
+        const sheet = this._providerArgs.styleSheet;
+        let hasContent = false;
         if (unthemedCSS.length > 0) {
-            sheet.insertRule(this._unThemedSelector + " {" + unthemedCSS + "}", 0);
+            sheet.insertRule(`${this._unThemedSelector} {${unthemedCSS}}`, 0);
             hasContent = true;
         }
         if (lightCSS.length > 0) {
-            sheet.insertRule(".vs" + this._unThemedSelector + " {" + lightCSS + "}", 0);
+            sheet.insertRule(`.vs${this._unThemedSelector} {${lightCSS}}`, 0);
             hasContent = true;
         }
         if (darkCSS.length > 0) {
-            sheet.insertRule(".vs-dark" + this._unThemedSelector + ", .hc-black" + this._unThemedSelector + " {" + darkCSS + "}", 0);
+            sheet.insertRule(`.vs-dark${this._unThemedSelector}, .hc-black${this._unThemedSelector} {${darkCSS}}`, 0);
             hasContent = true;
         }
         this._hasContent = hasContent;
-    };
-    DecorationCSSRules.prototype._removeCSS = function () {
-        dom.removeCSSRulesContainingSelector(this._unThemedSelector, this._providerArgs.styleSheet);
-    };
+    }
+    _removeCSS() {
+        this._providerArgs.styleSheet.removeRulesContainingSelector(this._unThemedSelector);
+    }
     /**
      * Build the CSS for decorations styled via `className`.
      */
-    DecorationCSSRules.prototype.getCSSTextForModelDecorationClassName = function (opts) {
+    getCSSTextForModelDecorationClassName(opts) {
         if (!opts) {
             return '';
         }
-        var cssTextArr = [];
+        const cssTextArr = [];
         this.collectCSSText(opts, ['backgroundColor'], cssTextArr);
         this.collectCSSText(opts, ['outline', 'outlineColor', 'outlineStyle', 'outlineWidth'], cssTextArr);
         this.collectBorderSettingsCSSText(opts, cssTextArr);
         return cssTextArr.join('');
-    };
+    }
     /**
      * Build the CSS for decorations styled via `inlineClassName`.
      */
-    DecorationCSSRules.prototype.getCSSTextForModelDecorationInlineClassName = function (opts) {
+    getCSSTextForModelDecorationInlineClassName(opts) {
         if (!opts) {
             return '';
         }
-        var cssTextArr = [];
+        const cssTextArr = [];
         this.collectCSSText(opts, ['fontStyle', 'fontWeight', 'textDecoration', 'cursor', 'color', 'opacity', 'letterSpacing'], cssTextArr);
         if (opts.letterSpacing) {
             this._hasLetterSpacing = true;
         }
         return cssTextArr.join('');
-    };
+    }
     /**
      * Build the CSS for decorations styled before or after content.
      */
-    DecorationCSSRules.prototype.getCSSTextForModelDecorationContentClassName = function (opts) {
+    getCSSTextForModelDecorationContentClassName(opts) {
         if (!opts) {
             return '';
         }
-        var cssTextArr = [];
+        const cssTextArr = [];
         if (typeof opts !== 'undefined') {
             this.collectBorderSettingsCSSText(opts, cssTextArr);
             if (typeof opts.contentIconPath !== 'undefined') {
                 cssTextArr.push(strings.format(_CSS_MAP.contentIconPath, dom.asCSSUrl(URI.revive(opts.contentIconPath))));
             }
             if (typeof opts.contentText === 'string') {
-                var truncated = opts.contentText.match(/^.*$/m)[0]; // only take first line
-                var escaped = truncated.replace(/['\\]/g, '\\$&');
+                const truncated = opts.contentText.match(/^.*$/m)[0]; // only take first line
+                const escaped = truncated.replace(/['\\]/g, '\\$&');
                 cssTextArr.push(strings.format(_CSS_MAP.contentText, escaped));
             }
-            this.collectCSSText(opts, ['fontStyle', 'fontWeight', 'textDecoration', 'color', 'opacity', 'backgroundColor', 'margin'], cssTextArr);
+            this.collectCSSText(opts, ['fontStyle', 'fontWeight', 'fontSize', 'fontFamily', 'textDecoration', 'color', 'opacity', 'backgroundColor', 'margin', 'padding'], cssTextArr);
             if (this.collectCSSText(opts, ['width', 'height'], cssTextArr)) {
                 cssTextArr.push('display:inline-block;');
             }
         }
         return cssTextArr.join('');
-    };
+    }
     /**
      * Build the CSS for decorations styled via `glpyhMarginClassName`.
      */
-    DecorationCSSRules.prototype.getCSSTextForModelDecorationGlyphMarginClassName = function (opts) {
+    getCSSTextForModelDecorationGlyphMarginClassName(opts) {
         if (!opts) {
             return '';
         }
-        var cssTextArr = [];
+        const cssTextArr = [];
         if (typeof opts.gutterIconPath !== 'undefined') {
             cssTextArr.push(strings.format(_CSS_MAP.gutterIconPath, dom.asCSSUrl(URI.revive(opts.gutterIconPath))));
             if (typeof opts.gutterIconSize !== 'undefined') {
@@ -443,46 +455,42 @@ var DecorationCSSRules = /** @class */ (function () {
             }
         }
         return cssTextArr.join('');
-    };
-    DecorationCSSRules.prototype.collectBorderSettingsCSSText = function (opts, cssTextArr) {
+    }
+    collectBorderSettingsCSSText(opts, cssTextArr) {
         if (this.collectCSSText(opts, ['border', 'borderColor', 'borderRadius', 'borderSpacing', 'borderStyle', 'borderWidth'], cssTextArr)) {
             cssTextArr.push(strings.format('box-sizing: border-box;'));
             return true;
         }
         return false;
-    };
-    DecorationCSSRules.prototype.collectCSSText = function (opts, properties, cssTextArr) {
-        var lenBefore = cssTextArr.length;
-        for (var _i = 0, properties_1 = properties; _i < properties_1.length; _i++) {
-            var property = properties_1[_i];
-            var value = this.resolveValue(opts[property]);
+    }
+    collectCSSText(opts, properties, cssTextArr) {
+        const lenBefore = cssTextArr.length;
+        for (let property of properties) {
+            const value = this.resolveValue(opts[property]);
             if (typeof value === 'string') {
                 cssTextArr.push(strings.format(_CSS_MAP[property], value));
             }
         }
         return cssTextArr.length !== lenBefore;
-    };
-    DecorationCSSRules.prototype.resolveValue = function (value) {
+    }
+    resolveValue(value) {
         if (isThemeColor(value)) {
             this._usesThemeColors = true;
-            var color = this._theme.getColor(value.id);
+            const color = this._theme.getColor(value.id);
             if (color) {
                 return color.toString();
             }
             return 'transparent';
         }
         return value;
-    };
-    return DecorationCSSRules;
-}());
-var CSSNameHelper = /** @class */ (function () {
-    function CSSNameHelper() {
     }
-    CSSNameHelper.getClassName = function (key, type) {
+}
+class CSSNameHelper {
+    static getClassName(key, type) {
         return 'ced-' + key + '-' + type;
-    };
-    CSSNameHelper.getSelector = function (key, parentKey, ruleType) {
-        var selector = '.monaco-editor .' + this.getClassName(key, ruleType);
+    }
+    static getSelector(key, parentKey, ruleType) {
+        let selector = '.monaco-editor .' + this.getClassName(key, ruleType);
         if (parentKey) {
             selector = selector + '.' + this.getClassName(parentKey, ruleType);
         }
@@ -493,6 +501,5 @@ var CSSNameHelper = /** @class */ (function () {
             selector += '::after';
         }
         return selector;
-    };
-    return CSSNameHelper;
-}());
+    }
+}

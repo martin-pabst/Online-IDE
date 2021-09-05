@@ -7,10 +7,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -31,20 +33,19 @@ var SCSSParser = /** @class */ (function (_super) {
     function SCSSParser() {
         return _super.call(this, new scssScanner.SCSSScanner()) || this;
     }
-    SCSSParser.prototype._parseStylesheetStart = function () {
-        return this._parseForward()
-            || this._parseUse()
-            || _super.prototype._parseStylesheetStart.call(this);
-    };
-    SCSSParser.prototype._parseStylesheetStatement = function () {
+    SCSSParser.prototype._parseStylesheetStatement = function (isNested) {
+        if (isNested === void 0) { isNested = false; }
         if (this.peek(TokenType.AtKeyword)) {
-            return this._parseWarnAndDebug()
-                || this._parseControlStatement()
-                || this._parseMixinDeclaration()
-                || this._parseMixinContent()
+            return this._parseWarnAndDebug() // @warn, @debug and @error statements
+                || this._parseControlStatement() // @if, @while, @for, @each
+                || this._parseMixinDeclaration() // @mixin
+                || this._parseMixinContent() // @content
                 || this._parseMixinReference() // @include
-                || this._parseFunctionDeclaration()
-                || _super.prototype._parseStylesheetAtStatement.call(this);
+                || this._parseFunctionDeclaration() // @function
+                || this._parseForward() // @forward
+                || this._parseUse() // @use
+                || this._parseRuleset(isNested) // @at-rule
+                || _super.prototype._parseStylesheetAtStatement.call(this, isNested);
         }
         return this._parseRuleset(true) || this._parseVariableDeclaration();
     };
@@ -86,11 +87,17 @@ var SCSSParser = /** @class */ (function (_super) {
         if (!node.setValue(this._parseExpr())) {
             return this.finish(node, ParseError.VariableValueExpected, [], panic);
         }
-        while (this.accept(TokenType.Exclamation)) {
-            if (!this.peekRegExp(TokenType.Ident, /^(default|global)$/)) {
-                return this.finish(node, ParseError.UnknownKeyword);
+        while (this.peek(TokenType.Exclamation)) {
+            if (node.addChild(this._tryParsePrio())) {
+                // !important
             }
-            this.consumeToken();
+            else {
+                this.consumeToken();
+                if (!this.peekRegExp(TokenType.Ident, /^(default|global)$/)) {
+                    return this.finish(node, ParseError.UnknownKeyword);
+                }
+                this.consumeToken();
+            }
         }
         if (this.peek(TokenType.SemiColon)) {
             node.semicolonPosition = this.token.offset; // not part of the declaration, but useful information for code assist
@@ -159,7 +166,7 @@ var SCSSParser = /** @class */ (function (_super) {
             }
             return _this._parseInterpolation();
         };
-        while (this.accept(TokenType.Ident) || node.addChild(indentInterpolation()) || (hasContent && (this.acceptDelim('-') || this.accept(TokenType.Num)))) {
+        while (this.accept(TokenType.Ident) || node.addChild(indentInterpolation()) || (hasContent && this.acceptRegexp(/^[\w-]/))) {
             hasContent = true;
             if (this.hasWhitespace()) {
                 break;
@@ -167,21 +174,12 @@ var SCSSParser = /** @class */ (function (_super) {
         }
         return hasContent ? this.finish(node) : null;
     };
-    SCSSParser.prototype._parseTerm = function () {
-        var term = this.create(nodes.Term);
-        if (term.setExpression(this._parseModuleMember())) {
-            return this.finish(term);
-        }
-        var superTerm = _super.prototype._parseTerm.call(this);
-        if (superTerm) {
-            return superTerm;
-        }
-        if (term.setExpression(this._parseVariable())
-            || term.setExpression(this._parseSelectorCombinator())
-            || term.setExpression(this._tryParsePrio())) {
-            return this.finish(term);
-        }
-        return null;
+    SCSSParser.prototype._parseTermExpression = function () {
+        return this._parseModuleMember() ||
+            this._parseVariable() ||
+            this._parseSelectorCombinator() ||
+            //this._tryParsePrio() ||
+            _super.prototype._parseTermExpression.call(this);
     };
     SCSSParser.prototype._parseInterpolation = function () {
         if (this.peek(scssScanner.InterpolationFunction)) {
@@ -234,19 +232,24 @@ var SCSSParser = /** @class */ (function (_super) {
                 || this._parseMixinContent() // @content
                 || this._parseMixinDeclaration() // nested @mixin
                 || this._parseRuleset(true) // @at-rule
-                || this._parseSupports(true); // @supports
+                || this._parseSupports(true) // @supports
+                || _super.prototype._parseRuleSetDeclarationAtStatement.call(this);
         }
         return this._parseVariableDeclaration() // variable declaration
             || this._tryParseRuleset(true) // nested ruleset
             || _super.prototype._parseRuleSetDeclaration.call(this); // try css ruleset declaration as last so in the error case, the ast will contain a declaration
     };
-    SCSSParser.prototype._parseDeclaration = function (resyncStopTokens) {
+    SCSSParser.prototype._parseDeclaration = function (stopTokens) {
+        var custonProperty = this._tryParseCustomPropertyDeclaration(stopTokens);
+        if (custonProperty) {
+            return custonProperty;
+        }
         var node = this.create(nodes.Declaration);
         if (!node.setProperty(this._parseProperty())) {
             return null;
         }
         if (!this.accept(TokenType.Colon)) {
-            return this.finish(node, ParseError.ColonExpected, [TokenType.Colon], resyncStopTokens);
+            return this.finish(node, ParseError.ColonExpected, [TokenType.Colon], stopTokens || [TokenType.SemiColon]);
         }
         if (this.prevToken) {
             node.colonPosition = this.prevToken.offset;
@@ -521,8 +524,23 @@ var SCSSParser = /** @class */ (function (_super) {
         if (!this.peekKeyword('@content')) {
             return null;
         }
-        var node = this.createNode(nodes.NodeType.MixinContent);
+        var node = this.create(nodes.MixinContentReference);
         this.consumeToken();
+        if (this.accept(TokenType.ParenthesisL)) {
+            if (node.getArguments().addChild(this._parseFunctionArgument())) {
+                while (this.accept(TokenType.Comma)) {
+                    if (this.peek(TokenType.ParenthesisR)) {
+                        break;
+                    }
+                    if (!node.getArguments().addChild(this._parseFunctionArgument())) {
+                        return this.finish(node, ParseError.ExpressionExpected);
+                    }
+                }
+            }
+            if (!this.accept(TokenType.ParenthesisR)) {
+                return this.finish(node, ParseError.RightParenthesisExpected);
+            }
+        }
         return this.finish(node);
     };
     SCSSParser.prototype._parseMixinReference = function () {
@@ -565,10 +583,33 @@ var SCSSParser = /** @class */ (function (_super) {
                 return this.finish(node, ParseError.RightParenthesisExpected);
             }
         }
+        if (this.peekIdent('using') || this.peek(TokenType.CurlyL)) {
+            node.setContent(this._parseMixinContentDeclaration());
+        }
+        return this.finish(node);
+    };
+    SCSSParser.prototype._parseMixinContentDeclaration = function () {
+        var node = this.create(nodes.MixinContentDeclaration);
+        if (this.acceptIdent('using')) {
+            if (!this.accept(TokenType.ParenthesisL)) {
+                return this.finish(node, ParseError.LeftParenthesisExpected, [TokenType.CurlyL]);
+            }
+            if (node.getParameters().addChild(this._parseParameterDeclaration())) {
+                while (this.accept(TokenType.Comma)) {
+                    if (this.peek(TokenType.ParenthesisR)) {
+                        break;
+                    }
+                    if (!node.getParameters().addChild(this._parseParameterDeclaration())) {
+                        return this.finish(node, ParseError.VariableNameExpected);
+                    }
+                }
+            }
+            if (!this.accept(TokenType.ParenthesisR)) {
+                return this.finish(node, ParseError.RightParenthesisExpected, [TokenType.CurlyL]);
+            }
+        }
         if (this.peek(TokenType.CurlyL)) {
-            var content = this.create(nodes.BodyDeclaration);
-            this._parseBody(content, this._parseMixinReferenceBodyStatement.bind(this));
-            node.setContent(content);
+            this._parseBody(node, this._parseMixinReferenceBodyStatement.bind(this));
         }
         return this.finish(node);
     };
@@ -597,6 +638,9 @@ var SCSSParser = /** @class */ (function (_super) {
         if (node.setValue(this._parseExpr(true))) {
             this.accept(scssScanner.Ellipsis); // #43746
             node.addChild(this._parsePrio()); // #9859
+            return this.finish(node);
+        }
+        else if (node.setValue(this._tryParsePrio())) {
             return this.finish(node);
         }
         return null;
@@ -644,11 +688,11 @@ var SCSSParser = /** @class */ (function (_super) {
         return this.finish(node);
     };
     SCSSParser.prototype._parseUse = function () {
-        if (!this.peek(scssScanner.Use)) {
+        if (!this.peekKeyword('@use')) {
             return null;
         }
         var node = this.create(nodes.Use);
-        this.consumeToken();
+        this.consumeToken(); // @use
         if (!node.addChild(this._parseStringLiteral())) {
             return this.finish(node, ParseError.StringLiteralExpected);
         }
@@ -694,16 +738,41 @@ var SCSSParser = /** @class */ (function (_super) {
         if (!this.accept(TokenType.Colon) || !node.setValue(this._parseExpr(true))) {
             return this.finish(node, ParseError.VariableValueExpected, [], [TokenType.Comma, TokenType.ParenthesisR]);
         }
+        if (this.accept(TokenType.Exclamation)) {
+            if (this.hasWhitespace() || !this.acceptIdent('default')) {
+                return this.finish(node, ParseError.UnknownKeyword);
+            }
+        }
         return this.finish(node);
     };
     SCSSParser.prototype._parseForward = function () {
-        if (!this.peek(scssScanner.Forward)) {
+        if (!this.peekKeyword('@forward')) {
             return null;
         }
         var node = this.create(nodes.Forward);
         this.consumeToken();
         if (!node.addChild(this._parseStringLiteral())) {
             return this.finish(node, ParseError.StringLiteralExpected);
+        }
+        if (this.acceptIdent('with')) {
+            if (!this.accept(TokenType.ParenthesisL)) {
+                return this.finish(node, ParseError.LeftParenthesisExpected, [TokenType.ParenthesisR]);
+            }
+            // First variable statement, no comma.
+            if (!node.getParameters().addChild(this._parseModuleConfigDeclaration())) {
+                return this.finish(node, ParseError.VariableNameExpected);
+            }
+            while (this.accept(TokenType.Comma)) {
+                if (this.peek(TokenType.ParenthesisR)) {
+                    break;
+                }
+                if (!node.getParameters().addChild(this._parseModuleConfigDeclaration())) {
+                    return this.finish(node, ParseError.VariableNameExpected);
+                }
+            }
+            if (!this.accept(TokenType.ParenthesisR)) {
+                return this.finish(node, ParseError.RightParenthesisExpected);
+            }
         }
         if (!this.peek(TokenType.SemiColon) && !this.peek(TokenType.EOF)) {
             if (!this.peekRegExp(TokenType.Ident, /as|hide|show/)) {
@@ -736,9 +805,13 @@ var SCSSParser = /** @class */ (function (_super) {
         node.setIdentifier(this._parseIdent());
         while (node.addChild(this._parseVariable() || this._parseIdent())) {
             // Consume all variables and idents ahead.
+            this.accept(TokenType.Comma);
         }
         // More than just identifier 
         return node.getChildren().length > 1 ? node : null;
+    };
+    SCSSParser.prototype._parseSupportsCondition = function () {
+        return this._parseInterpolation() || _super.prototype._parseSupportsCondition.call(this);
     };
     return SCSSParser;
 }(cssParser.Parser));

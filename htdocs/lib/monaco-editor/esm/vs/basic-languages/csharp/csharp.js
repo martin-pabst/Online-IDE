@@ -2,37 +2,36 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 export var conf = {
     wordPattern: /(-?\d*\.\d\w*)|([^\`\~\!\#\$\%\^\&\*\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s]+)/g,
     comments: {
         lineComment: '//',
-        blockComment: ['/*', '*/'],
+        blockComment: ['/*', '*/']
     },
     brackets: [
         ['{', '}'],
         ['[', ']'],
-        ['(', ')'],
+        ['(', ')']
     ],
     autoClosingPairs: [
         { open: '{', close: '}' },
         { open: '[', close: ']' },
         { open: '(', close: ')' },
-        { open: '\'', close: '\'', notIn: ['string', 'comment'] },
-        { open: '"', close: '"', notIn: ['string', 'comment'] },
+        { open: "'", close: "'", notIn: ['string', 'comment'] },
+        { open: '"', close: '"', notIn: ['string', 'comment'] }
     ],
     surroundingPairs: [
         { open: '{', close: '}' },
         { open: '[', close: ']' },
         { open: '(', close: ')' },
         { open: '<', close: '>' },
-        { open: '\'', close: '\'' },
-        { open: '"', close: '"' },
+        { open: "'", close: "'" },
+        { open: '"', close: '"' }
     ],
     folding: {
         markers: {
-            start: new RegExp("^\\s*#region\\b"),
-            end: new RegExp("^\\s*#endregion\\b")
+            start: new RegExp('^\\s*#region\\b'),
+            end: new RegExp('^\\s*#endregion\\b')
         }
     }
 };
@@ -46,32 +45,150 @@ export var language = {
         { open: '<', close: '>', token: 'delimiter.angle' }
     ],
     keywords: [
-        'extern', 'alias', 'using', 'bool', 'decimal', 'sbyte', 'byte', 'short',
-        'ushort', 'int', 'uint', 'long', 'ulong', 'char', 'float', 'double',
-        'object', 'dynamic', 'string', 'assembly', 'is', 'as', 'ref',
-        'out', 'this', 'base', 'new', 'typeof', 'void', 'checked', 'unchecked',
-        'default', 'delegate', 'var', 'const', 'if', 'else', 'switch', 'case',
-        'while', 'do', 'for', 'foreach', 'in', 'break', 'continue', 'goto',
-        'return', 'throw', 'try', 'catch', 'finally', 'lock', 'yield', 'from',
-        'let', 'where', 'join', 'on', 'equals', 'into', 'orderby', 'ascending',
-        'descending', 'select', 'group', 'by', 'namespace', 'partial', 'class',
-        'field', 'event', 'method', 'param', 'property', 'public', 'protected',
-        'internal', 'private', 'abstract', 'sealed', 'static', 'struct', 'readonly',
-        'volatile', 'virtual', 'override', 'params', 'get', 'set', 'add', 'remove',
-        'operator', 'true', 'false', 'implicit', 'explicit', 'interface', 'enum',
-        'null', 'async', 'await', 'fixed', 'sizeof', 'stackalloc', 'unsafe', 'nameof',
+        'extern',
+        'alias',
+        'using',
+        'bool',
+        'decimal',
+        'sbyte',
+        'byte',
+        'short',
+        'ushort',
+        'int',
+        'uint',
+        'long',
+        'ulong',
+        'char',
+        'float',
+        'double',
+        'object',
+        'dynamic',
+        'string',
+        'assembly',
+        'is',
+        'as',
+        'ref',
+        'out',
+        'this',
+        'base',
+        'new',
+        'typeof',
+        'void',
+        'checked',
+        'unchecked',
+        'default',
+        'delegate',
+        'var',
+        'const',
+        'if',
+        'else',
+        'switch',
+        'case',
+        'while',
+        'do',
+        'for',
+        'foreach',
+        'in',
+        'break',
+        'continue',
+        'goto',
+        'return',
+        'throw',
+        'try',
+        'catch',
+        'finally',
+        'lock',
+        'yield',
+        'from',
+        'let',
+        'where',
+        'join',
+        'on',
+        'equals',
+        'into',
+        'orderby',
+        'ascending',
+        'descending',
+        'select',
+        'group',
+        'by',
+        'namespace',
+        'partial',
+        'class',
+        'field',
+        'event',
+        'method',
+        'param',
+        'public',
+        'protected',
+        'internal',
+        'private',
+        'abstract',
+        'sealed',
+        'static',
+        'struct',
+        'readonly',
+        'volatile',
+        'virtual',
+        'override',
+        'params',
+        'get',
+        'set',
+        'add',
+        'remove',
+        'operator',
+        'true',
+        'false',
+        'implicit',
+        'explicit',
+        'interface',
+        'enum',
+        'null',
+        'async',
+        'await',
+        'fixed',
+        'sizeof',
+        'stackalloc',
+        'unsafe',
+        'nameof',
         'when'
     ],
-    namespaceFollows: [
-        'namespace', 'using',
-    ],
-    parenFollows: [
-        'if', 'for', 'while', 'switch', 'foreach', 'using', 'catch', 'when'
-    ],
+    namespaceFollows: ['namespace', 'using'],
+    parenFollows: ['if', 'for', 'while', 'switch', 'foreach', 'using', 'catch', 'when'],
     operators: [
-        '=', '??', '||', '&&', '|', '^', '&', '==', '!=', '<=', '>=', '<<',
-        '+', '-', '*', '/', '%', '!', '~', '++', '--', '+=',
-        '-=', '*=', '/=', '%=', '&=', '|=', '^=', '<<=', '>>=', '>>', '=>'
+        '=',
+        '??',
+        '||',
+        '&&',
+        '|',
+        '^',
+        '&',
+        '==',
+        '!=',
+        '<=',
+        '>=',
+        '<<',
+        '+',
+        '-',
+        '*',
+        '/',
+        '%',
+        '!',
+        '~',
+        '++',
+        '--',
+        '+=',
+        '-=',
+        '*=',
+        '/=',
+        '%=',
+        '&=',
+        '|=',
+        '^=',
+        '<<=',
+        '>>=',
+        '>>',
+        '=>'
     ],
     symbols: /[=><!~?:&|+\-*\/\^%]+/,
     // escape sequences
@@ -80,31 +197,52 @@ export var language = {
     tokenizer: {
         root: [
             // identifiers and keywords
-            [/\@?[a-zA-Z_]\w*/, {
+            [
+                /\@?[a-zA-Z_]\w*/,
+                {
                     cases: {
-                        '@namespaceFollows': { token: 'keyword.$0', next: '@namespace' },
-                        '@keywords': { token: 'keyword.$0', next: '@qualified' },
+                        '@namespaceFollows': {
+                            token: 'keyword.$0',
+                            next: '@namespace'
+                        },
+                        '@keywords': {
+                            token: 'keyword.$0',
+                            next: '@qualified'
+                        },
                         '@default': { token: 'identifier', next: '@qualified' }
                     }
-                }],
+                }
+            ],
             // whitespace
             { include: '@whitespace' },
             // delimiters and operators
-            [/}/, {
+            [
+                /}/,
+                {
                     cases: {
-                        '$S2==interpolatedstring': { token: 'string.quote', next: '@pop' },
-                        '$S2==litinterpstring': { token: 'string.quote', next: '@pop' },
+                        '$S2==interpolatedstring': {
+                            token: 'string.quote',
+                            next: '@pop'
+                        },
+                        '$S2==litinterpstring': {
+                            token: 'string.quote',
+                            next: '@pop'
+                        },
                         '@default': '@brackets'
                     }
-                }],
+                }
+            ],
             [/[{}()\[\]]/, '@brackets'],
             [/[<>](?!@symbols)/, '@brackets'],
-            [/@symbols/, {
+            [
+                /@symbols/,
+                {
                     cases: {
                         '@operators': 'delimiter',
                         '@default': ''
                     }
-                }],
+                }
+            ],
             // numbers
             [/[0-9_]*\.[0-9_]+([eE][\-+]?\d+)?[fFdD]?/, 'number.float'],
             [/0[xX][0-9a-fA-F_]+/, 'number.hex'],
@@ -124,20 +262,23 @@ export var language = {
             [/'/, 'string.invalid']
         ],
         qualified: [
-            [/[a-zA-Z_][\w]*/, {
+            [
+                /[a-zA-Z_][\w]*/,
+                {
                     cases: {
                         '@keywords': { token: 'keyword.$0' },
                         '@default': 'identifier'
                     }
-                }],
+                }
+            ],
             [/\./, 'delimiter'],
-            ['', '', '@pop'],
+            ['', '', '@pop']
         ],
         namespace: [
             { include: '@whitespace' },
             [/[A-Z]\w*/, 'namespace'],
             [/[\.=]/, 'delimiter'],
-            ['', '', '@pop'],
+            ['', '', '@pop']
         ],
         comment: [
             [/[^\/*]+/, 'comment'],
@@ -178,7 +319,7 @@ export var language = {
             [/^[ \t\v\f]*#\w.*$/, 'namespace.cpp'],
             [/[ \t\v\f\r\n]+/, ''],
             [/\/\*/, 'comment', '@comment'],
-            [/\/\/.*$/, 'comment'],
-        ],
-    },
+            [/\/\/.*$/, 'comment']
+        ]
+    }
 };

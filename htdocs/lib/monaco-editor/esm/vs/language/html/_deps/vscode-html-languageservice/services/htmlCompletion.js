@@ -2,24 +2,91 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { Position, CompletionItemKind, Range, TextEdit, InsertTextFormat, MarkupKind } from './../_deps/vscode-languageserver-types/main.js';
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 import { createScanner } from '../parser/htmlScanner.js';
-import { ScannerState, TokenType } from '../htmlLanguageTypes.js';
+import { ScannerState, TokenType, Position, CompletionItemKind, Range, TextEdit, InsertTextFormat, MarkupKind } from '../htmlLanguageTypes.js';
 import { entities } from '../parser/htmlEntities.js';
 import * as nls from './../../../fillers/vscode-nls.js';
 import { isLetterOrDigit, endsWith, startsWith } from '../utils/strings.js';
-import { getAllDataProviders } from '../languageFacts/builtinDataProviders.js';
 import { isVoidElement } from '../languageFacts/fact.js';
 import { isDefined } from '../utils/object.js';
 import { generateDocumentation } from '../languageFacts/dataProvider.js';
+import { PathCompletionParticipant } from './pathCompletion.js';
 var localize = nls.loadMessageBundle();
 var HTMLCompletion = /** @class */ (function () {
-    function HTMLCompletion(clientCapabilities) {
-        this.clientCapabilities = clientCapabilities;
+    function HTMLCompletion(lsOptions, dataManager) {
+        this.lsOptions = lsOptions;
+        this.dataManager = dataManager;
         this.completionParticipants = [];
     }
     HTMLCompletion.prototype.setCompletionParticipants = function (registeredCompletionParticipants) {
         this.completionParticipants = registeredCompletionParticipants || [];
+    };
+    HTMLCompletion.prototype.doComplete2 = function (document, position, htmlDocument, documentContext, settings) {
+        return __awaiter(this, void 0, void 0, function () {
+            var participant, contributedParticipants, result, pathCompletionResult;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!this.lsOptions.fileSystemProvider || !this.lsOptions.fileSystemProvider.readDirectory) {
+                            return [2 /*return*/, this.doComplete(document, position, htmlDocument, settings)];
+                        }
+                        participant = new PathCompletionParticipant(this.lsOptions.fileSystemProvider.readDirectory);
+                        contributedParticipants = this.completionParticipants;
+                        this.completionParticipants = [participant].concat(contributedParticipants);
+                        result = this.doComplete(document, position, htmlDocument, settings);
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, , 3, 4]);
+                        return [4 /*yield*/, participant.computeCompletions(document, documentContext)];
+                    case 2:
+                        pathCompletionResult = _a.sent();
+                        return [2 /*return*/, {
+                                isIncomplete: result.isIncomplete || pathCompletionResult.isIncomplete,
+                                items: pathCompletionResult.items.concat(result.items)
+                            }];
+                    case 3:
+                        this.completionParticipants = contributedParticipants;
+                        return [7 /*endfinally*/];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
     };
     HTMLCompletion.prototype.doComplete = function (document, position, htmlDocument, settings) {
         var result = this._doComplete(document, position, htmlDocument, settings);
@@ -31,7 +98,7 @@ var HTMLCompletion = /** @class */ (function () {
             items: []
         };
         var completionParticipants = this.completionParticipants;
-        var dataProviders = getAllDataProviders().filter(function (p) { return p.isApplicable(document.languageId) && (!settings || settings[p.getId()] !== false); });
+        var dataProviders = this.dataManager.getDataProviders().filter(function (p) { return p.isApplicable(document.languageId) && (!settings || settings[p.getId()] !== false); });
         var doesSupportMarkdown = this.doesSupportMarkdown();
         var text = document.getText();
         var offset = document.offsetAt(position);
@@ -56,7 +123,7 @@ var HTMLCompletion = /** @class */ (function () {
                     result.items.push({
                         label: tag.name,
                         kind: CompletionItemKind.Property,
-                        documentation: generateDocumentation(tag, doesSupportMarkdown),
+                        documentation: generateDocumentation(tag, undefined, doesSupportMarkdown),
                         textEdit: TextEdit.replace(range, tag.name),
                         insertTextFormat: InsertTextFormat.PlainText
                     });
@@ -116,9 +183,9 @@ var HTMLCompletion = /** @class */ (function () {
                     result.items.push({
                         label: '/' + tag.name,
                         kind: CompletionItemKind.Property,
-                        documentation: generateDocumentation(tag, doesSupportMarkdown),
-                        filterText: '/' + tag + closeTag,
-                        textEdit: TextEdit.replace(range, '/' + tag + closeTag),
+                        documentation: generateDocumentation(tag, undefined, doesSupportMarkdown),
+                        filterText: '/' + tag.name + closeTag,
+                        textEdit: TextEdit.replace(range, '/' + tag.name + closeTag),
                         insertTextFormat: InsertTextFormat.PlainText
                     });
                 });
@@ -146,18 +213,27 @@ var HTMLCompletion = /** @class */ (function () {
             collectCloseTagSuggestions(tagStart, true, tagEnd);
             return result;
         }
+        function getExistingAttributes() {
+            var existingAttributes = Object.create(null);
+            node.attributeNames.forEach(function (attribute) {
+                existingAttributes[attribute] = true;
+            });
+            return existingAttributes;
+        }
         function collectAttributeNameSuggestions(nameStart, nameEnd) {
             if (nameEnd === void 0) { nameEnd = offset; }
             var replaceEnd = offset;
             while (replaceEnd < nameEnd && text[replaceEnd] !== '<') { // < is a valid attribute name character, but we rather assume the attribute name ends. See #23236.
                 replaceEnd++;
             }
+            var currentAttribute = text.substring(nameStart, nameEnd);
             var range = getReplaceRange(nameStart, replaceEnd);
             var value = isFollowedBy(text, nameEnd, ScannerState.AfterAttributeName, TokenType.DelimiterAssign) ? '' : '="$1"';
-            var tag = currentTag.toLowerCase();
-            var seenAttributes = Object.create(null);
+            var seenAttributes = getExistingAttributes();
+            // include current typing attribute
+            seenAttributes[currentAttribute] = false;
             dataProviders.forEach(function (provider) {
-                provider.provideAttributes(tag).forEach(function (attr) {
+                provider.provideAttributes(currentTag).forEach(function (attr) {
                     if (seenAttributes[attr.name]) {
                         return;
                     }
@@ -176,7 +252,7 @@ var HTMLCompletion = /** @class */ (function () {
                     result.items.push({
                         label: attr.name,
                         kind: attr.valueSet === 'handler' ? CompletionItemKind.Function : CompletionItemKind.Value,
-                        documentation: generateDocumentation(attr, doesSupportMarkdown),
+                        documentation: generateDocumentation(attr, undefined, doesSupportMarkdown),
                         textEdit: TextEdit.replace(range, codeSnippet),
                         insertTextFormat: InsertTextFormat.Snippet,
                         command: command
@@ -232,9 +308,9 @@ var HTMLCompletion = /** @class */ (function () {
                 valuePrefix = text.substring(valueStart, offset);
                 addQuotes = true;
             }
-            var tag = currentTag.toLowerCase();
-            var attribute = currentAttributeName.toLowerCase();
             if (completionParticipants.length > 0) {
+                var tag = currentTag.toLowerCase();
+                var attribute = currentAttributeName.toLowerCase();
                 var fullRange = getReplaceRange(valueStart, valueEnd);
                 for (var _i = 0, completionParticipants_1 = completionParticipants; _i < completionParticipants_1.length; _i++) {
                     var participant = completionParticipants_1[_i];
@@ -244,13 +320,13 @@ var HTMLCompletion = /** @class */ (function () {
                 }
             }
             dataProviders.forEach(function (provider) {
-                provider.provideValues(tag, attribute).forEach(function (value) {
+                provider.provideValues(currentTag, currentAttributeName).forEach(function (value) {
                     var insertText = addQuotes ? '"' + value.name + '"' : value.name;
                     result.items.push({
                         label: value.name,
                         filterText: insertText,
                         kind: CompletionItemKind.Unit,
-                        documentation: generateDocumentation(value, doesSupportMarkdown),
+                        documentation: generateDocumentation(value, undefined, doesSupportMarkdown),
                         textEdit: TextEdit.replace(range, insertText),
                         insertTextFormat: InsertTextFormat.PlainText
                     });
@@ -431,7 +507,7 @@ var HTMLCompletion = /** @class */ (function () {
         }
         else if (char === '/') {
             var node = htmlDocument.findNodeBefore(offset);
-            while (node && node.closed) {
+            while (node && node.closed && !(node.endTagStart && (node.endTagStart > offset))) {
                 node = node.parent;
             }
             if (node && node.tag) {
@@ -461,13 +537,14 @@ var HTMLCompletion = /** @class */ (function () {
         return list;
     };
     HTMLCompletion.prototype.doesSupportMarkdown = function () {
+        var _a, _b, _c;
         if (!isDefined(this.supportsMarkdown)) {
-            if (!isDefined(this.clientCapabilities)) {
+            if (!isDefined(this.lsOptions.clientCapabilities)) {
                 this.supportsMarkdown = true;
                 return this.supportsMarkdown;
             }
-            var hover = this.clientCapabilities && this.clientCapabilities.textDocument && this.clientCapabilities.textDocument.hover;
-            this.supportsMarkdown = hover && hover.contentFormat && Array.isArray(hover.contentFormat) && hover.contentFormat.indexOf(MarkupKind.Markdown) !== -1;
+            var documentationFormat = (_c = (_b = (_a = this.lsOptions.clientCapabilities.textDocument) === null || _a === void 0 ? void 0 : _a.completion) === null || _b === void 0 ? void 0 : _b.completionItem) === null || _c === void 0 ? void 0 : _c.documentationFormat;
+            this.supportsMarkdown = Array.isArray(documentationFormat) && documentationFormat.indexOf(MarkupKind.Markdown) !== -1;
         }
         return this.supportsMarkdown;
     };

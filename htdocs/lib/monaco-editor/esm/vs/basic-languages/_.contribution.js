@@ -2,9 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
-// Allow for running under nodejs/requirejs in tests
-var _monaco = (typeof monaco === 'undefined' ? self.monaco : monaco);
+import { languages } from './fillers/monaco-editor-core.js';
 var languageDefinitions = {};
 var lazyLanguageLoaders = {};
 var LazyLanguageLoader = /** @class */ (function () {
@@ -42,12 +40,12 @@ export function loadLanguage(languageId) {
 export function registerLanguage(def) {
     var languageId = def.id;
     languageDefinitions[languageId] = def;
-    _monaco.languages.register(def);
+    languages.register(def);
     var lazyLanguageLoader = LazyLanguageLoader.getOrCreate(languageId);
-    _monaco.languages.setMonarchTokensProvider(languageId, lazyLanguageLoader.whenLoaded().then(function (mod) { return mod.language; }));
-    _monaco.languages.onLanguage(languageId, function () {
+    languages.setMonarchTokensProvider(languageId, lazyLanguageLoader.whenLoaded().then(function (mod) { return mod.language; }));
+    languages.onLanguage(languageId, function () {
         lazyLanguageLoader.load().then(function (mod) {
-            _monaco.languages.setLanguageConfiguration(languageId, mod.conf);
+            languages.setLanguageConfiguration(languageId, mod.conf);
         });
     });
 }

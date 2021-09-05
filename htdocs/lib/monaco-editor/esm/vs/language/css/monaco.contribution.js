@@ -3,57 +3,64 @@ import '../../editor/editor.api.js';
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
-var Emitter = monaco.Emitter;
+import { languages, Emitter } from './fillers/monaco-editor-core.js';
 // --- CSS configuration and defaults ---------
 var LanguageServiceDefaultsImpl = /** @class */ (function () {
-    function LanguageServiceDefaultsImpl(languageId, diagnosticsOptions, modeConfiguration) {
+    function LanguageServiceDefaultsImpl(languageId, options, modeConfiguration) {
         this._onDidChange = new Emitter();
         this._languageId = languageId;
-        this.setDiagnosticsOptions(diagnosticsOptions);
+        this.setOptions(options);
         this.setModeConfiguration(modeConfiguration);
     }
     Object.defineProperty(LanguageServiceDefaultsImpl.prototype, "onDidChange", {
         get: function () {
             return this._onDidChange.event;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(LanguageServiceDefaultsImpl.prototype, "languageId", {
         get: function () {
             return this._languageId;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(LanguageServiceDefaultsImpl.prototype, "modeConfiguration", {
         get: function () {
             return this._modeConfiguration;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(LanguageServiceDefaultsImpl.prototype, "diagnosticsOptions", {
         get: function () {
-            return this._diagnosticsOptions;
+            return this.options;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
-    LanguageServiceDefaultsImpl.prototype.setDiagnosticsOptions = function (options) {
-        this._diagnosticsOptions = options || Object.create(null);
+    Object.defineProperty(LanguageServiceDefaultsImpl.prototype, "options", {
+        get: function () {
+            return this._options;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    LanguageServiceDefaultsImpl.prototype.setOptions = function (options) {
+        this._options = options || Object.create(null);
         this._onDidChange.fire(this);
+    };
+    LanguageServiceDefaultsImpl.prototype.setDiagnosticsOptions = function (options) {
+        this.setOptions(options);
     };
     LanguageServiceDefaultsImpl.prototype.setModeConfiguration = function (modeConfiguration) {
         this._modeConfiguration = modeConfiguration || Object.create(null);
         this._onDidChange.fire(this);
     };
-    ;
     return LanguageServiceDefaultsImpl;
 }());
-export { LanguageServiceDefaultsImpl };
-var diagnosticDefault = {
+var optionsDefault = {
     validate: true,
     lint: {
         compatibleVendorPrefixes: 'ignore',
@@ -74,7 +81,8 @@ var diagnosticDefault = {
         important: 'ignore',
         float: 'ignore',
         idSelector: 'ignore'
-    }
+    },
+    data: { useDefaultDataProvider: true }
 };
 var modeConfigurationDefault = {
     completionItems: true,
@@ -89,28 +97,21 @@ var modeConfigurationDefault = {
     diagnostics: true,
     selectionRanges: true
 };
-var cssDefaults = new LanguageServiceDefaultsImpl('css', diagnosticDefault, modeConfigurationDefault);
-var scssDefaults = new LanguageServiceDefaultsImpl('scss', diagnosticDefault, modeConfigurationDefault);
-var lessDefaults = new LanguageServiceDefaultsImpl('less', diagnosticDefault, modeConfigurationDefault);
-// Export API
-function createAPI() {
-    return {
-        cssDefaults: cssDefaults,
-        lessDefaults: lessDefaults,
-        scssDefaults: scssDefaults
-    };
-}
-monaco.languages.css = createAPI();
+export var cssDefaults = new LanguageServiceDefaultsImpl('css', optionsDefault, modeConfigurationDefault);
+export var scssDefaults = new LanguageServiceDefaultsImpl('scss', optionsDefault, modeConfigurationDefault);
+export var lessDefaults = new LanguageServiceDefaultsImpl('less', optionsDefault, modeConfigurationDefault);
+// export to the global based API
+languages.css = { cssDefaults: cssDefaults, lessDefaults: lessDefaults, scssDefaults: scssDefaults };
 // --- Registration to monaco editor ---
 function getMode() {
     return import('./cssMode.js');
 }
-monaco.languages.onLanguage('less', function () {
+languages.onLanguage('less', function () {
     getMode().then(function (mode) { return mode.setupMode(lessDefaults); });
 });
-monaco.languages.onLanguage('scss', function () {
+languages.onLanguage('scss', function () {
     getMode().then(function (mode) { return mode.setupMode(scssDefaults); });
 });
-monaco.languages.onLanguage('css', function () {
+languages.onLanguage('css', function () {
     getMode().then(function (mode) { return mode.setupMode(cssDefaults); });
 });

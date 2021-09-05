@@ -3,6 +3,16 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
 'use strict';
+export var integer;
+(function (integer) {
+    integer.MIN_VALUE = -2147483648;
+    integer.MAX_VALUE = 2147483647;
+})(integer || (integer = {}));
+export var uinteger;
+(function (uinteger) {
+    uinteger.MIN_VALUE = 0;
+    uinteger.MAX_VALUE = 2147483647;
+})(uinteger || (uinteger = {}));
 /**
  * The Position namespace provides helper functions to work with
  * [Position](#Position) literals.
@@ -15,15 +25,21 @@ export var Position;
      * @param character The position's character.
      */
     function create(line, character) {
+        if (line === Number.MAX_VALUE) {
+            line = uinteger.MAX_VALUE;
+        }
+        if (character === Number.MAX_VALUE) {
+            character = uinteger.MAX_VALUE;
+        }
         return { line: line, character: character };
     }
     Position.create = create;
     /**
-     * Checks whether the given liternal conforms to the [Position](#Position) interface.
+     * Checks whether the given literal conforms to the [Position](#Position) interface.
      */
     function is(value) {
         var candidate = value;
-        return Is.objectLiteral(candidate) && Is.number(candidate.line) && Is.number(candidate.character);
+        return Is.objectLiteral(candidate) && Is.uinteger(candidate.line) && Is.uinteger(candidate.character);
     }
     Position.is = is;
 })(Position || (Position = {}));
@@ -34,7 +50,7 @@ export var Position;
 export var Range;
 (function (Range) {
     function create(one, two, three, four) {
-        if (Is.number(one) && Is.number(two) && Is.number(three) && Is.number(four)) {
+        if (Is.uinteger(one) && Is.uinteger(two) && Is.uinteger(three) && Is.uinteger(four)) {
             return { start: Position.create(one, two), end: Position.create(three, four) };
         }
         else if (Position.is(one) && Position.is(two)) {
@@ -129,10 +145,10 @@ export var Color;
      */
     function is(value) {
         var candidate = value;
-        return Is.number(candidate.red)
-            && Is.number(candidate.green)
-            && Is.number(candidate.blue)
-            && Is.number(candidate.alpha);
+        return Is.numberRange(candidate.red, 0, 1)
+            && Is.numberRange(candidate.green, 0, 1)
+            && Is.numberRange(candidate.blue, 0, 1)
+            && Is.numberRange(candidate.alpha, 0, 1);
     }
     Color.is = is;
 })(Color || (Color = {}));
@@ -238,9 +254,9 @@ export var FoldingRange;
      */
     function is(value) {
         var candidate = value;
-        return Is.number(candidate.startLine) && Is.number(candidate.startLine)
-            && (Is.undefined(candidate.startCharacter) || Is.number(candidate.startCharacter))
-            && (Is.undefined(candidate.endCharacter) || Is.number(candidate.endCharacter))
+        return Is.uinteger(candidate.startLine) && Is.uinteger(candidate.startLine)
+            && (Is.undefined(candidate.startCharacter) || Is.uinteger(candidate.startCharacter))
+            && (Is.undefined(candidate.endCharacter) || Is.uinteger(candidate.endCharacter))
             && (Is.undefined(candidate.kind) || Is.string(candidate.kind));
     }
     FoldingRange.is = is;
@@ -314,6 +330,19 @@ export var DiagnosticTag;
     DiagnosticTag.Deprecated = 2;
 })(DiagnosticTag || (DiagnosticTag = {}));
 /**
+ * The CodeDescription namespace provides functions to deal with descriptions for diagnostic codes.
+ *
+ * @since 3.16.0
+ */
+export var CodeDescription;
+(function (CodeDescription) {
+    function is(value) {
+        var candidate = value;
+        return candidate !== undefined && candidate !== null && Is.string(candidate.href);
+    }
+    CodeDescription.is = is;
+})(CodeDescription || (CodeDescription = {}));
+/**
  * The Diagnostic namespace provides helper functions to work with
  * [Diagnostic](#Diagnostic) literals.
  */
@@ -343,12 +372,14 @@ export var Diagnostic;
      * Checks whether the given literal conforms to the [Diagnostic](#Diagnostic) interface.
      */
     function is(value) {
+        var _a;
         var candidate = value;
         return Is.defined(candidate)
             && Range.is(candidate.range)
             && Is.string(candidate.message)
             && (Is.number(candidate.severity) || Is.undefined(candidate.severity))
-            && (Is.number(candidate.code) || Is.string(candidate.code) || Is.undefined(candidate.code))
+            && (Is.integer(candidate.code) || Is.string(candidate.code) || Is.undefined(candidate.code))
+            && (Is.undefined(candidate.codeDescription) || (Is.string((_a = candidate.codeDescription) === null || _a === void 0 ? void 0 : _a.href)))
             && (Is.string(candidate.source) || Is.undefined(candidate.source))
             && (Is.undefined(candidate.relatedInformation) || Is.typedArray(candidate.relatedInformation, DiagnosticRelatedInformation.is));
     }
@@ -424,6 +455,75 @@ export var TextEdit;
     }
     TextEdit.is = is;
 })(TextEdit || (TextEdit = {}));
+export var ChangeAnnotation;
+(function (ChangeAnnotation) {
+    function create(label, needsConfirmation, description) {
+        var result = { label: label };
+        if (needsConfirmation !== undefined) {
+            result.needsConfirmation = needsConfirmation;
+        }
+        if (description !== undefined) {
+            result.description = description;
+        }
+        return result;
+    }
+    ChangeAnnotation.create = create;
+    function is(value) {
+        var candidate = value;
+        return candidate !== undefined && Is.objectLiteral(candidate) && Is.string(candidate.label) &&
+            (Is.boolean(candidate.needsConfirmation) || candidate.needsConfirmation === undefined) &&
+            (Is.string(candidate.description) || candidate.description === undefined);
+    }
+    ChangeAnnotation.is = is;
+})(ChangeAnnotation || (ChangeAnnotation = {}));
+export var ChangeAnnotationIdentifier;
+(function (ChangeAnnotationIdentifier) {
+    function is(value) {
+        var candidate = value;
+        return typeof candidate === 'string';
+    }
+    ChangeAnnotationIdentifier.is = is;
+})(ChangeAnnotationIdentifier || (ChangeAnnotationIdentifier = {}));
+export var AnnotatedTextEdit;
+(function (AnnotatedTextEdit) {
+    /**
+     * Creates an annotated replace text edit.
+     *
+     * @param range The range of text to be replaced.
+     * @param newText The new text.
+     * @param annotation The annotation.
+     */
+    function replace(range, newText, annotation) {
+        return { range: range, newText: newText, annotationId: annotation };
+    }
+    AnnotatedTextEdit.replace = replace;
+    /**
+     * Creates an annotated insert text edit.
+     *
+     * @param position The position to insert the text at.
+     * @param newText The text to be inserted.
+     * @param annotation The annotation.
+     */
+    function insert(position, newText, annotation) {
+        return { range: { start: position, end: position }, newText: newText, annotationId: annotation };
+    }
+    AnnotatedTextEdit.insert = insert;
+    /**
+     * Creates an annotated delete text edit.
+     *
+     * @param range The range of text to be deleted.
+     * @param annotation The annotation.
+     */
+    function del(range, annotation) {
+        return { range: range, newText: '', annotationId: annotation };
+    }
+    AnnotatedTextEdit.del = del;
+    function is(value) {
+        var candidate = value;
+        return TextEdit.is(candidate) && (ChangeAnnotation.is(candidate.annotationId) || ChangeAnnotationIdentifier.is(candidate.annotationId));
+    }
+    AnnotatedTextEdit.is = is;
+})(AnnotatedTextEdit || (AnnotatedTextEdit = {}));
 /**
  * The TextDocumentEdit namespace provides helper function to create
  * an edit that manipulates a text document.
@@ -440,72 +540,78 @@ export var TextDocumentEdit;
     function is(value) {
         var candidate = value;
         return Is.defined(candidate)
-            && VersionedTextDocumentIdentifier.is(candidate.textDocument)
+            && OptionalVersionedTextDocumentIdentifier.is(candidate.textDocument)
             && Array.isArray(candidate.edits);
     }
     TextDocumentEdit.is = is;
 })(TextDocumentEdit || (TextDocumentEdit = {}));
 export var CreateFile;
 (function (CreateFile) {
-    function create(uri, options) {
+    function create(uri, options, annotation) {
         var result = {
             kind: 'create',
             uri: uri
         };
-        if (options !== void 0 && (options.overwrite !== void 0 || options.ignoreIfExists !== void 0)) {
+        if (options !== undefined && (options.overwrite !== undefined || options.ignoreIfExists !== undefined)) {
             result.options = options;
+        }
+        if (annotation !== undefined) {
+            result.annotationId = annotation;
         }
         return result;
     }
     CreateFile.create = create;
     function is(value) {
         var candidate = value;
-        return candidate && candidate.kind === 'create' && Is.string(candidate.uri) &&
-            (candidate.options === void 0 ||
-                ((candidate.options.overwrite === void 0 || Is.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === void 0 || Is.boolean(candidate.options.ignoreIfExists))));
+        return candidate && candidate.kind === 'create' && Is.string(candidate.uri) && (candidate.options === undefined ||
+            ((candidate.options.overwrite === undefined || Is.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === undefined || Is.boolean(candidate.options.ignoreIfExists)))) && (candidate.annotationId === undefined || ChangeAnnotationIdentifier.is(candidate.annotationId));
     }
     CreateFile.is = is;
 })(CreateFile || (CreateFile = {}));
 export var RenameFile;
 (function (RenameFile) {
-    function create(oldUri, newUri, options) {
+    function create(oldUri, newUri, options, annotation) {
         var result = {
             kind: 'rename',
             oldUri: oldUri,
             newUri: newUri
         };
-        if (options !== void 0 && (options.overwrite !== void 0 || options.ignoreIfExists !== void 0)) {
+        if (options !== undefined && (options.overwrite !== undefined || options.ignoreIfExists !== undefined)) {
             result.options = options;
+        }
+        if (annotation !== undefined) {
+            result.annotationId = annotation;
         }
         return result;
     }
     RenameFile.create = create;
     function is(value) {
         var candidate = value;
-        return candidate && candidate.kind === 'rename' && Is.string(candidate.oldUri) && Is.string(candidate.newUri) &&
-            (candidate.options === void 0 ||
-                ((candidate.options.overwrite === void 0 || Is.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === void 0 || Is.boolean(candidate.options.ignoreIfExists))));
+        return candidate && candidate.kind === 'rename' && Is.string(candidate.oldUri) && Is.string(candidate.newUri) && (candidate.options === undefined ||
+            ((candidate.options.overwrite === undefined || Is.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === undefined || Is.boolean(candidate.options.ignoreIfExists)))) && (candidate.annotationId === undefined || ChangeAnnotationIdentifier.is(candidate.annotationId));
     }
     RenameFile.is = is;
 })(RenameFile || (RenameFile = {}));
 export var DeleteFile;
 (function (DeleteFile) {
-    function create(uri, options) {
+    function create(uri, options, annotation) {
         var result = {
             kind: 'delete',
             uri: uri
         };
-        if (options !== void 0 && (options.recursive !== void 0 || options.ignoreIfNotExists !== void 0)) {
+        if (options !== undefined && (options.recursive !== undefined || options.ignoreIfNotExists !== undefined)) {
             result.options = options;
+        }
+        if (annotation !== undefined) {
+            result.annotationId = annotation;
         }
         return result;
     }
     DeleteFile.create = create;
     function is(value) {
         var candidate = value;
-        return candidate && candidate.kind === 'delete' && Is.string(candidate.uri) &&
-            (candidate.options === void 0 ||
-                ((candidate.options.recursive === void 0 || Is.boolean(candidate.options.recursive)) && (candidate.options.ignoreIfNotExists === void 0 || Is.boolean(candidate.options.ignoreIfNotExists))));
+        return candidate && candidate.kind === 'delete' && Is.string(candidate.uri) && (candidate.options === undefined ||
+            ((candidate.options.recursive === undefined || Is.boolean(candidate.options.recursive)) && (candidate.options.ignoreIfNotExists === undefined || Is.boolean(candidate.options.ignoreIfNotExists)))) && (candidate.annotationId === undefined || ChangeAnnotationIdentifier.is(candidate.annotationId));
     }
     DeleteFile.is = is;
 })(DeleteFile || (DeleteFile = {}));
@@ -514,8 +620,8 @@ export var WorkspaceEdit;
     function is(value) {
         var candidate = value;
         return candidate &&
-            (candidate.changes !== void 0 || candidate.documentChanges !== void 0) &&
-            (candidate.documentChanges === void 0 || candidate.documentChanges.every(function (change) {
+            (candidate.changes !== undefined || candidate.documentChanges !== undefined) &&
+            (candidate.documentChanges === undefined || candidate.documentChanges.every(function (change) {
                 if (Is.string(change.kind)) {
                     return CreateFile.is(change) || RenameFile.is(change) || DeleteFile.is(change);
                 }
@@ -527,17 +633,69 @@ export var WorkspaceEdit;
     WorkspaceEdit.is = is;
 })(WorkspaceEdit || (WorkspaceEdit = {}));
 var TextEditChangeImpl = /** @class */ (function () {
-    function TextEditChangeImpl(edits) {
+    function TextEditChangeImpl(edits, changeAnnotations) {
         this.edits = edits;
+        this.changeAnnotations = changeAnnotations;
     }
-    TextEditChangeImpl.prototype.insert = function (position, newText) {
-        this.edits.push(TextEdit.insert(position, newText));
+    TextEditChangeImpl.prototype.insert = function (position, newText, annotation) {
+        var edit;
+        var id;
+        if (annotation === undefined) {
+            edit = TextEdit.insert(position, newText);
+        }
+        else if (ChangeAnnotationIdentifier.is(annotation)) {
+            id = annotation;
+            edit = AnnotatedTextEdit.insert(position, newText, annotation);
+        }
+        else {
+            this.assertChangeAnnotations(this.changeAnnotations);
+            id = this.changeAnnotations.manage(annotation);
+            edit = AnnotatedTextEdit.insert(position, newText, id);
+        }
+        this.edits.push(edit);
+        if (id !== undefined) {
+            return id;
+        }
     };
-    TextEditChangeImpl.prototype.replace = function (range, newText) {
-        this.edits.push(TextEdit.replace(range, newText));
+    TextEditChangeImpl.prototype.replace = function (range, newText, annotation) {
+        var edit;
+        var id;
+        if (annotation === undefined) {
+            edit = TextEdit.replace(range, newText);
+        }
+        else if (ChangeAnnotationIdentifier.is(annotation)) {
+            id = annotation;
+            edit = AnnotatedTextEdit.replace(range, newText, annotation);
+        }
+        else {
+            this.assertChangeAnnotations(this.changeAnnotations);
+            id = this.changeAnnotations.manage(annotation);
+            edit = AnnotatedTextEdit.replace(range, newText, id);
+        }
+        this.edits.push(edit);
+        if (id !== undefined) {
+            return id;
+        }
     };
-    TextEditChangeImpl.prototype.delete = function (range) {
-        this.edits.push(TextEdit.del(range));
+    TextEditChangeImpl.prototype.delete = function (range, annotation) {
+        var edit;
+        var id;
+        if (annotation === undefined) {
+            edit = TextEdit.del(range);
+        }
+        else if (ChangeAnnotationIdentifier.is(annotation)) {
+            id = annotation;
+            edit = AnnotatedTextEdit.del(range, annotation);
+        }
+        else {
+            this.assertChangeAnnotations(this.changeAnnotations);
+            id = this.changeAnnotations.manage(annotation);
+            edit = AnnotatedTextEdit.del(range, id);
+        }
+        this.edits.push(edit);
+        if (id !== undefined) {
+            return id;
+        }
     };
     TextEditChangeImpl.prototype.add = function (edit) {
         this.edits.push(edit);
@@ -548,7 +706,56 @@ var TextEditChangeImpl = /** @class */ (function () {
     TextEditChangeImpl.prototype.clear = function () {
         this.edits.splice(0, this.edits.length);
     };
+    TextEditChangeImpl.prototype.assertChangeAnnotations = function (value) {
+        if (value === undefined) {
+            throw new Error("Text edit change is not configured to manage change annotations.");
+        }
+    };
     return TextEditChangeImpl;
+}());
+/**
+ * A helper class
+ */
+var ChangeAnnotations = /** @class */ (function () {
+    function ChangeAnnotations(annotations) {
+        this._annotations = annotations === undefined ? Object.create(null) : annotations;
+        this._counter = 0;
+        this._size = 0;
+    }
+    ChangeAnnotations.prototype.all = function () {
+        return this._annotations;
+    };
+    Object.defineProperty(ChangeAnnotations.prototype, "size", {
+        get: function () {
+            return this._size;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    ChangeAnnotations.prototype.manage = function (idOrAnnotation, annotation) {
+        var id;
+        if (ChangeAnnotationIdentifier.is(idOrAnnotation)) {
+            id = idOrAnnotation;
+        }
+        else {
+            id = this.nextId();
+            annotation = idOrAnnotation;
+        }
+        if (this._annotations[id] !== undefined) {
+            throw new Error("Id " + id + " is already in use.");
+        }
+        if (annotation === undefined) {
+            throw new Error("No annotation provided for id " + id);
+        }
+        this._annotations[id] = annotation;
+        this._size++;
+        return id;
+    };
+    ChangeAnnotations.prototype.nextId = function () {
+        this._counter++;
+        return this._counter.toString();
+    };
+    return ChangeAnnotations;
 }());
 /**
  * A workspace change helps constructing changes to a workspace.
@@ -557,12 +764,14 @@ var WorkspaceChange = /** @class */ (function () {
     function WorkspaceChange(workspaceEdit) {
         var _this = this;
         this._textEditChanges = Object.create(null);
-        if (workspaceEdit) {
+        if (workspaceEdit !== undefined) {
             this._workspaceEdit = workspaceEdit;
             if (workspaceEdit.documentChanges) {
+                this._changeAnnotations = new ChangeAnnotations(workspaceEdit.changeAnnotations);
+                workspaceEdit.changeAnnotations = this._changeAnnotations.all();
                 workspaceEdit.documentChanges.forEach(function (change) {
                     if (TextDocumentEdit.is(change)) {
-                        var textEditChange = new TextEditChangeImpl(change.edits);
+                        var textEditChange = new TextEditChangeImpl(change.edits, _this._changeAnnotations);
                         _this._textEditChanges[change.textDocument.uri] = textEditChange;
                     }
                 });
@@ -574,6 +783,9 @@ var WorkspaceChange = /** @class */ (function () {
                 });
             }
         }
+        else {
+            this._workspaceEdit = {};
+        }
     }
     Object.defineProperty(WorkspaceChange.prototype, "edit", {
         /**
@@ -581,22 +793,27 @@ var WorkspaceChange = /** @class */ (function () {
          * use to be returned from a workspace edit operation like rename.
          */
         get: function () {
+            this.initDocumentChanges();
+            if (this._changeAnnotations !== undefined) {
+                if (this._changeAnnotations.size === 0) {
+                    this._workspaceEdit.changeAnnotations = undefined;
+                }
+                else {
+                    this._workspaceEdit.changeAnnotations = this._changeAnnotations.all();
+                }
+            }
             return this._workspaceEdit;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     WorkspaceChange.prototype.getTextEditChange = function (key) {
-        if (VersionedTextDocumentIdentifier.is(key)) {
-            if (!this._workspaceEdit) {
-                this._workspaceEdit = {
-                    documentChanges: []
-                };
-            }
-            if (!this._workspaceEdit.documentChanges) {
+        if (OptionalVersionedTextDocumentIdentifier.is(key)) {
+            this.initDocumentChanges();
+            if (this._workspaceEdit.documentChanges === undefined) {
                 throw new Error('Workspace edit is not configured for document changes.');
             }
-            var textDocument = key;
+            var textDocument = { uri: key.uri, version: key.version };
             var result = this._textEditChanges[textDocument.uri];
             if (!result) {
                 var edits = [];
@@ -605,18 +822,14 @@ var WorkspaceChange = /** @class */ (function () {
                     edits: edits
                 };
                 this._workspaceEdit.documentChanges.push(textDocumentEdit);
-                result = new TextEditChangeImpl(edits);
+                result = new TextEditChangeImpl(edits, this._changeAnnotations);
                 this._textEditChanges[textDocument.uri] = result;
             }
             return result;
         }
         else {
-            if (!this._workspaceEdit) {
-                this._workspaceEdit = {
-                    changes: Object.create(null)
-                };
-            }
-            if (!this._workspaceEdit.changes) {
+            this.initChanges();
+            if (this._workspaceEdit.changes === undefined) {
                 throw new Error('Workspace edit is not configured for normal text edit changes.');
             }
             var result = this._textEditChanges[key];
@@ -629,21 +842,94 @@ var WorkspaceChange = /** @class */ (function () {
             return result;
         }
     };
-    WorkspaceChange.prototype.createFile = function (uri, options) {
-        this.checkDocumentChanges();
-        this._workspaceEdit.documentChanges.push(CreateFile.create(uri, options));
+    WorkspaceChange.prototype.initDocumentChanges = function () {
+        if (this._workspaceEdit.documentChanges === undefined && this._workspaceEdit.changes === undefined) {
+            this._changeAnnotations = new ChangeAnnotations();
+            this._workspaceEdit.documentChanges = [];
+            this._workspaceEdit.changeAnnotations = this._changeAnnotations.all();
+        }
     };
-    WorkspaceChange.prototype.renameFile = function (oldUri, newUri, options) {
-        this.checkDocumentChanges();
-        this._workspaceEdit.documentChanges.push(RenameFile.create(oldUri, newUri, options));
+    WorkspaceChange.prototype.initChanges = function () {
+        if (this._workspaceEdit.documentChanges === undefined && this._workspaceEdit.changes === undefined) {
+            this._workspaceEdit.changes = Object.create(null);
+        }
     };
-    WorkspaceChange.prototype.deleteFile = function (uri, options) {
-        this.checkDocumentChanges();
-        this._workspaceEdit.documentChanges.push(DeleteFile.create(uri, options));
-    };
-    WorkspaceChange.prototype.checkDocumentChanges = function () {
-        if (!this._workspaceEdit || !this._workspaceEdit.documentChanges) {
+    WorkspaceChange.prototype.createFile = function (uri, optionsOrAnnotation, options) {
+        this.initDocumentChanges();
+        if (this._workspaceEdit.documentChanges === undefined) {
             throw new Error('Workspace edit is not configured for document changes.');
+        }
+        var annotation;
+        if (ChangeAnnotation.is(optionsOrAnnotation) || ChangeAnnotationIdentifier.is(optionsOrAnnotation)) {
+            annotation = optionsOrAnnotation;
+        }
+        else {
+            options = optionsOrAnnotation;
+        }
+        var operation;
+        var id;
+        if (annotation === undefined) {
+            operation = CreateFile.create(uri, options);
+        }
+        else {
+            id = ChangeAnnotationIdentifier.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
+            operation = CreateFile.create(uri, options, id);
+        }
+        this._workspaceEdit.documentChanges.push(operation);
+        if (id !== undefined) {
+            return id;
+        }
+    };
+    WorkspaceChange.prototype.renameFile = function (oldUri, newUri, optionsOrAnnotation, options) {
+        this.initDocumentChanges();
+        if (this._workspaceEdit.documentChanges === undefined) {
+            throw new Error('Workspace edit is not configured for document changes.');
+        }
+        var annotation;
+        if (ChangeAnnotation.is(optionsOrAnnotation) || ChangeAnnotationIdentifier.is(optionsOrAnnotation)) {
+            annotation = optionsOrAnnotation;
+        }
+        else {
+            options = optionsOrAnnotation;
+        }
+        var operation;
+        var id;
+        if (annotation === undefined) {
+            operation = RenameFile.create(oldUri, newUri, options);
+        }
+        else {
+            id = ChangeAnnotationIdentifier.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
+            operation = RenameFile.create(oldUri, newUri, options, id);
+        }
+        this._workspaceEdit.documentChanges.push(operation);
+        if (id !== undefined) {
+            return id;
+        }
+    };
+    WorkspaceChange.prototype.deleteFile = function (uri, optionsOrAnnotation, options) {
+        this.initDocumentChanges();
+        if (this._workspaceEdit.documentChanges === undefined) {
+            throw new Error('Workspace edit is not configured for document changes.');
+        }
+        var annotation;
+        if (ChangeAnnotation.is(optionsOrAnnotation) || ChangeAnnotationIdentifier.is(optionsOrAnnotation)) {
+            annotation = optionsOrAnnotation;
+        }
+        else {
+            options = optionsOrAnnotation;
+        }
+        var operation;
+        var id;
+        if (annotation === undefined) {
+            operation = DeleteFile.create(uri, options);
+        }
+        else {
+            id = ChangeAnnotationIdentifier.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
+            operation = DeleteFile.create(uri, options, id);
+        }
+        this._workspaceEdit.documentChanges.push(operation);
+        if (id !== undefined) {
+            return id;
         }
     };
     return WorkspaceChange;
@@ -692,10 +978,34 @@ export var VersionedTextDocumentIdentifier;
      */
     function is(value) {
         var candidate = value;
-        return Is.defined(candidate) && Is.string(candidate.uri) && (candidate.version === null || Is.number(candidate.version));
+        return Is.defined(candidate) && Is.string(candidate.uri) && Is.integer(candidate.version);
     }
     VersionedTextDocumentIdentifier.is = is;
 })(VersionedTextDocumentIdentifier || (VersionedTextDocumentIdentifier = {}));
+/**
+ * The OptionalVersionedTextDocumentIdentifier namespace provides helper functions to work with
+ * [OptionalVersionedTextDocumentIdentifier](#OptionalVersionedTextDocumentIdentifier) literals.
+ */
+export var OptionalVersionedTextDocumentIdentifier;
+(function (OptionalVersionedTextDocumentIdentifier) {
+    /**
+     * Creates a new OptionalVersionedTextDocumentIdentifier literal.
+     * @param uri The document's uri.
+     * @param uri The document's text.
+     */
+    function create(uri, version) {
+        return { uri: uri, version: version };
+    }
+    OptionalVersionedTextDocumentIdentifier.create = create;
+    /**
+     * Checks whether the given literal conforms to the [OptionalVersionedTextDocumentIdentifier](#OptionalVersionedTextDocumentIdentifier) interface.
+     */
+    function is(value) {
+        var candidate = value;
+        return Is.defined(candidate) && Is.string(candidate.uri) && (candidate.version === null || Is.integer(candidate.version));
+    }
+    OptionalVersionedTextDocumentIdentifier.is = is;
+})(OptionalVersionedTextDocumentIdentifier || (OptionalVersionedTextDocumentIdentifier = {}));
 /**
  * The TextDocumentItem namespace provides helper functions to work with
  * [TextDocumentItem](#TextDocumentItem) literals.
@@ -718,7 +1028,7 @@ export var TextDocumentItem;
      */
     function is(value) {
         var candidate = value;
-        return Is.defined(candidate) && Is.string(candidate.uri) && Is.string(candidate.languageId) && Is.number(candidate.version) && Is.string(candidate.text);
+        return Is.defined(candidate) && Is.string(candidate.uri) && Is.string(candidate.languageId) && Is.integer(candidate.version) && Is.string(candidate.text);
     }
     TextDocumentItem.is = is;
 })(TextDocumentItem || (TextDocumentItem = {}));
@@ -810,7 +1120,7 @@ export var InsertTextFormat;
      * the end of the snippet. Placeholders with equal identifiers are linked,
      * that is typing in one will update others too.
      *
-     * See also: https://github.com/Microsoft/vscode/blob/master/src/vs/editor/contrib/snippet/common/snippet.md
+     * See also: https://microsoft.github.io/language-server-protocol/specifications/specification-current/#snippet_syntax
      */
     InsertTextFormat.Snippet = 2;
 })(InsertTextFormat || (InsertTextFormat = {}));
@@ -827,6 +1137,56 @@ export var CompletionItemTag;
      */
     CompletionItemTag.Deprecated = 1;
 })(CompletionItemTag || (CompletionItemTag = {}));
+/**
+ * The InsertReplaceEdit namespace provides functions to deal with insert / replace edits.
+ *
+ * @since 3.16.0
+ */
+export var InsertReplaceEdit;
+(function (InsertReplaceEdit) {
+    /**
+     * Creates a new insert / replace edit
+     */
+    function create(newText, insert, replace) {
+        return { newText: newText, insert: insert, replace: replace };
+    }
+    InsertReplaceEdit.create = create;
+    /**
+     * Checks whether the given literal conforms to the [InsertReplaceEdit](#InsertReplaceEdit) interface.
+     */
+    function is(value) {
+        var candidate = value;
+        return candidate && Is.string(candidate.newText) && Range.is(candidate.insert) && Range.is(candidate.replace);
+    }
+    InsertReplaceEdit.is = is;
+})(InsertReplaceEdit || (InsertReplaceEdit = {}));
+/**
+ * How whitespace and indentation is handled during completion
+ * item insertion.
+ *
+ * @since 3.16.0
+ */
+export var InsertTextMode;
+(function (InsertTextMode) {
+    /**
+     * The insertion or replace strings is taken as it is. If the
+     * value is multi line the lines below the cursor will be
+     * inserted using the indentation defined in the string value.
+     * The client will not apply any kind of adjustments to the
+     * string.
+     */
+    InsertTextMode.asIs = 1;
+    /**
+     * The editor adjusts leading whitespace of new lines so that
+     * they match the indentation up to the cursor of the line for
+     * which the item is accepted.
+     *
+     * Consider a line like this: <2tabs><cursor><3tabs>foo. Accepting a
+     * multi line completion item is indented using 2 tabs and all
+     * following lines inserted will be indented using 2 tabs as well.
+     */
+    InsertTextMode.adjustIndentation = 2;
+})(InsertTextMode || (InsertTextMode = {}));
 /**
  * The CompletionItem namespace provides functions to deal with
  * completion items.
@@ -888,7 +1248,7 @@ export var Hover;
         var candidate = value;
         return !!candidate && Is.objectLiteral(candidate) && (MarkupContent.is(candidate.contents) ||
             MarkedString.is(candidate.contents) ||
-            Is.typedArray(candidate.contents, MarkedString.is)) && (value.range === void 0 || Range.is(value.range));
+            Is.typedArray(candidate.contents, MarkedString.is)) && (value.range === undefined || Range.is(value.range));
     }
     Hover.is = is;
 })(Hover || (Hover = {}));
@@ -1005,7 +1365,7 @@ export var SymbolKind;
 })(SymbolKind || (SymbolKind = {}));
 /**
  * Symbol tags are extra annotations that tweak the rendering of a symbol.
- * @since 3.15
+ * @since 3.16
  */
 export var SymbolTag;
 (function (SymbolTag) {
@@ -1058,7 +1418,7 @@ export var DocumentSymbol;
             range: range,
             selectionRange: selectionRange
         };
-        if (children !== void 0) {
+        if (children !== undefined) {
             result.children = children;
         }
         return result;
@@ -1072,9 +1432,10 @@ export var DocumentSymbol;
         return candidate &&
             Is.string(candidate.name) && Is.number(candidate.kind) &&
             Range.is(candidate.range) && Range.is(candidate.selectionRange) &&
-            (candidate.detail === void 0 || Is.string(candidate.detail)) &&
-            (candidate.deprecated === void 0 || Is.boolean(candidate.deprecated)) &&
-            (candidate.children === void 0 || Array.isArray(candidate.children));
+            (candidate.detail === undefined || Is.string(candidate.detail)) &&
+            (candidate.deprecated === undefined || Is.boolean(candidate.deprecated)) &&
+            (candidate.children === undefined || Array.isArray(candidate.children)) &&
+            (candidate.tags === undefined || Array.isArray(candidate.tags));
     }
     DocumentSymbol.is = is;
 })(DocumentSymbol || (DocumentSymbol = {}));
@@ -1162,7 +1523,7 @@ export var CodeActionContext;
      */
     function create(diagnostics, only) {
         var result = { diagnostics: diagnostics };
-        if (only !== void 0 && only !== null) {
+        if (only !== undefined && only !== null) {
             result.only = only;
         }
         return result;
@@ -1173,21 +1534,26 @@ export var CodeActionContext;
      */
     function is(value) {
         var candidate = value;
-        return Is.defined(candidate) && Is.typedArray(candidate.diagnostics, Diagnostic.is) && (candidate.only === void 0 || Is.typedArray(candidate.only, Is.string));
+        return Is.defined(candidate) && Is.typedArray(candidate.diagnostics, Diagnostic.is) && (candidate.only === undefined || Is.typedArray(candidate.only, Is.string));
     }
     CodeActionContext.is = is;
 })(CodeActionContext || (CodeActionContext = {}));
 export var CodeAction;
 (function (CodeAction) {
-    function create(title, commandOrEdit, kind) {
+    function create(title, kindOrCommandOrEdit, kind) {
         var result = { title: title };
-        if (Command.is(commandOrEdit)) {
-            result.command = commandOrEdit;
+        var checkKind = true;
+        if (typeof kindOrCommandOrEdit === 'string') {
+            checkKind = false;
+            result.kind = kindOrCommandOrEdit;
+        }
+        else if (Command.is(kindOrCommandOrEdit)) {
+            result.command = kindOrCommandOrEdit;
         }
         else {
-            result.edit = commandOrEdit;
+            result.edit = kindOrCommandOrEdit;
         }
-        if (kind !== void 0) {
+        if (checkKind && kind !== undefined) {
             result.kind = kind;
         }
         return result;
@@ -1196,12 +1562,12 @@ export var CodeAction;
     function is(value) {
         var candidate = value;
         return candidate && Is.string(candidate.title) &&
-            (candidate.diagnostics === void 0 || Is.typedArray(candidate.diagnostics, Diagnostic.is)) &&
-            (candidate.kind === void 0 || Is.string(candidate.kind)) &&
-            (candidate.edit !== void 0 || candidate.command !== void 0) &&
-            (candidate.command === void 0 || Command.is(candidate.command)) &&
-            (candidate.isPreferred === void 0 || Is.boolean(candidate.isPreferred)) &&
-            (candidate.edit === void 0 || WorkspaceEdit.is(candidate.edit));
+            (candidate.diagnostics === undefined || Is.typedArray(candidate.diagnostics, Diagnostic.is)) &&
+            (candidate.kind === undefined || Is.string(candidate.kind)) &&
+            (candidate.edit !== undefined || candidate.command !== undefined) &&
+            (candidate.command === undefined || Command.is(candidate.command)) &&
+            (candidate.isPreferred === undefined || Is.boolean(candidate.isPreferred)) &&
+            (candidate.edit === undefined || WorkspaceEdit.is(candidate.edit));
     }
     CodeAction.is = is;
 })(CodeAction || (CodeAction = {}));
@@ -1249,7 +1615,7 @@ export var FormattingOptions;
      */
     function is(value) {
         var candidate = value;
-        return Is.defined(candidate) && Is.number(candidate.tabSize) && Is.boolean(candidate.insertSpaces);
+        return Is.defined(candidate) && Is.uinteger(candidate.tabSize) && Is.boolean(candidate.insertSpaces);
     }
     FormattingOptions.is = is;
 })(FormattingOptions || (FormattingOptions = {}));
@@ -1317,7 +1683,7 @@ export var TextDocument;
      */
     function is(value) {
         var candidate = value;
-        return Is.defined(candidate) && Is.string(candidate.uri) && (Is.undefined(candidate.languageId) || Is.string(candidate.languageId)) && Is.number(candidate.lineCount)
+        return Is.defined(candidate) && Is.string(candidate.uri) && (Is.undefined(candidate.languageId) || Is.string(candidate.languageId)) && Is.uinteger(candidate.lineCount)
             && Is.func(candidate.getText) && Is.func(candidate.positionAt) && Is.func(candidate.offsetAt) ? true : false;
     }
     TextDocument.is = is;
@@ -1379,6 +1745,9 @@ export var TextDocument;
         return data;
     }
 })(TextDocument || (TextDocument = {}));
+/**
+ * @deprecated Use the text document from the new vscode-languageserver-textdocument package.
+ */
 var FullTextDocument = /** @class */ (function () {
     function FullTextDocument(uri, languageId, version, content) {
         this._uri = uri;
@@ -1391,21 +1760,21 @@ var FullTextDocument = /** @class */ (function () {
         get: function () {
             return this._uri;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(FullTextDocument.prototype, "languageId", {
         get: function () {
             return this._languageId;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(FullTextDocument.prototype, "version", {
         get: function () {
             return this._version;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     FullTextDocument.prototype.getText = function (range) {
@@ -1481,7 +1850,7 @@ var FullTextDocument = /** @class */ (function () {
         get: function () {
             return this.getLineOffsets().length;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return FullTextDocument;
@@ -1509,6 +1878,18 @@ var Is;
         return toString.call(value) === '[object Number]';
     }
     Is.number = number;
+    function numberRange(value, min, max) {
+        return toString.call(value) === '[object Number]' && min <= value && value <= max;
+    }
+    Is.numberRange = numberRange;
+    function integer(value) {
+        return toString.call(value) === '[object Number]' && -2147483648 <= value && value <= 2147483647;
+    }
+    Is.integer = integer;
+    function uinteger(value) {
+        return toString.call(value) === '[object Number]' && 0 <= value && value <= 2147483647;
+    }
+    Is.uinteger = uinteger;
     function func(value) {
         return toString.call(value) === '[object Function]';
     }

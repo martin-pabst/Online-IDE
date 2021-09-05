@@ -2,9 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports"], function (require, exports) {
-    'use strict';
+define('vs/basic-languages/r/r',["require", "exports"], function (require, exports) {
+    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.language = exports.conf = void 0;
     exports.conf = {
         comments: {
             lineComment: '#'
@@ -18,57 +19,79 @@ define(["require", "exports"], function (require, exports) {
             { open: '{', close: '}' },
             { open: '[', close: ']' },
             { open: '(', close: ')' },
-            { open: '"', close: '"' },
+            { open: '"', close: '"' }
         ],
         surroundingPairs: [
             { open: '{', close: '}' },
             { open: '[', close: ']' },
             { open: '(', close: ')' },
-            { open: '"', close: '"' },
+            { open: '"', close: '"' }
         ]
     };
     exports.language = {
         defaultToken: '',
         tokenPostfix: '.r',
         roxygen: [
-            '@param',
-            '@return',
-            '@name',
-            '@rdname',
-            '@examples',
-            '@include',
-            '@docType',
-            '@S3method',
-            '@TODO',
-            '@aliases',
             '@alias',
+            '@aliases',
             '@assignee',
             '@author',
-            '@callGraphDepth',
+            '@backref',
             '@callGraph',
+            '@callGraphDepth',
             '@callGraphPrimitives',
             '@concept',
+            '@describeIn',
+            '@description',
+            '@details',
+            '@docType',
+            '@encoding',
+            '@evalNamespace',
+            '@evalRd',
+            '@example',
+            '@examples',
+            '@export',
             '@exportClass',
             '@exportMethod',
             '@exportPattern',
-            '@export',
+            '@family',
+            '@field',
             '@formals',
             '@format',
+            '@import',
             '@importClassesFrom',
             '@importFrom',
             '@importMethodsFrom',
-            '@import',
+            '@include',
+            '@inherit',
+            '@inheritDotParams',
+            '@inheritParams',
+            '@inheritSection',
             '@keywords',
+            '@md',
             '@method',
-            '@nord',
+            '@name',
+            '@noMd',
+            '@noRd',
             '@note',
+            '@param',
+            '@rawNamespace',
+            '@rawRd',
+            '@rdname',
             '@references',
+            '@return',
+            '@S3method',
+            '@section',
             '@seealso',
             '@setClass',
             '@slot',
             '@source',
+            '@template',
+            '@templateVar',
             '@title',
-            '@usage'
+            '@TODO',
+            '@usage',
+            '@useDynLib'
         ],
         constants: [
             'NULL',
@@ -76,11 +99,11 @@ define(["require", "exports"], function (require, exports) {
             'TRUE',
             'NA',
             'Inf',
-            'NaN ',
+            'NaN',
             'NA_integer_',
             'NA_real_',
             'NA_complex_',
-            'NA_character_ ',
+            'NA_character_',
             'T',
             'F',
             'LETTERS',
@@ -120,18 +143,7 @@ define(["require", "exports"], function (require, exports) {
             'detach',
             'source'
         ],
-        special: [
-            '\\n',
-            '\\r',
-            '\\t',
-            '\\b',
-            '\\a',
-            '\\f',
-            '\\v',
-            '\\\'',
-            '\\"',
-            '\\\\'
-        ],
+        special: ['\\n', '\\r', '\\t', '\\b', '\\a', '\\f', '\\v', "\\'", '\\"', '\\\\'],
         brackets: [
             { open: '{', close: '}', token: 'delimiter.curly' },
             { open: '[', close: ']', token: 'delimiter.bracket' },
@@ -143,34 +155,44 @@ define(["require", "exports"], function (require, exports) {
                 { include: '@strings' },
                 [/[{}\[\]()]/, '@brackets'],
                 { include: '@operators' },
+                [/#'$/, 'comment.doc'],
                 [/#'/, 'comment.doc', '@roxygen'],
                 [/(^#.*$)/, 'comment'],
                 [/\s+/, 'white'],
                 [/[,:;]/, 'delimiter'],
                 [/@[a-zA-Z]\w*/, 'tag'],
-                [/[a-zA-Z]\w*/, {
+                [
+                    /[a-zA-Z]\w*/,
+                    {
                         cases: {
                             '@keywords': 'keyword',
                             '@constants': 'constant',
                             '@default': 'identifier'
                         }
-                    }]
+                    }
+                ]
             ],
             // Recognize Roxygen comments
             roxygen: [
-                [/@\w+/, {
+                [
+                    /@\w+/,
+                    {
                         cases: {
                             '@roxygen': 'tag',
                             '@eos': { token: 'comment.doc', next: '@pop' },
                             '@default': 'comment.doc'
                         }
-                    }],
-                [/\s+/, {
+                    }
+                ],
+                [
+                    /\s+/,
+                    {
                         cases: {
                             '@eos': { token: 'comment.doc', next: '@pop' },
                             '@default': 'comment.doc'
                         }
-                    }],
+                    }
+                ],
                 [/.*/, { token: 'comment.doc', next: '@pop' }]
             ],
             // Recognize positives, negatives, decimals, imaginaries, and scientific notation
@@ -197,25 +219,32 @@ define(["require", "exports"], function (require, exports) {
                 [/"/, 'string.escape', '@dblStringBody']
             ],
             stringBody: [
-                [/\\./, {
+                [
+                    /\\./,
+                    {
                         cases: {
                             '@special': 'string',
                             '@default': 'error-token'
                         }
-                    }],
+                    }
+                ],
                 [/'/, 'string.escape', '@popall'],
-                [/./, 'string'],
+                [/./, 'string']
             ],
             dblStringBody: [
-                [/\\./, {
+                [
+                    /\\./,
+                    {
                         cases: {
                             '@special': 'string',
                             '@default': 'error-token'
                         }
-                    }],
+                    }
+                ],
                 [/"/, 'string.escape', '@popall'],
-                [/./, 'string'],
+                [/./, 'string']
             ]
         }
     };
 });
+

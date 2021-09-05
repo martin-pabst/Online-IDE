@@ -2,31 +2,34 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 export var conf = {
     comments: {
         lineComment: '//',
-        blockComment: ['(*', '*)'],
+        blockComment: ['(*', '*)']
     },
     brackets: [
         ['{', '}'],
         ['[', ']'],
         ['(', ')'],
-        ['<', '>'],
+        ['<', '>']
     ],
     autoClosingPairs: [
         { open: '{', close: '}' },
         { open: '[', close: ']' },
         { open: '(', close: ')' },
         { open: '<', close: '>' },
-        { open: '\'', close: '\'' },
+        { open: "'", close: "'" },
+        { open: "\"", close: "\"" },
+        { open: "(*", close: "*)" },
     ],
     surroundingPairs: [
         { open: '{', close: '}' },
         { open: '[', close: ']' },
         { open: '(', close: ')' },
         { open: '<', close: '>' },
-        { open: '\'', close: '\'' },
+        { open: "'", close: "'" },
+        { open: "\"", close: "\"" },
+        { open: "(*", close: "*)" },
     ]
 };
 export var language = {
@@ -40,17 +43,72 @@ export var language = {
         { open: '<', close: '>', token: 'delimiter.angle' }
     ],
     keywords: [
-        'abs', 'begin', 'Bytes', 'Crypto', 'Current', 'else', 'end', 'failwith',
-        'false', 'fun', 'if', 'in', 'let', 'let%entry', 'let%init', 'List', 'list',
-        'Map', 'map', 'match', 'match%nat', 'mod', 'not', 'operation', 'Operation', 'of',
-        'Set', 'set', 'sender', 'source', 'String', 'then', 'true', 'type', 'with',
+        'abs',
+        'assert',
+        'block',
+        'Bytes',
+        'case',
+        'Crypto',
+        'Current',
+        'else',
+        'failwith',
+        'false',
+        'for',
+        'fun',
+        'if',
+        'in',
+        'let',
+        'let%entry',
+        'let%init',
+        'List',
+        'list',
+        'Map',
+        'map',
+        'match',
+        'match%nat',
+        'mod',
+        'not',
+        'operation',
+        'Operation',
+        'of',
+        'record',
+        'Set',
+        'set',
+        'sender',
+        'skip',
+        'source',
+        'String',
+        'then',
+        'to',
+        'true',
+        'type',
+        'with',
     ],
-    typeKeywords: [
-        'int', 'unit', 'string', 'tz',
-    ],
+    typeKeywords: ['int', 'unit', 'string', 'tz', 'nat', 'bool'],
     operators: [
-        '=', '>', '<', '<=', '>=', '<>', ':', ':=', 'and', 'mod', 'or',
-        '+', '-', '*', '/', '@', '&', '^', '%', '->', '<-'
+        '=',
+        '>',
+        '<',
+        '<=',
+        '>=',
+        '<>',
+        ':',
+        ':=',
+        'and',
+        'mod',
+        'or',
+        '+',
+        '-',
+        '*',
+        '/',
+        '@',
+        '&',
+        '^',
+        '%',
+        '->',
+        '<-',
+        '&&',
+        '||',
     ],
     // we include these common regular expressions
     symbols: /[=><:@\^&|+\-*\/\^%]+/,
@@ -58,23 +116,29 @@ export var language = {
     tokenizer: {
         root: [
             // identifiers and keywords
-            [/[a-zA-Z_][\w]*/, {
+            [
+                /[a-zA-Z_][\w]*/,
+                {
                     cases: {
                         '@keywords': { token: 'keyword.$0' },
                         '@default': 'identifier'
                     }
-                }],
+                }
+            ],
             // whitespace
             { include: '@whitespace' },
             // delimiters and operators
             [/[{}()\[\]]/, '@brackets'],
             [/[<>](?!@symbols)/, '@brackets'],
-            [/@symbols/, {
+            [
+                /@symbols/,
+                {
                     cases: {
                         '@operators': 'delimiter',
                         '@default': ''
                     }
-                }],
+                }
+            ],
             // numbers
             [/\d*\.\d+([eE][\-+]?\d+)?/, 'number.float'],
             [/\$[0-9a-fA-F]{1,16}/, 'number.hex'],
@@ -104,7 +168,7 @@ export var language = {
         whitespace: [
             [/[ \t\r\n]+/, 'white'],
             [/\(\*/, 'comment', '@comment'],
-            [/\/\/.*$/, 'comment'],
-        ],
-    },
+            [/\/\/.*$/, 'comment']
+        ]
+    }
 };

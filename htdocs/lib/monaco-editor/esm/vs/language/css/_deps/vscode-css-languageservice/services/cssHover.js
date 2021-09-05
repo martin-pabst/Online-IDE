@@ -5,15 +5,21 @@
 'use strict';
 import * as nodes from '../parser/cssNodes.js';
 import * as languageFacts from '../languageFacts/facts.js';
-import { selectorToMarkedString, simpleSelectorToMarkedString } from './selectorPrinting.js';
+import { SelectorPrinting } from './selectorPrinting.js';
 import { startsWith } from '../utils/strings.js';
 import { Range, MarkupKind } from '../cssLanguageTypes.js';
 import { isDefined } from '../utils/objects.js';
 var CSSHover = /** @class */ (function () {
-    function CSSHover(clientCapabilities) {
+    function CSSHover(clientCapabilities, cssDataManager) {
         this.clientCapabilities = clientCapabilities;
+        this.cssDataManager = cssDataManager;
+        this.selectorPrinting = new SelectorPrinting(cssDataManager);
     }
-    CSSHover.prototype.doHover = function (document, position, stylesheet) {
+    CSSHover.prototype.configure = function (settings) {
+        this.defaultSettings = settings;
+    };
+    CSSHover.prototype.doHover = function (document, position, stylesheet, settings) {
+        if (settings === void 0) { settings = this.defaultSettings; }
         function getRange(node) {
             return Range.create(document.positionAt(node.offset), document.positionAt(node.end));
         }
@@ -28,7 +34,7 @@ var CSSHover = /** @class */ (function () {
             var node = nodepath[i];
             if (node instanceof nodes.Selector) {
                 hover = {
-                    contents: selectorToMarkedString(node),
+                    contents: this.selectorPrinting.selectorToMarkedString(node),
                     range: getRange(node)
                 };
                 break;
@@ -39,7 +45,7 @@ var CSSHover = /** @class */ (function () {
                  */
                 if (!startsWith(node.getText(), '@')) {
                     hover = {
-                        contents: simpleSelectorToMarkedString(node),
+                        contents: this.selectorPrinting.simpleSelectorToMarkedString(node),
                         range: getRange(node)
                     };
                 }
@@ -47,36 +53,54 @@ var CSSHover = /** @class */ (function () {
             }
             if (node instanceof nodes.Declaration) {
                 var propertyName = node.getFullPropertyName();
-                var entry = languageFacts.cssDataManager.getProperty(propertyName);
+                var entry = this.cssDataManager.getProperty(propertyName);
                 if (entry) {
-                    hover = {
-                        contents: languageFacts.getEntryDescription(entry, this.doesSupportMarkdown()),
-                        range: getRange(node)
-                    };
+                    var contents = languageFacts.getEntryDescription(entry, this.doesSupportMarkdown(), settings);
+                    if (contents) {
+                        hover = {
+                            contents: contents,
+                            range: getRange(node)
+                        };
+                    }
+                    else {
+                        hover = null;
+                    }
                 }
                 continue;
             }
             if (node instanceof nodes.UnknownAtRule) {
                 var atRuleName = node.getText();
-                var entry = languageFacts.cssDataManager.getAtDirective(atRuleName);
+                var entry = this.cssDataManager.getAtDirective(atRuleName);
                 if (entry) {
-                    hover = {
-                        contents: languageFacts.getEntryDescription(entry, this.doesSupportMarkdown()),
-                        range: getRange(node)
-                    };
+                    var contents = languageFacts.getEntryDescription(entry, this.doesSupportMarkdown(), settings);
+                    if (contents) {
+                        hover = {
+                            contents: contents,
+                            range: getRange(node)
+                        };
+                    }
+                    else {
+                        hover = null;
+                    }
                 }
                 continue;
             }
             if (node instanceof nodes.Node && node.type === nodes.NodeType.PseudoSelector) {
                 var selectorName = node.getText();
                 var entry = selectorName.slice(0, 2) === '::'
-                    ? languageFacts.cssDataManager.getPseudoElement(selectorName)
-                    : languageFacts.cssDataManager.getPseudoClass(selectorName);
+                    ? this.cssDataManager.getPseudoElement(selectorName)
+                    : this.cssDataManager.getPseudoClass(selectorName);
                 if (entry) {
-                    hover = {
-                        contents: languageFacts.getEntryDescription(entry, this.doesSupportMarkdown()),
-                        range: getRange(node)
-                    };
+                    var contents = languageFacts.getEntryDescription(entry, this.doesSupportMarkdown(), settings);
+                    if (contents) {
+                        hover = {
+                            contents: contents,
+                            range: getRange(node)
+                        };
+                    }
+                    else {
+                        hover = null;
+                    }
                 }
                 continue;
             }

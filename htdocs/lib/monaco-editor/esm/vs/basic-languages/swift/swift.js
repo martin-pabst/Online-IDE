@@ -1,11 +1,10 @@
 /*!---------------------------------------------------------------------------------------------
  *  Copyright (C) David Owens II, owensd.io. All rights reserved.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 export var conf = {
     comments: {
         lineComment: '//',
-        blockComment: ['/*', '*/'],
+        blockComment: ['/*', '*/']
     },
     brackets: [
         ['{', '}'],
@@ -17,16 +16,16 @@ export var conf = {
         { open: '[', close: ']' },
         { open: '(', close: ')' },
         { open: '"', close: '"' },
-        { open: '\'', close: '\'' },
-        { open: '`', close: '`' },
+        { open: "'", close: "'" },
+        { open: '`', close: '`' }
     ],
     surroundingPairs: [
         { open: '{', close: '}' },
         { open: '[', close: ']' },
         { open: '(', close: ')' },
         { open: '"', close: '"' },
-        { open: '\'', close: '\'' },
-        { open: '`', close: '`' },
+        { open: "'", close: "'" },
+        { open: '`', close: '`' }
     ]
 };
 export var language = {
@@ -36,18 +35,104 @@ export var language = {
     identifier: /[a-zA-Z_][\w$]*/,
     // TODO(owensd): Support the @availability macro properly.
     attributes: [
-        '@autoclosure', '@noescape', '@noreturn', '@NSApplicationMain', '@NSCopying', '@NSManaged',
-        '@objc', '@UIApplicationMain', '@noreturn', '@availability', '@IBAction', '@IBDesignable', '@IBInspectable', '@IBOutlet'
+        '@autoclosure',
+        '@noescape',
+        '@noreturn',
+        '@NSApplicationMain',
+        '@NSCopying',
+        '@NSManaged',
+        '@objc',
+        '@UIApplicationMain',
+        '@noreturn',
+        '@availability',
+        '@IBAction',
+        '@IBDesignable',
+        '@IBInspectable',
+        '@IBOutlet'
     ],
-    accessmodifiers: ['public', 'private', 'internal'],
+    accessmodifiers: ['public', 'private', 'fileprivate', 'internal'],
     keywords: [
-        '__COLUMN__', '__FILE__', '__FUNCTION__', '__LINE__', 'as', 'as!', 'as?', 'associativity', 'break', 'case', 'catch',
-        'class', 'continue', 'convenience', 'default', 'deinit', 'didSet', 'do', 'dynamic', 'dynamicType',
-        'else', 'enum', 'extension', 'fallthrough', 'final', 'for', 'func', 'get', 'guard', 'if', 'import', 'in', 'infix',
-        'init', 'inout', 'internal', 'is', 'lazy', 'left', 'let', 'mutating', 'nil', 'none', 'nonmutating', 'operator',
-        'optional', 'override', 'postfix', 'precedence', 'prefix', 'private', 'protocol', 'Protocol', 'public',
-        'repeat', 'required', 'return', 'right', 'self', 'Self', 'set', 'static', 'struct', 'subscript', 'super', 'switch',
-        'throw', 'throws', 'try', 'try!', 'Type', 'typealias', 'unowned', 'var', 'weak', 'where', 'while', 'willSet', 'FALSE', 'TRUE'
+        '__COLUMN__',
+        '__FILE__',
+        '__FUNCTION__',
+        '__LINE__',
+        'as',
+        'as!',
+        'as?',
+        'associativity',
+        'break',
+        'case',
+        'catch',
+        'class',
+        'continue',
+        'convenience',
+        'default',
+        'deinit',
+        'didSet',
+        'do',
+        'dynamic',
+        'dynamicType',
+        'else',
+        'enum',
+        'extension',
+        'fallthrough',
+        'fileprivate',
+        'final',
+        'for',
+        'func',
+        'get',
+        'guard',
+        'if',
+        'import',
+        'in',
+        'infix',
+        'init',
+        'inout',
+        'internal',
+        'is',
+        'lazy',
+        'left',
+        'let',
+        'mutating',
+        'nil',
+        'none',
+        'nonmutating',
+        'operator',
+        'optional',
+        'override',
+        'postfix',
+        'precedence',
+        'prefix',
+        'private',
+        'protocol',
+        'Protocol',
+        'public',
+        'repeat',
+        'required',
+        'return',
+        'right',
+        'self',
+        'Self',
+        'set',
+        'static',
+        'struct',
+        'subscript',
+        'super',
+        'switch',
+        'throw',
+        'throws',
+        'try',
+        'try!',
+        'Type',
+        'typealias',
+        'unowned',
+        'var',
+        'weak',
+        'where',
+        'while',
+        'willSet',
+        'FALSE',
+        'TRUE'
     ],
     symbols: /[=(){}\[\].,:;@#\_&\-<>`?!+*\\\/]/,
     // Moved . to operatorstart so it can be a delimiter
@@ -64,7 +149,7 @@ export var language = {
             { include: '@literal' },
             { include: '@keyword' },
             { include: '@invokedmethod' },
-            { include: '@symbol' },
+            { include: '@symbol' }
         ],
         whitespace: [
             [/\s+/, 'white'],
@@ -101,12 +186,15 @@ export var language = {
             [/./, 'comment']
         ],
         attribute: [
-            [/\@@identifier/, {
+            [
+                /@@@identifier/,
+                {
                     cases: {
                         '@attributes': 'keyword.control',
                         '@default': ''
                     }
-                }]
+                }
+            ]
         ],
         literal: [
             [/"/, { token: 'string.quote', next: '@stringlit' }],
@@ -132,12 +220,16 @@ export var language = {
         ],
         keyword: [
             [/`/, { token: 'operator', next: '@escapedkeyword' }],
-            [/@identifier/, {
+            [
+                /@identifier/,
+                {
                     cases: {
-                        '@keywords': 'keyword', '[A-Z][\a-zA-Z0-9$]*': 'type.identifier',
+                        '@keywords': 'keyword',
+                        '[A-Z][a-zA-Z0-9$]*': 'type.identifier',
                         '@default': 'identifier'
                     }
-                }]
+                }
+            ]
         ],
         escapedkeyword: [
             [/`/, { token: 'operator', next: '@pop' }],
@@ -148,12 +240,15 @@ export var language = {
         //			[ /@operators/, 'operator' ]
         //		],
         invokedmethod: [
-            [/([.])(@identifier)/, {
+            [
+                /([.])(@identifier)/,
+                {
                     cases: {
-                        '$2': ['delimeter', 'type.identifier'],
+                        $2: ['delimeter', 'type.identifier'],
                         '@default': ''
                     }
-                }],
+                }
+            ]
         ]
     }
 };

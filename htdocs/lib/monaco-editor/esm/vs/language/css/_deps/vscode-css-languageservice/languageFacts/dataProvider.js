@@ -29,19 +29,51 @@ var CSSDataProvider = /** @class */ (function () {
         return this._pseudoElements;
     };
     CSSDataProvider.prototype.addData = function (data) {
-        if (data.properties) {
-            this._properties = this._properties.concat(data.properties);
+        if (Array.isArray(data.properties)) {
+            for (var _i = 0, _a = data.properties; _i < _a.length; _i++) {
+                var prop = _a[_i];
+                if (isPropertyData(prop)) {
+                    this._properties.push(prop);
+                }
+            }
         }
-        if (data.atDirectives) {
-            this._atDirectives = this._atDirectives.concat(data.atDirectives);
+        if (Array.isArray(data.atDirectives)) {
+            for (var _b = 0, _c = data.atDirectives; _b < _c.length; _b++) {
+                var prop = _c[_b];
+                if (isAtDirective(prop)) {
+                    this._atDirectives.push(prop);
+                }
+            }
         }
-        if (data.pseudoClasses) {
-            this._pseudoClasses = this._pseudoClasses.concat(data.pseudoClasses);
+        if (Array.isArray(data.pseudoClasses)) {
+            for (var _d = 0, _e = data.pseudoClasses; _d < _e.length; _d++) {
+                var prop = _e[_d];
+                if (isPseudoClassData(prop)) {
+                    this._pseudoClasses.push(prop);
+                }
+            }
         }
-        if (data.pseudoElements) {
-            this._pseudoElements = this._pseudoElements.concat(data.pseudoElements);
+        if (Array.isArray(data.pseudoElements)) {
+            for (var _f = 0, _g = data.pseudoElements; _f < _g.length; _f++) {
+                var prop = _g[_f];
+                if (isPseudoElementData(prop)) {
+                    this._pseudoElements.push(prop);
+                }
+            }
         }
     };
     return CSSDataProvider;
 }());
 export { CSSDataProvider };
+function isPropertyData(d) {
+    return typeof d.name === 'string';
+}
+function isAtDirective(d) {
+    return typeof d.name === 'string';
+}
+function isPseudoClassData(d) {
+    return typeof d.name === 'string';
+}
+function isPseudoElementData(d) {
+    return typeof d.name === 'string';
+}

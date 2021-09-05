@@ -39,15 +39,19 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { DocumentHighlightKind, Location, Range, SymbolKind, TextEdit } from '../cssLanguageTypes.js';
+import { DocumentHighlightKind, Location, Range, SymbolKind, TextEdit, FileType } from '../cssLanguageTypes.js';
 import * as nls from './../../../fillers/vscode-nls.js';
 import * as nodes from '../parser/cssNodes.js';
 import { Symbols } from '../parser/cssSymbolScope.js';
 import { getColorValue, hslFromColor } from '../languageFacts/facts.js';
 import { startsWith } from '../utils/strings.js';
+import { dirname, joinPath } from '../utils/resources.js';
 var localize = nls.loadMessageBundle();
+var startsWithSchemeRegex = /^\w+:\/\//;
+var startsWithData = /^data:/;
 var CSSNavigation = /** @class */ (function () {
-    function CSSNavigation() {
+    function CSSNavigation(fileSystemProvider) {
+        this.fileSystemProvider = fileSystemProvider;
     }
     CSSNavigation.prototype.findDefinition = function (document, position, stylesheet) {
         var symbols = new Symbols(stylesheet);
@@ -112,13 +116,86 @@ var CSSNavigation = /** @class */ (function () {
         return node.type === nodes.NodeType.Import;
     };
     CSSNavigation.prototype.findDocumentLinks = function (document, stylesheet, documentContext) {
+        var linkData = this.findUnresolvedLinks(document, stylesheet);
+        var resolvedLinks = [];
+        for (var _i = 0, linkData_1 = linkData; _i < linkData_1.length; _i++) {
+            var data = linkData_1[_i];
+            var link = data.link;
+            var target = link.target;
+            if (!target || startsWithData.test(target)) {
+                // no links for data:
+            }
+            else if (startsWithSchemeRegex.test(target)) {
+                resolvedLinks.push(link);
+            }
+            else {
+                var resolved = documentContext.resolveReference(target, document.uri);
+                if (resolved) {
+                    link.target = resolved;
+                }
+                resolvedLinks.push(link);
+            }
+        }
+        return resolvedLinks;
+    };
+    CSSNavigation.prototype.findDocumentLinks2 = function (document, stylesheet, documentContext) {
+        return __awaiter(this, void 0, void 0, function () {
+            var linkData, resolvedLinks, _i, linkData_2, data, link, target, resolvedTarget;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        linkData = this.findUnresolvedLinks(document, stylesheet);
+                        resolvedLinks = [];
+                        _i = 0, linkData_2 = linkData;
+                        _a.label = 1;
+                    case 1:
+                        if (!(_i < linkData_2.length)) return [3 /*break*/, 6];
+                        data = linkData_2[_i];
+                        link = data.link;
+                        target = link.target;
+                        if (!(!target || startsWithData.test(target))) return [3 /*break*/, 2];
+                        return [3 /*break*/, 5];
+                    case 2:
+                        if (!startsWithSchemeRegex.test(target)) return [3 /*break*/, 3];
+                        resolvedLinks.push(link);
+                        return [3 /*break*/, 5];
+                    case 3: return [4 /*yield*/, this.resolveRelativeReference(target, document.uri, documentContext, data.isRawLink)];
+                    case 4:
+                        resolvedTarget = _a.sent();
+                        if (resolvedTarget !== undefined) {
+                            link.target = resolvedTarget;
+                            resolvedLinks.push(link);
+                        }
+                        _a.label = 5;
+                    case 5:
+                        _i++;
+                        return [3 /*break*/, 1];
+                    case 6: return [2 /*return*/, resolvedLinks];
+                }
+            });
+        });
+    };
+    CSSNavigation.prototype.findUnresolvedLinks = function (document, stylesheet) {
         var _this = this;
         var result = [];
+        var collect = function (uriStringNode) {
+            var rawUri = uriStringNode.getText();
+            var range = getRange(uriStringNode, document);
+            // Make sure the range is not empty
+            if (range.start.line === range.end.line && range.start.character === range.end.character) {
+                return;
+            }
+            if (startsWith(rawUri, "'") || startsWith(rawUri, "\"")) {
+                rawUri = rawUri.slice(1, -1);
+            }
+            var isRawLink = uriStringNode.parent ? _this.isRawStringDocumentLinkNode(uriStringNode.parent) : false;
+            result.push({ link: { target: rawUri, range: range }, isRawLink: isRawLink });
+        };
         stylesheet.accept(function (candidate) {
             if (candidate.type === nodes.NodeType.URILiteral) {
-                var link = uriLiteralNodeToDocumentLink(document, candidate, documentContext);
-                if (link) {
-                    result.push(link);
+                var first = candidate.getChild(0);
+                if (first) {
+                    collect(first);
                 }
                 return false;
             }
@@ -129,23 +206,13 @@ var CSSNavigation = /** @class */ (function () {
             if (candidate.parent && _this.isRawStringDocumentLinkNode(candidate.parent)) {
                 var rawText = candidate.getText();
                 if (startsWith(rawText, "'") || startsWith(rawText, "\"")) {
-                    var link = uriStringNodeToDocumentLink(document, candidate, documentContext);
-                    if (link) {
-                        result.push(link);
-                    }
+                    collect(candidate);
                 }
                 return false;
             }
             return true;
         });
         return result;
-    };
-    CSSNavigation.prototype.findDocumentLinks2 = function (document, stylesheet, documentContext) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, this.findDocumentLinks(document, stylesheet, documentContext)];
-            });
-        });
     };
     CSSNavigation.prototype.findDocumentSymbols = function (document, stylesheet) {
         var result = [];
@@ -245,6 +312,79 @@ var CSSNavigation = /** @class */ (function () {
             changes: (_a = {}, _a[document.uri] = edits, _a)
         };
     };
+    CSSNavigation.prototype.resolveRelativeReference = function (ref, documentUri, documentContext, isRawLink) {
+        return __awaiter(this, void 0, void 0, function () {
+            var moduleName, rootFolderUri, documentFolderUri, modulePath, pathWithinModule;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!(ref[0] === '~' && ref[1] !== '/' && this.fileSystemProvider)) return [3 /*break*/, 3];
+                        ref = ref.substring(1);
+                        if (!startsWith(documentUri, 'file://')) return [3 /*break*/, 2];
+                        moduleName = getModuleNameFromPath(ref);
+                        rootFolderUri = documentContext.resolveReference('/', documentUri);
+                        documentFolderUri = dirname(documentUri);
+                        return [4 /*yield*/, this.resolvePathToModule(moduleName, documentFolderUri, rootFolderUri)];
+                    case 1:
+                        modulePath = _a.sent();
+                        if (modulePath) {
+                            pathWithinModule = ref.substring(moduleName.length + 1);
+                            return [2 /*return*/, joinPath(modulePath, pathWithinModule)];
+                        }
+                        _a.label = 2;
+                    case 2: return [2 /*return*/, documentContext.resolveReference(ref, documentUri)];
+                    case 3: return [2 /*return*/, documentContext.resolveReference(ref, documentUri)];
+                }
+            });
+        });
+    };
+    CSSNavigation.prototype.resolvePathToModule = function (_moduleName, documentFolderUri, rootFolderUri) {
+        return __awaiter(this, void 0, void 0, function () {
+            var packPath;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        packPath = joinPath(documentFolderUri, 'node_modules', _moduleName, 'package.json');
+                        return [4 /*yield*/, this.fileExists(packPath)];
+                    case 1:
+                        if (_a.sent()) {
+                            return [2 /*return*/, dirname(packPath)];
+                        }
+                        else if (rootFolderUri && documentFolderUri.startsWith(rootFolderUri) && (documentFolderUri.length !== rootFolderUri.length)) {
+                            return [2 /*return*/, this.resolvePathToModule(_moduleName, dirname(documentFolderUri), rootFolderUri)];
+                        }
+                        return [2 /*return*/, undefined];
+                }
+            });
+        });
+    };
+    CSSNavigation.prototype.fileExists = function (uri) {
+        return __awaiter(this, void 0, void 0, function () {
+            var stat, err_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!this.fileSystemProvider) {
+                            return [2 /*return*/, false];
+                        }
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, this.fileSystemProvider.stat(uri)];
+                    case 2:
+                        stat = _a.sent();
+                        if (stat.type === FileType.Unknown && stat.size === -1) {
+                            return [2 /*return*/, false];
+                        }
+                        return [2 /*return*/, true];
+                    case 3:
+                        err_1 = _a.sent();
+                        return [2 /*return*/, false];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
     return CSSNavigation;
 }());
 export { CSSNavigation };
@@ -255,41 +395,6 @@ function getColorInformation(node, document) {
         return { color: color, range: range };
     }
     return null;
-}
-function uriLiteralNodeToDocumentLink(document, uriLiteralNode, documentContext) {
-    if (uriLiteralNode.getChildren().length === 0) {
-        return null;
-    }
-    var uriStringNode = uriLiteralNode.getChild(0);
-    return uriStringNodeToDocumentLink(document, uriStringNode, documentContext);
-}
-function uriStringNodeToDocumentLink(document, uriStringNode, documentContext) {
-    if (!uriStringNode) {
-        return null;
-    }
-    var rawUri = uriStringNode.getText();
-    var range = getRange(uriStringNode, document);
-    // Make sure the range is not empty
-    if (range.start.line === range.end.line && range.start.character === range.end.character) {
-        return null;
-    }
-    if (startsWith(rawUri, "'") || startsWith(rawUri, "\"")) {
-        rawUri = rawUri.slice(1, -1);
-    }
-    var target;
-    if (startsWith(rawUri, 'http://') || startsWith(rawUri, 'https://')) {
-        target = rawUri;
-    }
-    else if (/^\w+:\/\//g.test(rawUri)) {
-        target = rawUri;
-    }
-    else {
-        target = documentContext.resolveReference(rawUri, document.uri);
-    }
-    return {
-        range: range,
-        target: target
-    };
 }
 function getRange(node, document) {
     return Range.create(document.positionAt(node.offset), document.positionAt(node.end));
@@ -320,4 +425,11 @@ function getHighlightKind(node) {
 function toTwoDigitHex(n) {
     var r = n.toString(16);
     return r.length !== 2 ? '0' + r : r;
+}
+function getModuleNameFromPath(path) {
+    // If a scoped module (starts with @) then get up until second instance of '/', otherwise get until first instance of '/'
+    if (path[0] === '@') {
+        return path.substring(0, path.indexOf('/', path.indexOf('/') + 1));
+    }
+    return path.substring(0, path.indexOf('/'));
 }

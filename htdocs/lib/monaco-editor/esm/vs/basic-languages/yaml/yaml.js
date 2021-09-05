@@ -12,14 +12,14 @@ export var conf = {
         { open: '[', close: ']' },
         { open: '(', close: ')' },
         { open: '"', close: '"' },
-        { open: '\'', close: '\'' },
+        { open: "'", close: "'" }
     ],
     surroundingPairs: [
         { open: '{', close: '}' },
         { open: '[', close: ']' },
         { open: '(', close: ')' },
         { open: '"', close: '"' },
-        { open: '\'', close: '\'' },
+        { open: "'", close: "'" }
     ],
     folding: {
         offSide: true
@@ -67,12 +67,15 @@ export var language = {
             [/(".*?"|'.*?'|.*?)([ \t]*)(:)( |$)/, ['type', 'white', 'operators', 'white']],
             { include: '@flowScalars' },
             // String nodes
-            [/.+$/, {
+            [
+                /[^#]+/,
+                {
                     cases: {
                         '@keywords': 'keyword',
                         '@default': 'string'
                     }
-                }]
+                }
+            ]
         ],
         // Flow Collection: Flow Mapping
         object: [
@@ -94,12 +97,15 @@ export var language = {
             { include: '@anchor' },
             { include: '@flowNumber' },
             // Other value (keyword or string)
-            [/[^\},]+/, {
+            [
+                /[^\},]+/,
+                {
                     cases: {
                         '@keywords': 'keyword',
                         '@default': 'string'
                     }
-                }]
+                }
+            ]
         ],
         // Flow Collection: Flow Sequence
         array: [
@@ -117,34 +123,34 @@ export var language = {
             { include: '@anchor' },
             { include: '@flowNumber' },
             // Other value (keyword or string)
-            [/[^\],]+/, {
+            [
+                /[^\],]+/,
+                {
                     cases: {
                         '@keywords': 'keyword',
                         '@default': 'string'
                     }
-                }]
+                }
+            ]
         ],
         // First line of a Block Style
-        multiString: [
-            [/^( +).+$/, 'string', '@multiStringContinued.$1']
-        ],
+        multiString: [[/^( +).+$/, 'string', '@multiStringContinued.$1']],
         // Further lines of a Block Style
         //   Workaround for indentation detection
         multiStringContinued: [
-            [/^( *).+$/, {
+            [
+                /^( *).+$/,
+                {
                     cases: {
                         '$1==$S2': 'string',
                         '@default': { token: '@rematch', next: '@popall' }
                     }
-                }]
+                }
+            ]
         ],
-        whitespace: [
-            [/[ \t\r\n]+/, 'white']
-        ],
+        whitespace: [[/[ \t\r\n]+/, 'white']],
         // Only line comments
-        comment: [
-            [/#.*$/, 'comment']
-        ],
+        comment: [[/#.*$/, 'comment']],
         // Start Flow Collections
         flowCollections: [
             [/\[/, '@brackets', '@array'],
@@ -164,9 +170,7 @@ export var language = {
             [/"/, 'string', '@pop']
         ],
         // Start Block Scalar
-        blockStyle: [
-            [/[>|][0-9]*[+-]?$/, 'operators', '@multiString']
-        ],
+        blockStyle: [[/[>|][0-9]*[+-]?$/, 'operators', '@multiString']],
         // Numbers in Flow Collections (terminate with ,]})
         flowNumber: [
             [/@numberInteger(?=[ \t]*[,\]\}])/, 'number'],
@@ -177,11 +181,7 @@ export var language = {
             [/@numberNaN(?=[ \t]*[,\]\}])/, 'number.nan'],
             [/@numberDate(?=[ \t]*[,\]\}])/, 'number.date']
         ],
-        tagHandle: [
-            [/\![^ ]*/, 'tag']
-        ],
-        anchor: [
-            [/[&*][^ ]+/, 'namespace']
-        ]
+        tagHandle: [[/\![^ ]*/, 'tag']],
+        anchor: [[/[&*][^ ]+/, 'namespace']]
     }
 };

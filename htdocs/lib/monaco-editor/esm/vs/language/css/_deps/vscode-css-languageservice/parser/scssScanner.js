@@ -7,10 +7,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -40,8 +42,6 @@ export var GreaterEqualsOperator = customTokenValue++;
 export var SmallerEqualsOperator = customTokenValue++;
 export var Ellipsis = customTokenValue++;
 export var Module = customTokenValue++;
-export var Forward = customTokenValue++;
-export var Use = customTokenValue++;
 var SCSSScanner = /** @class */ (function (_super) {
     __extends(SCSSScanner, _super);
     function SCSSScanner() {
@@ -87,20 +87,6 @@ var SCSSScanner = /** @class */ (function (_super) {
         // ellipis
         if (this.stream.advanceIfChars([_DOT, _DOT, _DOT])) {
             return this.finishToken(offset, Ellipsis);
-        }
-        // module loaders, @forward and @use
-        if (this.stream.advanceIfChar(_ATS)) {
-            var content = ['@'];
-            if (this.ident(content)) {
-                var keywordText = content.join('');
-                if (keywordText === '@forward') {
-                    return this.finishToken(offset, Forward, keywordText);
-                }
-                else if (keywordText === '@use') {
-                    return this.finishToken(offset, Use, keywordText);
-                }
-            }
-            this.stream.goBackTo(offset);
         }
         return _super.prototype.scanNext.call(this, offset);
     };

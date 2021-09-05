@@ -42,3 +42,11 @@ export function repeat(value, count) {
     }
     return s;
 }
+export function extendedRegExp(pattern) {
+    if (startsWith(pattern, '(?i)')) {
+        return new RegExp(pattern.substring(4), 'i');
+    }
+    else {
+        return new RegExp(pattern);
+    }
+}

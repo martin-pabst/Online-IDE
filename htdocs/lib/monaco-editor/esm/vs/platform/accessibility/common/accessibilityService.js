@@ -2,19 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -29,44 +16,37 @@ import { CONTEXT_ACCESSIBILITY_MODE_ENABLED } from './accessibility.js';
 import { Emitter } from '../../../base/common/event.js';
 import { IContextKeyService } from '../../contextkey/common/contextkey.js';
 import { IConfigurationService } from '../../configuration/common/configuration.js';
-var AccessibilityService = /** @class */ (function (_super) {
-    __extends(AccessibilityService, _super);
-    function AccessibilityService(_contextKeyService, _configurationService) {
-        var _this = _super.call(this) || this;
-        _this._contextKeyService = _contextKeyService;
-        _this._configurationService = _configurationService;
-        _this._accessibilitySupport = 0 /* Unknown */;
-        _this._onDidChangeScreenReaderOptimized = new Emitter();
-        _this._accessibilityModeEnabledContext = CONTEXT_ACCESSIBILITY_MODE_ENABLED.bindTo(_this._contextKeyService);
-        var updateContextKey = function () { return _this._accessibilityModeEnabledContext.set(_this.isScreenReaderOptimized()); };
-        _this._register(_this._configurationService.onDidChangeConfiguration(function (e) {
+let AccessibilityService = class AccessibilityService extends Disposable {
+    constructor(_contextKeyService, _configurationService) {
+        super();
+        this._contextKeyService = _contextKeyService;
+        this._configurationService = _configurationService;
+        this._accessibilitySupport = 0 /* Unknown */;
+        this._onDidChangeScreenReaderOptimized = new Emitter();
+        this._accessibilityModeEnabledContext = CONTEXT_ACCESSIBILITY_MODE_ENABLED.bindTo(this._contextKeyService);
+        const updateContextKey = () => this._accessibilityModeEnabledContext.set(this.isScreenReaderOptimized());
+        this._register(this._configurationService.onDidChangeConfiguration(e => {
             if (e.affectsConfiguration('editor.accessibilitySupport')) {
                 updateContextKey();
-                _this._onDidChangeScreenReaderOptimized.fire();
+                this._onDidChangeScreenReaderOptimized.fire();
             }
         }));
         updateContextKey();
-        _this.onDidChangeScreenReaderOptimized(function () { return updateContextKey(); });
-        return _this;
+        this.onDidChangeScreenReaderOptimized(() => updateContextKey());
     }
-    Object.defineProperty(AccessibilityService.prototype, "onDidChangeScreenReaderOptimized", {
-        get: function () {
-            return this._onDidChangeScreenReaderOptimized.event;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    AccessibilityService.prototype.isScreenReaderOptimized = function () {
-        var config = this._configurationService.getValue('editor.accessibilitySupport');
+    get onDidChangeScreenReaderOptimized() {
+        return this._onDidChangeScreenReaderOptimized.event;
+    }
+    isScreenReaderOptimized() {
+        const config = this._configurationService.getValue('editor.accessibilitySupport');
         return config === 'on' || (config === 'auto' && this._accessibilitySupport === 2 /* Enabled */);
-    };
-    AccessibilityService.prototype.getAccessibilitySupport = function () {
+    }
+    getAccessibilitySupport() {
         return this._accessibilitySupport;
-    };
-    AccessibilityService = __decorate([
-        __param(0, IContextKeyService),
-        __param(1, IConfigurationService)
-    ], AccessibilityService);
-    return AccessibilityService;
-}(Disposable));
+    }
+};
+AccessibilityService = __decorate([
+    __param(0, IContextKeyService),
+    __param(1, IConfigurationService)
+], AccessibilityService);
 export { AccessibilityService };

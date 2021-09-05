@@ -2,7 +2,9 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { MarkupKind } from './_deps/vscode-languageserver-types/main.js';
+import { Position, Range, Location, MarkupContent, MarkupKind, MarkedString, SelectionRange, WorkspaceEdit, CompletionList, CompletionItemKind, CompletionItem, CompletionItemTag, InsertTextMode, Command, SymbolInformation, SymbolKind, Hover, TextEdit, InsertReplaceEdit, InsertTextFormat, DocumentHighlight, DocumentHighlightKind, DocumentLink, FoldingRange, FoldingRangeKind, Diagnostic, FormattingOptions, Color, ColorInformation, ColorPresentation } from './../vscode-languageserver-types/main.js';
+import { TextDocument } from './../vscode-languageserver-textdocument/lib/esm/main.js';
+export { TextDocument, Position, Range, Location, MarkupContent, MarkupKind, MarkedString, SelectionRange, WorkspaceEdit, CompletionList, CompletionItemKind, CompletionItem, CompletionItemTag, InsertTextMode, Command, SymbolInformation, SymbolKind, Hover, TextEdit, InsertReplaceEdit, InsertTextFormat, DocumentHighlight, DocumentHighlightKind, DocumentLink, FoldingRange, FoldingRangeKind, Diagnostic, FormattingOptions, Color, ColorInformation, ColorPresentation };
 export var TokenType;
 (function (TokenType) {
     TokenType[TokenType["StartCommentTag"] = 0] = "StartCommentTag";
@@ -57,3 +59,22 @@ export var ClientCapabilities;
         }
     };
 })(ClientCapabilities || (ClientCapabilities = {}));
+export var FileType;
+(function (FileType) {
+    /**
+     * The file type is unknown.
+     */
+    FileType[FileType["Unknown"] = 0] = "Unknown";
+    /**
+     * A regular file.
+     */
+    FileType[FileType["File"] = 1] = "File";
+    /**
+     * A directory.
+     */
+    FileType[FileType["Directory"] = 2] = "Directory";
+    /**
+     * A symbolic link to a file.
+     */
+    FileType[FileType["SymbolicLink"] = 64] = "SymbolicLink";
+})(FileType || (FileType = {}));

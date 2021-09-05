@@ -131,11 +131,14 @@ var _LFD = '\f'.charCodeAt(0);
 var _WSP = ' '.charCodeAt(0);
 var _TAB = '\t'.charCodeAt(0);
 var htmlScriptContents = {
-    'text/x-handlebars-template': true
+    'text/x-handlebars-template': true,
+    // Fix for https://github.com/microsoft/vscode/issues/77977
+    'text/html': true,
 };
-export function createScanner(input, initialOffset, initialState) {
+export function createScanner(input, initialOffset, initialState, emitPseudoCloseTags) {
     if (initialOffset === void 0) { initialOffset = 0; }
     if (initialState === void 0) { initialState = ScannerState.WithinContent; }
+    if (emitPseudoCloseTags === void 0) { emitPseudoCloseTags = false; }
     var stream = new MultiLineStream(input, initialOffset);
     var state = initialState;
     var tokenOffset = 0;
@@ -149,7 +152,7 @@ export function createScanner(input, initialOffset, initialState) {
         return stream.advanceIfRegExp(/^[_:\w][_:\w-.\d]*/).toLowerCase();
     }
     function nextAttributeName() {
-        return stream.advanceIfRegExp(/^[^\s"'>/=\x00-\x0F\x7F\x80-\x9F]*/).toLowerCase();
+        return stream.advanceIfRegExp(/^[^\s"'></=\x00-\x0F\x7F\x80-\x9F]*/).toLowerCase();
     }
     function finishToken(offset, type, errorMessage) {
         tokenType = type;
@@ -161,7 +164,7 @@ export function createScanner(input, initialOffset, initialState) {
         var offset = stream.pos();
         var oldState = state;
         var token = internalScan();
-        if (token !== TokenType.EOS && offset === stream.pos()) {
+        if (token !== TokenType.EOS && offset === stream.pos() && !(emitPseudoCloseTags && (token === TokenType.StartTagClose || token === TokenType.EndTagClose))) {
             console.log('Scanner.scan has not advanced at offset ' + offset + ', state before: ' + oldState + ' after: ' + state);
             stream.advance(1);
             return finishToken(offset, TokenType.Unknown);
@@ -233,7 +236,11 @@ export function createScanner(input, initialOffset, initialState) {
                     state = ScannerState.WithinContent;
                     return finishToken(offset, TokenType.EndTagClose);
                 }
-                errorMessage = localize('error.tagNameExpected', 'Closing bracket expected.');
+                if (emitPseudoCloseTags && stream.peekChar() === _LAN) { // <
+                    state = ScannerState.WithinContent;
+                    return finishToken(offset, TokenType.EndTagClose, localize('error.closingBracketMissing', 'Closing bracket missing.'));
+                }
+                errorMessage = localize('error.closingBracketExpected', 'Closing bracket expected.');
                 break;
             case ScannerState.AfterOpeningStartTag:
                 lastTag = nextElementName();
@@ -287,6 +294,10 @@ export function createScanner(input, initialOffset, initialState) {
                         state = ScannerState.WithinContent;
                     }
                     return finishToken(offset, TokenType.StartTagClose);
+                }
+                if (emitPseudoCloseTags && stream.peekChar() === _LAN) { // <
+                    state = ScannerState.WithinContent;
+                    return finishToken(offset, TokenType.StartTagClose, localize('error.closingBracketMissing', 'Closing bracket missing.'));
                 }
                 stream.advance(1);
                 return finishToken(offset, TokenType.Unknown, localize('error.unexpectedCharacterInTag', 'Unexpected character in tag.'));

@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { Range, Position } from './../_deps/vscode-languageserver-types/main.js';
+import { Range, Position } from '../htmlLanguageTypes.js';
 import { html_beautify } from '../beautify/beautify-html.js';
 import { repeat } from '../utils/strings.js';
 export function format(document, range, options) {
@@ -72,7 +72,10 @@ export function format(document, range, options) {
         extra_liners: getTagsFormatOption(options, 'extraLiners', void 0),
         wrap_attributes: getFormatOption(options, 'wrapAttributes', 'auto'),
         wrap_attributes_indent_size: getFormatOption(options, 'wrapAttributesIndentSize', void 0),
-        eol: '\n'
+        eol: '\n',
+        indent_scripts: getFormatOption(options, 'indentScripts', 'normal'),
+        templating: getTemplatingFormatOption(options, 'all'),
+        unformatted_content_delimiter: getFormatOption(options, 'unformattedContentDelimiter', ''),
     };
     var result = html_beautify(trimLeft(value), htmlOptions);
     if (initialIndentLevel > 0) {
@@ -108,6 +111,13 @@ function getTagsFormatOption(options, key, dflt) {
         return [];
     }
     return dflt;
+}
+function getTemplatingFormatOption(options, dflt) {
+    var value = getFormatOption(options, 'templating', dflt);
+    if (value === true) {
+        return ['auto'];
+    }
+    return ['none'];
 }
 function computeIndentLevel(content, offset, options) {
     var i = offset;

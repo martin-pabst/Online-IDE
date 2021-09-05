@@ -29,15 +29,16 @@ export var IndentAction;
 /**
  * @internal
  */
-var StandardAutoClosingPairConditional = /** @class */ (function () {
-    function StandardAutoClosingPairConditional(source) {
+export class StandardAutoClosingPairConditional {
+    constructor(source) {
+        this._standardAutoClosingPairConditionalBrand = undefined;
         this.open = source.open;
         this.close = source.close;
         // initially allowed in all tokens
         this._standardTokenMask = 0;
         if (Array.isArray(source.notIn)) {
-            for (var i = 0, len = source.notIn.length; i < len; i++) {
-                var notIn = source.notIn[i];
+            for (let i = 0, len = source.notIn.length; i < len; i++) {
+                const notIn = source.notIn[i];
                 switch (notIn) {
                     case 'string':
                         this._standardTokenMask |= 2 /* String */;
@@ -52,9 +53,36 @@ var StandardAutoClosingPairConditional = /** @class */ (function () {
             }
         }
     }
-    StandardAutoClosingPairConditional.prototype.isOK = function (standardToken) {
+    isOK(standardToken) {
         return (this._standardTokenMask & standardToken) === 0;
-    };
-    return StandardAutoClosingPairConditional;
-}());
-export { StandardAutoClosingPairConditional };
+    }
+}
+/**
+ * @internal
+ */
+export class AutoClosingPairs {
+    constructor(autoClosingPairs) {
+        this.autoClosingPairsOpenByStart = new Map();
+        this.autoClosingPairsOpenByEnd = new Map();
+        this.autoClosingPairsCloseByStart = new Map();
+        this.autoClosingPairsCloseByEnd = new Map();
+        this.autoClosingPairsCloseSingleChar = new Map();
+        for (const pair of autoClosingPairs) {
+            appendEntry(this.autoClosingPairsOpenByStart, pair.open.charAt(0), pair);
+            appendEntry(this.autoClosingPairsOpenByEnd, pair.open.charAt(pair.open.length - 1), pair);
+            appendEntry(this.autoClosingPairsCloseByStart, pair.close.charAt(0), pair);
+            appendEntry(this.autoClosingPairsCloseByEnd, pair.close.charAt(pair.close.length - 1), pair);
+            if (pair.close.length === 1 && pair.open.length === 1) {
+                appendEntry(this.autoClosingPairsCloseSingleChar, pair.close, pair);
+            }
+        }
+    }
+}
+function appendEntry(target, key, value) {
+    if (target.has(key)) {
+        target.get(key).push(value);
+    }
+    else {
+        target.set(key, [value]);
+    }
+}

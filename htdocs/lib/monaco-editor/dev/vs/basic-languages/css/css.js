@@ -2,9 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports"], function (require, exports) {
-    'use strict';
+define('vs/basic-languages/css/css',["require", "exports"], function (require, exports) {
+    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.language = exports.conf = void 0;
     exports.conf = {
         wordPattern: /(#?-?\d*\.\d\w*%?)|((::|[@#.!:])?[\w-?]+%?)|::|[@#.!:]/g,
         comments: {
@@ -20,19 +21,19 @@ define(["require", "exports"], function (require, exports) {
             { open: '[', close: ']', notIn: ['string', 'comment'] },
             { open: '(', close: ')', notIn: ['string', 'comment'] },
             { open: '"', close: '"', notIn: ['string', 'comment'] },
-            { open: '\'', close: '\'', notIn: ['string', 'comment'] }
+            { open: "'", close: "'", notIn: ['string', 'comment'] }
         ],
         surroundingPairs: [
             { open: '{', close: '}' },
             { open: '[', close: ']' },
             { open: '(', close: ')' },
             { open: '"', close: '"' },
-            { open: '\'', close: '\'' }
+            { open: "'", close: "'" }
         ],
         folding: {
             markers: {
-                start: new RegExp("^\\s*\\/\\*\\s*#region\\b\\s*(.*?)\\s*\\*\\/"),
-                end: new RegExp("^\\s*\\/\\*\\s*#endregion\\b.*\\*\\/")
+                start: new RegExp('^\\s*\\/\\*\\s*#region\\b\\s*(.*?)\\s*\\*\\/'),
+                end: new RegExp('^\\s*\\/\\*\\s*#endregion\\b.*\\*\\/')
             }
         }
     };
@@ -48,18 +49,25 @@ define(["require", "exports"], function (require, exports) {
             { open: '<', close: '>', token: 'delimiter.angle' }
         ],
         tokenizer: {
-            root: [
-                { include: '@selector' },
-            ],
+            root: [{ include: '@selector' }],
             selector: [
                 { include: '@comments' },
                 { include: '@import' },
                 { include: '@strings' },
-                ['[@](keyframes|-webkit-keyframes|-moz-keyframes|-o-keyframes)', { token: 'keyword', next: '@keyframedeclaration' }],
+                [
+                    '[@](keyframes|-webkit-keyframes|-moz-keyframes|-o-keyframes)',
+                    { token: 'keyword', next: '@keyframedeclaration' }
+                ],
                 ['[@](page|content|font-face|-moz-document)', { token: 'keyword' }],
                 ['[@](charset|namespace)', { token: 'keyword', next: '@declarationbody' }],
-                ['(url-prefix)(\\()', ['attribute.value', { token: 'delimiter.parenthesis', next: '@urldeclaration' }]],
-                ['(url)(\\()', ['attribute.value', { token: 'delimiter.parenthesis', next: '@urldeclaration' }]],
+                [
+                    '(url-prefix)(\\()',
+                    ['attribute.value', { token: 'delimiter.parenthesis', next: '@urldeclaration' }]
+                ],
+                [
+                    '(url)(\\()',
+                    ['attribute.value', { token: 'delimiter.parenthesis', next: '@urldeclaration' }]
+                ],
                 { include: '@selectorname' },
                 ['[\\*]', 'tag'],
                 ['[>\\+,]', 'delimiter'],
@@ -72,19 +80,26 @@ define(["require", "exports"], function (require, exports) {
                 ['}', { token: 'delimiter.bracket', next: '@pop' }]
             ],
             selectorname: [
-                ['(\\.|#(?=[^{])|%|(@identifier)|:)+', 'tag'],
+                ['(\\.|#(?=[^{])|%|(@identifier)|:)+', 'tag'] // selector (.foo, div, ...)
             ],
             selectorattribute: [
                 { include: '@term' },
-                [']', { token: 'delimiter.bracket', next: '@pop' }],
+                [']', { token: 'delimiter.bracket', next: '@pop' }]
             ],
             term: [
                 { include: '@comments' },
-                ['(url-prefix)(\\()', ['attribute.value', { token: 'delimiter.parenthesis', next: '@urldeclaration' }]],
-                ['(url)(\\()', ['attribute.value', { token: 'delimiter.parenthesis', next: '@urldeclaration' }]],
+                [
+                    '(url-prefix)(\\()',
+                    ['attribute.value', { token: 'delimiter.parenthesis', next: '@urldeclaration' }]
+                ],
+                [
+                    '(url)(\\()',
+                    ['attribute.value', { token: 'delimiter.parenthesis', next: '@urldeclaration' }]
+                ],
                 { include: '@functioninvocation' },
                 { include: '@numbers' },
                 { include: '@name' },
+                { include: '@strings' },
                 ['([<>=\\+\\-\\*\\/\\^\\|\\~,])', 'delimiter'],
                 [',', 'delimiter']
             ],
@@ -96,12 +111,8 @@ define(["require", "exports"], function (require, exports) {
                 [';', 'delimiter', '@pop'],
                 ['(?=})', { token: '', next: '@pop' }] // missing semicolon
             ],
-            warndebug: [
-                ['[@](warn|debug)', { token: 'keyword', next: '@declarationbody' }]
-            ],
-            import: [
-                ['[@](import)', { token: 'keyword', next: '@declarationbody' }]
-            ],
+            warndebug: [['[@](warn|debug)', { token: 'keyword', next: '@declarationbody' }]],
+            import: [['[@](import)', { token: 'keyword', next: '@declarationbody' }]],
             urldeclaration: [
                 { include: '@strings' },
                 ['[^)\r\n]+', 'string'],
@@ -123,39 +134,44 @@ define(["require", "exports"], function (require, exports) {
             comment: [
                 ['\\*\\/', 'comment', '@pop'],
                 [/[^*/]+/, 'comment'],
-                [/./, 'comment'],
+                [/./, 'comment']
             ],
-            name: [
-                ['@identifier', 'attribute.value']
-            ],
+            name: [['@identifier', 'attribute.value']],
             numbers: [
-                ['-?(\\d*\\.)?\\d+([eE][\\-+]?\\d+)?', { token: 'attribute.value.number', next: '@units' }],
+                [
+                    '-?(\\d*\\.)?\\d+([eE][\\-+]?\\d+)?',
+                    { token: 'attribute.value.number', next: '@units' }
+                ],
                 ['#[0-9a-fA-F_]+(?!\\w)', 'attribute.value.hex']
             ],
             units: [
-                ['(em|ex|ch|rem|vmin|vmax|vw|vh|vm|cm|mm|in|px|pt|pc|deg|grad|rad|turn|s|ms|Hz|kHz|%)?', 'attribute.value.unit', '@pop']
+                [
+                    '(em|ex|ch|rem|vmin|vmax|vw|vh|vm|cm|mm|in|px|pt|pc|deg|grad|rad|turn|s|ms|Hz|kHz|%)?',
+                    'attribute.value.unit',
+                    '@pop'
+                ]
             ],
             keyframedeclaration: [
                 ['@identifier', 'attribute.value'],
-                ['{', { token: 'delimiter.bracket', switchTo: '@keyframebody' }],
+                ['{', { token: 'delimiter.bracket', switchTo: '@keyframebody' }]
             ],
             keyframebody: [
                 { include: '@term' },
                 ['{', { token: 'delimiter.bracket', next: '@selectorbody' }],
-                ['}', { token: 'delimiter.bracket', next: '@pop' }],
+                ['}', { token: 'delimiter.bracket', next: '@pop' }]
             ],
             functioninvocation: [
-                ['@identifier\\(', { token: 'attribute.value', next: '@functionarguments' }],
+                ['@identifier\\(', { token: 'attribute.value', next: '@functionarguments' }]
             ],
             functionarguments: [
                 ['\\$@identifier@ws:', 'attribute.name'],
                 ['[,]', 'delimiter'],
                 { include: '@term' },
-                ['\\)', { token: 'attribute.value', next: '@pop' }],
+                ['\\)', { token: 'attribute.value', next: '@pop' }]
             ],
             strings: [
                 ['~?"', { token: 'string', next: '@stringenddoublequote' }],
-                ['~?\'', { token: 'string', next: '@stringendquote' }]
+                ["~?'", { token: 'string', next: '@stringendquote' }]
             ],
             stringenddoublequote: [
                 ['\\\\.', 'string'],
@@ -165,10 +181,11 @@ define(["require", "exports"], function (require, exports) {
             ],
             stringendquote: [
                 ['\\\\.', 'string'],
-                ['\'', { token: 'string', next: '@pop' }],
+                ["'", { token: 'string', next: '@pop' }],
                 [/[^\\']+/, 'string'],
                 ['.', 'string']
             ]
         }
     };
 });
+

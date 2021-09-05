@@ -2,119 +2,145 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import * as nls from '../../../nls.js';
-import { IntervalTimer } from '../../../base/common/async.js';
+import { IntervalTimer, TimeoutTimer } from '../../../base/common/async.js';
 import { Emitter, Event } from '../../../base/common/event.js';
 import { Disposable } from '../../../base/common/lifecycle.js';
-var AbstractKeybindingService = /** @class */ (function (_super) {
-    __extends(AbstractKeybindingService, _super);
-    function AbstractKeybindingService(_contextKeyService, _commandService, _telemetryService, _notificationService) {
-        var _this = _super.call(this) || this;
-        _this._contextKeyService = _contextKeyService;
-        _this._commandService = _commandService;
-        _this._telemetryService = _telemetryService;
-        _this._notificationService = _notificationService;
-        _this._onDidUpdateKeybindings = _this._register(new Emitter());
-        _this._currentChord = null;
-        _this._currentChordChecker = new IntervalTimer();
-        _this._currentChordStatusMessage = null;
-        return _this;
+export class AbstractKeybindingService extends Disposable {
+    constructor(_contextKeyService, _commandService, _telemetryService, _notificationService, _logService) {
+        super();
+        this._contextKeyService = _contextKeyService;
+        this._commandService = _commandService;
+        this._telemetryService = _telemetryService;
+        this._notificationService = _notificationService;
+        this._logService = _logService;
+        this._onDidUpdateKeybindings = this._register(new Emitter());
+        this._currentChord = null;
+        this._currentChordChecker = new IntervalTimer();
+        this._currentChordStatusMessage = null;
+        this._currentSingleModifier = null;
+        this._currentSingleModifierClearTimeout = new TimeoutTimer();
+        this._logging = false;
     }
-    Object.defineProperty(AbstractKeybindingService.prototype, "onDidUpdateKeybindings", {
-        get: function () {
-            return this._onDidUpdateKeybindings ? this._onDidUpdateKeybindings.event : Event.None; // Sinon stubbing walks properties on prototype
-        },
-        enumerable: true,
-        configurable: true
-    });
-    AbstractKeybindingService.prototype.dispose = function () {
-        _super.prototype.dispose.call(this);
-    };
-    AbstractKeybindingService.prototype.getKeybindings = function () {
+    get onDidUpdateKeybindings() {
+        return this._onDidUpdateKeybindings ? this._onDidUpdateKeybindings.event : Event.None; // Sinon stubbing walks properties on prototype
+    }
+    dispose() {
+        super.dispose();
+    }
+    _log(str) {
+        if (this._logging) {
+            this._logService.info(`[KeybindingService]: ${str}`);
+        }
+    }
+    getKeybindings() {
         return this._getResolver().getKeybindings();
-    };
-    AbstractKeybindingService.prototype.lookupKeybinding = function (commandId) {
-        var result = this._getResolver().lookupPrimaryKeybinding(commandId);
+    }
+    lookupKeybinding(commandId, context) {
+        const result = this._getResolver().lookupPrimaryKeybinding(commandId, context || this._contextKeyService);
         if (!result) {
             return undefined;
         }
         return result.resolvedKeybinding;
-    };
-    AbstractKeybindingService.prototype.softDispatch = function (e, target) {
-        var keybinding = this.resolveKeyboardEvent(e);
+    }
+    dispatchEvent(e, target) {
+        return this._dispatch(e, target);
+    }
+    softDispatch(e, target) {
+        const keybinding = this.resolveKeyboardEvent(e);
         if (keybinding.isChord()) {
             console.warn('Unexpected keyboard event mapped to a chord');
             return null;
         }
-        var firstPart = keybinding.getDispatchParts()[0];
+        const [firstPart,] = keybinding.getDispatchParts();
         if (firstPart === null) {
             // cannot be dispatched, probably only modifier keys
             return null;
         }
-        var contextValue = this._contextKeyService.getContext(target);
-        var currentChord = this._currentChord ? this._currentChord.keypress : null;
+        const contextValue = this._contextKeyService.getContext(target);
+        const currentChord = this._currentChord ? this._currentChord.keypress : null;
         return this._getResolver().resolve(contextValue, currentChord, firstPart);
-    };
-    AbstractKeybindingService.prototype._enterChordMode = function (firstPart, keypressLabel) {
-        var _this = this;
+    }
+    _enterChordMode(firstPart, keypressLabel) {
         this._currentChord = {
             keypress: firstPart,
             label: keypressLabel
         };
         this._currentChordStatusMessage = this._notificationService.status(nls.localize('first.chord', "({0}) was pressed. Waiting for second key of chord...", keypressLabel));
-        var chordEnterTime = Date.now();
-        this._currentChordChecker.cancelAndSet(function () {
-            if (!_this._documentHasFocus()) {
+        const chordEnterTime = Date.now();
+        this._currentChordChecker.cancelAndSet(() => {
+            if (!this._documentHasFocus()) {
                 // Focus has been lost => leave chord mode
-                _this._leaveChordMode();
+                this._leaveChordMode();
                 return;
             }
             if (Date.now() - chordEnterTime > 5000) {
                 // 5 seconds elapsed => leave chord mode
-                _this._leaveChordMode();
+                this._leaveChordMode();
             }
         }, 500);
-    };
-    AbstractKeybindingService.prototype._leaveChordMode = function () {
+    }
+    _leaveChordMode() {
         if (this._currentChordStatusMessage) {
             this._currentChordStatusMessage.dispose();
             this._currentChordStatusMessage = null;
         }
         this._currentChordChecker.cancel();
         this._currentChord = null;
-    };
-    AbstractKeybindingService.prototype._dispatch = function (e, target) {
-        return this._doDispatch(this.resolveKeyboardEvent(e), target);
-    };
-    AbstractKeybindingService.prototype._doDispatch = function (keybinding, target) {
-        var _this = this;
-        var shouldPreventDefault = false;
+    }
+    _dispatch(e, target) {
+        return this._doDispatch(this.resolveKeyboardEvent(e), target, /*isSingleModiferChord*/ false);
+    }
+    _singleModifierDispatch(e, target) {
+        const keybinding = this.resolveKeyboardEvent(e);
+        const [singleModifier,] = keybinding.getSingleModifierDispatchParts();
+        if (singleModifier !== null && this._currentSingleModifier === null) {
+            // we have a valid `singleModifier`, store it for the next keyup, but clear it in 300ms
+            this._log(`+ Storing single modifier for possible chord ${singleModifier}.`);
+            this._currentSingleModifier = singleModifier;
+            this._currentSingleModifierClearTimeout.cancelAndSet(() => {
+                this._log(`+ Clearing single modifier due to 300ms elapsed.`);
+                this._currentSingleModifier = null;
+            }, 300);
+            return false;
+        }
+        if (singleModifier !== null && singleModifier === this._currentSingleModifier) {
+            // bingo!
+            this._log(`/ Dispatching single modifier chord ${singleModifier} ${singleModifier}`);
+            this._currentSingleModifierClearTimeout.cancel();
+            this._currentSingleModifier = null;
+            return this._doDispatch(keybinding, target, /*isSingleModiferChord*/ true);
+        }
+        this._currentSingleModifierClearTimeout.cancel();
+        this._currentSingleModifier = null;
+        return false;
+    }
+    _doDispatch(keybinding, target, isSingleModiferChord = false) {
+        let shouldPreventDefault = false;
         if (keybinding.isChord()) {
             console.warn('Unexpected keyboard event mapped to a chord');
             return false;
         }
-        var firstPart = keybinding.getDispatchParts()[0];
+        let firstPart = null; // the first keybinding i.e. Ctrl+K
+        let currentChord = null; // the "second" keybinding i.e. Ctrl+K "Ctrl+D"
+        if (isSingleModiferChord) {
+            const [dispatchKeyname,] = keybinding.getSingleModifierDispatchParts();
+            firstPart = dispatchKeyname;
+            currentChord = dispatchKeyname;
+        }
+        else {
+            [firstPart,] = keybinding.getDispatchParts();
+            currentChord = this._currentChord ? this._currentChord.keypress : null;
+        }
         if (firstPart === null) {
+            this._log(`\\ Keyboard event cannot be dispatched in keydown phase.`);
             // cannot be dispatched, probably only modifier keys
             return shouldPreventDefault;
         }
-        var contextValue = this._contextKeyService.getContext(target);
-        var currentChord = this._currentChord ? this._currentChord.keypress : null;
-        var keypressLabel = keybinding.getLabel();
-        var resolveResult = this._getResolver().resolve(contextValue, currentChord, firstPart);
+        const contextValue = this._contextKeyService.getContext(target);
+        const keypressLabel = keybinding.getLabel();
+        const resolveResult = this._getResolver().resolve(contextValue, currentChord, firstPart);
+        this._logService.trace('KeybindingService#dispatch', keypressLabel, resolveResult === null || resolveResult === void 0 ? void 0 : resolveResult.commandId);
         if (resolveResult && resolveResult.enterChord) {
             shouldPreventDefault = true;
             this._enterChordMode(firstPart, keypressLabel);
@@ -132,16 +158,16 @@ var AbstractKeybindingService = /** @class */ (function (_super) {
                 shouldPreventDefault = true;
             }
             if (typeof resolveResult.commandArgs === 'undefined') {
-                this._commandService.executeCommand(resolveResult.commandId).then(undefined, function (err) { return _this._notificationService.warn(err); });
+                this._commandService.executeCommand(resolveResult.commandId).then(undefined, err => this._notificationService.warn(err));
             }
             else {
-                this._commandService.executeCommand(resolveResult.commandId, resolveResult.commandArgs).then(undefined, function (err) { return _this._notificationService.warn(err); });
+                this._commandService.executeCommand(resolveResult.commandId, resolveResult.commandArgs).then(undefined, err => this._notificationService.warn(err));
             }
             this._telemetryService.publicLog2('workbenchActionExecuted', { id: resolveResult.commandId, from: 'keybinding' });
         }
         return shouldPreventDefault;
-    };
-    AbstractKeybindingService.prototype.mightProducePrintableCharacter = function (event) {
+    }
+    mightProducePrintableCharacter(event) {
         if (event.ctrlKey || event.metaKey) {
             // ignore ctrl/cmd-combination but not shift/alt-combinatios
             return false;
@@ -153,7 +179,5 @@ var AbstractKeybindingService = /** @class */ (function (_super) {
             return true;
         }
         return false;
-    };
-    return AbstractKeybindingService;
-}(Disposable));
-export { AbstractKeybindingService };
+    }
+}

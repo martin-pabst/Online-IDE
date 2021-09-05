@@ -2,18 +2,22 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 export var conf = {
     comments: {
         lineComment: '//',
-        blockComment: ['/*', '*/'],
+        blockComment: ['/*', '*/']
     },
-    brackets: [['{', '}'], ['[', ']'], ['(', ')'], ['<', '>']],
+    brackets: [
+        ['{', '}'],
+        ['[', ']'],
+        ['(', ')'],
+        ['<', '>']
+    ],
     autoClosingPairs: [
         { open: '"', close: '"', notIn: ['string', 'comment'] },
         { open: '{', close: '}', notIn: ['string', 'comment'] },
         { open: '[', close: ']', notIn: ['string', 'comment'] },
-        { open: '(', close: ')', notIn: ['string', 'comment'] },
+        { open: '(', close: ')', notIn: ['string', 'comment'] }
     ]
 };
 export var language = {
@@ -73,11 +77,44 @@ export var language = {
         'throw'
     ],
     operators: [
-        '=', '>', '<', '!', '~', '?', '::', ':',
-        '==', '<=', '>=', '!=', '&&', '||', '++', '--',
-        '+', '-', '*', '/', '&', '|', '^', '%', '<<',
-        '>>', '>>>', '+=', '-=', '*=', '/=', '&=', '|=',
-        '^=', '%=', '<<=', '>>=', '>>>='
+        '=',
+        '>',
+        '<',
+        '!',
+        '~',
+        '?',
+        '::',
+        ':',
+        '==',
+        '<=',
+        '>=',
+        '!=',
+        '&&',
+        '||',
+        '++',
+        '--',
+        '+',
+        '-',
+        '*',
+        '/',
+        '&',
+        '|',
+        '^',
+        '%',
+        '<<',
+        '>>',
+        '>>>',
+        '+=',
+        '-=',
+        '*=',
+        '/=',
+        '&=',
+        '|=',
+        '^=',
+        '%=',
+        '<<=',
+        '>>=',
+        '>>>='
     ],
     // we include these common regular expressions
     symbols: /[=><!~?:&|+\-*\/\^%]+/,
@@ -88,12 +125,15 @@ export var language = {
     tokenizer: {
         root: [
             // identifiers and keywords
-            [/[a-zA-Z_]\w*/, {
+            [
+                /[a-zA-Z_]\w*/,
+                {
                     cases: {
                         '@keywords': { token: 'keyword.$0' },
                         '@default': 'identifier'
                     }
-                }],
+                }
+            ],
             // whitespace
             { include: '@whitespace' },
             // [[ attributes ]].
@@ -105,12 +145,15 @@ export var language = {
             // delimiters and operators
             [/[{}()\[\]]/, '@brackets'],
             [/[<>](?!@symbols)/, '@brackets'],
-            [/@symbols/, {
+            [
+                /@symbols/,
+                {
                     cases: {
                         '@operators': 'delimiter',
                         '@default': ''
                     }
-                }],
+                }
+            ],
             // numbers
             [/\d*\d+[eE]([\-+]?\d+)?(@floatsuffix)/, 'number.float'],
             [/\d*\.\d+([eE][\-+]?\d+)?(@floatsuffix)/, 'number.float'],
@@ -133,7 +176,7 @@ export var language = {
             [/[ \t\r\n]+/, ''],
             [/\/\*\*(?!\/)/, 'comment.doc', '@doccomment'],
             [/\/\*/, 'comment', '@comment'],
-            [/\/\/.*$/, 'comment'],
+            [/\/\/.*$/, 'comment']
         ],
         comment: [
             [/[^\/*]+/, 'comment'],
@@ -151,6 +194,6 @@ export var language = {
             [/@escapes/, 'string.escape'],
             [/\\./, 'string.escape.invalid'],
             [/"/, 'string', '@pop']
-        ],
-    },
+        ]
+    }
 };

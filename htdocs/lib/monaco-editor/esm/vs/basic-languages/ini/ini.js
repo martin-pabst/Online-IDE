@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 export var conf = {
     comments: {
         lineComment: '#'
@@ -10,21 +9,21 @@ export var conf = {
     brackets: [
         ['{', '}'],
         ['[', ']'],
-        ['(', ')'],
+        ['(', ')']
     ],
     autoClosingPairs: [
         { open: '{', close: '}' },
         { open: '[', close: ']' },
         { open: '(', close: ')' },
         { open: '"', close: '"' },
-        { open: '\'', close: '\'' },
+        { open: "'", close: "'" }
     ],
     surroundingPairs: [
         { open: '{', close: '}' },
         { open: '[', close: ']' },
         { open: '(', close: ')' },
         { open: '"', close: '"' },
-        { open: '\'', close: '\'' },
+        { open: "'", close: "'" }
     ]
 };
 export var language = {
@@ -47,22 +46,25 @@ export var language = {
             [/"([^"\\]|\\.)*$/, 'string.invalid'],
             [/'([^'\\]|\\.)*$/, 'string.invalid'],
             [/"/, 'string', '@string."'],
-            [/'/, 'string', '@string.\''],
+            [/'/, 'string', "@string.'"]
         ],
         whitespace: [
             [/[ \t\r\n]+/, ''],
-            [/^\s*[#;].*$/, 'comment'],
+            [/^\s*[#;].*$/, 'comment']
         ],
         string: [
             [/[^\\"']+/, 'string'],
             [/@escapes/, 'string.escape'],
             [/\\./, 'string.escape.invalid'],
-            [/["']/, {
+            [
+                /["']/,
+                {
                     cases: {
                         '$#==$S2': { token: 'string', next: '@pop' },
                         '@default': 'string'
                     }
-                }]
-        ],
-    },
+                }
+            ]
+        ]
+    }
 };

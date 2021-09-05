@@ -4,50 +4,48 @@
  *--------------------------------------------------------------------------------------------*/
 import { RunOnceScheduler, createCancelablePromise } from '../../../base/common/async.js';
 import { onUnexpectedError } from '../../../base/common/errors.js';
-var HoverOperation = /** @class */ (function () {
-    function HoverOperation(computer, success, error, progress, hoverTime) {
-        var _this = this;
+export class HoverOperation {
+    constructor(computer, success, error, progress, hoverTime) {
         this._computer = computer;
         this._state = 0 /* IDLE */;
         this._hoverTime = hoverTime;
-        this._firstWaitScheduler = new RunOnceScheduler(function () { return _this._triggerAsyncComputation(); }, 0);
-        this._secondWaitScheduler = new RunOnceScheduler(function () { return _this._triggerSyncComputation(); }, 0);
-        this._loadingMessageScheduler = new RunOnceScheduler(function () { return _this._showLoadingMessage(); }, 0);
+        this._firstWaitScheduler = new RunOnceScheduler(() => this._triggerAsyncComputation(), 0);
+        this._secondWaitScheduler = new RunOnceScheduler(() => this._triggerSyncComputation(), 0);
+        this._loadingMessageScheduler = new RunOnceScheduler(() => this._showLoadingMessage(), 0);
         this._asyncComputationPromise = null;
         this._asyncComputationPromiseDone = false;
         this._completeCallback = success;
         this._errorCallback = error;
         this._progressCallback = progress;
     }
-    HoverOperation.prototype.setHoverTime = function (hoverTime) {
+    setHoverTime(hoverTime) {
         this._hoverTime = hoverTime;
-    };
-    HoverOperation.prototype._firstWaitTime = function () {
+    }
+    _firstWaitTime() {
         return this._hoverTime / 2;
-    };
-    HoverOperation.prototype._secondWaitTime = function () {
+    }
+    _secondWaitTime() {
         return this._hoverTime / 2;
-    };
-    HoverOperation.prototype._loadingMessageTime = function () {
+    }
+    _loadingMessageTime() {
         return 3 * this._hoverTime;
-    };
-    HoverOperation.prototype._triggerAsyncComputation = function () {
-        var _this = this;
+    }
+    _triggerAsyncComputation() {
         this._state = 2 /* SECOND_WAIT */;
         this._secondWaitScheduler.schedule(this._secondWaitTime());
         if (this._computer.computeAsync) {
             this._asyncComputationPromiseDone = false;
-            this._asyncComputationPromise = createCancelablePromise(function (token) { return _this._computer.computeAsync(token); });
-            this._asyncComputationPromise.then(function (asyncResult) {
-                _this._asyncComputationPromiseDone = true;
-                _this._withAsyncResult(asyncResult);
-            }, function (e) { return _this._onError(e); });
+            this._asyncComputationPromise = createCancelablePromise(token => this._computer.computeAsync(token));
+            this._asyncComputationPromise.then((asyncResult) => {
+                this._asyncComputationPromiseDone = true;
+                this._withAsyncResult(asyncResult);
+            }, (e) => this._onError(e));
         }
         else {
             this._asyncComputationPromiseDone = true;
         }
-    };
-    HoverOperation.prototype._triggerSyncComputation = function () {
+    }
+    _triggerSyncComputation() {
         if (this._computer.computeSync) {
             this._computer.onResult(this._computer.computeSync(), true);
         }
@@ -59,13 +57,13 @@ var HoverOperation = /** @class */ (function () {
             this._state = 3 /* WAITING_FOR_ASYNC_COMPUTATION */;
             this._onProgress(this._computer.getResult());
         }
-    };
-    HoverOperation.prototype._showLoadingMessage = function () {
+    }
+    _showLoadingMessage() {
         if (this._state === 3 /* WAITING_FOR_ASYNC_COMPUTATION */) {
             this._onProgress(this._computer.getResultWithLoadingMessage());
         }
-    };
-    HoverOperation.prototype._withAsyncResult = function (asyncResult) {
+    }
+    _withAsyncResult(asyncResult) {
         if (asyncResult) {
             this._computer.onResult(asyncResult, false);
         }
@@ -73,26 +71,22 @@ var HoverOperation = /** @class */ (function () {
             this._state = 0 /* IDLE */;
             this._onComplete(this._computer.getResult());
         }
-    };
-    HoverOperation.prototype._onComplete = function (value) {
-        if (this._completeCallback) {
-            this._completeCallback(value);
-        }
-    };
-    HoverOperation.prototype._onError = function (error) {
+    }
+    _onComplete(value) {
+        this._completeCallback(value);
+    }
+    _onError(error) {
         if (this._errorCallback) {
             this._errorCallback(error);
         }
         else {
             onUnexpectedError(error);
         }
-    };
-    HoverOperation.prototype._onProgress = function (value) {
-        if (this._progressCallback) {
-            this._progressCallback(value);
-        }
-    };
-    HoverOperation.prototype.start = function (mode) {
+    }
+    _onProgress(value) {
+        this._progressCallback(value);
+    }
+    start(mode) {
         if (mode === 0 /* Delayed */) {
             if (this._state === 0 /* IDLE */) {
                 this._state = 1 /* FIRST_WAIT */;
@@ -113,8 +107,8 @@ var HoverOperation = /** @class */ (function () {
                     break;
             }
         }
-    };
-    HoverOperation.prototype.cancel = function () {
+    }
+    cancel() {
         this._loadingMessageScheduler.cancel();
         if (this._state === 1 /* FIRST_WAIT */) {
             this._firstWaitScheduler.cancel();
@@ -133,7 +127,5 @@ var HoverOperation = /** @class */ (function () {
             }
         }
         this._state = 0 /* IDLE */;
-    };
-    return HoverOperation;
-}());
-export { HoverOperation };
+    }
+}

@@ -1,13 +1,14 @@
 /*!---------------------------------------------------------------------------------------------
  *  Copyright (C) David Owens II, owensd.io. All rights reserved.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports"], function (require, exports) {
-    'use strict';
+define('vs/basic-languages/swift/swift',["require", "exports"], function (require, exports) {
+    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.language = exports.conf = void 0;
     exports.conf = {
         comments: {
             lineComment: '//',
-            blockComment: ['/*', '*/'],
+            blockComment: ['/*', '*/']
         },
         brackets: [
             ['{', '}'],
@@ -19,16 +20,16 @@ define(["require", "exports"], function (require, exports) {
             { open: '[', close: ']' },
             { open: '(', close: ')' },
             { open: '"', close: '"' },
-            { open: '\'', close: '\'' },
-            { open: '`', close: '`' },
+            { open: "'", close: "'" },
+            { open: '`', close: '`' }
         ],
         surroundingPairs: [
             { open: '{', close: '}' },
             { open: '[', close: ']' },
             { open: '(', close: ')' },
             { open: '"', close: '"' },
-            { open: '\'', close: '\'' },
-            { open: '`', close: '`' },
+            { open: "'", close: "'" },
+            { open: '`', close: '`' }
         ]
     };
     exports.language = {
@@ -38,18 +39,104 @@ define(["require", "exports"], function (require, exports) {
         identifier: /[a-zA-Z_][\w$]*/,
         // TODO(owensd): Support the @availability macro properly.
         attributes: [
-            '@autoclosure', '@noescape', '@noreturn', '@NSApplicationMain', '@NSCopying', '@NSManaged',
-            '@objc', '@UIApplicationMain', '@noreturn', '@availability', '@IBAction', '@IBDesignable', '@IBInspectable', '@IBOutlet'
+            '@autoclosure',
+            '@noescape',
+            '@noreturn',
+            '@NSApplicationMain',
+            '@NSCopying',
+            '@NSManaged',
+            '@objc',
+            '@UIApplicationMain',
+            '@noreturn',
+            '@availability',
+            '@IBAction',
+            '@IBDesignable',
+            '@IBInspectable',
+            '@IBOutlet'
         ],
-        accessmodifiers: ['public', 'private', 'internal'],
+        accessmodifiers: ['public', 'private', 'fileprivate', 'internal'],
         keywords: [
-            '__COLUMN__', '__FILE__', '__FUNCTION__', '__LINE__', 'as', 'as!', 'as?', 'associativity', 'break', 'case', 'catch',
-            'class', 'continue', 'convenience', 'default', 'deinit', 'didSet', 'do', 'dynamic', 'dynamicType',
-            'else', 'enum', 'extension', 'fallthrough', 'final', 'for', 'func', 'get', 'guard', 'if', 'import', 'in', 'infix',
-            'init', 'inout', 'internal', 'is', 'lazy', 'left', 'let', 'mutating', 'nil', 'none', 'nonmutating', 'operator',
-            'optional', 'override', 'postfix', 'precedence', 'prefix', 'private', 'protocol', 'Protocol', 'public',
-            'repeat', 'required', 'return', 'right', 'self', 'Self', 'set', 'static', 'struct', 'subscript', 'super', 'switch',
-            'throw', 'throws', 'try', 'try!', 'Type', 'typealias', 'unowned', 'var', 'weak', 'where', 'while', 'willSet', 'FALSE', 'TRUE'
+            '__COLUMN__',
+            '__FILE__',
+            '__FUNCTION__',
+            '__LINE__',
+            'as',
+            'as!',
+            'as?',
+            'associativity',
+            'break',
+            'case',
+            'catch',
+            'class',
+            'continue',
+            'convenience',
+            'default',
+            'deinit',
+            'didSet',
+            'do',
+            'dynamic',
+            'dynamicType',
+            'else',
+            'enum',
+            'extension',
+            'fallthrough',
+            'fileprivate',
+            'final',
+            'for',
+            'func',
+            'get',
+            'guard',
+            'if',
+            'import',
+            'in',
+            'infix',
+            'init',
+            'inout',
+            'internal',
+            'is',
+            'lazy',
+            'left',
+            'let',
+            'mutating',
+            'nil',
+            'none',
+            'nonmutating',
+            'operator',
+            'optional',
+            'override',
+            'postfix',
+            'precedence',
+            'prefix',
+            'private',
+            'protocol',
+            'Protocol',
+            'public',
+            'repeat',
+            'required',
+            'return',
+            'right',
+            'self',
+            'Self',
+            'set',
+            'static',
+            'struct',
+            'subscript',
+            'super',
+            'switch',
+            'throw',
+            'throws',
+            'try',
+            'try!',
+            'Type',
+            'typealias',
+            'unowned',
+            'var',
+            'weak',
+            'where',
+            'while',
+            'willSet',
+            'FALSE',
+            'TRUE'
         ],
         symbols: /[=(){}\[\].,:;@#\_&\-<>`?!+*\\\/]/,
         // Moved . to operatorstart so it can be a delimiter
@@ -66,7 +153,7 @@ define(["require", "exports"], function (require, exports) {
                 { include: '@literal' },
                 { include: '@keyword' },
                 { include: '@invokedmethod' },
-                { include: '@symbol' },
+                { include: '@symbol' }
             ],
             whitespace: [
                 [/\s+/, 'white'],
@@ -103,12 +190,15 @@ define(["require", "exports"], function (require, exports) {
                 [/./, 'comment']
             ],
             attribute: [
-                [/\@@identifier/, {
+                [
+                    /@@@identifier/,
+                    {
                         cases: {
                             '@attributes': 'keyword.control',
                             '@default': ''
                         }
-                    }]
+                    }
+                ]
             ],
             literal: [
                 [/"/, { token: 'string.quote', next: '@stringlit' }],
@@ -134,12 +224,16 @@ define(["require", "exports"], function (require, exports) {
             ],
             keyword: [
                 [/`/, { token: 'operator', next: '@escapedkeyword' }],
-                [/@identifier/, {
+                [
+                    /@identifier/,
+                    {
                         cases: {
-                            '@keywords': 'keyword', '[A-Z][\a-zA-Z0-9$]*': 'type.identifier',
+                            '@keywords': 'keyword',
+                            '[A-Z][a-zA-Z0-9$]*': 'type.identifier',
                             '@default': 'identifier'
                         }
-                    }]
+                    }
+                ]
             ],
             escapedkeyword: [
                 [/`/, { token: 'operator', next: '@pop' }],
@@ -150,13 +244,17 @@ define(["require", "exports"], function (require, exports) {
             //			[ /@operators/, 'operator' ]
             //		],
             invokedmethod: [
-                [/([.])(@identifier)/, {
+                [
+                    /([.])(@identifier)/,
+                    {
                         cases: {
-                            '$2': ['delimeter', 'type.identifier'],
+                            $2: ['delimeter', 'type.identifier'],
                             '@default': ''
                         }
-                    }],
+                    }
+                ]
             ]
         }
     };
 });
+

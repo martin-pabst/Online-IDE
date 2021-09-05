@@ -5,8 +5,12 @@
 import * as nls from './../../../fillers/vscode-nls.js';
 var localize = nls.loadMessageBundle();
 export var schemaContributions = {
-    schemaAssociations: {},
+    schemaAssociations: [],
     schemas: {
+        // refer to the latest schema
+        'http://json-schema.org/schema#': {
+            $ref: 'http://json-schema.org/draft-07/schema#'
+        },
         // bundle the schema-schema to include (localized) descriptions
         'http://json-schema.org/draft-04/schema#': {
             'title': localize('schema.json', 'Describes a JSON file using a schema. See json-schema.org for more info.'),
@@ -512,7 +516,7 @@ for (var schemaName in schemaContributions.schemas) {
     var schema = schemaContributions.schemas[schemaName];
     for (var property in schema.properties) {
         var propertyObject = schema.properties[property];
-        if (propertyObject === true) {
+        if (typeof propertyObject === 'boolean') {
             propertyObject = schema.properties[property] = {};
         }
         var description = descriptions[property];

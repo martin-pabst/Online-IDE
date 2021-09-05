@@ -2,13 +2,11 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
-// Allow for running under nodejs/requirejs in tests
-var _monaco = (typeof monaco === 'undefined' ? self.monaco : monaco);
+import { languages } from '../fillers/monaco-editor-core.js';
 export var conf = {
     comments: {
         lineComment: '#',
-        blockComment: ['\'\'\'', '\'\'\''],
+        blockComment: ["'''", "'''"]
     },
     brackets: [
         ['{', '}'],
@@ -20,26 +18,26 @@ export var conf = {
         { open: '[', close: ']' },
         { open: '(', close: ')' },
         { open: '"', close: '"', notIn: ['string'] },
-        { open: '\'', close: '\'', notIn: ['string', 'comment'] },
+        { open: "'", close: "'", notIn: ['string', 'comment'] }
     ],
     surroundingPairs: [
         { open: '{', close: '}' },
         { open: '[', close: ']' },
         { open: '(', close: ')' },
         { open: '"', close: '"' },
-        { open: '\'', close: '\'' },
+        { open: "'", close: "'" }
     ],
     onEnterRules: [
         {
-            beforeText: new RegExp("^\\s*(?:def|class|for|if|elif|else|while|try|with|finally|except|async).*?:\\s*$"),
-            action: { indentAction: _monaco.languages.IndentAction.Indent }
+            beforeText: new RegExp('^\\s*(?:def|class|for|if|elif|else|while|try|with|finally|except|async).*?:\\s*$'),
+            action: { indentAction: languages.IndentAction.Indent }
         }
     ],
     folding: {
         offSide: true,
         markers: {
-            start: new RegExp("^\\s*#region\\b"),
-            end: new RegExp("^\\s*#endregion\\b")
+            start: new RegExp('^\\s*#region\\b'),
+            end: new RegExp('^\\s*#endregion\\b')
         }
     }
 };
@@ -47,9 +45,18 @@ export var language = {
     defaultToken: '',
     tokenPostfix: '.python',
     keywords: [
+        // This section is the result of running
+        // `for k in keyword.kwlist: print('  "' + k + '",')` in a Python REPL,
+        // though note that the output from Python 3 is not a strict superset of the
+        // output from Python 2.
+        'False',
+        'None',
+        'True',
         'and',
         'as',
         'assert',
+        'async',
+        'await',
         'break',
         'class',
         'continue',
@@ -68,14 +75,13 @@ export var language = {
         'in',
         'is',
         'lambda',
-        'None',
+        'nonlocal',
         'not',
         'or',
         'pass',
         'print',
         'raise',
         'return',
-        'self',
         'try',
         'while',
         'with',
@@ -146,6 +152,7 @@ export var language = {
         'repr',
         'reversed',
         'round',
+        'self',
         'set',
         'setattr',
         'slice',
@@ -161,8 +168,6 @@ export var language = {
         'vars',
         'xrange',
         'zip',
-        'True',
-        'False',
         '__dict__',
         '__methods__',
         '__members__',
@@ -186,13 +191,16 @@ export var language = {
             { include: '@strings' },
             [/[,:;]/, 'delimiter'],
             [/[{}\[\]()]/, '@brackets'],
-            [/@[a-zA-Z]\w*/, 'tag'],
-            [/[a-zA-Z]\w*/, {
+            [/@[a-zA-Z_]\w*/, 'tag'],
+            [
+                /[a-zA-Z_]\w*/,
+                {
                     cases: {
                         '@keywords': 'keyword',
                         '@default': 'identifier'
                     }
-                }]
+                }
+            ]
         ],
         // Deal with white space, including single and multi-line comments
         whitespace: [

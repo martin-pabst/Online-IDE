@@ -45,11 +45,11 @@ var JSONHover = /** @class */ (function () {
             }
         }
         return this.schemaService.getSchemaForResource(document.uri, doc).then(function (schema) {
-            if (schema) {
+            if (schema && node) {
                 var matchingSchemas = doc.getMatchingSchemas(schema.schema, node.offset);
-                var title_1 = null;
-                var markdownDescription_1 = null;
-                var markdownEnumValueDescription_1 = null, enumValue_1 = null;
+                var title_1 = undefined;
+                var markdownDescription_1 = undefined;
+                var markdownEnumValueDescription_1 = undefined, enumValue_1 = undefined;
                 matchingSchemas.every(function (s) {
                     if (s.node === node && !s.inverted && s.schema) {
                         title_1 = title_1 || s.schema.title;
@@ -101,7 +101,7 @@ function toMarkdown(plain) {
         var res = plain.replace(/([^\n\r])(\r?\n)([^\n\r])/gm, '$1\n\n$3'); // single new lines to \n\n (Markdown paragraph)
         return res.replace(/[\\`*_{}[\]()#+\-.!]/g, "\\$&"); // escape markdown syntax tokens: http://daringfireball.net/projects/markdown/syntax#backslash
     }
-    return void 0;
+    return undefined;
 }
 function toMarkdownCodeBlock(content) {
     // see https://daringfireball.net/projects/markdown/syntax#precode

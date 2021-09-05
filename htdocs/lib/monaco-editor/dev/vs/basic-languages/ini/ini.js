@@ -2,9 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports"], function (require, exports) {
-    'use strict';
+define('vs/basic-languages/ini/ini',["require", "exports"], function (require, exports) {
+    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.language = exports.conf = void 0;
     exports.conf = {
         comments: {
             lineComment: '#'
@@ -12,21 +13,21 @@ define(["require", "exports"], function (require, exports) {
         brackets: [
             ['{', '}'],
             ['[', ']'],
-            ['(', ')'],
+            ['(', ')']
         ],
         autoClosingPairs: [
             { open: '{', close: '}' },
             { open: '[', close: ']' },
             { open: '(', close: ')' },
             { open: '"', close: '"' },
-            { open: '\'', close: '\'' },
+            { open: "'", close: "'" }
         ],
         surroundingPairs: [
             { open: '{', close: '}' },
             { open: '[', close: ']' },
             { open: '(', close: ')' },
             { open: '"', close: '"' },
-            { open: '\'', close: '\'' },
+            { open: "'", close: "'" }
         ]
     };
     exports.language = {
@@ -49,23 +50,27 @@ define(["require", "exports"], function (require, exports) {
                 [/"([^"\\]|\\.)*$/, 'string.invalid'],
                 [/'([^'\\]|\\.)*$/, 'string.invalid'],
                 [/"/, 'string', '@string."'],
-                [/'/, 'string', '@string.\''],
+                [/'/, 'string', "@string.'"]
             ],
             whitespace: [
                 [/[ \t\r\n]+/, ''],
-                [/^\s*[#;].*$/, 'comment'],
+                [/^\s*[#;].*$/, 'comment']
             ],
             string: [
                 [/[^\\"']+/, 'string'],
                 [/@escapes/, 'string.escape'],
                 [/\\./, 'string.escape.invalid'],
-                [/["']/, {
+                [
+                    /["']/,
+                    {
                         cases: {
                             '$#==$S2': { token: 'string', next: '@pop' },
                             '@default': 'string'
                         }
-                    }]
-            ],
-        },
+                    }
+                ]
+            ]
+        }
     };
 });
+

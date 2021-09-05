@@ -8,20 +8,20 @@ import { onUnexpectedExternalError } from '../../../base/common/errors.js';
 import { registerModelAndPositionCommand } from '../../browser/editorExtensions.js';
 import { HoverProviderRegistry } from '../../common/modes.js';
 export function getHover(model, position, token) {
-    var supports = HoverProviderRegistry.ordered(model);
-    var promises = supports.map(function (support) {
-        return Promise.resolve(support.provideHover(model, position, token)).then(function (hover) {
+    const supports = HoverProviderRegistry.ordered(model);
+    const promises = supports.map(support => {
+        return Promise.resolve(support.provideHover(model, position, token)).then(hover => {
             return hover && isValid(hover) ? hover : undefined;
-        }, function (err) {
+        }, err => {
             onUnexpectedExternalError(err);
             return undefined;
         });
     });
     return Promise.all(promises).then(coalesce);
 }
-registerModelAndPositionCommand('_executeHoverProvider', function (model, position) { return getHover(model, position, CancellationToken.None); });
+registerModelAndPositionCommand('_executeHoverProvider', (model, position) => getHover(model, position, CancellationToken.None));
 function isValid(result) {
-    var hasRange = (typeof result.range !== 'undefined');
-    var hasHtmlContent = typeof result.contents !== 'undefined' && result.contents && result.contents.length > 0;
+    const hasRange = (typeof result.range !== 'undefined');
+    const hasHtmlContent = typeof result.contents !== 'undefined' && result.contents && result.contents.length > 0;
     return hasRange && hasHtmlContent;
 }

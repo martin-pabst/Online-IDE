@@ -178,7 +178,7 @@ export class ErrorManager {
                     jQuery(locf.class).off('click', locf.onClickFunction);
                     jQuery(locf.class).on('click', locf.onClickFunction).attr('title', locf.title);
             }            
-        }, 500);
+        }, 800);
 
 
     }

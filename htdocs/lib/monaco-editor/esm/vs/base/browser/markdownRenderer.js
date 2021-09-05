@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+var _a;
 import * as DOM from './dom.js';
 import { createElement } from './formattedTextRenderer.js';
 import { onUnexpectedError } from '../common/errors.js';
@@ -13,16 +14,29 @@ import { parse } from '../common/marshalling.js';
 import { cloneAndChange } from '../common/objects.js';
 import { escape } from '../common/strings.js';
 import { URI } from '../common/uri.js';
-import { Schemas } from '../common/network.js';
-import { renderCodicons, markdownEscapeEscapedCodicons } from '../common/codicons.js';
+import { FileAccess, Schemas } from '../common/network.js';
+import { markdownEscapeEscapedIcons } from '../common/iconLabels.js';
+import { resolvePath } from '../common/resources.js';
+import { StandardMouseEvent } from './mouseEvent.js';
+import { renderLabelWithIcons } from './ui/iconLabel/iconLabels.js';
+import { Event } from '../common/event.js';
+import { DomEmitter } from './event.js';
+const _ttpInsane = (_a = window.trustedTypes) === null || _a === void 0 ? void 0 : _a.createPolicy('insane', {
+    createHTML(value, options) {
+        return insane(value, options);
+    }
+});
 /**
- * Create html nodes for the given content element.
+ * Low-level way create a html element from a markdown string.
+ *
+ * **Note** that for most cases you should be using [`MarkdownRenderer`](./src/vs/editor/browser/core/markdownRenderer.ts)
+ * which comes with support for pretty code block rendering and which uses the default way of handling links.
  */
-export function renderMarkdown(markdown, options) {
-    if (options === void 0) { options = {}; }
-    var element = createElement(options);
-    var _uriMassage = function (part) {
-        var data;
+export function renderMarkdown(markdown, options = {}, markedOptions = {}) {
+    var _a;
+    const element = createElement(options);
+    const _uriMassage = function (part) {
+        let data;
         try {
             data = parse(decodeURIComponent(part));
         }
@@ -32,7 +46,7 @@ export function renderMarkdown(markdown, options) {
         if (!data) {
             return part;
         }
-        data = cloneAndChange(data, function (value) {
+        data = cloneAndChange(data, value => {
             if (markdown.uris && markdown.uris[value]) {
                 return URI.revive(markdown.uris[value]);
             }
@@ -42,54 +56,70 @@ export function renderMarkdown(markdown, options) {
         });
         return encodeURIComponent(JSON.stringify(data));
     };
-    var _href = function (href, isDomUri) {
-        var data = markdown.uris && markdown.uris[href];
+    const _href = function (href, isDomUri) {
+        const data = markdown.uris && markdown.uris[href];
         if (!data) {
             return href; // no uri exists
         }
-        var uri = URI.revive(data);
+        let uri = URI.revive(data);
         if (URI.parse(href).toString() === uri.toString()) {
             return href; // no tranformation performed
         }
         if (isDomUri) {
-            uri = DOM.asDomUri(uri);
+            // this URI will end up as "src"-attribute of a dom node
+            // and because of that special rewriting needs to be done
+            // so that the URI uses a protocol that's understood by
+            // browsers (like http or https)
+            return FileAccess.asBrowserUri(uri).toString(true);
         }
         if (uri.query) {
             uri = uri.with({ query: _uriMassage(uri.query) });
         }
-        return uri.toString(true);
+        return uri.toString();
     };
     // signal to code-block render that the
     // element has been created
-    var signalInnerHTML;
-    var withInnerHTML = new Promise(function (c) { return signalInnerHTML = c; });
-    var renderer = new marked.Renderer();
-    renderer.image = function (href, title, text) {
-        var _a;
-        var dimensions = [];
-        var attributes = [];
+    let signalInnerHTML;
+    const withInnerHTML = new Promise(c => signalInnerHTML = c);
+    const renderer = new marked.Renderer();
+    renderer.image = (href, title, text) => {
+        let dimensions = [];
+        let attributes = [];
         if (href) {
-            (_a = parseHrefAndDimensions(href), href = _a.href, dimensions = _a.dimensions);
+            ({ href, dimensions } = parseHrefAndDimensions(href));
             href = _href(href, true);
-            attributes.push("src=\"" + href + "\"");
+            try {
+                const hrefAsUri = URI.parse(href);
+                if (options.baseUrl && hrefAsUri.scheme === Schemas.file) { // absolute or relative local path, or file: uri
+                    href = resolvePath(options.baseUrl, href).toString();
+                }
+            }
+            catch (err) { }
+            attributes.push(`src="${href}"`);
         }
         if (text) {
-            attributes.push("alt=\"" + text + "\"");
+            attributes.push(`alt="${text}"`);
         }
         if (title) {
-            attributes.push("title=\"" + title + "\"");
+            attributes.push(`title="${title}"`);
         }
         if (dimensions.length) {
             attributes = attributes.concat(dimensions);
         }
         return '<img ' + attributes.join(' ') + '>';
     };
-    renderer.link = function (href, title, text) {
+    renderer.link = (href, title, text) => {
         // Remove markdown escapes. Workaround for https://github.com/chjj/marked/issues/829
         if (href === text) { // raw link case
             text = removeMarkdownEscapes(text);
         }
         href = _href(href, false);
+        if (options.baseUrl) {
+            const hasScheme = /^\w[\w\d+.-]*:/.test(href);
+            if (!hasScheme) {
+                href = resolvePath(options.baseUrl, href).toString();
+            }
+        }
         title = removeMarkdownEscapes(title);
         href = removeMarkdownEscapes(href);
         if (!href
@@ -106,37 +136,45 @@ export function renderMarkdown(markdown, options) {
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#39;');
-            return "<a href=\"#\" data-href=\"" + href + "\" title=\"" + (title || href) + "\">" + text + "</a>";
+            return `<a href="#" data-href="${href}" title="${title || href}">${text}</a>`;
         }
     };
-    renderer.paragraph = function (text) {
-        return "<p>" + (markdown.supportThemeIcons ? renderCodicons(text) : text) + "</p>";
+    renderer.paragraph = (text) => {
+        if (markdown.supportThemeIcons) {
+            const elements = renderLabelWithIcons(text);
+            text = elements.map(e => typeof e === 'string' ? e : e.outerHTML).join('');
+        }
+        return `<p>${text}</p>`;
     };
     if (options.codeBlockRenderer) {
-        renderer.code = function (code, lang) {
-            var value = options.codeBlockRenderer(lang, code);
+        renderer.code = (code, lang) => {
+            const value = options.codeBlockRenderer(lang, code);
             // when code-block rendering is async we return sync
             // but update the node with the real result later.
-            var id = defaultGenerator.nextId();
-            var promise = Promise.all([value, withInnerHTML]).then(function (values) {
-                var strValue = values[0];
-                var span = element.querySelector("div[data-code=\"" + id + "\"]");
+            const id = defaultGenerator.nextId();
+            const promise = Promise.all([value, withInnerHTML]).then(values => {
+                const span = element.querySelector(`div[data-code="${id}"]`);
                 if (span) {
-                    span.innerHTML = strValue;
+                    DOM.reset(span, values[0]);
                 }
-            }).catch(function (err) {
+            }).catch(_err => {
                 // ignore
             });
-            if (options.codeBlockRenderCallback) {
-                promise.then(options.codeBlockRenderCallback);
+            if (options.asyncRenderCallback) {
+                promise.then(options.asyncRenderCallback);
             }
-            return "<div class=\"code\" data-code=\"" + id + "\">" + escape(code) + "</div>";
+            return `<div class="code" data-code="${id}">${escape(code)}</div>`;
         };
     }
-    var actionHandler = options.actionHandler;
-    if (actionHandler) {
-        actionHandler.disposeables.add(DOM.addStandardDisposableListener(element, 'click', function (event) {
-            var target = event.target;
+    if (options.actionHandler) {
+        const onClick = options.actionHandler.disposeables.add(new DomEmitter(element, 'click'));
+        const onAuxClick = options.actionHandler.disposeables.add(new DomEmitter(element, 'auxclick'));
+        options.actionHandler.disposeables.add(Event.any(onClick.event, onAuxClick.event)(e => {
+            const mouseEvent = new StandardMouseEvent(e);
+            if (!mouseEvent.leftButton && !mouseEvent.middleButton) {
+                return;
+            }
+            let target = mouseEvent.target;
             if (target.tagName !== 'A') {
                 target = target.parentElement;
                 if (!target || target.tagName !== 'A') {
@@ -144,40 +182,102 @@ export function renderMarkdown(markdown, options) {
                 }
             }
             try {
-                var href = target.dataset['href'];
+                const href = target.dataset['href'];
                 if (href) {
-                    actionHandler.callback(href, event);
+                    options.actionHandler.callback(href, mouseEvent);
                 }
             }
             catch (err) {
                 onUnexpectedError(err);
             }
             finally {
-                event.preventDefault();
+                mouseEvent.preventDefault();
             }
         }));
     }
-    var markedOptions = {
-        sanitize: true,
-        renderer: renderer
+    // Use our own sanitizer so that we can let through only spans.
+    // Otherwise, we'd be letting all html be rendered.
+    // If we want to allow markdown permitted tags, then we can delete sanitizer and sanitize.
+    // We always pass the output through insane after this so that we don't rely on
+    // marked for sanitization.
+    markedOptions.sanitizer = (html) => {
+        const match = markdown.isTrusted ? html.match(/^(<span[^>]+>)|(<\/\s*span>)$/) : undefined;
+        return match ? html : '';
     };
-    var allowedSchemes = [Schemas.http, Schemas.https, Schemas.mailto, Schemas.data, Schemas.file, Schemas.vscodeRemote, Schemas.vscodeRemoteResource];
-    if (markdown.isTrusted) {
+    markedOptions.sanitize = true;
+    markedOptions.silent = true;
+    markedOptions.renderer = renderer;
+    // values that are too long will freeze the UI
+    let value = (_a = markdown.value) !== null && _a !== void 0 ? _a : '';
+    if (value.length > 100000) {
+        value = `${value.substr(0, 100000)}…`;
+    }
+    // escape theme icons
+    if (markdown.supportThemeIcons) {
+        value = markdownEscapeEscapedIcons(value);
+    }
+    const renderedMarkdown = marked.parse(value, markedOptions);
+    // sanitize with insane
+    element.innerHTML = sanitizeRenderedMarkdown(markdown, renderedMarkdown);
+    // signal that async code blocks can be now be inserted
+    signalInnerHTML();
+    // signal size changes for image tags
+    if (options.asyncRenderCallback) {
+        for (const img of element.getElementsByTagName('img')) {
+            const listener = DOM.addDisposableListener(img, 'load', () => {
+                listener.dispose();
+                options.asyncRenderCallback();
+            });
+        }
+    }
+    return element;
+}
+function sanitizeRenderedMarkdown(options, renderedMarkdown) {
+    var _a;
+    const insaneOptions = getInsaneOptions(options);
+    return (_a = _ttpInsane === null || _ttpInsane === void 0 ? void 0 : _ttpInsane.createHTML(renderedMarkdown, insaneOptions)) !== null && _a !== void 0 ? _a : insane(renderedMarkdown, insaneOptions);
+}
+function getInsaneOptions(options) {
+    const allowedSchemes = [
+        Schemas.http,
+        Schemas.https,
+        Schemas.mailto,
+        Schemas.data,
+        Schemas.file,
+        Schemas.vscodeRemote,
+        Schemas.vscodeRemoteResource,
+    ];
+    if (options.isTrusted) {
         allowedSchemes.push(Schemas.command);
     }
-    var renderedMarkdown = marked.parse(markdown.supportThemeIcons
-        ? markdownEscapeEscapedCodicons(markdown.value)
-        : markdown.value, markedOptions);
-    element.innerHTML = insane(renderedMarkdown, {
-        allowedSchemes: allowedSchemes,
+    return {
+        allowedSchemes,
+        // allowedTags should included everything that markdown renders to.
+        // Since we have our own sanitize function for marked, it's possible we missed some tag so let insane make sure.
+        // HTML tags that can result from markdown are from reading https://spec.commonmark.org/0.29/
+        // HTML table tags that can result from markdown are from https://github.github.com/gfm/#tables-extension-
+        allowedTags: ['ul', 'li', 'p', 'code', 'blockquote', 'ol', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'em', 'pre', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'div', 'del', 'a', 'strong', 'br', 'img', 'span'],
         allowedAttributes: {
             'a': ['href', 'name', 'target', 'data-href'],
-            'iframe': ['allowfullscreen', 'frameborder', 'src'],
             'img': ['src', 'title', 'alt', 'width', 'height'],
             'div': ['class', 'data-code'],
-            'span': ['class']
+            'span': ['class', 'style'],
+            // https://github.com/microsoft/vscode/issues/95937
+            'th': ['align'],
+            'td': ['align']
+        },
+        filter(token) {
+            if (token.tag === 'span' && options.isTrusted) {
+                if (token.attrs['style'] && (Object.keys(token.attrs).length === 1)) {
+                    return !!token.attrs['style'].match(/^(color\:#[0-9a-fA-F]+;)?(background-color\:#[0-9a-fA-F]+;)?$/);
+                }
+                else if (token.attrs['class']) {
+                    // The class should match codicon rendering in src\vs\base\common\codicons.ts
+                    return !!token.attrs['class'].match(/^codicon codicon-[a-z\-]+( codicon-modifier-[a-z\-]+)?$/);
+                }
+                return false;
+            }
+            return true;
         }
-    });
-    signalInnerHTML();
-    return element;
+    };
 }

@@ -2,13 +2,14 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports"], function (require, exports) {
-    'use strict';
+define('vs/basic-languages/fsharp/fsharp',["require", "exports"], function (require, exports) {
+    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.language = exports.conf = void 0;
     exports.conf = {
         comments: {
             lineComment: '//',
-            blockComment: ['(*', '*)'],
+            blockComment: ['(*', '*)']
         },
         brackets: [
             ['{', '}'],
@@ -26,12 +27,12 @@ define(["require", "exports"], function (require, exports) {
             { open: '[', close: ']' },
             { open: '(', close: ')' },
             { open: '"', close: '"' },
-            { open: '\'', close: '\'' }
+            { open: "'", close: "'" }
         ],
         folding: {
             markers: {
-                start: new RegExp("^\\s*//\\s*#region\\b|^\\s*\\(\\*\\s*#region(.*)\\*\\)"),
-                end: new RegExp("^\\s*//\\s*#endregion\\b|^\\s*\\(\\*\\s*#endregion\\s*\\*\\)")
+                start: new RegExp('^\\s*//\\s*#region\\b|^\\s*\\(\\*\\s*#region(.*)\\*\\)'),
+                end: new RegExp('^\\s*//\\s*#endregion\\b|^\\s*\\(\\*\\s*#endregion\\s*\\*\\)')
             }
         }
     };
@@ -39,29 +40,103 @@ define(["require", "exports"], function (require, exports) {
         defaultToken: '',
         tokenPostfix: '.fs',
         keywords: [
-            'abstract', 'and', 'atomic', 'as',
-            'assert', 'asr', 'base', 'begin',
-            'break', 'checked', 'component',
-            'const', 'constraint', 'constructor',
-            'continue', 'class', 'default',
-            'delegate', 'do', 'done', 'downcast',
-            'downto', 'elif', 'else', 'end',
-            'exception', 'eager', 'event', 'external',
-            'extern', 'false', 'finally', 'for',
-            'fun', 'function', 'fixed', 'functor',
-            'global', 'if', 'in', 'include', 'inherit',
-            'inline', 'interface', 'internal', 'land',
-            'lor', 'lsl', 'lsr', 'lxor', 'lazy', 'let',
-            'match', 'member', 'mod', 'module', 'mutable',
-            'namespace', 'method', 'mixin', 'new', 'not',
-            'null', 'of', 'open', 'or', 'object',
-            'override', 'private', 'parallel', 'process',
-            'protected', 'pure', 'public', 'rec', 'return',
-            'static', 'sealed', 'struct', 'sig', 'then',
-            'to', 'true', 'tailcall', 'trait',
-            'try', 'type', 'upcast', 'use',
-            'val', 'void', 'virtual', 'volatile',
-            'when', 'while', 'with', 'yield'
+            'abstract',
+            'and',
+            'atomic',
+            'as',
+            'assert',
+            'asr',
+            'base',
+            'begin',
+            'break',
+            'checked',
+            'component',
+            'const',
+            'constraint',
+            'constructor',
+            'continue',
+            'class',
+            'default',
+            'delegate',
+            'do',
+            'done',
+            'downcast',
+            'downto',
+            'elif',
+            'else',
+            'end',
+            'exception',
+            'eager',
+            'event',
+            'external',
+            'extern',
+            'false',
+            'finally',
+            'for',
+            'fun',
+            'function',
+            'fixed',
+            'functor',
+            'global',
+            'if',
+            'in',
+            'include',
+            'inherit',
+            'inline',
+            'interface',
+            'internal',
+            'land',
+            'lor',
+            'lsl',
+            'lsr',
+            'lxor',
+            'lazy',
+            'let',
+            'match',
+            'member',
+            'mod',
+            'module',
+            'mutable',
+            'namespace',
+            'method',
+            'mixin',
+            'new',
+            'not',
+            'null',
+            'of',
+            'open',
+            'or',
+            'object',
+            'override',
+            'private',
+            'parallel',
+            'process',
+            'protected',
+            'pure',
+            'public',
+            'rec',
+            'return',
+            'static',
+            'sealed',
+            'struct',
+            'sig',
+            'then',
+            'to',
+            'true',
+            'tailcall',
+            'trait',
+            'try',
+            'type',
+            'upcast',
+            'use',
+            'val',
+            'void',
+            'virtual',
+            'volatile',
+            'when',
+            'while',
+            'with',
+            'yield'
         ],
         // we include these common regular expressions
         symbols: /[=><!~?:&|+\-*\^%;\.,\/]+/,
@@ -72,12 +147,15 @@ define(["require", "exports"], function (require, exports) {
         tokenizer: {
             root: [
                 // identifiers and keywords
-                [/[a-zA-Z_]\w*/, {
+                [
+                    /[a-zA-Z_]\w*/,
+                    {
                         cases: {
                             '@keywords': { token: 'keyword.$0' },
                             '@default': 'identifier'
                         }
-                    }],
+                    }
+                ],
                 // whitespace
                 { include: '@whitespace' },
                 // [< attributes >].
@@ -111,7 +189,7 @@ define(["require", "exports"], function (require, exports) {
             whitespace: [
                 [/[ \t\r\n]+/, ''],
                 [/\(\*(?!\))/, 'comment', '@comment'],
-                [/\/\/.*$/, 'comment'],
+                [/\/\/.*$/, 'comment']
             ],
             comment: [
                 [/[^*(]+/, 'comment'],
@@ -124,18 +202,22 @@ define(["require", "exports"], function (require, exports) {
                 [/[^\\"]+/, 'string'],
                 [/@escapes/, 'string.escape'],
                 [/\\./, 'string.escape.invalid'],
-                [/("""|"B?)/, {
+                [
+                    /("""|"B?)/,
+                    {
                         cases: {
                             '$#==$S2': { token: 'string', next: '@pop' },
                             '@default': 'string'
                         }
-                    }]
+                    }
+                ]
             ],
             litstring: [
                 [/[^"]+/, 'string'],
                 [/""/, 'string.escape'],
                 [/"/, { token: 'string.quote', next: '@pop' }]
-            ],
-        },
+            ]
+        }
     };
 });
+

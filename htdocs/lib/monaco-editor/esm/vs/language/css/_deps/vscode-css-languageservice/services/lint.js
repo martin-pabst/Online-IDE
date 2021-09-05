@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
-import * as languageFacts from '../languageFacts/facts.js';
-import { Rules, Settings } from './lintRules.js';
-import * as nodes from '../parser/cssNodes.js';
-import calculateBoxModel, { Element } from './lintUtil.js';
-import { union } from '../utils/arrays.js';
 import * as nls from './../../../fillers/vscode-nls.js';
+import * as languageFacts from '../languageFacts/facts.js';
+import * as nodes from '../parser/cssNodes.js';
+import { union } from '../utils/arrays.js';
+import { Rules, Settings } from './lintRules.js';
+import calculateBoxModel, { Element } from './lintUtil.js';
 var localize = nls.loadMessageBundle();
 var NodesByRootMap = /** @class */ (function () {
     function NodesByRootMap() {
@@ -28,8 +28,9 @@ var NodesByRootMap = /** @class */ (function () {
     return NodesByRootMap;
 }());
 var LintVisitor = /** @class */ (function () {
-    function LintVisitor(document, settings) {
+    function LintVisitor(document, settings, cssDataManager) {
         var _this = this;
+        this.cssDataManager = cssDataManager;
         this.warnings = [];
         this.settings = settings;
         this.documentText = document.getText();
@@ -47,8 +48,8 @@ var LintVisitor = /** @class */ (function () {
             });
         }
     }
-    LintVisitor.entries = function (node, document, settings, entryFilter) {
-        var visitor = new LintVisitor(document, settings);
+    LintVisitor.entries = function (node, document, settings, cssDataManager, entryFilter) {
+        var visitor = new LintVisitor(document, settings, cssDataManager);
         node.acceptVisitor(visitor);
         visitor.completeValidations();
         return visitor.getEntries(entryFilter);
@@ -144,6 +145,8 @@ var LintVisitor = /** @class */ (function () {
                 return this.visitHexColorValue(node);
             case nodes.NodeType.Prio:
                 return this.visitPrio(node);
+            case nodes.NodeType.IdentifierSelector:
+                return this.visitIdentifierSelector(node);
         }
         return true;
     };
@@ -155,7 +158,7 @@ var LintVisitor = /** @class */ (function () {
         if (!atRuleName) {
             return false;
         }
-        var atDirective = languageFacts.cssDataManager.getAtDirective(atRuleName.getText());
+        var atDirective = this.cssDataManager.getAtDirective(atRuleName.getText());
         if (atDirective) {
             return false;
         }
@@ -199,19 +202,20 @@ var LintVisitor = /** @class */ (function () {
         return true;
     };
     LintVisitor.prototype.visitSimpleSelector = function (node) {
-        var firstChar = this.documentText.charAt(node.offset);
         /////////////////////////////////////////////////////////////
         //	Lint - The universal selector (*) is known to be slow.
         /////////////////////////////////////////////////////////////
+        var firstChar = this.documentText.charAt(node.offset);
         if (node.length === 1 && firstChar === '*') {
             this.addEntry(node, Rules.UniversalSelector);
         }
+        return true;
+    };
+    LintVisitor.prototype.visitIdentifierSelector = function (node) {
         /////////////////////////////////////////////////////////////
         //	Lint - Avoid id selectors
         /////////////////////////////////////////////////////////////
-        if (firstChar === '#') {
-            this.addEntry(node, Rules.AvoidIdSelector);
-        }
+        this.addEntry(node, Rules.AvoidIdSelector);
         return true;
     };
     LintVisitor.prototype.visitImport = function (node) {
@@ -283,31 +287,15 @@ var LintVisitor = /** @class */ (function () {
         /////////////////////////////////////////////////////////////
         //	Properties ignored due to display
         /////////////////////////////////////////////////////////////
-        // With 'display: inline', the width, height, margin-top, margin-bottom, and float properties have no effect
-        var displayElems = this.fetchWithValue(propertyTable, 'display', 'inline');
-        if (displayElems.length > 0) {
-            for (var _d = 0, _e = ['width', 'height', 'margin-top', 'margin-bottom', 'float']; _d < _e.length; _d++) {
-                var prop = _e[_d];
-                var elem = this.fetch(propertyTable, prop);
-                for (var index = 0; index < elem.length; index++) {
-                    var node_1 = elem[index].node;
-                    var value = node_1.getValue();
-                    if (prop === 'float' && (!value || value.matches('none'))) {
-                        continue;
-                    }
-                    this.addEntry(node_1, Rules.PropertyIgnoredDueToDisplay, localize('rule.propertyIgnoredDueToDisplayInline', "Property is ignored due to the display. With 'display: inline', the width, height, margin-top, margin-bottom, and float properties have no effect."));
-                }
-            }
-        }
         // With 'display: inline-block', 'float' has no effect
-        displayElems = this.fetchWithValue(propertyTable, 'display', 'inline-block');
+        var displayElems = this.fetchWithValue(propertyTable, 'display', 'inline-block');
         if (displayElems.length > 0) {
             var elem = this.fetch(propertyTable, 'float');
             for (var index = 0; index < elem.length; index++) {
-                var node_2 = elem[index].node;
-                var value = node_2.getValue();
+                var node_1 = elem[index].node;
+                var value = node_1.getValue();
                 if (value && !value.matches('none')) {
-                    this.addEntry(node_2, Rules.PropertyIgnoredDueToDisplay, localize('rule.propertyIgnoredDueToDisplayInlineBlock', "inline-block is ignored due to the float. If 'float' has a value other than 'none', the box is floated and 'display' is treated as 'block'"));
+                    this.addEntry(node_1, Rules.PropertyIgnoredDueToDisplay, localize('rule.propertyIgnoredDueToDisplayInlineBlock', "inline-block is ignored due to the float. If 'float' has a value other than 'none', the box is floated and 'display' is treated as 'block'"));
                 }
             }
         }
@@ -356,15 +344,15 @@ var LintVisitor = /** @class */ (function () {
         if (!isExportBlock) {
             var propertiesBySuffix = new NodesByRootMap();
             var containsUnknowns = false;
-            for (var _f = 0, propertyTable_1 = propertyTable; _f < propertyTable_1.length; _f++) {
-                var element = propertyTable_1[_f];
+            for (var _d = 0, propertyTable_1 = propertyTable; _d < propertyTable_1.length; _d++) {
+                var element = propertyTable_1[_d];
                 var decl = element.node;
                 if (this.isCSSDeclaration(decl)) {
                     var name = element.fullPropertyName;
                     var firstChar = name.charAt(0);
                     if (firstChar === '-') {
                         if (name.charAt(1) !== '-') { // avoid css variables
-                            if (!languageFacts.cssDataManager.isKnownProperty(name) && !this.validProperties[name]) {
+                            if (!this.cssDataManager.isKnownProperty(name) && !this.validProperties[name]) {
                                 this.addEntry(decl.getProperty(), Rules.UnknownVendorSpecificProperty);
                             }
                             var nonPrefixedName = decl.getNonPrefixedPropertyName();
@@ -378,9 +366,9 @@ var LintVisitor = /** @class */ (function () {
                             name = name.substr(1);
                         }
                         // _property and *property might be contributed via custom data
-                        if (!languageFacts.cssDataManager.isKnownProperty(fullName) && !languageFacts.cssDataManager.isKnownProperty(name)) {
+                        if (!this.cssDataManager.isKnownProperty(fullName) && !this.cssDataManager.isKnownProperty(name)) {
                             if (!this.validProperties[name]) {
-                                this.addEntry(decl.getProperty(), Rules.UnknownProperty, localize('property.unknownproperty.detailed', "Unknown property: '{0}'", name));
+                                this.addEntry(decl.getProperty(), Rules.UnknownProperty, localize('property.unknownproperty.detailed', "Unknown property: '{0}'", decl.getFullPropertyName()));
                             }
                         }
                         propertiesBySuffix.add(name, name, null); // don't pass the node as we don't show errors on the standard
@@ -394,28 +382,28 @@ var LintVisitor = /** @class */ (function () {
                 for (var suffix in propertiesBySuffix.data) {
                     var entry = propertiesBySuffix.data[suffix];
                     var actual = entry.names;
-                    var needsStandard = languageFacts.cssDataManager.isStandardProperty(suffix) && (actual.indexOf(suffix) === -1);
+                    var needsStandard = this.cssDataManager.isStandardProperty(suffix) && (actual.indexOf(suffix) === -1);
                     if (!needsStandard && actual.length === 1) {
                         continue; // only the non-vendor specific rule is used, that's fine, no warning
                     }
                     var expected = [];
                     for (var i = 0, len = LintVisitor.prefixes.length; i < len; i++) {
                         var prefix = LintVisitor.prefixes[i];
-                        if (languageFacts.cssDataManager.isStandardProperty(prefix + suffix)) {
+                        if (this.cssDataManager.isStandardProperty(prefix + suffix)) {
                             expected.push(prefix + suffix);
                         }
                     }
                     var missingVendorSpecific = this.getMissingNames(expected, actual);
                     if (missingVendorSpecific || needsStandard) {
-                        for (var _g = 0, _h = entry.nodes; _g < _h.length; _g++) {
-                            var node_3 = _h[_g];
+                        for (var _e = 0, _f = entry.nodes; _e < _f.length; _e++) {
+                            var node_2 = _f[_e];
                             if (needsStandard) {
                                 var message = localize('property.standard.missing', "Also define the standard property '{0}' for compatibility", suffix);
-                                this.addEntry(node_3, Rules.IncludeStandardPropertyWhenUsingVendorPrefix, message);
+                                this.addEntry(node_2, Rules.IncludeStandardPropertyWhenUsingVendorPrefix, message);
                             }
                             if (missingVendorSpecific) {
                                 var message = localize('property.vendorspecific.missing', "Always include all vendor specific properties: Missing: {0}", missingVendorSpecific);
-                                this.addEntry(node_3, Rules.AllVendorPrefixes, message);
+                                this.addEntry(node_2, Rules.AllVendorPrefixes, message);
                             }
                         }
                     }
@@ -463,9 +451,9 @@ var LintVisitor = /** @class */ (function () {
         var definesSrc = false, definesFontFamily = false;
         var containsUnknowns = false;
         for (var _i = 0, _a = declarations.getChildren(); _i < _a.length; _i++) {
-            var node_4 = _a[_i];
-            if (this.isCSSDeclaration(node_4)) {
-                var name = node_4.getProperty().getName().toLowerCase();
+            var node_3 = _a[_i];
+            if (this.isCSSDeclaration(node_3)) {
+                var name = node_3.getProperty().getName().toLowerCase();
                 if (name === 'src') {
                     definesSrc = true;
                 }
@@ -536,7 +524,8 @@ var LintVisitor = /** @class */ (function () {
         return true;
     };
     LintVisitor.prefixes = [
-        '-ms-', '-moz-', '-o-', '-webkit-',
+        '-ms-', '-moz-', '-o-', '-webkit-', // Quite common
+        //		'-xv-', '-atsc-', '-wap-', '-khtml-', 'mso-', 'prince-', '-ah-', '-hp-', '-ro-', '-rim-', '-tc-' // Quite un-common
     ];
     return LintVisitor;
 }());

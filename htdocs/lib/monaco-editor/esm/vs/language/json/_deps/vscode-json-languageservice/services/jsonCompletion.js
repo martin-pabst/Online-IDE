@@ -5,7 +5,7 @@
 import * as Parser from '../parser/jsonParser.js';
 import * as Json from './../../jsonc-parser/main.js';
 import { stringifyObject } from '../utils/json.js';
-import { endsWith } from '../utils/strings.js';
+import { endsWith, extendedRegExp } from '../utils/strings.js';
 import { isDefined } from '../utils/objects.js';
 import { CompletionItem, CompletionItemKind, Range, TextEdit, InsertTextFormat, MarkupKind } from '../jsonLanguageTypes.js';
 import * as nls from './../../../fillers/vscode-nls.js';
@@ -21,12 +21,12 @@ var JSONCompletion = /** @class */ (function () {
         this.contributions = contributions;
         this.promiseConstructor = promiseConstructor;
         this.clientCapabilities = clientCapabilities;
-        this.templateVarIdCounter = 0;
     }
     JSONCompletion.prototype.doResolve = function (item) {
         for (var i = this.contributions.length - 1; i >= 0; i--) {
-            if (this.contributions[i].resolveCompletion) {
-                var resolver = this.contributions[i].resolveCompletion(item);
+            var resolveCompletion = this.contributions[i].resolveCompletion;
+            if (resolveCompletion) {
+                var resolver = resolveCompletion(item);
                 if (resolver) {
                     return resolver;
                 }
@@ -54,7 +54,7 @@ var JSONCompletion = /** @class */ (function () {
             }
         }
         var currentWord = this.getCurrentWord(document, offset);
-        var overwriteRange = null;
+        var overwriteRange;
         if (node && (node.type === 'string' || node.type === 'number' || node.type === 'boolean' || node.type === 'null')) {
             overwriteRange = Range.create(document.positionAt(node.offset), document.positionAt(node.offset + node.length));
         }
@@ -79,7 +79,7 @@ var JSONCompletion = /** @class */ (function () {
                             label = shortendedLabel;
                         }
                     }
-                    if (overwriteRange) {
+                    if (overwriteRange && suggestion.insertText !== undefined) {
                         suggestion.textEdit = TextEdit.replace(overwriteRange, suggestion.insertText);
                     }
                     if (supportsCommitCharacters) {
@@ -89,8 +89,13 @@ var JSONCompletion = /** @class */ (function () {
                     proposed[label] = suggestion;
                     result.items.push(suggestion);
                 }
-                else if (!existing.documentation) {
-                    existing.documentation = suggestion.documentation;
+                else {
+                    if (!existing.documentation) {
+                        existing.documentation = suggestion.documentation;
+                    }
+                    if (!existing.detail) {
+                        existing.detail = suggestion.detail;
+                    }
                 }
             },
             setAsIncomplete: function () {
@@ -110,7 +115,7 @@ var JSONCompletion = /** @class */ (function () {
             var collectionPromises = [];
             var addValue = true;
             var currentKey = '';
-            var currentProperty = null;
+            var currentProperty = undefined;
             if (node) {
                 if (node.type === 'string') {
                     var parent = node.parent;
@@ -160,7 +165,7 @@ var JSONCompletion = /** @class */ (function () {
                     collector.add({
                         kind: CompletionItemKind.Property,
                         label: _this.getLabelForValue(currentWord),
-                        insertText: _this.getInsertTextForProperty(currentWord, null, false, separatorAfter_1),
+                        insertText: _this.getInsertTextForProperty(currentWord, undefined, false, separatorAfter_1),
                         insertTextFormat: InsertTextFormat.Snippet, documentation: '',
                     });
                     collector.setAsIncomplete();
@@ -210,7 +215,10 @@ var JSONCompletion = /** @class */ (function () {
                                 filterText: _this.getFilterTextForValue(key),
                                 documentation: _this.fromMarkup(propertySchema.markdownDescription) || propertySchema.description || '',
                             };
-                            if (endsWith(proposal.insertText, "$1" + separatorAfter)) {
+                            if (propertySchema.suggestSortText !== undefined) {
+                                proposal.sortText = propertySchema.suggestSortText;
+                            }
+                            if (proposal.insertText && endsWith(proposal.insertText, "$1" + separatorAfter)) {
                                 proposal.command = {
                                     title: 'Suggest',
                                     command: 'editor.action.triggerSuggest'
@@ -219,6 +227,45 @@ var JSONCompletion = /** @class */ (function () {
                             collector.add(proposal);
                         }
                     });
+                }
+                var schemaPropertyNames_1 = s.schema.propertyNames;
+                if (typeof schemaPropertyNames_1 === 'object' && !schemaPropertyNames_1.deprecationMessage && !schemaPropertyNames_1.doNotSuggest) {
+                    var propertyNameCompletionItem = function (name, enumDescription) {
+                        if (enumDescription === void 0) { enumDescription = undefined; }
+                        var proposal = {
+                            kind: CompletionItemKind.Property,
+                            label: name,
+                            insertText: _this.getInsertTextForProperty(name, undefined, addValue, separatorAfter),
+                            insertTextFormat: InsertTextFormat.Snippet,
+                            filterText: _this.getFilterTextForValue(name),
+                            documentation: enumDescription || _this.fromMarkup(schemaPropertyNames_1.markdownDescription) || schemaPropertyNames_1.description || '',
+                        };
+                        if (schemaPropertyNames_1.suggestSortText !== undefined) {
+                            proposal.sortText = schemaPropertyNames_1.suggestSortText;
+                        }
+                        if (proposal.insertText && endsWith(proposal.insertText, "$1" + separatorAfter)) {
+                            proposal.command = {
+                                title: 'Suggest',
+                                command: 'editor.action.triggerSuggest'
+                            };
+                        }
+                        collector.add(proposal);
+                    };
+                    if (schemaPropertyNames_1.enum) {
+                        for (var i = 0; i < schemaPropertyNames_1.enum.length; i++) {
+                            var enumDescription = undefined;
+                            if (schemaPropertyNames_1.markdownEnumDescriptions && i < schemaPropertyNames_1.markdownEnumDescriptions.length) {
+                                enumDescription = _this.fromMarkup(schemaPropertyNames_1.markdownEnumDescriptions[i]);
+                            }
+                            else if (schemaPropertyNames_1.enumDescriptions && i < schemaPropertyNames_1.enumDescriptions.length) {
+                                enumDescription = schemaPropertyNames_1.enumDescriptions[i];
+                            }
+                            propertyNameCompletionItem(schemaPropertyNames_1.enum[i], enumDescription);
+                        }
+                    }
+                    if (schemaPropertyNames_1.const) {
+                        propertyNameCompletionItem(schemaPropertyNames_1.const);
+                    }
                 }
             }
         });
@@ -262,7 +309,7 @@ var JSONCompletion = /** @class */ (function () {
             collector.add({
                 kind: CompletionItemKind.Property,
                 label: '$schema',
-                insertText: this.getInsertTextForProperty('$schema', null, true, ''),
+                insertText: this.getInsertTextForProperty('$schema', undefined, true, ''),
                 insertTextFormat: InsertTextFormat.Snippet, documentation: '',
                 filterText: this.getFilterTextForValue("$schema")
             });
@@ -294,7 +341,7 @@ var JSONCompletion = /** @class */ (function () {
         }
         var separatorAfter = this.evaluateSeparatorAfter(document, offsetForSeparator);
         var collectSuggestionsForValues = function (value) {
-            if (!Parser.contains(value.parent, offset, true)) {
+            if (value.parent && !Parser.contains(value.parent, offset, true)) {
                 collector.add({
                     kind: _this.getSuggestionKind(value.type),
                     label: _this.getLabelTextForMatchingNode(value, document),
@@ -307,7 +354,7 @@ var JSONCompletion = /** @class */ (function () {
             }
         };
         if (node.type === 'property') {
-            if (offset > node.colonOffset) {
+            if (offset > (node.colonOffset || 0)) {
                 var valueNode = node.valueNode;
                 if (valueNode && (offset > (valueNode.offset + valueNode.length) || valueNode.type === 'object' || valueNode.type === 'array')) {
                     return;
@@ -343,10 +390,9 @@ var JSONCompletion = /** @class */ (function () {
         }
     };
     JSONCompletion.prototype.getValueCompletions = function (schema, doc, node, offset, document, collector, types) {
-        var _this = this;
         var offsetForSeparator = offset;
-        var parentKey = null;
-        var valueNode = null;
+        var parentKey = undefined;
+        var valueNode = undefined;
         if (node && (node.type === 'string' || node.type === 'number' || node.type === 'boolean' || node.type === 'null')) {
             offsetForSeparator = node.offset + node.length;
             valueNode = node;
@@ -356,7 +402,7 @@ var JSONCompletion = /** @class */ (function () {
             this.addSchemaValueCompletions(schema.schema, '', collector, types);
             return;
         }
-        if ((node.type === 'property') && offset > node.colonOffset) {
+        if ((node.type === 'property') && offset > (node.colonOffset || 0)) {
             var valueNode_1 = node.valueNode;
             if (valueNode_1 && offset > (valueNode_1.offset + valueNode_1.length)) {
                 return; // we are past the value node
@@ -364,39 +410,59 @@ var JSONCompletion = /** @class */ (function () {
             parentKey = node.keyNode.value;
             node = node.parent;
         }
-        if (node && (parentKey !== null || node.type === 'array')) {
-            var separatorAfter_2 = this.evaluateSeparatorAfter(document, offsetForSeparator);
+        if (node && (parentKey !== undefined || node.type === 'array')) {
+            var separatorAfter = this.evaluateSeparatorAfter(document, offsetForSeparator);
             var matchingSchemas = doc.getMatchingSchemas(schema.schema, node.offset, valueNode);
-            matchingSchemas.forEach(function (s) {
+            for (var _i = 0, matchingSchemas_1 = matchingSchemas; _i < matchingSchemas_1.length; _i++) {
+                var s = matchingSchemas_1[_i];
                 if (s.node === node && !s.inverted && s.schema) {
                     if (node.type === 'array' && s.schema.items) {
                         if (Array.isArray(s.schema.items)) {
-                            var index = _this.findItemAtOffset(node, document, offset);
+                            var index = this.findItemAtOffset(node, document, offset);
                             if (index < s.schema.items.length) {
-                                _this.addSchemaValueCompletions(s.schema.items[index], separatorAfter_2, collector, types);
+                                this.addSchemaValueCompletions(s.schema.items[index], separatorAfter, collector, types);
                             }
                         }
                         else {
-                            _this.addSchemaValueCompletions(s.schema.items, separatorAfter_2, collector, types);
+                            this.addSchemaValueCompletions(s.schema.items, separatorAfter, collector, types);
                         }
                     }
-                    if (s.schema.properties) {
-                        var propertySchema = s.schema.properties[parentKey];
-                        if (propertySchema) {
-                            _this.addSchemaValueCompletions(propertySchema, separatorAfter_2, collector, types);
+                    if (parentKey !== undefined) {
+                        var propertyMatched = false;
+                        if (s.schema.properties) {
+                            var propertySchema = s.schema.properties[parentKey];
+                            if (propertySchema) {
+                                propertyMatched = true;
+                                this.addSchemaValueCompletions(propertySchema, separatorAfter, collector, types);
+                            }
+                        }
+                        if (s.schema.patternProperties && !propertyMatched) {
+                            for (var _a = 0, _b = Object.keys(s.schema.patternProperties); _a < _b.length; _a++) {
+                                var pattern = _b[_a];
+                                var regex = extendedRegExp(pattern);
+                                if (regex.test(parentKey)) {
+                                    propertyMatched = true;
+                                    var propertySchema = s.schema.patternProperties[pattern];
+                                    this.addSchemaValueCompletions(propertySchema, separatorAfter, collector, types);
+                                }
+                            }
+                        }
+                        if (s.schema.additionalProperties && !propertyMatched) {
+                            var propertySchema = s.schema.additionalProperties;
+                            this.addSchemaValueCompletions(propertySchema, separatorAfter, collector, types);
                         }
                     }
                 }
-            });
+            }
             if (parentKey === '$schema' && !node.parent) {
-                this.addDollarSchemaCompletions(separatorAfter_2, collector);
+                this.addDollarSchemaCompletions(separatorAfter, collector);
             }
             if (types['boolean']) {
-                this.addBooleanValueCompletion(true, separatorAfter_2, collector);
-                this.addBooleanValueCompletion(false, separatorAfter_2, collector);
+                this.addBooleanValueCompletion(true, separatorAfter, collector);
+                this.addBooleanValueCompletion(false, separatorAfter, collector);
             }
             if (types['null']) {
-                this.addNullValueCompletion(separatorAfter_2, collector);
+                this.addNullValueCompletion(separatorAfter, collector);
             }
         }
     };
@@ -413,10 +479,10 @@ var JSONCompletion = /** @class */ (function () {
             if (node.type === 'string' || node.type === 'number' || node.type === 'boolean' || node.type === 'null') {
                 node = node.parent;
             }
-            if ((node.type === 'property') && offset > node.colonOffset) {
+            if (node && (node.type === 'property') && offset > (node.colonOffset || 0)) {
                 var parentKey_4 = node.keyNode.value;
                 var valueNode = node.valueNode;
-                if (!valueNode || offset <= (valueNode.offset + valueNode.length)) {
+                if ((!valueNode || offset <= (valueNode.offset + valueNode.length)) && node.parent) {
                     var location_2 = Parser.getNodePath(node.parent);
                     this.contributions.forEach(function (contribution) {
                         var collectPromise = contribution.collectValueCompletions(document.uri, location_2, parentKey_4, collector);
@@ -511,6 +577,9 @@ var JSONCompletion = /** @class */ (function () {
                     label = label || insertText,
                         filterText = insertText.replace(/[\n]/g, ''); // remove new lines
                 }
+                else {
+                    return;
+                }
                 collector.add({
                     kind: _this.getSuggestionKind(type),
                     label: label,
@@ -522,7 +591,7 @@ var JSONCompletion = /** @class */ (function () {
                 hasProposals = true;
             });
         }
-        if (!hasProposals && typeof schema.items === 'object' && !Array.isArray(schema.items)) {
+        if (!hasProposals && typeof schema.items === 'object' && !Array.isArray(schema.items) && arrayDepth < 5 /* beware of recursion */) {
             this.addDefaultValueCompletions(schema.items, separatorAfter, collector, arrayDepth + 1);
         }
     };
@@ -564,7 +633,7 @@ var JSONCompletion = /** @class */ (function () {
         if (Array.isArray(type)) {
             type.forEach(function (t) { return types[t] = true; });
         }
-        else {
+        else if (type) {
             types[type] = true;
         }
     };
@@ -677,7 +746,7 @@ var JSONCompletion = /** @class */ (function () {
     JSONCompletion.prototype.getSuggestionKind = function (type) {
         if (Array.isArray(type)) {
             var array = type;
-            type = array.length > 0 ? array[0] : null;
+            type = array.length > 0 ? array[0] : undefined;
         }
         if (!type) {
             return CompletionItemKind.Value;

@@ -2,11 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 export var conf = {
     comments: {
         lineComment: '--',
-        blockComment: ['--[[', ']]'],
+        blockComment: ['--[[', ']]']
     },
     brackets: [
         ['{', '}'],
@@ -18,24 +17,41 @@ export var conf = {
         { open: '[', close: ']' },
         { open: '(', close: ')' },
         { open: '"', close: '"' },
-        { open: '\'', close: '\'' },
+        { open: "'", close: "'" }
     ],
     surroundingPairs: [
         { open: '{', close: '}' },
         { open: '[', close: ']' },
         { open: '(', close: ')' },
         { open: '"', close: '"' },
-        { open: '\'', close: '\'' },
+        { open: "'", close: "'" }
     ]
 };
 export var language = {
     defaultToken: '',
     tokenPostfix: '.lua',
     keywords: [
-        'and', 'break', 'do', 'else', 'elseif',
-        'end', 'false', 'for', 'function', 'goto', 'if',
-        'in', 'local', 'nil', 'not', 'or',
-        'repeat', 'return', 'then', 'true', 'until',
+        'and',
+        'break',
+        'do',
+        'else',
+        'elseif',
+        'end',
+        'false',
+        'for',
+        'function',
+        'goto',
+        'if',
+        'in',
+        'local',
+        'nil',
+        'not',
+        'or',
+        'repeat',
+        'return',
+        'then',
+        'true',
+        'until',
         'while'
     ],
     brackets: [
@@ -44,8 +60,26 @@ export var language = {
         { token: 'delimiter.parenthesis', open: '(', close: ')' }
     ],
     operators: [
-        '+', '-', '*', '/', '%', '^', '#', '==', '~=', '<=', '>=', '<', '>', '=',
-        ';', ':', ',', '.', '..', '...'
+        '+',
+        '-',
+        '*',
+        '/',
+        '%',
+        '^',
+        '#',
+        '==',
+        '~=',
+        '<=',
+        '>=',
+        '<',
+        '>',
+        '=',
+        ';',
+        ':',
+        ',',
+        '.',
+        '..',
+        '...'
     ],
     // we include these common regular expressions
     symbols: /[=><!~?:&|+\-*\/\^%]+/,
@@ -54,12 +88,15 @@ export var language = {
     tokenizer: {
         root: [
             // identifiers and keywords
-            [/[a-zA-Z_]\w*/, {
+            [
+                /[a-zA-Z_]\w*/,
+                {
                     cases: {
                         '@keywords': { token: 'keyword.$0' },
                         '@default': 'identifier'
                     }
-                }],
+                }
+            ],
             // whitespace
             { include: '@whitespace' },
             // keys
@@ -67,12 +104,15 @@ export var language = {
             [/({)(\s*)([a-zA-Z_]\w*)(\s*)(:)(?!:)/, ['@brackets', '', 'key', '', 'delimiter']],
             // delimiters and operators
             [/[{}()\[\]]/, '@brackets'],
-            [/@symbols/, {
+            [
+                /@symbols/,
+                {
                     cases: {
                         '@operators': 'delimiter',
                         '@default': ''
                     }
-                }],
+                }
+            ],
             // numbers
             [/\d*\.\d+([eE][\-+]?\d+)?/, 'number.float'],
             [/0[xX][0-9a-fA-F_]*[0-9a-fA-F]/, 'number.hex'],
@@ -83,33 +123,39 @@ export var language = {
             [/"([^"\\]|\\.)*$/, 'string.invalid'],
             [/'([^'\\]|\\.)*$/, 'string.invalid'],
             [/"/, 'string', '@string."'],
-            [/'/, 'string', '@string.\''],
+            [/'/, 'string', "@string.'"]
         ],
         whitespace: [
             [/[ \t\r\n]+/, ''],
             [/--\[([=]*)\[/, 'comment', '@comment.$1'],
-            [/--.*$/, 'comment'],
+            [/--.*$/, 'comment']
         ],
         comment: [
             [/[^\]]+/, 'comment'],
-            [/\]([=]*)\]/, {
+            [
+                /\]([=]*)\]/,
+                {
                     cases: {
                         '$1==$S2': { token: 'comment', next: '@pop' },
                         '@default': 'comment'
                     }
-                }],
+                }
+            ],
             [/./, 'comment']
         ],
         string: [
             [/[^\\"']+/, 'string'],
             [/@escapes/, 'string.escape'],
             [/\\./, 'string.escape.invalid'],
-            [/["']/, {
+            [
+                /["']/,
+                {
                     cases: {
                         '$#==$S2': { token: 'string', next: '@pop' },
                         '@default': 'string'
                     }
-                }]
-        ],
-    },
+                }
+            ]
+        ]
+    }
 };

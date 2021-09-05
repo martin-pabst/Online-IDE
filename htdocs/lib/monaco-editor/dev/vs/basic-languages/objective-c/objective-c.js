@@ -2,13 +2,14 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports"], function (require, exports) {
-    'use strict';
+define('vs/basic-languages/objective-c/objective-c',["require", "exports"], function (require, exports) {
+    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.language = exports.conf = void 0;
     exports.conf = {
         comments: {
             lineComment: '//',
-            blockComment: ['/*', '*/'],
+            blockComment: ['/*', '*/']
         },
         brackets: [
             ['{', '}'],
@@ -20,14 +21,14 @@ define(["require", "exports"], function (require, exports) {
             { open: '[', close: ']' },
             { open: '(', close: ')' },
             { open: '"', close: '"' },
-            { open: '\'', close: '\'' },
+            { open: "'", close: "'" }
         ],
         surroundingPairs: [
             { open: '{', close: '}' },
             { open: '[', close: ']' },
             { open: '(', close: ')' },
             { open: '"', close: '"' },
-            { open: '\'', close: '\'' },
+            { open: "'", close: "'" }
         ]
     };
     exports.language = {
@@ -118,7 +119,7 @@ define(["require", "exports"], function (require, exports) {
             'unsigned',
             'volatile',
             'void',
-            'while',
+            'while'
         ],
         decpart: /\d(_?\d)*/,
         decimal: /0|@decpart/,
@@ -130,33 +131,37 @@ define(["require", "exports"], function (require, exports) {
                 { include: '@strings' },
                 [/[,:;]/, 'delimiter'],
                 [/[{}\[\]()<>]/, '@brackets'],
-                [/[a-zA-Z@#]\w*/, {
+                [
+                    /[a-zA-Z@#]\w*/,
+                    {
                         cases: {
                             '@keywords': 'keyword',
                             '@default': 'identifier'
                         }
-                    }],
-                [/[<>=\\+\\-\\*\\/\\^\\|\\~,]|and\\b|or\\b|not\\b]/, 'operator'],
+                    }
+                ],
+                [/[<>=\\+\\-\\*\\/\\^\\|\\~,]|and\\b|or\\b|not\\b]/, 'operator']
             ],
-            whitespace: [
-                [/\s+/, 'white'],
-            ],
+            whitespace: [[/\s+/, 'white']],
             comments: [
                 ['\\/\\*', 'comment', '@comment'],
-                ['\\/\\/+.*', 'comment'],
+                ['\\/\\/+.*', 'comment']
             ],
             comment: [
                 ['\\*\\/', 'comment', '@pop'],
-                ['.', 'comment',],
+                ['.', 'comment']
             ],
             numbers: [
                 [/0[xX][0-9a-fA-F]*(_?[0-9a-fA-F])*/, 'number.hex'],
-                [/@decimal((\.@decpart)?([eE][\-+]?@decpart)?)[fF]*/, {
+                [
+                    /@decimal((\.@decpart)?([eE][\-+]?@decpart)?)[fF]*/,
+                    {
                         cases: {
                             '(\\d)*': 'number',
-                            '$0': 'number.float'
+                            $0: 'number.float'
                         }
-                    }]
+                    }
+                ]
             ],
             // Recognize strings, including those broken across lines with \ (but not without)
             strings: [
@@ -182,3 +187,4 @@ define(["require", "exports"], function (require, exports) {
         }
     };
 });
+

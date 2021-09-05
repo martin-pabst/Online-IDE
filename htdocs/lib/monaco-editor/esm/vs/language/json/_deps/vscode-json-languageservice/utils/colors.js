@@ -24,7 +24,7 @@ export function hexDigit(charCode) {
 }
 export function colorFromHex(text) {
     if (text[0] !== '#') {
-        return null;
+        return undefined;
     }
     switch (text.length) {
         case 4:
@@ -56,7 +56,7 @@ export function colorFromHex(text) {
                 alpha: (hexDigit(text.charCodeAt(7)) * 0x10 + hexDigit(text.charCodeAt(8))) / 255.0
             };
     }
-    return null;
+    return undefined;
 }
 export function colorFrom256RGB(red, green, blue, alpha) {
     if (alpha === void 0) { alpha = 1.0; }

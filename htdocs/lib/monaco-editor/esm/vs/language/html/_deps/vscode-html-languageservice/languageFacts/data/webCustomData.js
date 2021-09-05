@@ -3494,13 +3494,7 @@ export var htmlData = {
             "description": {
                 "kind": "markdown",
                 "value": "An enumerated attribute indicating what types of content can be dropped on an element, using the [Drag and Drop API](/en-US/docs/DragDrop/Drag_and_Drop). It can have the following values:\n\n*   `copy`, which indicates that dropping will create a copy of the element that was dragged\n*   `move`, which indicates that the element that was dragged will be moved to this new location.\n*   `link`, will create a link to the dragged data."
-            },
-            "references": [
-                {
-                    "name": "MDN Reference",
-                    "url": "https://developer.mozilla.org/docs/Web/HTML/Global_attributes/dropzone"
-                }
-            ]
+            }
         },
         {
             "name": "exportparts",
@@ -3982,6 +3976,14 @@ export var htmlData = {
             }
         },
         {
+            "name": "onmouseenter",
+            "description": "A pointing device is moved onto the element that has the listener attached."
+        },
+        {
+            "name": "onmouseleave",
+            "description": "A pointing device is moved off the element that has the listener attached."
+        },
+        {
             "name": "onmouseup",
             "description": {
                 "kind": "markdown",
@@ -4011,6 +4013,46 @@ export var htmlData = {
                 "kind": "markdown",
                 "value": "Playback is ready to start after having been paused or delayed due to lack of data."
             }
+        },
+        {
+            "name": "onpointercancel",
+            "description": "The pointer is unlikely to produce any more events."
+        },
+        {
+            "name": "onpointerdown",
+            "description": "The pointer enters the active buttons state."
+        },
+        {
+            "name": "onpointerenter",
+            "description": "Pointing device is moved inside the hit-testing boundary."
+        },
+        {
+            "name": "onpointerleave",
+            "description": "Pointing device is moved out of the hit-testing boundary."
+        },
+        {
+            "name": "onpointerlockchange",
+            "description": "The pointer was locked or released."
+        },
+        {
+            "name": "onpointerlockerror",
+            "description": "It was impossible to lock the pointer for technical reasons or because the permission was denied."
+        },
+        {
+            "name": "onpointermove",
+            "description": "The pointer changed coordinates."
+        },
+        {
+            "name": "onpointerout",
+            "description": "The pointing device moved out of hit-testing boundary or leaves detectable hover range."
+        },
+        {
+            "name": "onpointerover",
+            "description": "The pointing device is moved into the hit-testing boundary."
+        },
+        {
+            "name": "onpointerup",
+            "description": "The pointer leaves the active buttons state."
         },
         {
             "name": "onprogress",
@@ -4365,7 +4407,7 @@ export var htmlData = {
         },
         {
             "name": "aria-haspopup",
-            "valueSet": "b",
+            "valueSet": "haspopup",
             "references": [
                 {
                     "name": "WAI-ARIA Reference",
@@ -5907,6 +5949,60 @@ export var htmlData = {
                 },
                 {
                     "name": "viewport"
+                }
+            ]
+        },
+        {
+            "name": "haspopup",
+            "values": [
+                {
+                    "name": "false",
+                    "description": {
+                        "kind": "markdown",
+                        "value": "(default) Indicates the element does not have a popup."
+                    }
+                },
+                {
+                    "name": "true",
+                    "description": {
+                        "kind": "markdown",
+                        "value": "Indicates the popup is a menu."
+                    }
+                },
+                {
+                    "name": "menu",
+                    "description": {
+                        "kind": "markdown",
+                        "value": "Indicates the popup is a menu."
+                    }
+                },
+                {
+                    "name": "listbox",
+                    "description": {
+                        "kind": "markdown",
+                        "value": "Indicates the popup is a listbox."
+                    }
+                },
+                {
+                    "name": "tree",
+                    "description": {
+                        "kind": "markdown",
+                        "value": "Indicates the popup is a tree."
+                    }
+                },
+                {
+                    "name": "grid",
+                    "description": {
+                        "kind": "markdown",
+                        "value": "Indicates the popup is a grid."
+                    }
+                },
+                {
+                    "name": "dialog",
+                    "description": {
+                        "kind": "markdown",
+                        "value": "Indicates the popup is a dialog."
+                    }
                 }
             ]
         }

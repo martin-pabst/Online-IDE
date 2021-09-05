@@ -58,7 +58,7 @@ export function format(documentText, range, options) {
     }
     var editOperations = [];
     function addEdit(text, startOffset, endOffset) {
-        if (!hasError && startOffset < rangeEnd && endOffset > rangeStart && documentText.substring(startOffset, endOffset) !== text) {
+        if (!hasError && (!range || (startOffset < rangeEnd && endOffset > rangeStart)) && documentText.substring(startOffset, endOffset) !== text) {
             editOperations.push({ offset: startOffset, length: endOffset - startOffset, content: text });
         }
     }
@@ -72,12 +72,14 @@ export function format(documentText, range, options) {
         var firstTokenEnd = scanner.getTokenOffset() + scanner.getTokenLength() + formatTextStart;
         var secondToken = scanNext();
         var replaceContent = '';
+        var needsLineBreak = false;
         while (!lineBreak && (secondToken === 12 /* LineCommentTrivia */ || secondToken === 13 /* BlockCommentTrivia */)) {
             // comments on the same line: keep them on the same line, but ignore them otherwise
             var commentTokenStart = scanner.getTokenOffset() + formatTextStart;
             addEdit(' ', firstTokenEnd, commentTokenStart);
             firstTokenEnd = scanner.getTokenOffset() + scanner.getTokenLength() + formatTextStart;
-            replaceContent = secondToken === 12 /* LineCommentTrivia */ ? newLineAndIndent() : '';
+            needsLineBreak = secondToken === 12 /* LineCommentTrivia */;
+            replaceContent = needsLineBreak ? newLineAndIndent() : '';
             secondToken = scanNext();
         }
         if (secondToken === 2 /* CloseBraceToken */) {
@@ -107,17 +109,21 @@ export function format(documentText, range, options) {
                     if (lineBreak) {
                         replaceContent = newLineAndIndent();
                     }
-                    else {
+                    else if (!needsLineBreak) {
                         // symbol following comment on the same line: keep on same line, separate with ' '
                         replaceContent = ' ';
                     }
                     break;
                 case 6 /* ColonToken */:
-                    replaceContent = ' ';
+                    if (!needsLineBreak) {
+                        replaceContent = ' ';
+                    }
                     break;
                 case 10 /* StringLiteral */:
                     if (secondToken === 6 /* ColonToken */) {
-                        replaceContent = '';
+                        if (!needsLineBreak) {
+                            replaceContent = '';
+                        }
                         break;
                     }
                 // fall through
@@ -128,7 +134,9 @@ export function format(documentText, range, options) {
                 case 2 /* CloseBraceToken */:
                 case 4 /* CloseBracketToken */:
                     if (secondToken === 12 /* LineCommentTrivia */ || secondToken === 13 /* BlockCommentTrivia */) {
-                        replaceContent = ' ';
+                        if (!needsLineBreak) {
+                            replaceContent = ' ';
+                        }
                     }
                     else if (secondToken !== 5 /* CommaToken */ && secondToken !== 17 /* EOF */) {
                         hasError = true;
@@ -141,6 +149,9 @@ export function format(documentText, range, options) {
             if (lineBreak && (secondToken === 12 /* LineCommentTrivia */ || secondToken === 13 /* BlockCommentTrivia */)) {
                 replaceContent = newLineAndIndent();
             }
+        }
+        if (secondToken === 17 /* EOF */) {
+            replaceContent = options.insertFinalNewline ? eol : '';
         }
         var secondTokenStart = scanner.getTokenOffset() + formatTextStart;
         addEdit(replaceContent, firstTokenEnd, secondTokenStart);

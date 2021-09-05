@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as objects from '../../../common/objects.js';
-import { renderCodicons } from '../../../common/codicons.js';
-import { escape } from '../../../common/strings.js';
-var HighlightedLabel = /** @class */ (function () {
-    function HighlightedLabel(container, supportCodicons) {
-        this.supportCodicons = supportCodicons;
+import * as dom from '../../dom.js';
+import { renderLabelWithIcons } from '../iconLabel/iconLabels.js';
+export class HighlightedLabel {
+    constructor(container, supportIcons) {
+        this.supportIcons = supportIcons;
         this.text = '';
         this.title = '';
         this.highlights = [];
@@ -16,16 +16,10 @@ var HighlightedLabel = /** @class */ (function () {
         this.domNode.className = 'monaco-highlighted-label';
         container.appendChild(this.domNode);
     }
-    Object.defineProperty(HighlightedLabel.prototype, "element", {
-        get: function () {
-            return this.domNode;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    HighlightedLabel.prototype.set = function (text, highlights, title, escapeNewLines) {
-        if (highlights === void 0) { highlights = []; }
-        if (title === void 0) { title = ''; }
+    get element() {
+        return this.domNode;
+    }
+    set(text, highlights = [], title = '', escapeNewLines) {
         if (!text) {
             text = '';
         }
@@ -36,47 +30,36 @@ var HighlightedLabel = /** @class */ (function () {
         if (this.didEverRender && this.text === text && this.title === title && objects.equals(this.highlights, highlights)) {
             return;
         }
-        if (!Array.isArray(highlights)) {
-            highlights = [];
-        }
         this.text = text;
         this.title = title;
         this.highlights = highlights;
         this.render();
-    };
-    HighlightedLabel.prototype.render = function () {
-        var htmlContent = '';
-        var pos = 0;
-        for (var _i = 0, _a = this.highlights; _i < _a.length; _i++) {
-            var highlight = _a[_i];
+    }
+    render() {
+        const children = [];
+        let pos = 0;
+        for (const highlight of this.highlights) {
             if (highlight.end === highlight.start) {
                 continue;
             }
             if (pos < highlight.start) {
-                htmlContent += '<span>';
-                var substring_1 = this.text.substring(pos, highlight.start);
-                htmlContent += this.supportCodicons ? renderCodicons(escape(substring_1)) : escape(substring_1);
-                htmlContent += '</span>';
+                const substring = this.text.substring(pos, highlight.start);
+                children.push(dom.$('span', undefined, ...this.supportIcons ? renderLabelWithIcons(substring) : [substring]));
                 pos = highlight.end;
             }
+            const substring = this.text.substring(highlight.start, highlight.end);
+            const element = dom.$('span.highlight', undefined, ...this.supportIcons ? renderLabelWithIcons(substring) : [substring]);
             if (highlight.extraClasses) {
-                htmlContent += "<span class=\"highlight " + highlight.extraClasses + "\">";
+                element.classList.add(highlight.extraClasses);
             }
-            else {
-                htmlContent += "<span class=\"highlight\">";
-            }
-            var substring = this.text.substring(highlight.start, highlight.end);
-            htmlContent += this.supportCodicons ? renderCodicons(escape(substring)) : escape(substring);
-            htmlContent += '</span>';
+            children.push(element);
             pos = highlight.end;
         }
         if (pos < this.text.length) {
-            htmlContent += '<span>';
-            var substring = this.text.substring(pos);
-            htmlContent += this.supportCodicons ? renderCodicons(escape(substring)) : escape(substring);
-            htmlContent += '</span>';
+            const substring = this.text.substring(pos);
+            children.push(dom.$('span', undefined, ...this.supportIcons ? renderLabelWithIcons(substring) : [substring]));
         }
-        this.domNode.innerHTML = htmlContent;
+        dom.reset(this.domNode, ...children);
         if (this.title) {
             this.domNode.title = this.title;
         }
@@ -84,15 +67,14 @@ var HighlightedLabel = /** @class */ (function () {
             this.domNode.removeAttribute('title');
         }
         this.didEverRender = true;
-    };
-    HighlightedLabel.escapeNewLines = function (text, highlights) {
-        var total = 0;
-        var extra = 0;
-        return text.replace(/\r\n|\r|\n/g, function (match, offset) {
+    }
+    static escapeNewLines(text, highlights) {
+        let total = 0;
+        let extra = 0;
+        return text.replace(/\r\n|\r|\n/g, (match, offset) => {
             extra = match === '\r\n' ? -1 : 0;
             offset += total;
-            for (var _i = 0, highlights_1 = highlights; _i < highlights_1.length; _i++) {
-                var highlight = highlights_1[_i];
+            for (const highlight of highlights) {
                 if (highlight.end <= offset) {
                     continue;
                 }
@@ -106,7 +88,5 @@ var HighlightedLabel = /** @class */ (function () {
             total += extra;
             return '\u23CE';
         });
-    };
-    return HighlightedLabel;
-}());
-export { HighlightedLabel };
+    }
+}

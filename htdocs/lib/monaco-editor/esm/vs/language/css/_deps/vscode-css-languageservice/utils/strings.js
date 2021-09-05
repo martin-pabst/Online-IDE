@@ -81,3 +81,13 @@ export function getLimitedString(str, ellipsis) {
     }
     return str.slice(0, 140) + (ellipsis ? '\u2026' : '');
 }
+/**
+ * Limit of string length.
+ */
+export function trim(str, regexp) {
+    var m = regexp.exec(str);
+    if (m && m[0].length) {
+        return str.substr(0, str.length - m[0].length);
+    }
+    return str;
+}

@@ -2,13 +2,14 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports"], function (require, exports) {
-    'use strict';
+define('vs/basic-languages/cpp/cpp',["require", "exports"], function (require, exports) {
+    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.language = exports.conf = void 0;
     exports.conf = {
         comments: {
             lineComment: '//',
-            blockComment: ['/*', '*/'],
+            blockComment: ['/*', '*/']
         },
         brackets: [
             ['{', '}'],
@@ -19,20 +20,20 @@ define(["require", "exports"], function (require, exports) {
             { open: '[', close: ']' },
             { open: '{', close: '}' },
             { open: '(', close: ')' },
-            { open: '\'', close: '\'', notIn: ['string', 'comment'] },
-            { open: '"', close: '"', notIn: ['string'] },
+            { open: "'", close: "'", notIn: ['string', 'comment'] },
+            { open: '"', close: '"', notIn: ['string'] }
         ],
         surroundingPairs: [
             { open: '{', close: '}' },
             { open: '[', close: ']' },
             { open: '(', close: ')' },
             { open: '"', close: '"' },
-            { open: '\'', close: '\'' },
+            { open: "'", close: "'" }
         ],
         folding: {
             markers: {
-                start: new RegExp("^\\s*#pragma\\s+region\\b"),
-                end: new RegExp("^\\s*#pragma\\s+endregion\\b")
+                start: new RegExp('^\\s*#pragma\\s+region\\b'),
+                end: new RegExp('^\\s*#pragma\\s+endregion\\b')
             }
         }
     };
@@ -225,11 +226,43 @@ define(["require", "exports"], function (require, exports) {
             '__wchar_t'
         ],
         operators: [
-            '=', '>', '<', '!', '~', '?', ':',
-            '==', '<=', '>=', '!=', '&&', '||', '++', '--',
-            '+', '-', '*', '/', '&', '|', '^', '%', '<<',
-            '>>', '>>>', '+=', '-=', '*=', '/=', '&=', '|=',
-            '^=', '%=', '<<=', '>>=', '>>>='
+            '=',
+            '>',
+            '<',
+            '!',
+            '~',
+            '?',
+            ':',
+            '==',
+            '<=',
+            '>=',
+            '!=',
+            '&&',
+            '||',
+            '++',
+            '--',
+            '+',
+            '-',
+            '*',
+            '/',
+            '&',
+            '|',
+            '^',
+            '%',
+            '<<',
+            '>>',
+            '>>>',
+            '+=',
+            '-=',
+            '*=',
+            '/=',
+            '&=',
+            '|=',
+            '^=',
+            '%=',
+            '<<=',
+            '>>=',
+            '>>>='
         ],
         // we include these common regular expressions
         symbols: /[=><!~?:&|+\-*\/\^%]+/,
@@ -243,28 +276,37 @@ define(["require", "exports"], function (require, exports) {
                 // C++ 11 Raw String
                 [/@encoding?R\"(?:([^ ()\\\t]*))\(/, { token: 'string.raw.begin', next: '@raw.$1' }],
                 // identifiers and keywords
-                [/[a-zA-Z_]\w*/, {
+                [
+                    /[a-zA-Z_]\w*/,
+                    {
                         cases: {
                             '@keywords': { token: 'keyword.$0' },
                             '@default': 'identifier'
                         }
-                    }],
+                    }
+                ],
+                // The preprocessor checks must be before whitespace as they check /^\s*#/ which
+                // otherwise fails to match later after other whitespace has been removed.
+                // Inclusion
+                [/^\s*#\s*include/, { token: 'keyword.directive.include', next: '@include' }],
+                // Preprocessor directive
+                [/^\s*#\s*\w+/, 'keyword.directive'],
                 // whitespace
                 { include: '@whitespace' },
                 // [[ attributes ]].
-                [/\[\[.*\]\]/, 'annotation'],
-                [/^\s*#include/, { token: 'keyword.directive.include', next: '@include' }],
-                // Preprocessor directive
-                [/^\s*#\s*\w+/, 'keyword'],
+                [/\[\s*\[/, { token: 'annotation', next: '@annotation' }],
                 // delimiters and operators
                 [/[{}()\[\]]/, '@brackets'],
                 [/[<>](?!@symbols)/, '@brackets'],
-                [/@symbols/, {
+                [
+                    /@symbols/,
+                    {
                         cases: {
                             '@operators': 'delimiter',
                             '@default': ''
                         }
-                    }],
+                    }
+                ],
                 // numbers
                 [/\d*\d+[eE]([\-+]?\d+)?(@floatsuffix)/, 'number.float'],
                 [/\d*\.\d+([eE][\-+]?\d+)?(@floatsuffix)/, 'number.float'],
@@ -287,12 +329,18 @@ define(["require", "exports"], function (require, exports) {
                 [/[ \t\r\n]+/, ''],
                 [/\/\*\*(?!\/)/, 'comment.doc', '@doccomment'],
                 [/\/\*/, 'comment', '@comment'],
-                [/\/\/.*$/, 'comment'],
+                [/\/\/.*\\$/, 'comment', '@linecomment'],
+                [/\/\/.*$/, 'comment']
             ],
             comment: [
                 [/[^\/*]+/, 'comment'],
                 [/\*\//, 'comment', '@pop'],
                 [/[\/*]/, 'comment']
+            ],
+            //For use with continuous line comments
+            linecomment: [
+                [/.*[^\\]$/, 'comment', '@pop'],
+                [/[^]+/, 'comment']
             ],
             //Identical copy of comment above, except for the addition of .doc
             doccomment: [
@@ -307,19 +355,51 @@ define(["require", "exports"], function (require, exports) {
                 [/"/, 'string', '@pop']
             ],
             raw: [
-                [/(.*)(\))(?:([^ ()\\\t]*))(\")/, {
+                [
+                    /(.*)(\))(?:([^ ()\\\t"]*))(\")/,
+                    {
                         cases: {
-                            '$3==$S2': ['string.raw', 'string.raw.end', 'string.raw.end', { token: 'string.raw.end', next: '@pop' }],
+                            '$3==$S2': [
+                                'string.raw',
+                                'string.raw.end',
+                                'string.raw.end',
+                                { token: 'string.raw.end', next: '@pop' }
+                            ],
                             '@default': ['string.raw', 'string.raw', 'string.raw', 'string.raw']
                         }
                     }
                 ],
                 [/.*/, 'string.raw']
             ],
+            annotation: [
+                { include: '@whitespace' },
+                [/using|alignas/, 'keyword'],
+                [/[a-zA-Z0-9_]+/, 'annotation'],
+                [/[,:]/, 'delimiter'],
+                [/[()]/, '@brackets'],
+                [/\]\s*\]/, { token: 'annotation', next: '@pop' }]
+            ],
             include: [
-                [/(\s*)(<)([^<>]*)(>)/, ['', 'keyword.directive.include.begin', 'string.include.identifier', { token: 'keyword.directive.include.end', next: '@pop' }]],
-                [/(\s*)(")([^"]*)(")/, ['', 'keyword.directive.include.begin', 'string.include.identifier', { token: 'keyword.directive.include.end', next: '@pop' }]]
+                [
+                    /(\s*)(<)([^<>]*)(>)/,
+                    [
+                        '',
+                        'keyword.directive.include.begin',
+                        'string.include.identifier',
+                        { token: 'keyword.directive.include.end', next: '@pop' }
+                    ]
+                ],
+                [
+                    /(\s*)(")([^"]*)(")/,
+                    [
+                        '',
+                        'keyword.directive.include.begin',
+                        'string.include.identifier',
+                        { token: 'keyword.directive.include.end', next: '@pop' }
+                    ]
+                ]
             ]
-        },
+        }
     };
 });
+

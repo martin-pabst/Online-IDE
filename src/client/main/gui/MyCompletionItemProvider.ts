@@ -24,7 +24,7 @@ export class MyCompletionItemProvider implements monaco.languages.CompletionItem
             //@ts-ignore
             let sw = this.main.getMonacoEditor()._contentWidgets["editor.widget.suggestWidget"].widget;
             if (this.first) {
-                sw.toggleDetails();
+                sw._widget.toggleDetails();
                 this.first = false;
             }
             // sw.toggleSuggestionDetails();

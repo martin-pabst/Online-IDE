@@ -1,20 +1,23 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the MIT License. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
-'use strict';
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 export var conf = {
     comments: {
-        lineComment: '#',
+        lineComment: '#'
     },
-    brackets: [['{', '}'], ['[', ']'], ['(', ')']],
+    brackets: [
+        ['{', '}'],
+        ['[', ']'],
+        ['(', ')']
+    ],
     autoClosingPairs: [
         { open: '{', close: '}' },
         { open: '[', close: ']' },
         { open: '(', close: ')' },
         { open: '"', close: '"' },
         { open: "'", close: "'" },
-        { open: '`', close: '`' },
+        { open: '`', close: '`' }
     ],
     surroundingPairs: [
         { open: '{', close: '}' },
@@ -22,8 +25,8 @@ export var conf = {
         { open: '(', close: ')' },
         { open: '"', close: '"' },
         { open: "'", close: "'" },
-        { open: '`', close: '`' },
-    ],
+        { open: '`', close: '`' }
+    ]
 };
 export var language = {
     defaultToken: '',
@@ -32,7 +35,7 @@ export var language = {
     brackets: [
         { token: 'delimiter.bracket', open: '{', close: '}' },
         { token: 'delimiter.parenthesis', open: '(', close: ')' },
-        { token: 'delimiter.square', open: '[', close: ']' },
+        { token: 'delimiter.square', open: '[', close: ']' }
     ],
     keywords: [
         'if',
@@ -53,7 +56,7 @@ export var language = {
         'set',
         'unset',
         'export',
-        'function',
+        'function'
     ],
     builtins: [
         'ab',
@@ -121,7 +124,7 @@ export var language = {
         'who',
         'write',
         'yes',
-        'zsh',
+        'zsh'
     ],
     // we include these common regular expressions
     symbols: /[=><!~?&|+\-*\/\^;\.,]+/,
@@ -136,8 +139,8 @@ export var language = {
                         '@keywords': 'keyword',
                         '@builtins': 'type.identifier',
                         '@default': ''
-                    },
-                },
+                    }
+                }
             ],
             { include: '@strings' },
             { include: '@parameters' },
@@ -146,17 +149,17 @@ export var language = {
             [/-+\w+/, 'attribute.name'],
             [/@symbols/, 'delimiter'],
             { include: '@numbers' },
-            [/[,;]/, 'delimiter'],
+            [/[,;]/, 'delimiter']
         ],
         whitespace: [
             [/\s+/, 'white'],
             [/(^#!.*$)/, 'metatag'],
-            [/(^#.*$)/, 'comment'],
+            [/(^#.*$)/, 'comment']
         ],
         numbers: [
             [/\d*\.\d+([eE][\-+]?\d+)?/, 'number.float'],
             [/0[xX][0-9a-fA-F_]*[0-9a-fA-F]/, 'number.hex'],
-            [/\d+/, 'number'],
+            [/\d+/, 'number']
         ],
         // Recognize strings, including those broken across lines
         strings: [
@@ -165,14 +168,23 @@ export var language = {
         ],
         stringBody: [
             [/'/, 'string', '@popall'],
-            [/./, 'string'],
+            [/./, 'string']
         ],
         dblStringBody: [
             [/"/, 'string', '@popall'],
-            [/./, 'string'],
+            [/./, 'string']
         ],
         heredoc: [
-            [/(<<[-<]?)(\s*)(['"`]?)([\w\-]+)(['"`]?)/, ['constants', 'white', 'string.heredoc.delimiter', 'string.heredoc', 'string.heredoc.delimiter']]
+            [
+                /(<<[-<]?)(\s*)(['"`]?)([\w\-]+)(['"`]?)/,
+                [
+                    'constants',
+                    'white',
+                    'string.heredoc.delimiter',
+                    'string.heredoc',
+                    'string.heredoc.delimiter'
+                ]
+            ]
         ],
         parameters: [
             [/\$\d+/, 'variable.predefined'],
@@ -181,27 +193,27 @@ export var language = {
             [/\$'/, 'variable', '@parameterBodyQuote'],
             [/\$"/, 'variable', '@parameterBodyDoubleQuote'],
             [/\$\(/, 'variable', '@parameterBodyParen'],
-            [/\$\{/, 'variable', '@parameterBodyCurlyBrace'],
+            [/\$\{/, 'variable', '@parameterBodyCurlyBrace']
         ],
         parameterBodyQuote: [
             [/[^#:%*@\-!_']+/, 'variable'],
             [/[#:%*@\-!_]/, 'delimiter'],
-            [/[']/, 'variable', '@pop'],
+            [/[']/, 'variable', '@pop']
         ],
         parameterBodyDoubleQuote: [
             [/[^#:%*@\-!_"]+/, 'variable'],
             [/[#:%*@\-!_]/, 'delimiter'],
-            [/["]/, 'variable', '@pop'],
+            [/["]/, 'variable', '@pop']
         ],
         parameterBodyParen: [
             [/[^#:%*@\-!_)]+/, 'variable'],
             [/[#:%*@\-!_]/, 'delimiter'],
-            [/[)]/, 'variable', '@pop'],
+            [/[)]/, 'variable', '@pop']
         ],
         parameterBodyCurlyBrace: [
             [/[^#:%*@\-!_}]+/, 'variable'],
             [/[#:%*@\-!_]/, 'delimiter'],
-            [/[}]/, 'variable', '@pop'],
-        ],
+            [/[}]/, 'variable', '@pop']
+        ]
     }
 };

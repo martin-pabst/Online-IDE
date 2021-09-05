@@ -4,9 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 import * as objects from '../utils/objects.js';
+import { cssData } from '../data/webCustomData.js';
+import { CSSDataProvider } from './dataProvider.js';
 var CSSDataManager = /** @class */ (function () {
-    function CSSDataManager(dataProviders) {
-        this.dataProviders = dataProviders;
+    function CSSDataManager(options) {
+        this.dataProviders = [];
         this._propertySet = {};
         this._atDirectiveSet = {};
         this._pseudoClassSet = {};
@@ -15,10 +17,15 @@ var CSSDataManager = /** @class */ (function () {
         this._atDirectives = [];
         this._pseudoClasses = [];
         this._pseudoElements = [];
-        this.collectData();
+        this.setDataProviders((options === null || options === void 0 ? void 0 : options.useDefaultDataProvider) !== false, (options === null || options === void 0 ? void 0 : options.customDataProviders) || []);
     }
-    CSSDataManager.prototype.addDataProviders = function (providers) {
-        this.dataProviders = this.dataProviders.concat(providers);
+    CSSDataManager.prototype.setDataProviders = function (builtIn, providers) {
+        var _a;
+        this.dataProviders = [];
+        if (builtIn) {
+            this.dataProviders.push(new CSSDataProvider(cssData));
+        }
+        (_a = this.dataProviders).push.apply(_a, providers);
         this.collectData();
     };
     /**
@@ -26,6 +33,10 @@ var CSSDataManager = /** @class */ (function () {
      */
     CSSDataManager.prototype.collectData = function () {
         var _this = this;
+        this._propertySet = {};
+        this._atDirectiveSet = {};
+        this._pseudoClassSet = {};
+        this._pseudoElementSet = {};
         this.dataProviders.forEach(function (provider) {
             provider.provideProperties().forEach(function (p) {
                 if (!_this._propertySet[p.name]) {

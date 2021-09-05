@@ -1,5 +1,5 @@
 // copied from js-beautify/js/lib/beautify-html.js
-// version: 1.10.2
+// version: 1.14.0
 /* AUTO-GENERATED. DO NOT MODIFY. */
 /*
 
@@ -77,100 +77,15 @@
 import { js_beautify } from "./beautify.js";
 import { css_beautify } from "./beautify-css.js";
 
-var legacy_beautify_html =
-/******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// define __esModule on exports
-/******/ 	__webpack_require__.r = function(exports) {
-/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 		}
-/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 	};
-/******/
-/******/ 	// create a fake namespace object
-/******/ 	// mode & 1: value is a module id, require it
-/******/ 	// mode & 2: merge all properties of value into the ns
-/******/ 	// mode & 4: return value when already ns object
-/******/ 	// mode & 8|1: behave like require
-/******/ 	__webpack_require__.t = function(value, mode) {
-/******/ 		if(mode & 1) value = __webpack_require__(value);
-/******/ 		if(mode & 8) return value;
-/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
-/******/ 		var ns = Object.create(null);
-/******/ 		__webpack_require__.r(ns);
-/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
-/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
-/******/ 		return ns;
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
-/******/
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 18);
-/******/ })
-/************************************************************************/
-/******/ ([
+var legacy_beautify_html;
+/******/ (function() { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ([
 /* 0 */,
 /* 1 */,
 /* 2 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module) {
 
-"use strict";
 /*jshint node:true */
 /*
   The MIT License (MIT)
@@ -594,9 +509,8 @@ module.exports.Output = Output;
 
 /***/ }),
 /* 3 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -657,9 +571,8 @@ module.exports.Token = Token;
 /* 4 */,
 /* 5 */,
 /* 6 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -729,10 +642,10 @@ function Options(options, merge_child_field) {
 
   this.indent_empty_lines = this._get_boolean('indent_empty_lines');
 
-  // valid templating languages ['django', 'erb', 'handlebars', 'php']
+  // valid templating languages ['django', 'erb', 'handlebars', 'php', 'smarty']
   // For now, 'auto' = all off for javascript, all on for html (and inline javascript).
   // other values ignored
-  this.templating = this._get_selection_list('templating', ['auto', 'none', 'django', 'erb', 'handlebars', 'php'], ['auto']);
+  this.templating = this._get_selection_list('templating', ['auto', 'none', 'django', 'erb', 'handlebars', 'php', 'smarty'], ['auto']);
 }
 
 Options.prototype._get_array = function(name, default_value) {
@@ -858,9 +771,8 @@ module.exports.mergeOpts = _mergeOpts;
 /***/ }),
 /* 7 */,
 /* 8 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -1057,9 +969,8 @@ module.exports.InputScanner = InputScanner;
 
 /***/ }),
 /* 9 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -1204,9 +1115,8 @@ module.exports.TOKEN = TOKEN;
 
 /***/ }),
 /* 10 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -1289,9 +1199,8 @@ module.exports.TokenStream = TokenStream;
 
 /***/ }),
 /* 11 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -1401,9 +1310,8 @@ module.exports.WhitespacePattern = WhitespacePattern;
 
 /***/ }),
 /* 12 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -1502,9 +1410,8 @@ module.exports.Pattern = Pattern;
 
 /***/ }),
 /* 13 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -1571,9 +1478,8 @@ module.exports.Directives = Directives;
 
 /***/ }),
 /* 14 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -1611,7 +1517,8 @@ var template_names = {
   django: false,
   erb: false,
   handlebars: false,
-  php: false
+  php: false,
+  smarty: false
 };
 
 // This lets templates appear anywhere we would do a readUntil
@@ -1632,12 +1539,15 @@ function TemplatablePattern(input_scanner, parent) {
     handlebars_comment: pattern.starting_with(/{{!--/).until_after(/--}}/),
     handlebars_unescaped: pattern.starting_with(/{{{/).until_after(/}}}/),
     handlebars: pattern.starting_with(/{{/).until_after(/}}/),
-    php: pattern.starting_with(/<\?(?:[=]|php)/).until_after(/\?>/),
+    php: pattern.starting_with(/<\?(?:[= ]|php)/).until_after(/\?>/),
     erb: pattern.starting_with(/<%[^%]/).until_after(/[^%]%>/),
     // django coflicts with handlebars a bit.
     django: pattern.starting_with(/{%/).until_after(/%}/),
     django_value: pattern.starting_with(/{{/).until_after(/}}/),
-    django_comment: pattern.starting_with(/{#/).until_after(/#}/)
+    django_comment: pattern.starting_with(/{#/).until_after(/#}/),
+    smarty: pattern.starting_with(/{(?=[^}{\s\n])/).until_after(/[^\s\n]}/),
+    smarty_comment: pattern.starting_with(/{\*/).until_after(/\*}/),
+    smarty_literal: pattern.starting_with(/{literal}/).until_after(/{\/literal}/)
   };
 }
 TemplatablePattern.prototype = new Pattern();
@@ -1711,8 +1621,13 @@ TemplatablePattern.prototype.__set_templated_pattern = function() {
   }
   if (!this._disabled.django) {
     items.push(this.__patterns.django._starting_pattern.source);
+    // The starting pattern for django is more complex because it has different
+    // patterns for value, comment, and other sections
     items.push(this.__patterns.django_value._starting_pattern.source);
     items.push(this.__patterns.django_comment._starting_pattern.source);
+  }
+  if (!this._disabled.smarty) {
+    items.push(this.__patterns.smarty._starting_pattern.source);
   }
 
   if (this._until_pattern) {
@@ -1759,6 +1674,17 @@ TemplatablePattern.prototype._read_template = function() {
           this.__patterns.django.read();
       }
     }
+    if (!this._disabled.smarty) {
+      // smarty cannot be enabled with django or handlebars enabled
+      if (this._disabled.django && this._disabled.handlebars) {
+        resulting_string = resulting_string ||
+          this.__patterns.smarty_comment.read();
+        resulting_string = resulting_string ||
+          this.__patterns.smarty_literal.read();
+        resulting_string = resulting_string ||
+          this.__patterns.smarty.read();
+      }
+    }
   }
   return resulting_string;
 };
@@ -1772,9 +1698,8 @@ module.exports.TemplatablePattern = TemplatablePattern;
 /* 16 */,
 /* 17 */,
 /* 18 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -1821,9 +1746,8 @@ module.exports.defaultOptions = function() {
 
 /***/ }),
 /* 19 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -1985,7 +1909,7 @@ var get_custom_beautifier_name = function(tag_check, raw_token) {
   // For those without a type attribute use default;
   if (typeAttribute.search('text/css') > -1) {
     result = 'css';
-  } else if (typeAttribute.search(/(text|application|dojo)\/(x-)?(javascript|ecmascript|jscript|livescript|(ld\+)?json|method|aspect)/) > -1) {
+  } else if (typeAttribute.search(/module|((text|application|dojo)\/(x-)?(javascript|ecmascript|jscript|livescript|(ld\+)?json|method|aspect))/) > -1) {
     result = 'javascript';
   } else if (typeAttribute.search(/(text|application|dojo)\/(x-)?(html)/) > -1) {
     result = 'html';
@@ -2372,10 +2296,12 @@ Beautifier.prototype._handle_tag_open = function(printer, raw_token, last_tag_to
   var parser_token = this._get_tag_open_token(raw_token);
 
   if ((last_tag_token.is_unformatted || last_tag_token.is_content_unformatted) &&
+    !last_tag_token.is_empty_element &&
     raw_token.type === TOKEN.TAG_OPEN && raw_token.text.indexOf('</') === 0) {
     // End element tags for unformatted or content_unformatted elements
     // are printed raw to keep any newlines inside them exactly the same.
     printer.add_raw_token(raw_token);
+    parser_token.start_tag_token = this._tag_stack.try_pop(parser_token.tag_name);
   } else {
     printer.traverse_whitespace(raw_token);
     this._set_tag_position(printer, raw_token, parser_token, last_tag_token, last_token);
@@ -2431,8 +2357,13 @@ var TagOpenParserToken = function(parent, raw_token) {
       tag_check_match = raw_token.text.match(/^<([^\s>]*)/);
       this.tag_check = tag_check_match ? tag_check_match[1] : '';
     } else {
-      tag_check_match = raw_token.text.match(/^{{[#\^]?([^\s}]+)/);
+      tag_check_match = raw_token.text.match(/^{{(?:[\^]|#\*?)?([^\s}]+)/);
       this.tag_check = tag_check_match ? tag_check_match[1] : '';
+
+      // handle "{{#> myPartial}}
+      if (raw_token.text === '{{#>' && this.tag_check === '>' && raw_token.next !== null) {
+        this.tag_check = raw_token.next.text;
+      }
     }
     this.tag_check = this.tag_check.toLowerCase();
 
@@ -2479,12 +2410,8 @@ Beautifier.prototype._set_tag_position = function(printer, raw_token, parser_tok
       // and do an ending needed
       if (this._do_optional_end_element(parser_token)) {
         if (!parser_token.is_inline_element) {
-          if (parser_token.parent) {
-            parser_token.parent.multiline_content = true;
-          }
           printer.print_newline(false);
         }
-
       }
 
       this._tag_stack.record_tag(parser_token); //push it on the tag stack
@@ -2521,21 +2448,28 @@ Beautifier.prototype._set_tag_position = function(printer, raw_token, parser_tok
     if (parser_token.tag_name === '!--' && last_token.type === TOKEN.TAG_CLOSE &&
       last_tag_token.is_end_tag && parser_token.text.indexOf('\n') === -1) {
       //Do nothing. Leave comments on same line.
-    } else if (!parser_token.is_inline_element && !parser_token.is_unformatted) {
-      printer.print_newline(false);
-    }
-  } else if (parser_token.is_unformatted || parser_token.is_content_unformatted) {
-    if (!parser_token.is_inline_element && !parser_token.is_unformatted) {
-      printer.print_newline(false);
+    } else {
+      if (!(parser_token.is_inline_element || parser_token.is_unformatted)) {
+        printer.print_newline(false);
+      }
+      this._calcluate_parent_multiline(printer, parser_token);
     }
   } else if (parser_token.is_end_tag) { //this tag is a double tag so check for tag-ending
-    if ((parser_token.start_tag_token && parser_token.start_tag_token.multiline_content) ||
-      !(parser_token.is_inline_element ||
-        (last_tag_token.is_inline_element) ||
-        (last_token.type === TOKEN.TAG_CLOSE &&
-          parser_token.start_tag_token === last_tag_token) ||
-        (last_token.type === 'TK_CONTENT')
-      )) {
+    var do_end_expand = false;
+
+    // deciding whether a block is multiline should not be this hard
+    do_end_expand = parser_token.start_tag_token && parser_token.start_tag_token.multiline_content;
+    do_end_expand = do_end_expand || (!parser_token.is_inline_element &&
+      !(last_tag_token.is_inline_element || last_tag_token.is_unformatted) &&
+      !(last_token.type === TOKEN.TAG_CLOSE && parser_token.start_tag_token === last_tag_token) &&
+      last_token.type !== 'TK_CONTENT'
+    );
+
+    if (parser_token.is_content_unformatted || parser_token.is_unformatted) {
+      do_end_expand = false;
+    }
+
+    if (do_end_expand) {
       printer.print_newline(false);
     }
   } else { // it's a start-tag
@@ -2551,17 +2485,25 @@ Beautifier.prototype._set_tag_position = function(printer, raw_token, parser_tok
       }
     }
 
-    if (!parser_token.is_inline_element && last_token.type !== 'TK_CONTENT') {
-      if (parser_token.parent) {
-        parser_token.parent.multiline_content = true;
-      }
+    if (!(parser_token.is_inline_element || parser_token.is_unformatted) &&
+      (last_token.type !== 'TK_CONTENT' || parser_token.is_content_unformatted)) {
       printer.print_newline(false);
     }
+
+    this._calcluate_parent_multiline(printer, parser_token);
+  }
+};
+
+Beautifier.prototype._calcluate_parent_multiline = function(printer, parser_token) {
+  if (parser_token.parent && printer._output.just_added_newline() &&
+    !((parser_token.is_inline_element || parser_token.is_unformatted) && parser_token.parent.is_inline_element)) {
+    parser_token.parent.multiline_content = true;
   }
 };
 
 //To be used for <p> tag special case:
-//var p_closers = ['address', 'article', 'aside', 'blockquote', 'details', 'div', 'dl', 'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'hr', 'main', 'nav', 'ol', 'p', 'pre', 'section', 'table', 'ul'];
+var p_closers = ['address', 'article', 'aside', 'blockquote', 'details', 'div', 'dl', 'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'hr', 'main', 'nav', 'ol', 'p', 'pre', 'section', 'table', 'ul'];
+var p_parent_excludes = ['a', 'audio', 'del', 'ins', 'map', 'noscript', 'video'];
 
 Beautifier.prototype._do_optional_end_element = function(parser_token) {
   var result = null;
@@ -2572,7 +2514,9 @@ Beautifier.prototype._do_optional_end_element = function(parser_token) {
   if (parser_token.is_empty_element || !parser_token.is_start_tag || !parser_token.parent) {
     return;
 
-  } else if (parser_token.tag_name === 'body') {
+  }
+
+  if (parser_token.tag_name === 'body') {
     // A head element’s end tag may be omitted if the head element is not immediately followed by a space character or a comment.
     result = result || this._tag_stack.try_pop('head');
 
@@ -2589,11 +2533,16 @@ Beautifier.prototype._do_optional_end_element = function(parser_token) {
     result = result || this._tag_stack.try_pop('dt', ['dl']);
     result = result || this._tag_stack.try_pop('dd', ['dl']);
 
-    //} else if (p_closers.indexOf(parser_token.tag_name) !== -1) {
-    //TODO: THIS IS A BUG FARM. We are not putting this into 1.8.0 as it is likely to blow up.
-    //A p element’s end tag may be omitted if the p element is immediately followed by an address, article, aside, blockquote, details, div, dl, fieldset, figcaption, figure, footer, form, h1, h2, h3, h4, h5, h6, header, hr, main, nav, ol, p, pre, section, table, or ul element, or if there is no more content in the parent element and the parent element is an HTML element that is not an a, audio, del, ins, map, noscript, or video element, or an autonomous custom element.
-    //result = result || this._tag_stack.try_pop('p', ['body']);
 
+  } else if (parser_token.parent.tag_name === 'p' && p_closers.indexOf(parser_token.tag_name) !== -1) {
+    // IMPORTANT: this else-if works because p_closers has no overlap with any other element we look for in this method
+    // check for the parent element is an HTML element that is not an <a>, <audio>, <del>, <ins>, <map>, <noscript>, or <video> element,  or an autonomous custom element.
+    // To do this right, this needs to be coded as an inclusion of the inverse of the exclusion above.
+    // But to start with (if we ignore "autonomous custom elements") the exclusion would be fine.
+    var p_parent = parser_token.parent.parent;
+    if (!p_parent || p_parent_excludes.indexOf(p_parent.tag_name) === -1) {
+      result = result || this._tag_stack.try_pop('p');
+    }
   } else if (parser_token.tag_name === 'rp' || parser_token.tag_name === 'rt') {
     // An rt element’s end tag may be omitted if the rt element is immediately followed by an rt or rp element, or if there is no more content in the parent element.
     // An rp element’s end tag may be omitted if the rp element is immediately followed by an rt or rp element, or if there is no more content in the parent element.
@@ -2668,9 +2617,8 @@ module.exports.Beautifier = Beautifier;
 
 /***/ }),
 /* 20 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -2766,9 +2714,8 @@ module.exports.Options = Options;
 
 /***/ }),
 /* 21 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -2834,7 +2781,7 @@ var Tokenizer = function(input_string, options) {
     word: templatable_reader.until(/[\n\r\t <]/),
     single_quote: templatable_reader.until_after(/'/),
     double_quote: templatable_reader.until_after(/"/),
-    attribute: templatable_reader.until(/[\n\r\t =\/>]/),
+    attribute: templatable_reader.until(/[\n\r\t =>]|\/>/),
     element_name: templatable_reader.until(/[\n\r\t >\/]/),
 
     handlebars_comment: pattern_reader.starting_with(/{{!--/).until_after(/--}}/),
@@ -2893,8 +2840,8 @@ Tokenizer.prototype._get_next_token = function(previous_token, open_token) { // 
 
   token = token || this._read_open_handlebars(c, open_token);
   token = token || this._read_attribute(c, previous_token, open_token);
-  token = token || this._read_raw_content(c, previous_token, open_token);
   token = token || this._read_close(c, open_token);
+  token = token || this._read_raw_content(c, previous_token, open_token);
   token = token || this._read_content_word(c);
   token = token || this._read_comment_or_cdata(c);
   token = token || this._read_processing(c);
@@ -3057,7 +3004,9 @@ Tokenizer.prototype._read_raw_content = function(c, previous_token, open_token) 
   var resulting_string = '';
   if (open_token && open_token.text[0] === '{') {
     resulting_string = this.__patterns.handlebars_raw_close.read();
-  } else if (previous_token.type === TOKEN.TAG_CLOSE && (previous_token.opened.text[0] === '<')) {
+  } else if (previous_token.type === TOKEN.TAG_CLOSE &&
+    previous_token.opened.text[0] === '<' && previous_token.text[0] !== '/') {
+    // ^^ empty tag has no content 
     var tag_name = previous_token.opened.text.substr(1).toLowerCase();
     if (tag_name === 'script' || tag_name === 'style') {
       // Script and style tags are allowed to have comments wrapping their content
@@ -3069,6 +3018,7 @@ Tokenizer.prototype._read_raw_content = function(c, previous_token, open_token) 
       }
       resulting_string = this._input.readUntil(new RegExp('</' + tag_name + '[\\n\\r\\t ]*?>', 'ig'));
     } else if (this._is_content_unformatted(tag_name)) {
+
       resulting_string = this._input.readUntil(new RegExp('</' + tag_name + '[\\n\\r\\t ]*?>', 'ig'));
     }
   }
@@ -3101,7 +3051,42 @@ module.exports.TOKEN = TOKEN;
 
 
 /***/ })
-/******/ ]);
+/******/ 	]);
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __webpack_require__(18);
+/******/ 	legacy_beautify_html = __webpack_exports__;
+/******/ 	
+/******/ })()
+;
 
 export function html_beautify(html_source, options) {
     return legacy_beautify_html(html_source, options, js_beautify, css_beautify);

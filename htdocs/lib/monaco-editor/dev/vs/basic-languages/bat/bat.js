@@ -2,9 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports"], function (require, exports) {
-    'use strict';
+define('vs/basic-languages/bat/bat',["require", "exports"], function (require, exports) {
+    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.language = exports.conf = void 0;
     exports.conf = {
         comments: {
             lineComment: 'REM'
@@ -18,17 +19,17 @@ define(["require", "exports"], function (require, exports) {
             { open: '{', close: '}' },
             { open: '[', close: ']' },
             { open: '(', close: ')' },
-            { open: '"', close: '"' },
+            { open: '"', close: '"' }
         ],
         surroundingPairs: [
             { open: '[', close: ']' },
             { open: '(', close: ')' },
-            { open: '"', close: '"' },
+            { open: '"', close: '"' }
         ],
         folding: {
             markers: {
-                start: new RegExp("^\\s*(::\\s*|REM\\s+)#region"),
-                end: new RegExp("^\\s*(::\\s*|REM\\s+)#endregion")
+                start: new RegExp('^\\s*(::\\s*|REM\\s+)#region'),
+                end: new RegExp('^\\s*(::\\s*|REM\\s+)#endregion')
             }
         }
     };
@@ -73,27 +74,34 @@ define(["require", "exports"], function (require, exports) {
                 [/[;,.]/, 'delimiter'],
                 // strings:
                 [/"/, 'string', '@string."'],
-                [/'/, 'string', '@string.\''],
+                [/'/, 'string', "@string.'"]
             ],
             string: [
-                [/[^\\"'%]+/, {
+                [
+                    /[^\\"'%]+/,
+                    {
                         cases: {
                             '@eos': { token: 'string', next: '@popall' },
                             '@default': 'string'
                         }
-                    }],
+                    }
+                ],
                 [/@escapes/, 'string.escape'],
                 [/\\./, 'string.escape.invalid'],
                 [/%[\w ]+%/, 'variable'],
                 [/%%[\w]+(?!\w)/, 'variable'],
-                [/["']/, {
+                [
+                    /["']/,
+                    {
                         cases: {
                             '$#==$S2': { token: 'string', next: '@pop' },
                             '@default': 'string'
                         }
-                    }],
+                    }
+                ],
                 [/$/, 'string', '@popall']
-            ],
+            ]
         }
     };
 });
+

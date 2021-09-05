@@ -2,40 +2,41 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports"], function (require, exports) {
-    'use strict';
+define('vs/basic-languages/kotlin/kotlin',["require", "exports"], function (require, exports) {
+    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.language = exports.conf = void 0;
     exports.conf = {
         // the default separators except `@$`
         wordPattern: /(-?\d*\.\d\w*)|([^\`\~\!\#\%\^\&\*\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s]+)/g,
         comments: {
             lineComment: '//',
-            blockComment: ['/*', '*/'],
+            blockComment: ['/*', '*/']
         },
         brackets: [
             ['{', '}'],
             ['[', ']'],
-            ['(', ')'],
+            ['(', ')']
         ],
         autoClosingPairs: [
             { open: '{', close: '}' },
             { open: '[', close: ']' },
             { open: '(', close: ')' },
             { open: '"', close: '"' },
-            { open: '\'', close: '\'' },
+            { open: "'", close: "'" }
         ],
         surroundingPairs: [
             { open: '{', close: '}' },
             { open: '[', close: ']' },
             { open: '(', close: ')' },
             { open: '"', close: '"' },
-            { open: '\'', close: '\'' },
-            { open: '<', close: '>' },
+            { open: "'", close: "'" },
+            { open: '<', close: '>' }
         ],
         folding: {
             markers: {
-                start: new RegExp("^\\s*//\\s*(?:(?:#?region\\b)|(?:<editor-fold\\b))"),
-                end: new RegExp("^\\s*//\\s*(?:(?:#?endregion\\b)|(?:</editor-fold>))")
+                start: new RegExp('^\\s*//\\s*(?:(?:#?region\\b)|(?:<editor-fold\\b))'),
+                end: new RegExp('^\\s*//\\s*(?:(?:#?endregion\\b)|(?:</editor-fold>))')
             }
         }
     };
@@ -43,21 +44,124 @@ define(["require", "exports"], function (require, exports) {
         defaultToken: '',
         tokenPostfix: '.kt',
         keywords: [
-            'as', 'as?', 'break', 'class', 'continue', 'do', 'else', 'false', 'for', 'fun', 'if',
-            'in', '!in', 'interface', 'is', '!is', 'null', 'object', 'package', 'return', 'super',
-            'this', 'throw', 'true', 'try', 'typealias', 'val', 'var', 'when', 'while', 'by',
-            'catch', 'constructor', 'delegate', 'dynamic', 'field', 'file', 'finally', 'get',
-            'import', 'init', 'param', 'property', 'receiver', 'set', 'setparam', 'where', 'actual',
-            'abstract', 'annotation', 'companion', 'const', 'crossinline', 'data', 'enum', 'expect',
-            'external', 'final', 'infix', 'inline', 'inner', 'internal', 'lateinit', 'noinline',
-            'open', 'operator', 'out', 'override', 'private', 'protected', 'public', 'reified',
-            'sealed', 'suspend', 'tailrec', 'vararg', 'field', 'it'
+            'as',
+            'as?',
+            'break',
+            'class',
+            'continue',
+            'do',
+            'else',
+            'false',
+            'for',
+            'fun',
+            'if',
+            'in',
+            '!in',
+            'interface',
+            'is',
+            '!is',
+            'null',
+            'object',
+            'package',
+            'return',
+            'super',
+            'this',
+            'throw',
+            'true',
+            'try',
+            'typealias',
+            'val',
+            'var',
+            'when',
+            'while',
+            'by',
+            'catch',
+            'constructor',
+            'delegate',
+            'dynamic',
+            'field',
+            'file',
+            'finally',
+            'get',
+            'import',
+            'init',
+            'param',
+            'property',
+            'receiver',
+            'set',
+            'setparam',
+            'where',
+            'actual',
+            'abstract',
+            'annotation',
+            'companion',
+            'const',
+            'crossinline',
+            'data',
+            'enum',
+            'expect',
+            'external',
+            'final',
+            'infix',
+            'inline',
+            'inner',
+            'internal',
+            'lateinit',
+            'noinline',
+            'open',
+            'operator',
+            'out',
+            'override',
+            'private',
+            'protected',
+            'public',
+            'reified',
+            'sealed',
+            'suspend',
+            'tailrec',
+            'vararg',
+            'field',
+            'it'
         ],
         operators: [
-            '+', '-', '*', '/', '%', '=', '+=', '-=', '*=', '/=',
-            '%=', '++', '--', '&&', '||', '!', '==', '!=', '===',
-            '!==', '>', '<', '<=', '>=', '[', ']', '!!', '?.', '?:',
-            '::', '..', ':', '?', '->', '@', ';', '$', '_'
+            '+',
+            '-',
+            '*',
+            '/',
+            '%',
+            '=',
+            '+=',
+            '-=',
+            '*=',
+            '/=',
+            '%=',
+            '++',
+            '--',
+            '&&',
+            '||',
+            '!',
+            '==',
+            '!=',
+            '===',
+            '!==',
+            '>',
+            '<',
+            '<=',
+            '>=',
+            '[',
+            ']',
+            '!!',
+            '?.',
+            '?:',
+            '::',
+            '..',
+            ':',
+            '?',
+            '->',
+            '@',
+            ';',
+            '$',
+            '_'
         ],
         // we include these common regular expressions
         symbols: /[=><!~?:&|+\-*\/\^%]+/,
@@ -72,23 +176,29 @@ define(["require", "exports"], function (require, exports) {
                 // class name highlighting
                 [/[A-Z][\w\$]*/, 'type.identifier'],
                 // identifiers and keywords
-                [/[a-zA-Z_$][\w$]*/, {
+                [
+                    /[a-zA-Z_$][\w$]*/,
+                    {
                         cases: {
                             '@keywords': { token: 'keyword.$0' },
                             '@default': 'identifier'
                         }
-                    }],
+                    }
+                ],
                 // whitespace
                 { include: '@whitespace' },
                 // delimiters and operators
                 [/[{}()\[\]]/, '@brackets'],
                 [/[<>](?!@symbols)/, '@brackets'],
-                [/@symbols/, {
+                [
+                    /@symbols/,
+                    {
                         cases: {
                             '@operators': 'delimiter',
                             '@default': ''
                         }
-                    }],
+                    }
+                ],
                 // @ annotations.
                 [/@\s*[a-zA-Z_\$][\w\$]*/, 'annotation'],
                 // numbers
@@ -114,7 +224,7 @@ define(["require", "exports"], function (require, exports) {
                 [/[ \t\r\n]+/, ''],
                 [/\/\*\*(?!\/)/, 'comment.doc', '@javadoc'],
                 [/\/\*/, 'comment', '@comment'],
-                [/\/\/.*$/, 'comment'],
+                [/\/\/.*$/, 'comment']
             ],
             comment: [
                 [/[^\/*]+/, 'comment'],
@@ -142,7 +252,8 @@ define(["require", "exports"], function (require, exports) {
                 [/\\./, 'string.escape.invalid'],
                 [/"""/, 'string', '@pop'],
                 [/./, 'string']
-            ],
-        },
+            ]
+        }
     };
 });
+

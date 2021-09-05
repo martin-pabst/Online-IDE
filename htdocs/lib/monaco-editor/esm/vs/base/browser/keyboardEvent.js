@@ -5,10 +5,10 @@
 import * as browser from './browser.js';
 import { KeyCodeUtils, SimpleKeybinding } from '../common/keyCodes.js';
 import * as platform from '../common/platform.js';
-var KEY_CODE_MAP = new Array(230);
-var INVERSE_KEY_CODE_MAP = new Array(112 /* MAX_VALUE */);
+let KEY_CODE_MAP = new Array(230);
+let INVERSE_KEY_CODE_MAP = new Array(112 /* MAX_VALUE */);
 (function () {
-    for (var i = 0; i < INVERSE_KEY_CODE_MAP.length; i++) {
+    for (let i = 0; i < INVERSE_KEY_CODE_MAP.length; i++) {
         INVERSE_KEY_CODE_MAP[i] = -1;
     }
     function define(code, keyCode) {
@@ -130,10 +130,7 @@ var INVERSE_KEY_CODE_MAP = new Array(112 /* MAX_VALUE */);
      * If an Input Method Editor is processing key input and the event is keydown, return 229.
      */
     define(229, 109 /* KEY_IN_COMPOSITION */);
-    if (browser.isIE) {
-        define(91, 57 /* Meta */);
-    }
-    else if (browser.isFirefox) {
+    if (browser.isFirefox) {
         define(59, 80 /* US_SEMICOLON */);
         define(107, 81 /* US_EQUAL */);
         define(109, 83 /* US_MINUS */);
@@ -155,19 +152,19 @@ var INVERSE_KEY_CODE_MAP = new Array(112 /* MAX_VALUE */);
 function extractKeyCode(e) {
     if (e.charCode) {
         // "keypress" events mostly
-        var char = String.fromCharCode(e.charCode).toUpperCase();
+        let char = String.fromCharCode(e.charCode).toUpperCase();
         return KeyCodeUtils.fromString(char);
     }
     return KEY_CODE_MAP[e.keyCode] || 0 /* Unknown */;
 }
-var ctrlKeyMod = (platform.isMacintosh ? 256 /* WinCtrl */ : 2048 /* CtrlCmd */);
-var altKeyMod = 512 /* Alt */;
-var shiftKeyMod = 1024 /* Shift */;
-var metaKeyMod = (platform.isMacintosh ? 2048 /* CtrlCmd */ : 256 /* WinCtrl */);
-var StandardKeyboardEvent = /** @class */ (function () {
-    function StandardKeyboardEvent(source) {
+const ctrlKeyMod = (platform.isMacintosh ? 256 /* WinCtrl */ : 2048 /* CtrlCmd */);
+const altKeyMod = 512 /* Alt */;
+const shiftKeyMod = 1024 /* Shift */;
+const metaKeyMod = (platform.isMacintosh ? 2048 /* CtrlCmd */ : 256 /* WinCtrl */);
+export class StandardKeyboardEvent {
+    constructor(source) {
         this._standardKeyboardEventBrand = true;
-        var e = source;
+        let e = source;
         this.browserEvent = e;
         this.target = e.target;
         this.ctrlKey = e.ctrlKey;
@@ -185,28 +182,28 @@ var StandardKeyboardEvent = /** @class */ (function () {
         this._asRuntimeKeybinding = this._computeRuntimeKeybinding();
         // console.log(`code: ${e.code}, keyCode: ${e.keyCode}, key: ${e.key}`);
     }
-    StandardKeyboardEvent.prototype.preventDefault = function () {
+    preventDefault() {
         if (this.browserEvent && this.browserEvent.preventDefault) {
             this.browserEvent.preventDefault();
         }
-    };
-    StandardKeyboardEvent.prototype.stopPropagation = function () {
+    }
+    stopPropagation() {
         if (this.browserEvent && this.browserEvent.stopPropagation) {
             this.browserEvent.stopPropagation();
         }
-    };
-    StandardKeyboardEvent.prototype.toKeybinding = function () {
+    }
+    toKeybinding() {
         return this._asRuntimeKeybinding;
-    };
-    StandardKeyboardEvent.prototype.equals = function (other) {
+    }
+    equals(other) {
         return this._asKeybinding === other;
-    };
-    StandardKeyboardEvent.prototype._computeKeybinding = function () {
-        var key = 0 /* Unknown */;
+    }
+    _computeKeybinding() {
+        let key = 0 /* Unknown */;
         if (this.keyCode !== 5 /* Ctrl */ && this.keyCode !== 4 /* Shift */ && this.keyCode !== 6 /* Alt */ && this.keyCode !== 57 /* Meta */) {
             key = this.keyCode;
         }
-        var result = 0;
+        let result = 0;
         if (this.ctrlKey) {
             result |= ctrlKeyMod;
         }
@@ -221,14 +218,12 @@ var StandardKeyboardEvent = /** @class */ (function () {
         }
         result |= key;
         return result;
-    };
-    StandardKeyboardEvent.prototype._computeRuntimeKeybinding = function () {
-        var key = 0 /* Unknown */;
+    }
+    _computeRuntimeKeybinding() {
+        let key = 0 /* Unknown */;
         if (this.keyCode !== 5 /* Ctrl */ && this.keyCode !== 4 /* Shift */ && this.keyCode !== 6 /* Alt */ && this.keyCode !== 57 /* Meta */) {
             key = this.keyCode;
         }
         return new SimpleKeybinding(this.ctrlKey, this.shiftKey, this.altKey, this.metaKey, key);
-    };
-    return StandardKeyboardEvent;
-}());
-export { StandardKeyboardEvent };
+    }
+}

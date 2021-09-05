@@ -2,13 +2,14 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports"], function (require, exports) {
-    'use strict';
+define('vs/basic-languages/go/go',["require", "exports"], function (require, exports) {
+    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.language = exports.conf = void 0;
     exports.conf = {
         comments: {
             lineComment: '//',
-            blockComment: ['/*', '*/'],
+            blockComment: ['/*', '*/']
         },
         brackets: [
             ['{', '}'],
@@ -21,7 +22,7 @@ define(["require", "exports"], function (require, exports) {
             { open: '(', close: ')' },
             { open: '`', close: '`', notIn: ['string'] },
             { open: '"', close: '"', notIn: ['string'] },
-            { open: '\'', close: '\'', notIn: ['string', 'comment'] },
+            { open: "'", close: "'", notIn: ['string', 'comment'] }
         ],
         surroundingPairs: [
             { open: '{', close: '}' },
@@ -29,7 +30,7 @@ define(["require", "exports"], function (require, exports) {
             { open: '(', close: ')' },
             { open: '`', close: '`' },
             { open: '"', close: '"' },
-            { open: '\'', close: '\'' },
+            { open: "'", close: "'" }
         ]
     };
     exports.language = {
@@ -82,13 +83,56 @@ define(["require", "exports"], function (require, exports) {
             'int',
             'uintptr',
             'string',
-            'nil',
+            'nil'
         ],
         operators: [
-            '+', '-', '*', '/', '%', '&', '|', '^', '<<', '>>', '&^',
-            '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '<<=', '>>=', '&^=',
-            '&&', '||', '<-', '++', '--', '==', '<', '>', '=', '!', '!=', '<=', '>=', ':=', '...',
-            '(', ')', '', ']', '{', '}', ',', ';', '.', ':'
+            '+',
+            '-',
+            '*',
+            '/',
+            '%',
+            '&',
+            '|',
+            '^',
+            '<<',
+            '>>',
+            '&^',
+            '+=',
+            '-=',
+            '*=',
+            '/=',
+            '%=',
+            '&=',
+            '|=',
+            '^=',
+            '<<=',
+            '>>=',
+            '&^=',
+            '&&',
+            '||',
+            '<-',
+            '++',
+            '--',
+            '==',
+            '<',
+            '>',
+            '=',
+            '!',
+            '!=',
+            '<=',
+            '>=',
+            ':=',
+            '...',
+            '(',
+            ')',
+            '',
+            ']',
+            '{',
+            '}',
+            ',',
+            ';',
+            '.',
+            ':'
         ],
         // we include these common regular expressions
         symbols: /[=><!~?:&|+\-*\/\^%]+/,
@@ -97,12 +141,15 @@ define(["require", "exports"], function (require, exports) {
         tokenizer: {
             root: [
                 // identifiers and keywords
-                [/[a-zA-Z_]\w*/, {
+                [
+                    /[a-zA-Z_]\w*/,
+                    {
                         cases: {
                             '@keywords': { token: 'keyword.$0' },
                             '@default': 'identifier'
                         }
-                    }],
+                    }
+                ],
                 // whitespace
                 { include: '@whitespace' },
                 // [[ attributes ]].
@@ -112,12 +159,15 @@ define(["require", "exports"], function (require, exports) {
                 // delimiters and operators
                 [/[{}()\[\]]/, '@brackets'],
                 [/[<>](?!@symbols)/, '@brackets'],
-                [/@symbols/, {
+                [
+                    /@symbols/,
+                    {
                         cases: {
                             '@operators': 'delimiter',
                             '@default': ''
                         }
-                    }],
+                    }
+                ],
                 // numbers
                 [/\d*\d+[eE]([\-+]?\d+)?/, 'number.float'],
                 [/\d*\.\d+([eE][\-+]?\d+)?/, 'number.float'],
@@ -131,7 +181,7 @@ define(["require", "exports"], function (require, exports) {
                 // strings
                 [/"([^"\\]|\\.)*$/, 'string.invalid'],
                 [/"/, 'string', '@string'],
-                [/`/, "string", "@rawstring"],
+                [/`/, 'string', '@rawstring'],
                 // characters
                 [/'[^\\']'/, 'string'],
                 [/(')(@escapes)(')/, ['string', 'string.escape', 'string']],
@@ -141,7 +191,7 @@ define(["require", "exports"], function (require, exports) {
                 [/[ \t\r\n]+/, ''],
                 [/\/\*\*(?!\/)/, 'comment.doc', '@doccomment'],
                 [/\/\*/, 'comment', '@comment'],
-                [/\/\/.*$/, 'comment'],
+                [/\/\/.*$/, 'comment']
             ],
             comment: [
                 [/[^\/*]+/, 'comment'],
@@ -165,9 +215,10 @@ define(["require", "exports"], function (require, exports) {
                 [/"/, 'string', '@pop']
             ],
             rawstring: [
-                [/[^\`]/, "string"],
-                [/`/, "string", "@pop"]
-            ],
-        },
+                [/[^\`]/, 'string'],
+                [/`/, 'string', '@pop']
+            ]
+        }
     };
 });
+

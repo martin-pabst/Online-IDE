@@ -2,40 +2,41 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports"], function (require, exports) {
-    'use strict';
+define('vs/basic-languages/pascal/pascal',["require", "exports"], function (require, exports) {
+    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.language = exports.conf = void 0;
     exports.conf = {
         // the default separators except `@$`
         wordPattern: /(-?\d*\.\d\w*)|([^\`\~\!\#\%\^\&\*\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s]+)/g,
         comments: {
             lineComment: '//',
-            blockComment: ['{', '}'],
+            blockComment: ['{', '}']
         },
         brackets: [
             ['{', '}'],
             ['[', ']'],
             ['(', ')'],
-            ['<', '>'],
+            ['<', '>']
         ],
         autoClosingPairs: [
             { open: '{', close: '}' },
             { open: '[', close: ']' },
             { open: '(', close: ')' },
             { open: '<', close: '>' },
-            { open: '\'', close: '\'' },
+            { open: "'", close: "'" }
         ],
         surroundingPairs: [
             { open: '{', close: '}' },
             { open: '[', close: ']' },
             { open: '(', close: ')' },
             { open: '<', close: '>' },
-            { open: '\'', close: '\'' },
+            { open: "'", close: "'" }
         ],
         folding: {
             markers: {
                 start: new RegExp("^\\s*\\{\\$REGION(\\s\\'.*\\')?\\}"),
-                end: new RegExp("^\\s*\\{\\$ENDREGION\\}")
+                end: new RegExp('^\\s*\\{\\$ENDREGION\\}')
             }
         }
     };
@@ -50,31 +51,146 @@ define(["require", "exports"], function (require, exports) {
             { open: '<', close: '>', token: 'delimiter.angle' }
         ],
         keywords: [
-            'absolute', 'abstract', 'all', 'and_then', 'array', 'as', 'asm',
-            'attribute', 'begin', 'bindable', 'case', 'class', 'const',
-            'contains', 'default', 'div', 'else', 'end', 'except',
-            'exports', 'external', 'far', 'file', 'finalization', 'finally',
-            'forward', 'generic', 'goto', 'if', 'implements', 'import', 'in',
-            'index', 'inherited', 'initialization', 'interrupt', 'is', 'label',
-            'library', 'mod', 'module', 'name', 'near', 'not', 'object', 'of',
-            'on', 'only', 'operator', 'or_else', 'otherwise', 'override',
-            'package', 'packed', 'pow', 'private', 'program', 'protected',
-            'public', 'published', 'interface', 'implementation', 'qualified',
-            'read', 'record', 'resident', 'requires', 'resourcestring',
-            'restricted', 'segment', 'set', 'shl', 'shr', 'specialize', 'stored',
-            'then', 'threadvar', 'to', 'try', 'type', 'unit', 'uses', 'var',
-            'view', 'virtual', 'dynamic', 'overload', 'reintroduce', 'with',
-            'write', 'xor', 'true', 'false', 'procedure', 'function',
-            'constructor', 'destructor', 'property', 'break', 'continue', 'exit',
-            'abort', 'while', 'do', 'for', 'raise', 'repeat', 'until'
+            'absolute',
+            'abstract',
+            'all',
+            'and_then',
+            'array',
+            'as',
+            'asm',
+            'attribute',
+            'begin',
+            'bindable',
+            'case',
+            'class',
+            'const',
+            'contains',
+            'default',
+            'div',
+            'else',
+            'end',
+            'except',
+            'exports',
+            'external',
+            'far',
+            'file',
+            'finalization',
+            'finally',
+            'forward',
+            'generic',
+            'goto',
+            'if',
+            'implements',
+            'import',
+            'in',
+            'index',
+            'inherited',
+            'initialization',
+            'interrupt',
+            'is',
+            'label',
+            'library',
+            'mod',
+            'module',
+            'name',
+            'near',
+            'not',
+            'object',
+            'of',
+            'on',
+            'only',
+            'operator',
+            'or_else',
+            'otherwise',
+            'override',
+            'package',
+            'packed',
+            'pow',
+            'private',
+            'program',
+            'protected',
+            'public',
+            'published',
+            'interface',
+            'implementation',
+            'qualified',
+            'read',
+            'record',
+            'resident',
+            'requires',
+            'resourcestring',
+            'restricted',
+            'segment',
+            'set',
+            'shl',
+            'shr',
+            'specialize',
+            'stored',
+            'strict',
+            'then',
+            'threadvar',
+            'to',
+            'try',
+            'type',
+            'unit',
+            'uses',
+            'var',
+            'view',
+            'virtual',
+            'dynamic',
+            'overload',
+            'reintroduce',
+            'with',
+            'write',
+            'xor',
+            'true',
+            'false',
+            'procedure',
+            'function',
+            'constructor',
+            'destructor',
+            'property',
+            'break',
+            'continue',
+            'exit',
+            'abort',
+            'while',
+            'do',
+            'for',
+            'raise',
+            'repeat',
+            'until'
         ],
         typeKeywords: [
-            'boolean', 'double', 'byte', 'integer', 'shortint', 'char',
-            'longint', 'float', 'string'
+            'boolean',
+            'double',
+            'byte',
+            'integer',
+            'shortint',
+            'char',
+            'longint',
+            'float',
+            'string'
         ],
         operators: [
-            '=', '>', '<', '<=', '>=', '<>', ':', ':=', 'and', 'or',
-            '+', '-', '*', '/', '@', '&', '^', '%'
+            '=',
+            '>',
+            '<',
+            '<=',
+            '>=',
+            '<>',
+            ':',
+            ':=',
+            'and',
+            'or',
+            '+',
+            '-',
+            '*',
+            '/',
+            '@',
+            '&',
+            '^',
+            '%'
         ],
         // we include these common regular expressions
         symbols: /[=><:@\^&|+\-*\/\^%]+/,
@@ -82,23 +198,29 @@ define(["require", "exports"], function (require, exports) {
         tokenizer: {
             root: [
                 // identifiers and keywords
-                [/[a-zA-Z_][\w]*/, {
+                [
+                    /[a-zA-Z_][\w]*/,
+                    {
                         cases: {
                             '@keywords': { token: 'keyword.$0' },
                             '@default': 'identifier'
                         }
-                    }],
+                    }
+                ],
                 // whitespace
                 { include: '@whitespace' },
                 // delimiters and operators
                 [/[{}()\[\]]/, '@brackets'],
                 [/[<>](?!@symbols)/, '@brackets'],
-                [/@symbols/, {
+                [
+                    /@symbols/,
+                    {
                         cases: {
                             '@operators': 'delimiter',
                             '@default': ''
                         }
-                    }],
+                    }
+                ],
                 // numbers
                 [/\d*\.\d+([eE][\-+]?\d+)?/, 'number.float'],
                 [/\$[0-9a-fA-F]{1,16}/, 'number.hex'],
@@ -127,8 +249,9 @@ define(["require", "exports"], function (require, exports) {
             whitespace: [
                 [/[ \t\r\n]+/, 'white'],
                 [/\{/, 'comment', '@comment'],
-                [/\/\/.*$/, 'comment'],
-            ],
-        },
+                [/\/\/.*$/, 'comment']
+            ]
+        }
     };
 });
+

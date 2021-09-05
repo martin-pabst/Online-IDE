@@ -2,38 +2,37 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 export var conf = {
     // the default separators except `@$`
     wordPattern: /(-?\d*\.\d\w*)|([^\`\~\!\#\%\^\&\*\(\)\-\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s]+)/g,
     comments: {
         lineComment: '//',
-        blockComment: ['/*', '*/'],
+        blockComment: ['/*', '*/']
     },
     brackets: [
         ['{', '}'],
         ['[', ']'],
-        ['(', ')'],
+        ['(', ')']
     ],
     autoClosingPairs: [
         { open: '{', close: '}' },
         { open: '[', close: ']' },
         { open: '(', close: ')' },
         { open: '"', close: '"' },
-        { open: '\'', close: '\'' },
+        { open: "'", close: "'" }
     ],
     surroundingPairs: [
         { open: '{', close: '}' },
         { open: '[', close: ']' },
         { open: '(', close: ')' },
         { open: '"', close: '"' },
-        { open: '\'', close: '\'' },
-        { open: '<', close: '>' },
+        { open: "'", close: "'" },
+        { open: '<', close: '>' }
     ],
     folding: {
         markers: {
-            start: new RegExp("^\\s*//\\s*(?:(?:#?region\\b)|(?:<editor-fold\\b))"),
-            end: new RegExp("^\\s*//\\s*(?:(?:#?endregion\\b)|(?:</editor-fold>))")
+            start: new RegExp('^\\s*//\\s*(?:(?:#?region\\b)|(?:<editor-fold\\b))'),
+            end: new RegExp('^\\s*//\\s*(?:(?:#?endregion\\b)|(?:</editor-fold>))')
         }
     }
 };
@@ -182,7 +181,9 @@ var keywords = [
 ];
 // create case variations of the keywords - apex is case insensitive, but we can't make the highlighter case insensitive
 // because we use a heuristic to assume that identifiers starting with an upper case letter are types.
-var uppercaseFirstLetter = function (lowercase) { return lowercase.charAt(0).toUpperCase() + lowercase.substr(1); };
+var uppercaseFirstLetter = function (lowercase) {
+    return lowercase.charAt(0).toUpperCase() + lowercase.substr(1);
+};
 var keywordsWithCaseVariations = [];
 keywords.forEach(function (lowercase) {
     keywordsWithCaseVariations.push(lowercase);
@@ -194,11 +195,43 @@ export var language = {
     tokenPostfix: '.apex',
     keywords: keywordsWithCaseVariations,
     operators: [
-        '=', '>', '<', '!', '~', '?', ':',
-        '==', '<=', '>=', '!=', '&&', '||', '++', '--',
-        '+', '-', '*', '/', '&', '|', '^', '%', '<<',
-        '>>', '>>>', '+=', '-=', '*=', '/=', '&=', '|=',
-        '^=', '%=', '<<=', '>>=', '>>>='
+        '=',
+        '>',
+        '<',
+        '!',
+        '~',
+        '?',
+        ':',
+        '==',
+        '<=',
+        '>=',
+        '!=',
+        '&&',
+        '||',
+        '++',
+        '--',
+        '+',
+        '-',
+        '*',
+        '/',
+        '&',
+        '|',
+        '^',
+        '%',
+        '<<',
+        '>>',
+        '>>>',
+        '+=',
+        '-=',
+        '*=',
+        '/=',
+        '&=',
+        '|=',
+        '^=',
+        '%=',
+        '<<=',
+        '>>=',
+        '>>>='
     ],
     // we include these common regular expressions
     symbols: /[=><!~?:&|+\-*\/\^%]+/,
@@ -211,30 +244,39 @@ export var language = {
     tokenizer: {
         root: [
             // identifiers and keywords
-            [/[a-z_$][\w$]*/, {
+            [
+                /[a-z_$][\w$]*/,
+                {
                     cases: {
                         '@keywords': { token: 'keyword.$0' },
                         '@default': 'identifier'
                     }
-                }],
+                }
+            ],
             // assume that identifiers starting with an uppercase letter are types
-            [/[A-Z][\w\$]*/, {
+            [
+                /[A-Z][\w\$]*/,
+                {
                     cases: {
                         '@keywords': { token: 'keyword.$0' },
                         '@default': 'type.identifier'
                     }
-                }],
+                }
+            ],
             // whitespace
             { include: '@whitespace' },
             // delimiters and operators
             [/[{}()\[\]]/, '@brackets'],
             [/[<>](?!@symbols)/, '@brackets'],
-            [/@symbols/, {
+            [
+                /@symbols/,
+                {
                     cases: {
                         '@operators': 'delimiter',
                         '@default': ''
                     }
-                }],
+                }
+            ],
             // @ annotations.
             [/@\s*[a-zA-Z_\$][\w\$]*/, 'annotation'],
             // numbers
@@ -248,7 +290,7 @@ export var language = {
             [/"([^"\\]|\\.)*$/, 'string.invalid'],
             [/'([^'\\]|\\.)*$/, 'string.invalid'],
             [/"/, 'string', '@string."'],
-            [/'/, 'string', '@string.\''],
+            [/'/, 'string', "@string.'"],
             // characters
             [/'[^\\']'/, 'string'],
             [/(')(@escapes)(')/, ['string', 'string.escape', 'string']],
@@ -258,7 +300,7 @@ export var language = {
             [/[ \t\r\n]+/, ''],
             [/\/\*\*(?!\/)/, 'comment.doc', '@apexdoc'],
             [/\/\*/, 'comment', '@comment'],
-            [/\/\/.*$/, 'comment'],
+            [/\/\/.*$/, 'comment']
         ],
         comment: [
             [/[^\/*]+/, 'comment'],
@@ -277,8 +319,15 @@ export var language = {
             [/[^\\"']+/, 'string'],
             [/@escapes/, 'string.escape'],
             [/\\./, 'string.escape.invalid'],
-            [/["']/, { cases: { '$#==$S2': { token: 'string', next: '@pop' },
-                        '@default': 'string' } }]
-        ],
-    },
+            [
+                /["']/,
+                {
+                    cases: {
+                        '$#==$S2': { token: 'string', next: '@pop' },
+                        '@default': 'string'
+                    }
+                }
+            ]
+        ]
+    }
 };

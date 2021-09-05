@@ -7,15 +7,18 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+import { trim } from "../utils/strings.js";
 /// <summary>
 /// Nodes for the css 2.1 specification. See for reference:
 /// http://www.w3.org/TR/CSS21/grammar.html#grammar
@@ -70,36 +73,37 @@ export var NodeType;
     NodeType[NodeType["For"] = 45] = "For";
     NodeType[NodeType["Each"] = 46] = "Each";
     NodeType[NodeType["While"] = 47] = "While";
-    NodeType[NodeType["MixinContent"] = 48] = "MixinContent";
-    NodeType[NodeType["Media"] = 49] = "Media";
-    NodeType[NodeType["Keyframe"] = 50] = "Keyframe";
-    NodeType[NodeType["FontFace"] = 51] = "FontFace";
-    NodeType[NodeType["Import"] = 52] = "Import";
-    NodeType[NodeType["Namespace"] = 53] = "Namespace";
-    NodeType[NodeType["Invocation"] = 54] = "Invocation";
-    NodeType[NodeType["FunctionDeclaration"] = 55] = "FunctionDeclaration";
-    NodeType[NodeType["ReturnStatement"] = 56] = "ReturnStatement";
-    NodeType[NodeType["MediaQuery"] = 57] = "MediaQuery";
-    NodeType[NodeType["FunctionParameter"] = 58] = "FunctionParameter";
-    NodeType[NodeType["FunctionArgument"] = 59] = "FunctionArgument";
-    NodeType[NodeType["KeyframeSelector"] = 60] = "KeyframeSelector";
-    NodeType[NodeType["ViewPort"] = 61] = "ViewPort";
-    NodeType[NodeType["Document"] = 62] = "Document";
-    NodeType[NodeType["AtApplyRule"] = 63] = "AtApplyRule";
-    NodeType[NodeType["CustomPropertyDeclaration"] = 64] = "CustomPropertyDeclaration";
-    NodeType[NodeType["CustomPropertySet"] = 65] = "CustomPropertySet";
-    NodeType[NodeType["ListEntry"] = 66] = "ListEntry";
-    NodeType[NodeType["Supports"] = 67] = "Supports";
-    NodeType[NodeType["SupportsCondition"] = 68] = "SupportsCondition";
-    NodeType[NodeType["NamespacePrefix"] = 69] = "NamespacePrefix";
-    NodeType[NodeType["GridLine"] = 70] = "GridLine";
-    NodeType[NodeType["Plugin"] = 71] = "Plugin";
-    NodeType[NodeType["UnknownAtRule"] = 72] = "UnknownAtRule";
-    NodeType[NodeType["Use"] = 73] = "Use";
-    NodeType[NodeType["ModuleConfiguration"] = 74] = "ModuleConfiguration";
-    NodeType[NodeType["Forward"] = 75] = "Forward";
-    NodeType[NodeType["ForwardVisibility"] = 76] = "ForwardVisibility";
-    NodeType[NodeType["Module"] = 77] = "Module";
+    NodeType[NodeType["MixinContentReference"] = 48] = "MixinContentReference";
+    NodeType[NodeType["MixinContentDeclaration"] = 49] = "MixinContentDeclaration";
+    NodeType[NodeType["Media"] = 50] = "Media";
+    NodeType[NodeType["Keyframe"] = 51] = "Keyframe";
+    NodeType[NodeType["FontFace"] = 52] = "FontFace";
+    NodeType[NodeType["Import"] = 53] = "Import";
+    NodeType[NodeType["Namespace"] = 54] = "Namespace";
+    NodeType[NodeType["Invocation"] = 55] = "Invocation";
+    NodeType[NodeType["FunctionDeclaration"] = 56] = "FunctionDeclaration";
+    NodeType[NodeType["ReturnStatement"] = 57] = "ReturnStatement";
+    NodeType[NodeType["MediaQuery"] = 58] = "MediaQuery";
+    NodeType[NodeType["FunctionParameter"] = 59] = "FunctionParameter";
+    NodeType[NodeType["FunctionArgument"] = 60] = "FunctionArgument";
+    NodeType[NodeType["KeyframeSelector"] = 61] = "KeyframeSelector";
+    NodeType[NodeType["ViewPort"] = 62] = "ViewPort";
+    NodeType[NodeType["Document"] = 63] = "Document";
+    NodeType[NodeType["AtApplyRule"] = 64] = "AtApplyRule";
+    NodeType[NodeType["CustomPropertyDeclaration"] = 65] = "CustomPropertyDeclaration";
+    NodeType[NodeType["CustomPropertySet"] = 66] = "CustomPropertySet";
+    NodeType[NodeType["ListEntry"] = 67] = "ListEntry";
+    NodeType[NodeType["Supports"] = 68] = "Supports";
+    NodeType[NodeType["SupportsCondition"] = 69] = "SupportsCondition";
+    NodeType[NodeType["NamespacePrefix"] = 70] = "NamespacePrefix";
+    NodeType[NodeType["GridLine"] = 71] = "GridLine";
+    NodeType[NodeType["Plugin"] = 72] = "Plugin";
+    NodeType[NodeType["UnknownAtRule"] = 73] = "UnknownAtRule";
+    NodeType[NodeType["Use"] = 74] = "Use";
+    NodeType[NodeType["ModuleConfiguration"] = 75] = "ModuleConfiguration";
+    NodeType[NodeType["Forward"] = 76] = "Forward";
+    NodeType[NodeType["ForwardVisibility"] = 77] = "ForwardVisibility";
+    NodeType[NodeType["Module"] = 78] = "Module";
 })(NodeType || (NodeType = {}));
 export var ReferenceType;
 (function (ReferenceType) {
@@ -166,7 +170,7 @@ var Node = /** @class */ (function () {
     }
     Object.defineProperty(Node.prototype, "end", {
         get: function () { return this.offset + this.length; },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Node.prototype, "type", {
@@ -176,7 +180,7 @@ var Node = /** @class */ (function () {
         set: function (type) {
             this.nodeType = type;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Node.prototype.getTextProvider = function () {
@@ -398,7 +402,7 @@ var Identifier = /** @class */ (function (_super) {
         get: function () {
             return NodeType.Identifier;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Identifier.prototype.containsInterpolation = function () {
@@ -416,7 +420,7 @@ var Stylesheet = /** @class */ (function (_super) {
         get: function () {
             return NodeType.Stylesheet;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return Stylesheet;
@@ -431,7 +435,7 @@ var Declarations = /** @class */ (function (_super) {
         get: function () {
             return NodeType.Declarations;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return Declarations;
@@ -460,7 +464,7 @@ var RuleSet = /** @class */ (function (_super) {
         get: function () {
             return NodeType.Ruleset;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     RuleSet.prototype.getSelectors = function () {
@@ -484,7 +488,7 @@ var Selector = /** @class */ (function (_super) {
         get: function () {
             return NodeType.Selector;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return Selector;
@@ -499,7 +503,7 @@ var SimpleSelector = /** @class */ (function (_super) {
         get: function () {
             return NodeType.SimpleSelector;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return SimpleSelector;
@@ -514,7 +518,7 @@ var AtApplyRule = /** @class */ (function (_super) {
         get: function () {
             return NodeType.AtApplyRule;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     AtApplyRule.prototype.setIdentifier = function (node) {
@@ -537,39 +541,6 @@ var AbstractDeclaration = /** @class */ (function (_super) {
     return AbstractDeclaration;
 }(Node));
 export { AbstractDeclaration };
-var CustomPropertyDeclaration = /** @class */ (function (_super) {
-    __extends(CustomPropertyDeclaration, _super);
-    function CustomPropertyDeclaration(offset, length) {
-        return _super.call(this, offset, length) || this;
-    }
-    Object.defineProperty(CustomPropertyDeclaration.prototype, "type", {
-        get: function () {
-            return NodeType.CustomPropertyDeclaration;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    CustomPropertyDeclaration.prototype.setProperty = function (node) {
-        return this.setNode('property', node);
-    };
-    CustomPropertyDeclaration.prototype.getProperty = function () {
-        return this.property;
-    };
-    CustomPropertyDeclaration.prototype.setValue = function (value) {
-        return this.setNode('value', value);
-    };
-    CustomPropertyDeclaration.prototype.getValue = function () {
-        return this.value;
-    };
-    CustomPropertyDeclaration.prototype.setPropertySet = function (value) {
-        return this.setNode('propertySet', value);
-    };
-    CustomPropertyDeclaration.prototype.getPropertySet = function () {
-        return this.propertySet;
-    };
-    return CustomPropertyDeclaration;
-}(AbstractDeclaration));
-export { CustomPropertyDeclaration };
 var CustomPropertySet = /** @class */ (function (_super) {
     __extends(CustomPropertySet, _super);
     function CustomPropertySet(offset, length) {
@@ -579,7 +550,7 @@ var CustomPropertySet = /** @class */ (function (_super) {
         get: function () {
             return NodeType.CustomPropertySet;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return CustomPropertySet;
@@ -596,7 +567,7 @@ var Declaration = /** @class */ (function (_super) {
         get: function () {
             return NodeType.Declaration;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Declaration.prototype.setProperty = function (node) {
@@ -640,6 +611,27 @@ var Declaration = /** @class */ (function (_super) {
     return Declaration;
 }(AbstractDeclaration));
 export { Declaration };
+var CustomPropertyDeclaration = /** @class */ (function (_super) {
+    __extends(CustomPropertyDeclaration, _super);
+    function CustomPropertyDeclaration(offset, length) {
+        return _super.call(this, offset, length) || this;
+    }
+    Object.defineProperty(CustomPropertyDeclaration.prototype, "type", {
+        get: function () {
+            return NodeType.CustomPropertyDeclaration;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    CustomPropertyDeclaration.prototype.setPropertySet = function (value) {
+        return this.setNode('propertySet', value);
+    };
+    CustomPropertyDeclaration.prototype.getPropertySet = function () {
+        return this.propertySet;
+    };
+    return CustomPropertyDeclaration;
+}(Declaration));
+export { CustomPropertyDeclaration };
 var Property = /** @class */ (function (_super) {
     __extends(Property, _super);
     function Property(offset, length) {
@@ -649,7 +641,7 @@ var Property = /** @class */ (function (_super) {
         get: function () {
             return NodeType.Property;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Property.prototype.setIdentifier = function (value) {
@@ -659,7 +651,7 @@ var Property = /** @class */ (function (_super) {
         return this.identifier;
     };
     Property.prototype.getName = function () {
-        return this.getText();
+        return trim(this.getText(), /[_\+]+$/); /* +_: less merge */
     };
     Property.prototype.isCustomProperty = function () {
         return !!this.identifier && this.identifier.isCustomProperty;
@@ -676,7 +668,7 @@ var Invocation = /** @class */ (function (_super) {
         get: function () {
             return NodeType.Invocation;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Invocation.prototype.getArguments = function () {
@@ -697,7 +689,7 @@ var Function = /** @class */ (function (_super) {
         get: function () {
             return NodeType.Function;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Function.prototype.setIdentifier = function (node) {
@@ -721,7 +713,7 @@ var FunctionParameter = /** @class */ (function (_super) {
         get: function () {
             return NodeType.FunctionParameter;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     FunctionParameter.prototype.setIdentifier = function (node) {
@@ -751,7 +743,7 @@ var FunctionArgument = /** @class */ (function (_super) {
         get: function () {
             return NodeType.FunctionArgument;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     FunctionArgument.prototype.setIdentifier = function (node) {
@@ -781,7 +773,7 @@ var IfStatement = /** @class */ (function (_super) {
         get: function () {
             return NodeType.If;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     IfStatement.prototype.setExpression = function (node) {
@@ -802,7 +794,7 @@ var ForStatement = /** @class */ (function (_super) {
         get: function () {
             return NodeType.For;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     ForStatement.prototype.setVariable = function (node) {
@@ -820,7 +812,7 @@ var EachStatement = /** @class */ (function (_super) {
         get: function () {
             return NodeType.Each;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     EachStatement.prototype.getVariables = function () {
@@ -841,7 +833,7 @@ var WhileStatement = /** @class */ (function (_super) {
         get: function () {
             return NodeType.While;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return WhileStatement;
@@ -856,7 +848,7 @@ var ElseStatement = /** @class */ (function (_super) {
         get: function () {
             return NodeType.Else;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return ElseStatement;
@@ -871,7 +863,7 @@ var FunctionDeclaration = /** @class */ (function (_super) {
         get: function () {
             return NodeType.FunctionDeclaration;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     FunctionDeclaration.prototype.setIdentifier = function (node) {
@@ -901,7 +893,7 @@ var ViewPort = /** @class */ (function (_super) {
         get: function () {
             return NodeType.ViewPort;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return ViewPort;
@@ -916,7 +908,7 @@ var FontFace = /** @class */ (function (_super) {
         get: function () {
             return NodeType.FontFace;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return FontFace;
@@ -931,7 +923,7 @@ var NestedProperties = /** @class */ (function (_super) {
         get: function () {
             return NodeType.NestedProperties;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return NestedProperties;
@@ -946,7 +938,7 @@ var Keyframe = /** @class */ (function (_super) {
         get: function () {
             return NodeType.Keyframe;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Keyframe.prototype.setKeyword = function (keyword) {
@@ -976,7 +968,7 @@ var KeyframeSelector = /** @class */ (function (_super) {
         get: function () {
             return NodeType.KeyframeSelector;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return KeyframeSelector;
@@ -991,7 +983,7 @@ var Import = /** @class */ (function (_super) {
         get: function () {
             return NodeType.Import;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Import.prototype.setMedialist = function (node) {
@@ -1013,7 +1005,7 @@ var Use = /** @class */ (function (_super) {
         get: function () {
             return NodeType.Use;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Use.prototype.getParameters = function () {
@@ -1040,7 +1032,7 @@ var ModuleConfiguration = /** @class */ (function (_super) {
         get: function () {
             return NodeType.ModuleConfiguration;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     ModuleConfiguration.prototype.setIdentifier = function (node) {
@@ -1070,7 +1062,7 @@ var Forward = /** @class */ (function (_super) {
         get: function () {
             return NodeType.Forward;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Forward.prototype.setIdentifier = function (node) {
@@ -1078,6 +1070,18 @@ var Forward = /** @class */ (function (_super) {
     };
     Forward.prototype.getIdentifier = function () {
         return this.identifier;
+    };
+    Forward.prototype.getMembers = function () {
+        if (!this.members) {
+            this.members = new Nodelist(this);
+        }
+        return this.members;
+    };
+    Forward.prototype.getParameters = function () {
+        if (!this.parameters) {
+            this.parameters = new Nodelist(this);
+        }
+        return this.parameters;
     };
     return Forward;
 }(Node));
@@ -1091,7 +1095,7 @@ var ForwardVisibility = /** @class */ (function (_super) {
         get: function () {
             return NodeType.ForwardVisibility;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     ForwardVisibility.prototype.setIdentifier = function (node) {
@@ -1112,7 +1116,7 @@ var Namespace = /** @class */ (function (_super) {
         get: function () {
             return NodeType.Namespace;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return Namespace;
@@ -1127,7 +1131,7 @@ var Media = /** @class */ (function (_super) {
         get: function () {
             return NodeType.Media;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return Media;
@@ -1142,7 +1146,7 @@ var Supports = /** @class */ (function (_super) {
         get: function () {
             return NodeType.Supports;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return Supports;
@@ -1157,7 +1161,7 @@ var Document = /** @class */ (function (_super) {
         get: function () {
             return NodeType.Document;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return Document;
@@ -1186,7 +1190,7 @@ var MediaQuery = /** @class */ (function (_super) {
         get: function () {
             return NodeType.MediaQuery;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return MediaQuery;
@@ -1201,7 +1205,7 @@ var SupportsCondition = /** @class */ (function (_super) {
         get: function () {
             return NodeType.SupportsCondition;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return SupportsCondition;
@@ -1216,7 +1220,7 @@ var Page = /** @class */ (function (_super) {
         get: function () {
             return NodeType.Page;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return Page;
@@ -1231,7 +1235,7 @@ var PageBoxMarginBox = /** @class */ (function (_super) {
         get: function () {
             return NodeType.PageBoxMarginBox;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return PageBoxMarginBox;
@@ -1246,7 +1250,7 @@ var Expression = /** @class */ (function (_super) {
         get: function () {
             return NodeType.Expression;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return Expression;
@@ -1261,7 +1265,7 @@ var BinaryExpression = /** @class */ (function (_super) {
         get: function () {
             return NodeType.BinaryExpression;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     BinaryExpression.prototype.setLeft = function (left) {
@@ -1294,7 +1298,7 @@ var Term = /** @class */ (function (_super) {
         get: function () {
             return NodeType.Term;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Term.prototype.setOperator = function (value) {
@@ -1321,7 +1325,7 @@ var AttributeSelector = /** @class */ (function (_super) {
         get: function () {
             return NodeType.AttributeSelector;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     AttributeSelector.prototype.setNamespacePrefix = function (value) {
@@ -1360,7 +1364,7 @@ var Operator = /** @class */ (function (_super) {
         get: function () {
             return NodeType.Operator;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return Operator;
@@ -1375,7 +1379,7 @@ var HexColorValue = /** @class */ (function (_super) {
         get: function () {
             return NodeType.HexColorValue;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return HexColorValue;
@@ -1391,7 +1395,7 @@ var NumericValue = /** @class */ (function (_super) {
         get: function () {
             return NodeType.NumericValue;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     NumericValue.prototype.getValue = function () {
@@ -1426,7 +1430,7 @@ var VariableDeclaration = /** @class */ (function (_super) {
         get: function () {
             return NodeType.VariableDeclaration;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     VariableDeclaration.prototype.setVariable = function (node) {
@@ -1467,7 +1471,7 @@ var Interpolation = /** @class */ (function (_super) {
         get: function () {
             return NodeType.Interpolation;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return Interpolation;
@@ -1482,7 +1486,7 @@ var Variable = /** @class */ (function (_super) {
         get: function () {
             return NodeType.VariableName;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Variable.prototype.getName = function () {
@@ -1500,7 +1504,7 @@ var ExtendsReference = /** @class */ (function (_super) {
         get: function () {
             return NodeType.ExtendsReference;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     ExtendsReference.prototype.getSelectors = function () {
@@ -1512,6 +1516,48 @@ var ExtendsReference = /** @class */ (function (_super) {
     return ExtendsReference;
 }(Node));
 export { ExtendsReference };
+var MixinContentReference = /** @class */ (function (_super) {
+    __extends(MixinContentReference, _super);
+    function MixinContentReference(offset, length) {
+        return _super.call(this, offset, length) || this;
+    }
+    Object.defineProperty(MixinContentReference.prototype, "type", {
+        get: function () {
+            return NodeType.MixinContentReference;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    MixinContentReference.prototype.getArguments = function () {
+        if (!this.arguments) {
+            this.arguments = new Nodelist(this);
+        }
+        return this.arguments;
+    };
+    return MixinContentReference;
+}(Node));
+export { MixinContentReference };
+var MixinContentDeclaration = /** @class */ (function (_super) {
+    __extends(MixinContentDeclaration, _super);
+    function MixinContentDeclaration(offset, length) {
+        return _super.call(this, offset, length) || this;
+    }
+    Object.defineProperty(MixinContentDeclaration.prototype, "type", {
+        get: function () {
+            return NodeType.MixinContentReference;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    MixinContentDeclaration.prototype.getParameters = function () {
+        if (!this.parameters) {
+            this.parameters = new Nodelist(this);
+        }
+        return this.parameters;
+    };
+    return MixinContentDeclaration;
+}(BodyDeclaration));
+export { MixinContentDeclaration };
 var MixinReference = /** @class */ (function (_super) {
     __extends(MixinReference, _super);
     function MixinReference(offset, length) {
@@ -1521,7 +1567,7 @@ var MixinReference = /** @class */ (function (_super) {
         get: function () {
             return NodeType.MixinReference;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     MixinReference.prototype.getNamespaces = function () {
@@ -1563,7 +1609,7 @@ var MixinDeclaration = /** @class */ (function (_super) {
         get: function () {
             return NodeType.MixinDeclaration;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     MixinDeclaration.prototype.setIdentifier = function (node) {
@@ -1600,7 +1646,7 @@ var UnknownAtRule = /** @class */ (function (_super) {
         get: function () {
             return NodeType.UnknownAtRule;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     UnknownAtRule.prototype.setAtRuleName = function (atRuleName) {
@@ -1621,7 +1667,7 @@ var ListEntry = /** @class */ (function (_super) {
         get: function () {
             return NodeType.ListEntry;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     ListEntry.prototype.setKey = function (node) {
@@ -1667,7 +1713,7 @@ var Module = /** @class */ (function (_super) {
         get: function () {
             return NodeType.Module;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Module.prototype.setIdentifier = function (node) {

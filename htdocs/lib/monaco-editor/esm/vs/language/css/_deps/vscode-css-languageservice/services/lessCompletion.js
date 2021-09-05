@@ -7,10 +7,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -22,8 +24,8 @@ import * as nls from './../../../fillers/vscode-nls.js';
 var localize = nls.loadMessageBundle();
 var LESSCompletion = /** @class */ (function (_super) {
     __extends(LESSCompletion, _super);
-    function LESSCompletion(clientCapabilities) {
-        return _super.call(this, '@', clientCapabilities) || this;
+    function LESSCompletion(lsOptions, cssDataManager) {
+        return _super.call(this, '@', lsOptions, cssDataManager) || this;
     }
     LESSCompletion.prototype.createFunctionProposals = function (proposals, existingNode, sortToEnd, result) {
         for (var _i = 0, proposals_1 = proposals; _i < proposals_1.length; _i++) {

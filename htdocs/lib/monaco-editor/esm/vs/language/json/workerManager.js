@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
+import { editor } from './fillers/monaco-editor-core.js';
 var STOP_WHEN_IDLE_FOR = 2 * 60 * 1000; // 2min
 var WorkerManager = /** @class */ (function () {
     function WorkerManager(defaults) {
@@ -37,7 +37,7 @@ var WorkerManager = /** @class */ (function () {
     WorkerManager.prototype._getClient = function () {
         this._lastUsedTime = Date.now();
         if (!this._client) {
-            this._worker = monaco.editor.createWebWorker({
+            this._worker = editor.createWebWorker({
                 // module that exports the create() method and returns a `JSONWorker` instance
                 moduleId: 'vs/language/json/jsonWorker',
                 label: this._defaults.languageId,
@@ -59,11 +59,14 @@ var WorkerManager = /** @class */ (function () {
             resources[_i] = arguments[_i];
         }
         var _client;
-        return this._getClient().then(function (client) {
+        return this._getClient()
+            .then(function (client) {
             _client = client;
-        }).then(function (_) {
+        })
+            .then(function (_) {
             return _this._worker.withSyncedResources(resources);
-        }).then(function (_) { return _client; });
+        })
+            .then(function (_) { return _client; });
     };
     return WorkerManager;
 }());

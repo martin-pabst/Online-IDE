@@ -23,21 +23,30 @@ function getEntryStatus(status) {
             return '';
     }
 }
-export function getEntryDescription(entry, doesSupportMarkdown) {
+export function getEntryDescription(entry, doesSupportMarkdown, settings) {
+    var result;
     if (doesSupportMarkdown) {
-        return {
+        result = {
             kind: 'markdown',
-            value: getEntryMarkdownDescription(entry)
+            value: getEntryMarkdownDescription(entry, settings)
         };
     }
     else {
-        return {
+        result = {
             kind: 'plaintext',
-            value: getEntryStringDescription(entry)
+            value: getEntryStringDescription(entry, settings)
         };
     }
+    if (result.value === '') {
+        return undefined;
+    }
+    return result;
 }
-function getEntryStringDescription(entry) {
+export function textToMarkedString(text) {
+    text = text.replace(/[\\`*_{}[\]()#+\-.!]/g, '\\$&'); // escape markdown syntax tokens: http://daringfireball.net/projects/markdown/syntax#backslash
+    return text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+function getEntryStringDescription(entry, settings) {
     if (!entry.description || entry.description === '') {
         return '';
     }
@@ -45,48 +54,52 @@ function getEntryStringDescription(entry) {
         return entry.description.value;
     }
     var result = '';
-    if (entry.status) {
-        result += getEntryStatus(entry.status);
+    if ((settings === null || settings === void 0 ? void 0 : settings.documentation) !== false) {
+        if (entry.status) {
+            result += getEntryStatus(entry.status);
+        }
+        result += entry.description;
+        var browserLabel = getBrowserLabel(entry.browsers);
+        if (browserLabel) {
+            result += '\n(' + browserLabel + ')';
+        }
+        if ('syntax' in entry) {
+            result += "\n\nSyntax: " + entry.syntax;
+        }
     }
-    result += entry.description;
-    var browserLabel = getBrowserLabel(entry.browsers);
-    if (browserLabel) {
-        result += '\n(' + browserLabel + ')';
-    }
-    if ('syntax' in entry) {
-        result += "\n\nSyntax: " + entry.syntax;
-    }
-    if (entry.references && entry.references.length > 0) {
-        result += '\n\n';
+    if (entry.references && entry.references.length > 0 && (settings === null || settings === void 0 ? void 0 : settings.references) !== false) {
+        if (result.length > 0) {
+            result += '\n\n';
+        }
         result += entry.references.map(function (r) {
             return r.name + ": " + r.url;
         }).join(' | ');
     }
     return result;
 }
-function getEntryMarkdownDescription(entry) {
+function getEntryMarkdownDescription(entry, settings) {
     if (!entry.description || entry.description === '') {
         return '';
     }
     var result = '';
-    if (entry.status) {
-        result += getEntryStatus(entry.status);
+    if ((settings === null || settings === void 0 ? void 0 : settings.documentation) !== false) {
+        if (entry.status) {
+            result += getEntryStatus(entry.status);
+        }
+        var description = typeof entry.description === 'string' ? entry.description : entry.description.value;
+        result += textToMarkedString(description);
+        var browserLabel = getBrowserLabel(entry.browsers);
+        if (browserLabel) {
+            result += '\n\n(' + textToMarkedString(browserLabel) + ')';
+        }
+        if ('syntax' in entry && entry.syntax) {
+            result += "\n\nSyntax: " + textToMarkedString(entry.syntax);
+        }
     }
-    if (typeof entry.description === 'string') {
-        result += entry.description;
-    }
-    else {
-        result = entry.description.value;
-    }
-    var browserLabel = getBrowserLabel(entry.browsers);
-    if (browserLabel) {
-        result += '\n\n(' + browserLabel + ')';
-    }
-    if ('syntax' in entry) {
-        result += "\n\nSyntax: " + entry.syntax;
-    }
-    if (entry.references && entry.references.length > 0) {
-        result += '\n\n';
+    if (entry.references && entry.references.length > 0 && (settings === null || settings === void 0 ? void 0 : settings.references) !== false) {
+        if (result.length > 0) {
+            result += '\n\n';
+        }
         result += entry.references.map(function (r) {
             return "[" + r.name + "](" + r.url + ")";
         }).join(' | ');

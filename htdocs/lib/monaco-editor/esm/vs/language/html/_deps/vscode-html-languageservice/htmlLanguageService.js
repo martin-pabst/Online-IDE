@@ -12,23 +12,25 @@ import { findDocumentHighlights } from './services/htmlHighlighting.js';
 import { findDocumentSymbols } from './services/htmlSymbolsProvider.js';
 import { doRename } from './services/htmlRename.js';
 import { findMatchingTagPosition } from './services/htmlMatchingTagPosition.js';
+import { findLinkedEditingRanges } from './services/htmlLinkedEditing.js';
 import { getFoldingRanges } from './services/htmlFolding.js';
 import { getSelectionRanges } from './services/htmlSelectionRange.js';
-import { handleCustomDataProviders } from './languageFacts/builtinDataProviders.js';
 import { HTMLDataProvider } from './languageFacts/dataProvider.js';
+import { HTMLDataManager } from './languageFacts/dataManager.js';
+import { htmlData } from './languageFacts/data/webCustomData.js';
 export * from './htmlLanguageTypes.js';
-export { TextDocument } from './../vscode-languageserver-textdocument/lib/esm/main.js';
-export * from './_deps/vscode-languageserver-types/main.js';
+var defaultLanguageServiceOptions = {};
 export function getLanguageService(options) {
-    var htmlHover = new HTMLHover(options && options.clientCapabilities);
-    var htmlCompletion = new HTMLCompletion(options && options.clientCapabilities);
-    if (options && options.customDataProviders) {
-        handleCustomDataProviders(options.customDataProviders);
-    }
+    if (options === void 0) { options = defaultLanguageServiceOptions; }
+    var dataManager = new HTMLDataManager(options);
+    var htmlHover = new HTMLHover(options, dataManager);
+    var htmlCompletion = new HTMLCompletion(options, dataManager);
     return {
+        setDataProviders: dataManager.setDataProviders.bind(dataManager),
         createScanner: createScanner,
         parseHTMLDocument: function (document) { return parse(document.getText()); },
         doComplete: htmlCompletion.doComplete.bind(htmlCompletion),
+        doComplete2: htmlCompletion.doComplete2.bind(htmlCompletion),
         setCompletionParticipants: htmlCompletion.setCompletionParticipants.bind(htmlCompletion),
         doHover: htmlHover.doHover.bind(htmlHover),
         format: format,
@@ -39,9 +41,14 @@ export function getLanguageService(options) {
         getSelectionRanges: getSelectionRanges,
         doTagComplete: htmlCompletion.doTagComplete.bind(htmlCompletion),
         doRename: doRename,
-        findMatchingTagPosition: findMatchingTagPosition
+        findMatchingTagPosition: findMatchingTagPosition,
+        findOnTypeRenameRanges: findLinkedEditingRanges,
+        findLinkedEditingRanges: findLinkedEditingRanges
     };
 }
 export function newHTMLDataProvider(id, customData) {
     return new HTMLDataProvider(id, customData);
+}
+export function getDefaultHTMLDataProvider() {
+    return newHTMLDataProvider('default', htmlData);
 }

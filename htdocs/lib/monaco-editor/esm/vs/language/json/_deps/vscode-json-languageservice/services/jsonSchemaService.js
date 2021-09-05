@@ -7,26 +7,50 @@ import { URI } from './../../vscode-uri/index.js';
 import * as Strings from '../utils/strings.js';
 import * as Parser from '../parser/jsonParser.js';
 import * as nls from './../../../fillers/vscode-nls.js';
+import { createRegex } from '../utils/glob.js';
 var localize = nls.loadMessageBundle();
+var BANG = '!';
+var PATH_SEP = '/';
 var FilePatternAssociation = /** @class */ (function () {
-    function FilePatternAssociation(pattern) {
+    function FilePatternAssociation(pattern, uris) {
+        this.globWrappers = [];
         try {
-            this.patternRegExp = new RegExp(Strings.convertSimple2RegExpPattern(pattern) + '$');
+            for (var _i = 0, pattern_1 = pattern; _i < pattern_1.length; _i++) {
+                var patternString = pattern_1[_i];
+                var include = patternString[0] !== BANG;
+                if (!include) {
+                    patternString = patternString.substring(1);
+                }
+                if (patternString.length > 0) {
+                    if (patternString[0] === PATH_SEP) {
+                        patternString = patternString.substring(1);
+                    }
+                    this.globWrappers.push({
+                        regexp: createRegex('**/' + patternString, { extended: true, globstar: true }),
+                        include: include,
+                    });
+                }
+            }
+            ;
+            this.uris = uris;
         }
         catch (e) {
-            // invalid pattern
-            this.patternRegExp = null;
+            this.globWrappers.length = 0;
+            this.uris = [];
         }
-        this.schemas = [];
     }
-    FilePatternAssociation.prototype.addSchema = function (id) {
-        this.schemas.push(id);
-    };
     FilePatternAssociation.prototype.matchesPattern = function (fileName) {
-        return this.patternRegExp && this.patternRegExp.test(fileName);
+        var match = false;
+        for (var _i = 0, _a = this.globWrappers; _i < _a.length; _i++) {
+            var _b = _a[_i], regexp = _b.regexp, include = _b.include;
+            if (regexp.test(fileName)) {
+                match = include;
+            }
+        }
+        return match;
     };
-    FilePatternAssociation.prototype.getSchemas = function () {
-        return this.schemas;
+    FilePatternAssociation.prototype.getURIs = function () {
+        return this.uris;
     };
     return FilePatternAssociation;
 }());
@@ -55,8 +79,8 @@ var SchemaHandle = /** @class */ (function () {
         return this.resolvedSchema;
     };
     SchemaHandle.prototype.clearSchema = function () {
-        this.resolvedSchema = null;
-        this.unresolvedSchema = null;
+        this.resolvedSchema = undefined;
+        this.unresolvedSchema = undefined;
         this.dependencies = {};
     };
     return SchemaHandle;
@@ -77,7 +101,11 @@ var ResolvedSchema = /** @class */ (function () {
         this.errors = errors;
     }
     ResolvedSchema.prototype.getSection = function (path) {
-        return Parser.asSchema(this.getSectionRecursive(path, this.schema));
+        var schemaRef = this.getSectionRecursive(path, this.schema);
+        if (schemaRef) {
+            return Parser.asSchema(schemaRef);
+        }
+        return undefined;
     };
     ResolvedSchema.prototype.getSectionRecursive = function (path, schema) {
         if (!schema || typeof schema === 'boolean' || path.length === 0) {
@@ -90,7 +118,7 @@ var ResolvedSchema = /** @class */ (function () {
         else if (schema.patternProperties) {
             for (var _i = 0, _a = Object.keys(schema.patternProperties); _i < _a.length; _i++) {
                 var pattern = _a[_i];
-                var regex = new RegExp(pattern);
+                var regex = Strings.extendedRegExp(pattern);
                 if (regex.test(next)) {
                     return this.getSectionRecursive(path, schema.patternProperties[pattern]);
                 }
@@ -110,7 +138,7 @@ var ResolvedSchema = /** @class */ (function () {
                 return this.getSectionRecursive(path, schema.items);
             }
         }
-        return null;
+        return undefined;
     };
     return ResolvedSchema;
 }());
@@ -122,10 +150,9 @@ var JSONSchemaService = /** @class */ (function () {
         this.promiseConstructor = promiseConstructor || Promise;
         this.callOnDispose = [];
         this.contributionSchemas = {};
-        this.contributionAssociations = {};
+        this.contributionAssociations = [];
         this.schemasById = {};
         this.filePatternAssociations = [];
-        this.filePatternAssociationById = {};
         this.registeredSchemasIds = {};
     }
     JSONSchemaService.prototype.getRegisteredSchemaIds = function (filter) {
@@ -138,7 +165,7 @@ var JSONSchemaService = /** @class */ (function () {
         get: function () {
             return this.promiseConstructor;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     JSONSchemaService.prototype.dispose = function () {
@@ -149,7 +176,7 @@ var JSONSchemaService = /** @class */ (function () {
     JSONSchemaService.prototype.onResourceChange = function (uri) {
         var _this = this;
         var hasChanges = false;
-        uri = this.normalizeId(uri);
+        uri = normalizeId(uri);
         var toWalk = [uri];
         var all = Object.keys(this.schemasById).map(function (key) { return _this.schemasById[key]; });
         while (toWalk.length) {
@@ -168,34 +195,21 @@ var JSONSchemaService = /** @class */ (function () {
         }
         return hasChanges;
     };
-    JSONSchemaService.prototype.normalizeId = function (id) {
-        // remove trailing '#', normalize drive capitalization
-        try {
-            return URI.parse(id).toString();
-        }
-        catch (e) {
-            return id;
-        }
-    };
     JSONSchemaService.prototype.setSchemaContributions = function (schemaContributions) {
         if (schemaContributions.schemas) {
             var schemas = schemaContributions.schemas;
             for (var id in schemas) {
-                var normalizedId = this.normalizeId(id);
+                var normalizedId = normalizeId(id);
                 this.contributionSchemas[normalizedId] = this.addSchemaHandle(normalizedId, schemas[id]);
             }
         }
-        if (schemaContributions.schemaAssociations) {
+        if (Array.isArray(schemaContributions.schemaAssociations)) {
             var schemaAssociations = schemaContributions.schemaAssociations;
-            for (var pattern in schemaAssociations) {
-                var associations = schemaAssociations[pattern];
-                this.contributionAssociations[pattern] = associations;
-                var fpa = this.getOrAddFilePatternAssociation(pattern);
-                for (var _i = 0, associations_1 = associations; _i < associations_1.length; _i++) {
-                    var schemaId = associations_1[_i];
-                    var id = this.normalizeId(schemaId);
-                    fpa.addSchema(id);
-                }
+            for (var _i = 0, schemaAssociations_1 = schemaAssociations; _i < schemaAssociations_1.length; _i++) {
+                var schemaAssociation = schemaAssociations_1[_i];
+                var uris = schemaAssociation.uris.map(normalizeId);
+                var association = this.addFilePatternAssociation(schemaAssociation.pattern, uris);
+                this.contributionAssociations.push(association);
             }
         }
     };
@@ -207,52 +221,41 @@ var JSONSchemaService = /** @class */ (function () {
     JSONSchemaService.prototype.getOrAddSchemaHandle = function (id, unresolvedSchemaContent) {
         return this.schemasById[id] || this.addSchemaHandle(id, unresolvedSchemaContent);
     };
-    JSONSchemaService.prototype.getOrAddFilePatternAssociation = function (pattern) {
-        var fpa = this.filePatternAssociationById[pattern];
-        if (!fpa) {
-            fpa = new FilePatternAssociation(pattern);
-            this.filePatternAssociationById[pattern] = fpa;
-            this.filePatternAssociations.push(fpa);
-        }
+    JSONSchemaService.prototype.addFilePatternAssociation = function (pattern, uris) {
+        var fpa = new FilePatternAssociation(pattern, uris);
+        this.filePatternAssociations.push(fpa);
         return fpa;
     };
     JSONSchemaService.prototype.registerExternalSchema = function (uri, filePatterns, unresolvedSchemaContent) {
-        if (filePatterns === void 0) { filePatterns = null; }
-        var id = this.normalizeId(uri);
+        var id = normalizeId(uri);
         this.registeredSchemasIds[id] = true;
+        this.cachedSchemaForResource = undefined;
         if (filePatterns) {
-            for (var _i = 0, filePatterns_1 = filePatterns; _i < filePatterns_1.length; _i++) {
-                var pattern = filePatterns_1[_i];
-                this.getOrAddFilePatternAssociation(pattern).addSchema(id);
-            }
+            this.addFilePatternAssociation(filePatterns, [uri]);
         }
         return unresolvedSchemaContent ? this.addSchemaHandle(id, unresolvedSchemaContent) : this.getOrAddSchemaHandle(id);
     };
     JSONSchemaService.prototype.clearExternalSchemas = function () {
         this.schemasById = {};
         this.filePatternAssociations = [];
-        this.filePatternAssociationById = {};
         this.registeredSchemasIds = {};
+        this.cachedSchemaForResource = undefined;
         for (var id in this.contributionSchemas) {
             this.schemasById[id] = this.contributionSchemas[id];
             this.registeredSchemasIds[id] = true;
         }
-        for (var pattern in this.contributionAssociations) {
-            var fpa = this.getOrAddFilePatternAssociation(pattern);
-            for (var _i = 0, _a = this.contributionAssociations[pattern]; _i < _a.length; _i++) {
-                var schemaId = _a[_i];
-                var id = this.normalizeId(schemaId);
-                fpa.addSchema(id);
-            }
+        for (var _i = 0, _a = this.contributionAssociations; _i < _a.length; _i++) {
+            var contributionAssociation = _a[_i];
+            this.filePatternAssociations.push(contributionAssociation);
         }
     };
     JSONSchemaService.prototype.getResolvedSchema = function (schemaId) {
-        var id = this.normalizeId(schemaId);
+        var id = normalizeId(schemaId);
         var schemaHandle = this.schemasById[id];
         if (schemaHandle) {
             return schemaHandle.getResolvedSchema();
         }
-        return this.promise.resolve(null);
+        return this.promise.resolve(undefined);
     };
     JSONSchemaService.prototype.loadSchema = function (url) {
         if (!this.requestService) {
@@ -287,12 +290,12 @@ var JSONSchemaService = /** @class */ (function () {
         var resolveErrors = schemaToResolve.errors.slice(0);
         var schema = schemaToResolve.schema;
         if (schema.$schema) {
-            var id = this.normalizeId(schema.$schema);
+            var id = normalizeId(schema.$schema);
             if (id === 'http://json-schema.org/draft-03/schema') {
                 return this.promise.resolve(new ResolvedSchema({}, [localize('json.schema.draft03.notsupported', "Draft-03 schemas are not supported.")]));
             }
             else if (id === 'https://json-schema.org/draft/2019-09/schema') {
-                schemaToResolve.errors.push(localize('json.schema.draft201909.notsupported', "Draft 2019-09 schemas are not yet fully supported."));
+                resolveErrors.push(localize('json.schema.draft201909.notsupported', "Draft 2019-09 schemas are not yet fully supported."));
             }
         }
         var contextService = this.contextService;
@@ -305,12 +308,14 @@ var JSONSchemaService = /** @class */ (function () {
                 path = path.substr(1);
             }
             path.split('/').some(function (part) {
+                part = part.replace(/~1/g, '/').replace(/~0/g, '~');
                 current = current[part];
                 return !current;
             });
             return current;
         };
-        var merge = function (target, sourceRoot, sourceURI, path) {
+        var merge = function (target, sourceRoot, sourceURI, refSegment) {
+            var path = refSegment ? decodeURIComponent(refSegment) : undefined;
             var section = findSection(sourceRoot, path);
             if (section) {
                 for (var key in section) {
@@ -323,19 +328,19 @@ var JSONSchemaService = /** @class */ (function () {
                 resolveErrors.push(localize('json.schema.invalidref', '$ref \'{0}\' in \'{1}\' can not be resolved.', path, sourceURI));
             }
         };
-        var resolveExternalLink = function (node, uri, linkPath, parentSchemaURL, parentSchemaDependencies) {
-            if (contextService && !/^\w+:\/\/.*/.test(uri)) {
+        var resolveExternalLink = function (node, uri, refSegment, parentSchemaURL, parentSchemaDependencies) {
+            if (contextService && !/^[A-Za-z][A-Za-z0-9+\-.+]*:\/\/.*/.test(uri)) {
                 uri = contextService.resolveRelativePath(uri, parentSchemaURL);
             }
-            uri = _this.normalizeId(uri);
+            uri = normalizeId(uri);
             var referencedHandle = _this.getOrAddSchemaHandle(uri);
             return referencedHandle.getUnresolvedSchema().then(function (unresolvedSchema) {
                 parentSchemaDependencies[uri] = true;
                 if (unresolvedSchema.errors.length) {
-                    var loc = linkPath ? uri + '#' + linkPath : uri;
+                    var loc = refSegment ? uri + '#' + refSegment : uri;
                     resolveErrors.push(localize('json.schema.problemloadingref', 'Problems loading reference \'{0}\': {1}', loc, unresolvedSchema.errors[0]));
                 }
-                merge(node, unresolvedSchema.schema, uri, linkPath);
+                merge(node, unresolvedSchema.schema, uri, refSegment);
                 return resolveRefs(node, unresolvedSchema.schema, uri, referencedHandle.dependencies);
             });
         };
@@ -366,7 +371,8 @@ var JSONSchemaService = /** @class */ (function () {
                 for (var _a = 0, maps_1 = maps; _a < maps_1.length; _a++) {
                     var map = maps_1[_a];
                     if (typeof map === 'object') {
-                        for (var key in map) {
+                        for (var k in map) {
+                            var key = k;
                             var entry = map[key];
                             if (typeof entry === 'object') {
                                 toWalk.push(entry);
@@ -409,7 +415,7 @@ var JSONSchemaService = /** @class */ (function () {
                         }
                     }
                 }
-                collectEntries(next.items, next.additionalProperties, next.not, next.contains, next.propertyNames, next.if, next.then, next.else);
+                collectEntries(next.items, next.additionalItems, next.additionalProperties, next.not, next.contains, next.propertyNames, next.if, next.then, next.else);
                 collectMapEntries(next.definitions, next.properties, next.patternProperties, next.dependencies);
                 collectArrayEntries(next.anyOf, next.allOf, next.oneOf, next.items);
             };
@@ -430,22 +436,29 @@ var JSONSchemaService = /** @class */ (function () {
         if (document && document.root && document.root.type === 'object') {
             var schemaProperties = document.root.properties.filter(function (p) { return (p.keyNode.value === '$schema') && p.valueNode && p.valueNode.type === 'string'; });
             if (schemaProperties.length > 0) {
-                var schemeId = Parser.getNodeValue(schemaProperties[0].valueNode);
-                if (schemeId && Strings.startsWith(schemeId, '.') && this.contextService) {
-                    schemeId = this.contextService.resolveRelativePath(schemeId, resource);
-                }
-                if (schemeId) {
-                    var id = this.normalizeId(schemeId);
-                    return this.getOrAddSchemaHandle(id).getResolvedSchema();
+                var valueNode = schemaProperties[0].valueNode;
+                if (valueNode && valueNode.type === 'string') {
+                    var schemeId = Parser.getNodeValue(valueNode);
+                    if (schemeId && Strings.startsWith(schemeId, '.') && this.contextService) {
+                        schemeId = this.contextService.resolveRelativePath(schemeId, resource);
+                    }
+                    if (schemeId) {
+                        var id = normalizeId(schemeId);
+                        return this.getOrAddSchemaHandle(id).getResolvedSchema();
+                    }
                 }
             }
         }
+        if (this.cachedSchemaForResource && this.cachedSchemaForResource.resource === resource) {
+            return this.cachedSchemaForResource.resolvedSchema;
+        }
         var seen = Object.create(null);
         var schemas = [];
+        var normalizedResource = normalizeResourceForMatching(resource);
         for (var _i = 0, _a = this.filePatternAssociations; _i < _a.length; _i++) {
             var entry = _a[_i];
-            if (entry.matchesPattern(resource)) {
-                for (var _b = 0, _c = entry.getSchemas(); _b < _c.length; _b++) {
+            if (entry.matchesPattern(normalizedResource)) {
+                for (var _b = 0, _c = entry.getURIs(); _b < _c.length; _b++) {
                     var schemaId = _c[_b];
                     if (!seen[schemaId]) {
                         schemas.push(schemaId);
@@ -454,10 +467,9 @@ var JSONSchemaService = /** @class */ (function () {
                 }
             }
         }
-        if (schemas.length > 0) {
-            return this.createCombinedSchema(resource, schemas).getResolvedSchema();
-        }
-        return this.promise.resolve(null);
+        var resolvedSchema = schemas.length > 0 ? this.createCombinedSchema(resource, schemas).getResolvedSchema() : this.promise.resolve(undefined);
+        this.cachedSchemaForResource = { resource: resource, resolvedSchema: resolvedSchema };
+        return resolvedSchema;
     };
     JSONSchemaService.prototype.createCombinedSchema = function (resource, schemaIds) {
         if (schemaIds.length === 1) {
@@ -471,9 +483,42 @@ var JSONSchemaService = /** @class */ (function () {
             return this.addSchemaHandle(combinedSchemaId, combinedSchema);
         }
     };
+    JSONSchemaService.prototype.getMatchingSchemas = function (document, jsonDocument, schema) {
+        if (schema) {
+            var id = schema.id || ('schemaservice://untitled/matchingSchemas/' + idCounter++);
+            return this.resolveSchemaContent(new UnresolvedSchema(schema), id, {}).then(function (resolvedSchema) {
+                return jsonDocument.getMatchingSchemas(resolvedSchema.schema).filter(function (s) { return !s.inverted; });
+            });
+        }
+        return this.getSchemaForResource(document.uri, jsonDocument).then(function (schema) {
+            if (schema) {
+                return jsonDocument.getMatchingSchemas(schema.schema).filter(function (s) { return !s.inverted; });
+            }
+            return [];
+        });
+    };
     return JSONSchemaService;
 }());
 export { JSONSchemaService };
+var idCounter = 0;
+function normalizeId(id) {
+    // remove trailing '#', normalize drive capitalization
+    try {
+        return URI.parse(id).toString();
+    }
+    catch (e) {
+        return id;
+    }
+}
+function normalizeResourceForMatching(resource) {
+    // remove queries and fragments, normalize drive capitalization
+    try {
+        return URI.parse(resource).with({ fragment: null, query: null }).toString();
+    }
+    catch (e) {
+        return resource;
+    }
+}
 function toDisplayString(url) {
     try {
         var uri = URI.parse(url);

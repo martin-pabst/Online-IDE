@@ -2,9 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports"], function (require, exports) {
-    'use strict';
+define('vs/basic-languages/mips/mips',["require", "exports"], function (require, exports) {
+    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.language = exports.conf = void 0;
     exports.conf = {
         wordPattern: /(-?\d*\.\d\w*)|([^\`\~\!\@\#%\^\&\*\(\)\=\$\-\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s]+)/g,
         comments: {
@@ -13,8 +14,8 @@ define(["require", "exports"], function (require, exports) {
         },
         folding: {
             markers: {
-                start: new RegExp("^\\s*#region\\b"),
-                end: new RegExp("^\\s*#endregion\\b")
+                start: new RegExp('^\\s*#region\\b'),
+                end: new RegExp('^\\s*#endregion\\b')
             }
         }
     };
@@ -24,15 +25,64 @@ define(["require", "exports"], function (require, exports) {
         tokenPostfix: '.mips',
         regEx: /\/(?!\/\/)(?:[^\/\\]|\\.)*\/[igm]*/,
         keywords: [
-            '.data', '.text', 'syscall', 'trap',
-            'add', 'addu', 'addi', 'addiu', 'and', 'andi',
-            'div', 'divu', 'mult', 'multu', 'nor', 'or', 'ori',
-            'sll', 'slv', 'sra', 'srav', 'srl', 'srlv',
-            'sub', 'subu', 'xor', 'xori', 'lhi', 'lho',
-            'lhi', 'llo', 'slt', 'slti', 'sltu', 'sltiu',
-            'beq', 'bgtz', 'blez', 'bne', 'j', 'jal', 'jalr', 'jr',
-            'lb', 'lbu', 'lh', 'lhu', 'lw', 'li', 'la',
-            'sb', 'sh', 'sw', 'mfhi', 'mflo', 'mthi', 'mtlo', 'move',
+            '.data',
+            '.text',
+            'syscall',
+            'trap',
+            'add',
+            'addu',
+            'addi',
+            'addiu',
+            'and',
+            'andi',
+            'div',
+            'divu',
+            'mult',
+            'multu',
+            'nor',
+            'or',
+            'ori',
+            'sll',
+            'slv',
+            'sra',
+            'srav',
+            'srl',
+            'srlv',
+            'sub',
+            'subu',
+            'xor',
+            'xori',
+            'lhi',
+            'lho',
+            'lhi',
+            'llo',
+            'slt',
+            'slti',
+            'sltu',
+            'sltiu',
+            'beq',
+            'bgtz',
+            'blez',
+            'bne',
+            'j',
+            'jal',
+            'jalr',
+            'jr',
+            'lb',
+            'lbu',
+            'lh',
+            'lhu',
+            'lw',
+            'li',
+            'la',
+            'sb',
+            'sh',
+            'sw',
+            'mfhi',
+            'mflo',
+            'mthi',
+            'mtlo',
+            'move'
         ],
         // we include these common regular expressions
         symbols: /[\.,\:]+/,
@@ -42,13 +92,16 @@ define(["require", "exports"], function (require, exports) {
             root: [
                 // identifiers and keywords
                 [/\$[a-zA-Z_]\w*/, 'variable.predefined'],
-                [/[.a-zA-Z_]\w*/, {
+                [
+                    /[.a-zA-Z_]\w*/,
+                    {
                         cases: {
-                            'this': 'variable.predefined',
+                            this: 'variable.predefined',
                             '@keywords': { token: 'keyword.$0' },
                             '@default': ''
                         }
-                    }],
+                    }
+                ],
                 // whitespace
                 [/[ \t\r\n]+/, ''],
                 // Comments
@@ -70,46 +123,64 @@ define(["require", "exports"], function (require, exports) {
                 [/[,.]/, 'delimiter'],
                 // strings:
                 [/"""/, 'string', '@herestring."""'],
-                [/'''/, 'string', '@herestring.\'\'\''],
-                [/"/, {
+                [/'''/, 'string', "@herestring.'''"],
+                [
+                    /"/,
+                    {
                         cases: {
                             '@eos': 'string',
                             '@default': { token: 'string', next: '@string."' }
                         }
-                    }],
-                [/'/, {
+                    }
+                ],
+                [
+                    /'/,
+                    {
                         cases: {
                             '@eos': 'string',
-                            '@default': { token: 'string', next: '@string.\'' }
+                            '@default': { token: 'string', next: "@string.'" }
                         }
-                    }],
+                    }
+                ]
             ],
             string: [
                 [/[^"'\#\\]+/, 'string'],
                 [/@escapes/, 'string.escape'],
                 [/\./, 'string.escape.invalid'],
                 [/\./, 'string.escape.invalid'],
-                [/#{/, {
+                [
+                    /#{/,
+                    {
                         cases: {
-                            '$S2=="': { token: 'string', next: 'root.interpolatedstring' },
+                            '$S2=="': {
+                                token: 'string',
+                                next: 'root.interpolatedstring'
+                            },
                             '@default': 'string'
                         }
-                    }],
-                [/["']/, {
+                    }
+                ],
+                [
+                    /["']/,
+                    {
                         cases: {
                             '$#==$S2': { token: 'string', next: '@pop' },
                             '@default': 'string'
                         }
-                    }],
+                    }
+                ],
                 [/#/, 'string']
             ],
             herestring: [
-                [/("""|''')/, {
+                [
+                    /("""|''')/,
+                    {
                         cases: {
                             '$1==$S2': { token: 'string', next: '@pop' },
                             '@default': 'string'
                         }
-                    }],
+                    }
+                ],
                 [/[^#\\'"]+/, 'string'],
                 [/['"]+/, 'string'],
                 [/@escapes/, 'string.escape'],
@@ -118,16 +189,17 @@ define(["require", "exports"], function (require, exports) {
                 [/#/, 'string']
             ],
             comment: [
-                [/[^#]+/, 'comment',],
-                [/#/, 'comment'],
+                [/[^#]+/, 'comment'],
+                [/#/, 'comment']
             ],
             hereregexp: [
                 [/[^\\\/#]+/, 'regexp'],
                 [/\\./, 'regexp'],
                 [/#.*$/, 'comment'],
                 ['///[igm]*', { token: 'regexp', next: '@pop' }],
-                [/\//, 'regexp'],
-            ],
-        },
+                [/\//, 'regexp']
+            ]
+        }
     };
 });
+

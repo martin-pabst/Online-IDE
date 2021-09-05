@@ -15,8 +15,8 @@ var JSONValidation = /** @class */ (function () {
     }
     JSONValidation.prototype.configure = function (raw) {
         if (raw) {
-            this.validationEnabled = raw.validate;
-            this.commentSeverity = raw.allowComments ? void 0 : DiagnosticSeverity.Error;
+            this.validationEnabled = raw.validate !== false;
+            this.commentSeverity = raw.allowComments ? undefined : DiagnosticSeverity.Error;
         }
     };
     JSONValidation.prototype.doValidation = function (textDocument, jsonDocument, documentSettings, schema) {
@@ -35,33 +35,35 @@ var JSONValidation = /** @class */ (function () {
             }
         };
         var getDiagnostics = function (schema) {
-            var trailingCommaSeverity = documentSettings ? toDiagnosticSeverity(documentSettings.trailingCommas) : DiagnosticSeverity.Error;
-            var commentSeverity = documentSettings ? toDiagnosticSeverity(documentSettings.comments) : _this.commentSeverity;
+            var trailingCommaSeverity = (documentSettings === null || documentSettings === void 0 ? void 0 : documentSettings.trailingCommas) ? toDiagnosticSeverity(documentSettings.trailingCommas) : DiagnosticSeverity.Error;
+            var commentSeverity = (documentSettings === null || documentSettings === void 0 ? void 0 : documentSettings.comments) ? toDiagnosticSeverity(documentSettings.comments) : _this.commentSeverity;
+            var schemaValidation = (documentSettings === null || documentSettings === void 0 ? void 0 : documentSettings.schemaValidation) ? toDiagnosticSeverity(documentSettings.schemaValidation) : DiagnosticSeverity.Warning;
+            var schemaRequest = (documentSettings === null || documentSettings === void 0 ? void 0 : documentSettings.schemaRequest) ? toDiagnosticSeverity(documentSettings.schemaRequest) : DiagnosticSeverity.Warning;
             if (schema) {
-                if (schema.errors.length && jsonDocument.root) {
+                if (schema.errors.length && jsonDocument.root && schemaRequest) {
                     var astRoot = jsonDocument.root;
-                    var property = astRoot.type === 'object' ? astRoot.properties[0] : null;
+                    var property = astRoot.type === 'object' ? astRoot.properties[0] : undefined;
                     if (property && property.keyNode.value === '$schema') {
                         var node = property.valueNode || property;
                         var range = Range.create(textDocument.positionAt(node.offset), textDocument.positionAt(node.offset + node.length));
-                        addProblem(Diagnostic.create(range, schema.errors[0], DiagnosticSeverity.Warning, ErrorCode.SchemaResolveError));
+                        addProblem(Diagnostic.create(range, schema.errors[0], schemaRequest, ErrorCode.SchemaResolveError));
                     }
                     else {
                         var range = Range.create(textDocument.positionAt(astRoot.offset), textDocument.positionAt(astRoot.offset + 1));
-                        addProblem(Diagnostic.create(range, schema.errors[0], DiagnosticSeverity.Warning, ErrorCode.SchemaResolveError));
+                        addProblem(Diagnostic.create(range, schema.errors[0], schemaRequest, ErrorCode.SchemaResolveError));
                     }
                 }
-                else {
-                    var semanticErrors = jsonDocument.validate(textDocument, schema.schema);
+                else if (schemaValidation) {
+                    var semanticErrors = jsonDocument.validate(textDocument, schema.schema, schemaValidation);
                     if (semanticErrors) {
                         semanticErrors.forEach(addProblem);
                     }
                 }
                 if (schemaAllowsComments(schema.schema)) {
-                    commentSeverity = void 0;
+                    commentSeverity = undefined;
                 }
                 if (schemaAllowsTrailingCommas(schema.schema)) {
-                    trailingCommaSeverity = void 0;
+                    trailingCommaSeverity = undefined;
                 }
             }
             for (var _i = 0, _a = jsonDocument.syntaxErrors; _i < _a.length; _i++) {
@@ -118,8 +120,9 @@ function schemaAllowsTrailingCommas(schemaRef) {
         if (isBoolean(schemaRef.allowTrailingCommas)) {
             return schemaRef.allowTrailingCommas;
         }
-        if (isBoolean(schemaRef['allowsTrailingCommas'])) { // deprecated
-            return schemaRef['allowsTrailingCommas'];
+        var deprSchemaRef = schemaRef;
+        if (isBoolean(deprSchemaRef['allowsTrailingCommas'])) { // deprecated
+            return deprSchemaRef['allowsTrailingCommas'];
         }
         if (schemaRef.allOf) {
             for (var _i = 0, _a = schemaRef.allOf; _i < _a.length; _i++) {
@@ -137,7 +140,7 @@ function toDiagnosticSeverity(severityLevel) {
     switch (severityLevel) {
         case 'error': return DiagnosticSeverity.Error;
         case 'warning': return DiagnosticSeverity.Warning;
-        case 'ignore': return void 0;
+        case 'ignore': return undefined;
     }
-    return void 0;
+    return undefined;
 }

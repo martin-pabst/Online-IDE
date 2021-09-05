@@ -2,19 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import * as arrays from '../../../base/common/arrays.js';
 import { onUnexpectedError } from '../../../base/common/errors.js';
 import { LineTokens } from '../core/lineTokens.js';
@@ -25,14 +12,14 @@ import { Disposable } from '../../../base/common/lifecycle.js';
 import { StopWatch } from '../../../base/common/stopwatch.js';
 import { MultilineTokensBuilder, countEOL } from './tokensStore.js';
 import * as platform from '../../../base/common/platform.js';
-var TokenizationStateStore = /** @class */ (function () {
-    function TokenizationStateStore() {
+export class TokenizationStateStore {
+    constructor() {
         this._beginState = [];
         this._valid = [];
         this._len = 0;
         this._invalidLineStartIndex = 0;
     }
-    TokenizationStateStore.prototype._reset = function (initialState) {
+    _reset(initialState) {
         this._beginState = [];
         this._valid = [];
         this._len = 0;
@@ -40,45 +27,41 @@ var TokenizationStateStore = /** @class */ (function () {
         if (initialState) {
             this._setBeginState(0, initialState);
         }
-    };
-    TokenizationStateStore.prototype.flush = function (initialState) {
+    }
+    flush(initialState) {
         this._reset(initialState);
-    };
-    Object.defineProperty(TokenizationStateStore.prototype, "invalidLineStartIndex", {
-        get: function () {
-            return this._invalidLineStartIndex;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    TokenizationStateStore.prototype._invalidateLine = function (lineIndex) {
+    }
+    get invalidLineStartIndex() {
+        return this._invalidLineStartIndex;
+    }
+    _invalidateLine(lineIndex) {
         if (lineIndex < this._len) {
             this._valid[lineIndex] = false;
         }
         if (lineIndex < this._invalidLineStartIndex) {
             this._invalidLineStartIndex = lineIndex;
         }
-    };
-    TokenizationStateStore.prototype._isValid = function (lineIndex) {
+    }
+    _isValid(lineIndex) {
         if (lineIndex < this._len) {
             return this._valid[lineIndex];
         }
         return false;
-    };
-    TokenizationStateStore.prototype.getBeginState = function (lineIndex) {
+    }
+    getBeginState(lineIndex) {
         if (lineIndex < this._len) {
             return this._beginState[lineIndex];
         }
         return null;
-    };
-    TokenizationStateStore.prototype._ensureLine = function (lineIndex) {
+    }
+    _ensureLine(lineIndex) {
         while (lineIndex >= this._len) {
             this._beginState[this._len] = null;
             this._valid[this._len] = false;
             this._len++;
         }
-    };
-    TokenizationStateStore.prototype._deleteLines = function (start, deleteCount) {
+    }
+    _deleteLines(start, deleteCount) {
         if (deleteCount === 0) {
             return;
         }
@@ -88,30 +71,30 @@ var TokenizationStateStore = /** @class */ (function () {
         this._beginState.splice(start, deleteCount);
         this._valid.splice(start, deleteCount);
         this._len -= deleteCount;
-    };
-    TokenizationStateStore.prototype._insertLines = function (insertIndex, insertCount) {
+    }
+    _insertLines(insertIndex, insertCount) {
         if (insertCount === 0) {
             return;
         }
-        var beginState = [];
-        var valid = [];
-        for (var i = 0; i < insertCount; i++) {
+        let beginState = [];
+        let valid = [];
+        for (let i = 0; i < insertCount; i++) {
             beginState[i] = null;
             valid[i] = false;
         }
         this._beginState = arrays.arrayInsert(this._beginState, insertIndex, beginState);
         this._valid = arrays.arrayInsert(this._valid, insertIndex, valid);
         this._len += insertCount;
-    };
-    TokenizationStateStore.prototype._setValid = function (lineIndex, valid) {
+    }
+    _setValid(lineIndex, valid) {
         this._ensureLine(lineIndex);
         this._valid[lineIndex] = valid;
-    };
-    TokenizationStateStore.prototype._setBeginState = function (lineIndex, beginState) {
+    }
+    _setBeginState(lineIndex, beginState) {
         this._ensureLine(lineIndex);
         this._beginState[lineIndex] = beginState;
-    };
-    TokenizationStateStore.prototype.setEndState = function (linesLength, lineIndex, endState) {
+    }
+    setEndState(linesLength, lineIndex, endState) {
         this._setValid(lineIndex, true);
         this._invalidLineStartIndex = lineIndex + 1;
         // Check if this was the last line
@@ -119,14 +102,14 @@ var TokenizationStateStore = /** @class */ (function () {
             return;
         }
         // Check if the end state has changed
-        var previousEndState = this.getBeginState(lineIndex + 1);
+        const previousEndState = this.getBeginState(lineIndex + 1);
         if (previousEndState === null || !endState.equals(previousEndState)) {
             this._setBeginState(lineIndex + 1, endState);
             this._invalidateLine(lineIndex + 1);
             return;
         }
         // Perhaps we can skip tokenizing some lines...
-        var i = lineIndex + 1;
+        let i = lineIndex + 1;
         while (i < linesLength) {
             if (!this._isValid(i)) {
                 break;
@@ -134,137 +117,129 @@ var TokenizationStateStore = /** @class */ (function () {
             i++;
         }
         this._invalidLineStartIndex = i;
-    };
-    TokenizationStateStore.prototype.setFakeTokens = function (lineIndex) {
+    }
+    setFakeTokens(lineIndex) {
         this._setValid(lineIndex, false);
-    };
+    }
     //#region Editing
-    TokenizationStateStore.prototype.applyEdits = function (range, eolCount) {
-        var deletingLinesCnt = range.endLineNumber - range.startLineNumber;
-        var insertingLinesCnt = eolCount;
-        var editingLinesCnt = Math.min(deletingLinesCnt, insertingLinesCnt);
-        for (var j = editingLinesCnt; j >= 0; j--) {
+    applyEdits(range, eolCount) {
+        const deletingLinesCnt = range.endLineNumber - range.startLineNumber;
+        const insertingLinesCnt = eolCount;
+        const editingLinesCnt = Math.min(deletingLinesCnt, insertingLinesCnt);
+        for (let j = editingLinesCnt; j >= 0; j--) {
             this._invalidateLine(range.startLineNumber + j - 1);
         }
         this._acceptDeleteRange(range);
         this._acceptInsertText(new Position(range.startLineNumber, range.startColumn), eolCount);
-    };
-    TokenizationStateStore.prototype._acceptDeleteRange = function (range) {
-        var firstLineIndex = range.startLineNumber - 1;
+    }
+    _acceptDeleteRange(range) {
+        const firstLineIndex = range.startLineNumber - 1;
         if (firstLineIndex >= this._len) {
             return;
         }
         this._deleteLines(range.startLineNumber, range.endLineNumber - range.startLineNumber);
-    };
-    TokenizationStateStore.prototype._acceptInsertText = function (position, eolCount) {
-        var lineIndex = position.lineNumber - 1;
+    }
+    _acceptInsertText(position, eolCount) {
+        const lineIndex = position.lineNumber - 1;
         if (lineIndex >= this._len) {
             return;
         }
         this._insertLines(position.lineNumber, eolCount);
-    };
-    return TokenizationStateStore;
-}());
-export { TokenizationStateStore };
-var TextModelTokenization = /** @class */ (function (_super) {
-    __extends(TextModelTokenization, _super);
-    function TextModelTokenization(textModel) {
-        var _this = _super.call(this) || this;
-        _this._isDisposed = false;
-        _this._textModel = textModel;
-        _this._tokenizationStateStore = new TokenizationStateStore();
-        _this._tokenizationSupport = null;
-        _this._register(TokenizationRegistry.onDidChange(function (e) {
-            var languageIdentifier = _this._textModel.getLanguageIdentifier();
+    }
+}
+export class TextModelTokenization extends Disposable {
+    constructor(textModel) {
+        super();
+        this._isDisposed = false;
+        this._textModel = textModel;
+        this._tokenizationStateStore = new TokenizationStateStore();
+        this._tokenizationSupport = null;
+        this._register(TokenizationRegistry.onDidChange((e) => {
+            const languageIdentifier = this._textModel.getLanguageIdentifier();
             if (e.changedLanguages.indexOf(languageIdentifier.language) === -1) {
                 return;
             }
-            _this._resetTokenizationState();
-            _this._textModel.clearTokens();
+            this._resetTokenizationState();
+            this._textModel.clearTokens();
         }));
-        _this._register(_this._textModel.onDidChangeRawContentFast(function (e) {
-            if (e.containsEvent(1 /* Flush */)) {
-                _this._resetTokenizationState();
+        this._register(this._textModel.onDidChangeContentFast((e) => {
+            if (e.isFlush) {
+                this._resetTokenizationState();
                 return;
             }
-        }));
-        _this._register(_this._textModel.onDidChangeContentFast(function (e) {
-            for (var i = 0, len = e.changes.length; i < len; i++) {
-                var change = e.changes[i];
-                var eolCount = countEOL(change.text)[0];
-                _this._tokenizationStateStore.applyEdits(change.range, eolCount);
+            for (let i = 0, len = e.changes.length; i < len; i++) {
+                const change = e.changes[i];
+                const [eolCount] = countEOL(change.text);
+                this._tokenizationStateStore.applyEdits(change.range, eolCount);
             }
-            _this._beginBackgroundTokenization();
+            this._beginBackgroundTokenization();
         }));
-        _this._register(_this._textModel.onDidChangeAttached(function () {
-            _this._beginBackgroundTokenization();
+        this._register(this._textModel.onDidChangeAttached(() => {
+            this._beginBackgroundTokenization();
         }));
-        _this._register(_this._textModel.onDidChangeLanguage(function () {
-            _this._resetTokenizationState();
-            _this._textModel.clearTokens();
+        this._register(this._textModel.onDidChangeLanguage(() => {
+            this._resetTokenizationState();
+            this._textModel.clearTokens();
         }));
-        _this._resetTokenizationState();
-        return _this;
+        this._resetTokenizationState();
     }
-    TextModelTokenization.prototype.dispose = function () {
+    dispose() {
         this._isDisposed = true;
-        _super.prototype.dispose.call(this);
-    };
-    TextModelTokenization.prototype._resetTokenizationState = function () {
-        var _a = initializeTokenization(this._textModel), tokenizationSupport = _a[0], initialState = _a[1];
+        super.dispose();
+    }
+    _resetTokenizationState() {
+        const [tokenizationSupport, initialState] = initializeTokenization(this._textModel);
         this._tokenizationSupport = tokenizationSupport;
         this._tokenizationStateStore.flush(initialState);
         this._beginBackgroundTokenization();
-    };
-    TextModelTokenization.prototype._beginBackgroundTokenization = function () {
-        var _this = this;
+    }
+    _beginBackgroundTokenization() {
         if (this._textModel.isAttachedToEditor() && this._hasLinesToTokenize()) {
-            platform.setImmediate(function () {
-                if (_this._isDisposed) {
+            platform.setImmediate(() => {
+                if (this._isDisposed) {
                     // disposed in the meantime
                     return;
                 }
-                _this._revalidateTokensNow();
+                this._revalidateTokensNow();
             });
         }
-    };
-    TextModelTokenization.prototype._revalidateTokensNow = function (toLineNumber) {
-        if (toLineNumber === void 0) { toLineNumber = this._textModel.getLineCount(); }
-        var MAX_ALLOWED_TIME = 1;
-        var builder = new MultilineTokensBuilder();
-        var sw = StopWatch.create(false);
+    }
+    _revalidateTokensNow(toLineNumber = this._textModel.getLineCount()) {
+        const MAX_ALLOWED_TIME = 1;
+        const builder = new MultilineTokensBuilder();
+        const sw = StopWatch.create(false);
         while (this._hasLinesToTokenize()) {
             if (sw.elapsed() > MAX_ALLOWED_TIME) {
                 // Stop if MAX_ALLOWED_TIME is reached
                 break;
             }
-            var tokenizedLineNumber = this._tokenizeOneInvalidLine(builder);
+            const tokenizedLineNumber = this._tokenizeOneInvalidLine(builder);
             if (tokenizedLineNumber >= toLineNumber) {
                 break;
             }
         }
         this._beginBackgroundTokenization();
         this._textModel.setTokens(builder.tokens);
-    };
-    TextModelTokenization.prototype.tokenizeViewport = function (startLineNumber, endLineNumber) {
-        var builder = new MultilineTokensBuilder();
+    }
+    tokenizeViewport(startLineNumber, endLineNumber) {
+        const builder = new MultilineTokensBuilder();
         this._tokenizeViewport(builder, startLineNumber, endLineNumber);
         this._textModel.setTokens(builder.tokens);
-    };
-    TextModelTokenization.prototype.reset = function () {
+    }
+    reset() {
         this._resetTokenizationState();
         this._textModel.clearTokens();
-    };
-    TextModelTokenization.prototype.forceTokenization = function (lineNumber) {
-        var builder = new MultilineTokensBuilder();
+    }
+    forceTokenization(lineNumber) {
+        const builder = new MultilineTokensBuilder();
         this._updateTokensUntilLine(builder, lineNumber);
         this._textModel.setTokens(builder.tokens);
-    };
-    TextModelTokenization.prototype.isCheapToTokenize = function (lineNumber) {
+    }
+    isCheapToTokenize(lineNumber) {
         if (!this._tokenizationSupport) {
             return true;
         }
-        var firstInvalidLineNumber = this._tokenizationStateStore.invalidLineStartIndex + 1;
+        const firstInvalidLineNumber = this._tokenizationStateStore.invalidLineStartIndex + 1;
         if (lineNumber > firstInvalidLineNumber) {
             return false;
         }
@@ -275,39 +250,39 @@ var TextModelTokenization = /** @class */ (function (_super) {
             return true;
         }
         return false;
-    };
-    TextModelTokenization.prototype._hasLinesToTokenize = function () {
+    }
+    _hasLinesToTokenize() {
         if (!this._tokenizationSupport) {
             return false;
         }
         return (this._tokenizationStateStore.invalidLineStartIndex < this._textModel.getLineCount());
-    };
-    TextModelTokenization.prototype._tokenizeOneInvalidLine = function (builder) {
+    }
+    _tokenizeOneInvalidLine(builder) {
         if (!this._hasLinesToTokenize()) {
             return this._textModel.getLineCount() + 1;
         }
-        var lineNumber = this._tokenizationStateStore.invalidLineStartIndex + 1;
+        const lineNumber = this._tokenizationStateStore.invalidLineStartIndex + 1;
         this._updateTokensUntilLine(builder, lineNumber);
         return lineNumber;
-    };
-    TextModelTokenization.prototype._updateTokensUntilLine = function (builder, lineNumber) {
+    }
+    _updateTokensUntilLine(builder, lineNumber) {
         if (!this._tokenizationSupport) {
             return;
         }
-        var languageIdentifier = this._textModel.getLanguageIdentifier();
-        var linesLength = this._textModel.getLineCount();
-        var endLineIndex = lineNumber - 1;
+        const languageIdentifier = this._textModel.getLanguageIdentifier();
+        const linesLength = this._textModel.getLineCount();
+        const endLineIndex = lineNumber - 1;
         // Validate all states up to and including endLineIndex
-        for (var lineIndex = this._tokenizationStateStore.invalidLineStartIndex; lineIndex <= endLineIndex; lineIndex++) {
-            var text = this._textModel.getLineContent(lineIndex + 1);
-            var lineStartState = this._tokenizationStateStore.getBeginState(lineIndex);
-            var r = safeTokenize(languageIdentifier, this._tokenizationSupport, text, lineStartState);
+        for (let lineIndex = this._tokenizationStateStore.invalidLineStartIndex; lineIndex <= endLineIndex; lineIndex++) {
+            const text = this._textModel.getLineContent(lineIndex + 1);
+            const lineStartState = this._tokenizationStateStore.getBeginState(lineIndex);
+            const r = safeTokenize(languageIdentifier, this._tokenizationSupport, text, true, lineStartState);
             builder.add(lineIndex + 1, r.tokens);
             this._tokenizationStateStore.setEndState(linesLength, lineIndex, r.endState);
             lineIndex = this._tokenizationStateStore.invalidLineStartIndex - 1; // -1 because the outer loop increments it
         }
-    };
-    TextModelTokenization.prototype._tokenizeViewport = function (builder, startLineNumber, endLineNumber) {
+    }
+    _tokenizeViewport(builder, startLineNumber, endLineNumber) {
         if (!this._tokenizationSupport) {
             // nothing to do
             return;
@@ -321,11 +296,11 @@ var TextModelTokenization = /** @class */ (function (_super) {
             this._updateTokensUntilLine(builder, endLineNumber);
             return;
         }
-        var nonWhitespaceColumn = this._textModel.getLineFirstNonWhitespaceColumn(startLineNumber);
-        var fakeLines = [];
-        var initialState = null;
-        for (var i = startLineNumber - 1; nonWhitespaceColumn > 0 && i >= 1; i--) {
-            var newNonWhitespaceIndex = this._textModel.getLineFirstNonWhitespaceColumn(i);
+        let nonWhitespaceColumn = this._textModel.getLineFirstNonWhitespaceColumn(startLineNumber);
+        let fakeLines = [];
+        let initialState = null;
+        for (let i = startLineNumber - 1; nonWhitespaceColumn > 0 && i >= 1; i--) {
+            let newNonWhitespaceIndex = this._textModel.getLineFirstNonWhitespaceColumn(i);
             if (newNonWhitespaceIndex === 0) {
                 continue;
             }
@@ -341,29 +316,27 @@ var TextModelTokenization = /** @class */ (function (_super) {
         if (!initialState) {
             initialState = this._tokenizationSupport.getInitialState();
         }
-        var languageIdentifier = this._textModel.getLanguageIdentifier();
-        var state = initialState;
-        for (var i = fakeLines.length - 1; i >= 0; i--) {
-            var r = safeTokenize(languageIdentifier, this._tokenizationSupport, fakeLines[i], state);
+        const languageIdentifier = this._textModel.getLanguageIdentifier();
+        let state = initialState;
+        for (let i = fakeLines.length - 1; i >= 0; i--) {
+            let r = safeTokenize(languageIdentifier, this._tokenizationSupport, fakeLines[i], false, state);
             state = r.endState;
         }
-        for (var lineNumber = startLineNumber; lineNumber <= endLineNumber; lineNumber++) {
-            var text = this._textModel.getLineContent(lineNumber);
-            var r = safeTokenize(languageIdentifier, this._tokenizationSupport, text, state);
+        for (let lineNumber = startLineNumber; lineNumber <= endLineNumber; lineNumber++) {
+            let text = this._textModel.getLineContent(lineNumber);
+            let r = safeTokenize(languageIdentifier, this._tokenizationSupport, text, true, state);
             builder.add(lineNumber, r.tokens);
             this._tokenizationStateStore.setFakeTokens(lineNumber - 1);
             state = r.endState;
         }
-    };
-    return TextModelTokenization;
-}(Disposable));
-export { TextModelTokenization };
+    }
+}
 function initializeTokenization(textModel) {
-    var languageIdentifier = textModel.getLanguageIdentifier();
-    var tokenizationSupport = (textModel.isTooLargeForTokenization()
+    const languageIdentifier = textModel.getLanguageIdentifier();
+    let tokenizationSupport = (textModel.isTooLargeForTokenization()
         ? null
         : TokenizationRegistry.get(languageIdentifier.language));
-    var initialState = null;
+    let initialState = null;
     if (tokenizationSupport) {
         try {
             initialState = tokenizationSupport.getInitialState();
@@ -375,11 +348,11 @@ function initializeTokenization(textModel) {
     }
     return [tokenizationSupport, initialState];
 }
-function safeTokenize(languageIdentifier, tokenizationSupport, text, state) {
-    var r = null;
+function safeTokenize(languageIdentifier, tokenizationSupport, text, hasEOL, state) {
+    let r = null;
     if (tokenizationSupport) {
         try {
-            r = tokenizationSupport.tokenize2(text, state.clone(), 0);
+            r = tokenizationSupport.tokenize2(text, hasEOL, state.clone(), 0);
         }
         catch (e) {
             onUnexpectedError(e);

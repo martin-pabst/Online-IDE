@@ -2,50 +2,122 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 import { CancellationTokenSource } from './cancellation.js';
-import * as errors from './errors.js';
+import { canceled } from './errors.js';
 import { toDisposable } from './lifecycle.js';
 export function isThenable(obj) {
-    return obj && typeof obj.then === 'function';
+    return !!obj && typeof obj.then === 'function';
 }
 export function createCancelablePromise(callback) {
-    var source = new CancellationTokenSource();
-    var thenable = callback(source.token);
-    var promise = new Promise(function (resolve, reject) {
-        source.token.onCancellationRequested(function () {
-            reject(errors.canceled());
+    const source = new CancellationTokenSource();
+    const thenable = callback(source.token);
+    const promise = new Promise((resolve, reject) => {
+        const subscription = source.token.onCancellationRequested(() => {
+            subscription.dispose();
+            source.dispose();
+            reject(canceled());
         });
-        Promise.resolve(thenable).then(function (value) {
+        Promise.resolve(thenable).then(value => {
+            subscription.dispose();
             source.dispose();
             resolve(value);
-        }, function (err) {
+        }, err => {
+            subscription.dispose();
             source.dispose();
             reject(err);
         });
     });
-    return new /** @class */ (function () {
-        function class_1() {
-        }
-        class_1.prototype.cancel = function () {
+    return new class {
+        cancel() {
             source.cancel();
-        };
-        class_1.prototype.then = function (resolve, reject) {
+        }
+        then(resolve, reject) {
             return promise.then(resolve, reject);
-        };
-        class_1.prototype.catch = function (reject) {
+        }
+        catch(reject) {
             return this.then(undefined, reject);
-        };
-        class_1.prototype.finally = function (onfinally) {
+        }
+        finally(onfinally) {
             return promise.finally(onfinally);
-        };
-        return class_1;
-    }());
+        }
+    };
 }
 export function raceCancellation(promise, token, defaultValue) {
-    return Promise.race([promise, new Promise(function (resolve) { return token.onCancellationRequested(function () { return resolve(defaultValue); }); })]);
+    return Promise.race([promise, new Promise(resolve => token.onCancellationRequested(() => resolve(defaultValue)))]);
 }
 /**
- * A helper to delay execution of a task that is being requested often.
+ * A helper to prevent accumulation of sequential async tasks.
+ *
+ * Imagine a mail man with the sole task of delivering letters. As soon as
+ * a letter submitted for delivery, he drives to the destination, delivers it
+ * and returns to his base. Imagine that during the trip, N more letters were submitted.
+ * When the mail man returns, he picks those N letters and delivers them all in a
+ * single trip. Even though N+1 submissions occurred, only 2 deliveries were made.
+ *
+ * The throttler implements this via the queue() method, by providing it a task
+ * factory. Following the example:
+ *
+ * 		const throttler = new Throttler();
+ * 		const letters = [];
+ *
+ * 		function deliver() {
+ * 			const lettersToDeliver = letters;
+ * 			letters = [];
+ * 			return makeTheTrip(lettersToDeliver);
+ * 		}
+ *
+ * 		function onLetterReceived(l) {
+ * 			letters.push(l);
+ * 			throttler.queue(deliver);
+ * 		}
+ */
+export class Throttler {
+    constructor() {
+        this.activePromise = null;
+        this.queuedPromise = null;
+        this.queuedPromiseFactory = null;
+    }
+    queue(promiseFactory) {
+        if (this.activePromise) {
+            this.queuedPromiseFactory = promiseFactory;
+            if (!this.queuedPromise) {
+                const onComplete = () => {
+                    this.queuedPromise = null;
+                    const result = this.queue(this.queuedPromiseFactory);
+                    this.queuedPromiseFactory = null;
+                    return result;
+                };
+                this.queuedPromise = new Promise(resolve => {
+                    this.activePromise.then(onComplete, onComplete).then(resolve);
+                });
+            }
+            return new Promise((resolve, reject) => {
+                this.queuedPromise.then(resolve, reject);
+            });
+        }
+        this.activePromise = promiseFactory();
+        return new Promise((resolve, reject) => {
+            this.activePromise.then((result) => {
+                this.activePromise = null;
+                resolve(result);
+            }, (err) => {
+                this.activePromise = null;
+                reject(err);
+            });
+        });
+    }
+}
+/**
+ * A helper to delay (debounce) execution of a task that is being requested often.
  *
  * Following the throttler, now imagine the mail man wants to optimize the number of
  * trips proactively. The trip itself can be long, so he decides not to make the trip
@@ -67,8 +139,8 @@ export function raceCancellation(promise, token, defaultValue) {
  * 			delayer.trigger(() => { return makeTheTrip(); });
  * 		}
  */
-var Delayer = /** @class */ (function () {
-    function Delayer(defaultDelay) {
+export class Delayer {
+    constructor(defaultDelay) {
         this.defaultDelay = defaultDelay;
         this.timeout = null;
         this.completionPromise = null;
@@ -76,87 +148,105 @@ var Delayer = /** @class */ (function () {
         this.doReject = null;
         this.task = null;
     }
-    Delayer.prototype.trigger = function (task, delay) {
-        var _this = this;
-        if (delay === void 0) { delay = this.defaultDelay; }
+    trigger(task, delay = this.defaultDelay) {
         this.task = task;
         this.cancelTimeout();
         if (!this.completionPromise) {
-            this.completionPromise = new Promise(function (c, e) {
-                _this.doResolve = c;
-                _this.doReject = e;
-            }).then(function () {
-                _this.completionPromise = null;
-                _this.doResolve = null;
-                if (_this.task) {
-                    var task_1 = _this.task;
-                    _this.task = null;
-                    return task_1();
+            this.completionPromise = new Promise((resolve, reject) => {
+                this.doResolve = resolve;
+                this.doReject = reject;
+            }).then(() => {
+                this.completionPromise = null;
+                this.doResolve = null;
+                if (this.task) {
+                    const task = this.task;
+                    this.task = null;
+                    return task();
                 }
                 return undefined;
             });
         }
-        this.timeout = setTimeout(function () {
-            _this.timeout = null;
-            if (_this.doResolve) {
-                _this.doResolve(null);
+        this.timeout = setTimeout(() => {
+            this.timeout = null;
+            if (this.doResolve) {
+                this.doResolve(null);
             }
         }, delay);
         return this.completionPromise;
-    };
-    Delayer.prototype.isTriggered = function () {
+    }
+    isTriggered() {
         return this.timeout !== null;
-    };
-    Delayer.prototype.cancel = function () {
+    }
+    cancel() {
         this.cancelTimeout();
         if (this.completionPromise) {
             if (this.doReject) {
-                this.doReject(errors.canceled());
+                this.doReject(canceled());
             }
             this.completionPromise = null;
         }
-    };
-    Delayer.prototype.cancelTimeout = function () {
+    }
+    cancelTimeout() {
         if (this.timeout !== null) {
             clearTimeout(this.timeout);
             this.timeout = null;
         }
-    };
-    Delayer.prototype.dispose = function () {
-        this.cancelTimeout();
-    };
-    return Delayer;
-}());
-export { Delayer };
+    }
+    dispose() {
+        this.cancel();
+    }
+}
+/**
+ * A helper to delay execution of a task that is being requested often, while
+ * preventing accumulation of consecutive executions, while the task runs.
+ *
+ * The mail man is clever and waits for a certain amount of time, before going
+ * out to deliver letters. While the mail man is going out, more letters arrive
+ * and can only be delivered once he is back. Once he is back the mail man will
+ * do one more trip to deliver the letters that have accumulated while he was out.
+ */
+export class ThrottledDelayer {
+    constructor(defaultDelay) {
+        this.delayer = new Delayer(defaultDelay);
+        this.throttler = new Throttler();
+    }
+    trigger(promiseFactory, delay) {
+        return this.delayer.trigger(() => this.throttler.queue(promiseFactory), delay);
+    }
+    dispose() {
+        this.delayer.dispose();
+    }
+}
 export function timeout(millis, token) {
     if (!token) {
-        return createCancelablePromise(function (token) { return timeout(millis, token); });
+        return createCancelablePromise(token => timeout(millis, token));
     }
-    return new Promise(function (resolve, reject) {
-        var handle = setTimeout(resolve, millis);
-        token.onCancellationRequested(function () {
+    return new Promise((resolve, reject) => {
+        const handle = setTimeout(() => {
+            disposable.dispose();
+            resolve();
+        }, millis);
+        const disposable = token.onCancellationRequested(() => {
             clearTimeout(handle);
-            reject(errors.canceled());
+            disposable.dispose();
+            reject(canceled());
         });
     });
 }
-export function disposableTimeout(handler, timeout) {
-    if (timeout === void 0) { timeout = 0; }
-    var timer = setTimeout(handler, timeout);
-    return toDisposable(function () { return clearTimeout(timer); });
+export function disposableTimeout(handler, timeout = 0) {
+    const timer = setTimeout(handler, timeout);
+    return toDisposable(() => clearTimeout(timer));
 }
-export function first(promiseFactories, shouldStop, defaultValue) {
-    if (shouldStop === void 0) { shouldStop = function (t) { return !!t; }; }
-    if (defaultValue === void 0) { defaultValue = null; }
-    var index = 0;
-    var len = promiseFactories.length;
-    var loop = function () {
+export function first(promiseFactories, shouldStop = t => !!t, defaultValue = null) {
+    let index = 0;
+    const len = promiseFactories.length;
+    const loop = () => {
         if (index >= len) {
             return Promise.resolve(defaultValue);
         }
-        var factory = promiseFactories[index++];
-        var promise = Promise.resolve(factory());
-        return promise.then(function (result) {
+        const factory = promiseFactories[index++];
+        const promise = Promise.resolve(factory());
+        return promise.then(result => {
             if (shouldStop(result)) {
                 return Promise.resolve(result);
             }
@@ -165,132 +255,129 @@ export function first(promiseFactories, shouldStop, defaultValue) {
     };
     return loop();
 }
-var TimeoutTimer = /** @class */ (function () {
-    function TimeoutTimer(runner, timeout) {
+export class TimeoutTimer {
+    constructor(runner, timeout) {
         this._token = -1;
         if (typeof runner === 'function' && typeof timeout === 'number') {
             this.setIfNotSet(runner, timeout);
         }
     }
-    TimeoutTimer.prototype.dispose = function () {
+    dispose() {
         this.cancel();
-    };
-    TimeoutTimer.prototype.cancel = function () {
+    }
+    cancel() {
         if (this._token !== -1) {
             clearTimeout(this._token);
             this._token = -1;
         }
-    };
-    TimeoutTimer.prototype.cancelAndSet = function (runner, timeout) {
-        var _this = this;
+    }
+    cancelAndSet(runner, timeout) {
         this.cancel();
-        this._token = setTimeout(function () {
-            _this._token = -1;
+        this._token = setTimeout(() => {
+            this._token = -1;
             runner();
         }, timeout);
-    };
-    TimeoutTimer.prototype.setIfNotSet = function (runner, timeout) {
-        var _this = this;
+    }
+    setIfNotSet(runner, timeout) {
         if (this._token !== -1) {
             // timer is already set
             return;
         }
-        this._token = setTimeout(function () {
-            _this._token = -1;
+        this._token = setTimeout(() => {
+            this._token = -1;
             runner();
         }, timeout);
-    };
-    return TimeoutTimer;
-}());
-export { TimeoutTimer };
-var IntervalTimer = /** @class */ (function () {
-    function IntervalTimer() {
+    }
+}
+export class IntervalTimer {
+    constructor() {
         this._token = -1;
     }
-    IntervalTimer.prototype.dispose = function () {
+    dispose() {
         this.cancel();
-    };
-    IntervalTimer.prototype.cancel = function () {
+    }
+    cancel() {
         if (this._token !== -1) {
             clearInterval(this._token);
             this._token = -1;
         }
-    };
-    IntervalTimer.prototype.cancelAndSet = function (runner, interval) {
+    }
+    cancelAndSet(runner, interval) {
         this.cancel();
-        this._token = setInterval(function () {
+        this._token = setInterval(() => {
             runner();
         }, interval);
-    };
-    return IntervalTimer;
-}());
-export { IntervalTimer };
-var RunOnceScheduler = /** @class */ (function () {
-    function RunOnceScheduler(runner, timeout) {
+    }
+}
+export class RunOnceScheduler {
+    constructor(runner, delay) {
         this.timeoutToken = -1;
         this.runner = runner;
-        this.timeout = timeout;
+        this.timeout = delay;
         this.timeoutHandler = this.onTimeout.bind(this);
     }
     /**
      * Dispose RunOnceScheduler
      */
-    RunOnceScheduler.prototype.dispose = function () {
+    dispose() {
         this.cancel();
         this.runner = null;
-    };
+    }
     /**
      * Cancel current scheduled runner (if any).
      */
-    RunOnceScheduler.prototype.cancel = function () {
+    cancel() {
         if (this.isScheduled()) {
             clearTimeout(this.timeoutToken);
             this.timeoutToken = -1;
         }
-    };
+    }
     /**
      * Cancel previous runner (if any) & schedule a new runner.
      */
-    RunOnceScheduler.prototype.schedule = function (delay) {
-        if (delay === void 0) { delay = this.timeout; }
+    schedule(delay = this.timeout) {
         this.cancel();
         this.timeoutToken = setTimeout(this.timeoutHandler, delay);
-    };
+    }
+    get delay() {
+        return this.timeout;
+    }
+    set delay(value) {
+        this.timeout = value;
+    }
     /**
      * Returns true if scheduled.
      */
-    RunOnceScheduler.prototype.isScheduled = function () {
+    isScheduled() {
         return this.timeoutToken !== -1;
-    };
-    RunOnceScheduler.prototype.onTimeout = function () {
+    }
+    onTimeout() {
         this.timeoutToken = -1;
         if (this.runner) {
             this.doRun();
         }
-    };
-    RunOnceScheduler.prototype.doRun = function () {
+    }
+    doRun() {
         if (this.runner) {
             this.runner();
         }
-    };
-    return RunOnceScheduler;
-}());
-export { RunOnceScheduler };
+    }
+}
 /**
  * Execute the callback the next time the browser is idle
  */
-export var runWhenIdle;
+export let runWhenIdle;
 (function () {
     if (typeof requestIdleCallback !== 'function' || typeof cancelIdleCallback !== 'function') {
-        var dummyIdle_1 = Object.freeze({
+        const dummyIdle = Object.freeze({
             didTimeout: true,
-            timeRemaining: function () { return 15; }
+            timeRemaining() { return 15; }
         });
-        runWhenIdle = function (runner) {
-            var handle = setTimeout(function () { return runner(dummyIdle_1); });
-            var disposed = false;
+        runWhenIdle = (runner) => {
+            const handle = setTimeout(() => runner(dummyIdle));
+            let disposed = false;
             return {
-                dispose: function () {
+                dispose() {
                     if (disposed) {
                         return;
                     }
@@ -301,11 +388,11 @@ export var runWhenIdle;
         };
     }
     else {
-        runWhenIdle = function (runner, timeout) {
-            var handle = requestIdleCallback(runner, typeof timeout === 'number' ? { timeout: timeout } : undefined);
-            var disposed = false;
+        runWhenIdle = (runner, timeout) => {
+            const handle = requestIdleCallback(runner, typeof timeout === 'number' ? { timeout } : undefined);
+            let disposed = false;
             return {
-                dispose: function () {
+                dispose() {
                     if (disposed) {
                         return;
                     }
@@ -320,27 +407,26 @@ export var runWhenIdle;
  * An implementation of the "idle-until-urgent"-strategy as introduced
  * here: https://philipwalton.com/articles/idle-until-urgent/
  */
-var IdleValue = /** @class */ (function () {
-    function IdleValue(executor) {
-        var _this = this;
+export class IdleValue {
+    constructor(executor) {
         this._didRun = false;
-        this._executor = function () {
+        this._executor = () => {
             try {
-                _this._value = executor();
+                this._value = executor();
             }
             catch (err) {
-                _this._error = err;
+                this._error = err;
             }
             finally {
-                _this._didRun = true;
+                this._didRun = true;
             }
         };
-        this._handle = runWhenIdle(function () { return _this._executor(); });
+        this._handle = runWhenIdle(() => this._executor());
     }
-    IdleValue.prototype.dispose = function () {
+    dispose() {
         this._handle.dispose();
-    };
-    IdleValue.prototype.getValue = function () {
+    }
+    get value() {
         if (!this._didRun) {
             this._handle.dispose();
             this._executor();
@@ -349,7 +435,34 @@ var IdleValue = /** @class */ (function () {
             throw this._error;
         }
         return this._value;
-    };
-    return IdleValue;
-}());
-export { IdleValue };
+    }
+}
+//#endregion
+//#region Promises
+export var Promises;
+(function (Promises) {
+    /**
+     * A drop-in replacement for `Promise.all` with the only difference
+     * that the method awaits every promise to either fulfill or reject.
+     *
+     * Similar to `Promise.all`, only the first error will be returned
+     * if any.
+     */
+    function settled(promises) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let firstError = undefined;
+            const result = yield Promise.all(promises.map(promise => promise.then(value => value, error => {
+                if (!firstError) {
+                    firstError = error;
+                }
+                return undefined; // do not rethrow so that other promises can settle
+            })));
+            if (typeof firstError !== 'undefined') {
+                throw firstError;
+            }
+            return result; // cast is needed and protected by the `throw` above
+        });
+    }
+    Promises.settled = settled;
+})(Promises || (Promises = {}));
+//#endregion

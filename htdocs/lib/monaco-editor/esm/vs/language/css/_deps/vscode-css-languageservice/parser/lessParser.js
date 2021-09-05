@@ -7,10 +7,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -230,18 +232,11 @@ var LESSParser = /** @class */ (function (_super) {
         }
         return node;
     };
-    LESSParser.prototype._parseTerm = function () {
-        var term = _super.prototype._parseTerm.call(this);
-        if (term) {
-            return term;
-        }
-        term = this.create(nodes.Term);
-        if (term.setExpression(this._parseVariable()) ||
-            term.setExpression(this._parseEscaped()) ||
-            term.setExpression(this._tryParseMixinReference(false))) {
-            return this.finish(term);
-        }
-        return null;
+    LESSParser.prototype._parseTermExpression = function () {
+        return this._parseVariable() ||
+            this._parseEscaped() ||
+            _super.prototype._parseTermExpression.call(this) || // preference for colors before mixin references
+            this._tryParseMixinReference(false);
     };
     LESSParser.prototype._parseEscaped = function () {
         if (this.peek(TokenType.EscapedJavaScript) ||
@@ -300,7 +295,7 @@ var LESSParser = /** @class */ (function (_super) {
                 || this._parseSupports(true) // @supports
                 || this._parseDetachedRuleSetMixin() // less detached ruleset mixin
                 || this._parseVariableDeclaration() // Variable declarations
-                || this._parseUnknownAtRule();
+                || _super.prototype._parseRuleSetDeclarationAtStatement.call(this);
         }
         return this._tryParseMixinDeclaration()
             || this._tryParseRuleset(true) // nested ruleset
@@ -581,7 +576,7 @@ var LESSParser = /** @class */ (function (_super) {
             return null;
         }
         var hasArguments = false;
-        if (!this.hasWhitespace() && this.accept(TokenType.ParenthesisL)) {
+        if (this.accept(TokenType.ParenthesisL)) {
             hasArguments = true;
             if (node.getArguments().addChild(this._parseMixinArgument())) {
                 while (this.accept(TokenType.Comma) || this.accept(TokenType.SemiColon)) {

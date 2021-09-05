@@ -3,10 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { createScanner } from '../parser/htmlScanner.js';
-import { Range } from './../_deps/vscode-languageserver-types/main.js';
 import * as strings from '../utils/strings.js';
 import { URI as Uri } from './../../vscode-uri/index.js';
-import { TokenType } from '../htmlLanguageTypes.js';
+import { TokenType, Range } from '../htmlLanguageTypes.js';
 function normalizeRef(url) {
     var first = url[0];
     var last = url[url.length - 1];

@@ -2,11 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 export var conf = {
     wordPattern: /(-?\d*\.\d\w*)|([^\`\~\!\@\$\^\&\*\(\)\=\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\s]+)/g,
     comments: {
-        blockComment: ['{#', '#}'],
+        blockComment: ['{#', '#}']
     },
     brackets: [
         ['{#', '#}'],
@@ -16,7 +15,7 @@ export var conf = {
         ['[', ']'],
         // HTML
         ['<!--', '-->'],
-        ['<', '>'],
+        ['<', '>']
     ],
     autoClosingPairs: [
         { open: '{# ', close: ' #}' },
@@ -25,14 +24,14 @@ export var conf = {
         { open: '[', close: ']' },
         { open: '(', close: ')' },
         { open: '"', close: '"' },
-        { open: '\'', close: '\'' },
+        { open: "'", close: "'" }
     ],
     surroundingPairs: [
         { open: '"', close: '"' },
-        { open: '\'', close: '\'' },
+        { open: "'", close: "'" },
         // HTML
-        { open: '<', close: '>' },
-    ],
+        { open: '<', close: '>' }
+    ]
 };
 export var language = {
     defaultToken: '',
@@ -40,14 +39,39 @@ export var language = {
     ignoreCase: true,
     keywords: [
         // (opening) tags
-        'apply', 'autoescape', 'block', 'deprecated', 'do', 'embed', 'extends',
-        'flush', 'for', 'from', 'if', 'import', 'include', 'macro', 'sandbox',
-        'set', 'use', 'verbatim', 'with',
+        'apply',
+        'autoescape',
+        'block',
+        'deprecated',
+        'do',
+        'embed',
+        'extends',
+        'flush',
+        'for',
+        'from',
+        'if',
+        'import',
+        'include',
+        'macro',
+        'sandbox',
+        'set',
+        'use',
+        'verbatim',
+        'with',
         // closing tags
-        'endapply', 'endautoescape', 'endblock', 'endembed', 'endfor', 'endif',
-        'endmacro', 'endsandbox', 'endset', 'endwith',
+        'endapply',
+        'endautoescape',
+        'endblock',
+        'endembed',
+        'endfor',
+        'endif',
+        'endmacro',
+        'endsandbox',
+        'endset',
+        'endwith',
         // literals
-        'true', 'false',
+        'true',
+        'false'
     ],
     tokenizer: {
         root: [
@@ -60,20 +84,29 @@ export var language = {
             // HTML
             [/<!DOCTYPE/, 'metatag.html', '@doctype'],
             [/<!--/, 'comment.html', '@comment'],
-            [/(<)((?:[\w\-]+:)?[\w\-]+)(\s*)(\/>)/, ['delimiter.html', 'tag.html', '', 'delimiter.html']],
+            [
+                /(<)((?:[\w\-]+:)?[\w\-]+)(\s*)(\/>)/,
+                ['delimiter.html', 'tag.html', '', 'delimiter.html']
+            ],
             [/(<)(script)/, ['delimiter.html', { token: 'tag.html', next: '@script' }]],
             [/(<)(style)/, ['delimiter.html', { token: 'tag.html', next: '@style' }]],
-            [/(<)((?:[\w\-]+:)?[\w\-]+)/, ['delimiter.html', { token: 'tag.html', next: '@otherTag' }]],
-            [/(<\/)((?:[\w\-]+:)?[\w\-]+)/, ['delimiter.html', { token: 'tag.html', next: '@otherTag' }]],
+            [
+                /(<)((?:[\w\-]+:)?[\w\-]+)/,
+                ['delimiter.html', { token: 'tag.html', next: '@otherTag' }]
+            ],
+            [
+                /(<\/)((?:[\w\-]+:)?[\w\-]+)/,
+                ['delimiter.html', { token: 'tag.html', next: '@otherTag' }]
+            ],
             [/</, 'delimiter.html'],
-            [/[^<]+/],
+            [/[^<]+/] // text
         ],
         /**
          * Comment Tag Handling
          */
         commentState: [
             [/#}/, 'comment.twig', '@pop'],
-            [/./, 'comment.twig'],
+            [/./, 'comment.twig']
         ],
         /**
          * Block Tag Handling
@@ -85,43 +118,42 @@ export var language = {
             // verbatim
             // Unlike other blocks, verbatim ehas its own state
             // transition to ensure we mark its contents as strings.
-            [/(verbatim)(\s*)([-~]?%})/, [
-                    'keyword.twig',
-                    '',
-                    { token: 'delimiter.twig', next: '@rawDataState' },
-                ]],
+            [
+                /(verbatim)(\s*)([-~]?%})/,
+                ['keyword.twig', '', { token: 'delimiter.twig', next: '@rawDataState' }]
+            ],
             { include: 'expression' }
         ],
         rawDataState: [
             // endverbatim
-            [/({%[-~]?)(\s*)(endverbatim)(\s*)([-~]?%})/, [
+            [
+                /({%[-~]?)(\s*)(endverbatim)(\s*)([-~]?%})/,
+                [
                     'delimiter.twig',
                     '',
                     'keyword.twig',
                     '',
-                    { token: 'delimiter.twig', next: '@popall' },
-                ]],
-            [/./, 'string.twig'],
+                    { token: 'delimiter.twig', next: '@popall' }
+                ]
+            ],
+            [/./, 'string.twig']
         ],
         /**
          * Variable Tag Handling
          */
-        variableState: [
-            [/[-~]?}}/, 'delimiter.twig', '@pop'],
-            { include: 'expression' },
-        ],
+        variableState: [[/[-~]?}}/, 'delimiter.twig', '@pop'], { include: 'expression' }],
         stringState: [
             // closing double quoted string
             [/"/, 'string.twig', '@pop'],
             // interpolation start
             [/#{\s*/, 'string.twig', '@interpolationState'],
             // string part
-            [/[^#"\\]*(?:(?:\\.|#(?!\{))[^#"\\]*)*/, 'string.twig'],
+            [/[^#"\\]*(?:(?:\\.|#(?!\{))[^#"\\]*)*/, 'string.twig']
         ],
         interpolationState: [
             // interpolation end
             [/}/, 'string.twig', '@pop'],
-            { include: 'expression' },
+            { include: 'expression' }
         ],
         /**
          * Expression Handling
@@ -144,12 +176,15 @@ export var language = {
             // operators - misc
             [/\||~|:|\.{1,2}|\?{1,2}/, 'operators.twig'],
             // names
-            [/[^\W\d][\w]*/, {
+            [
+                /[^\W\d][\w]*/,
+                {
                     cases: {
                         '@keywords': 'keyword.twig',
                         '@default': 'variable.twig'
                     }
-                }],
+                }
+            ],
             // numbers
             [/\d+(\.\d+)?/, 'number.twig'],
             // punctuation
@@ -164,14 +199,14 @@ export var language = {
             // arrow functions
             [/=>/, 'operators.twig'],
             // assignment
-            [/=/, 'operators.twig'],
+            [/=/, 'operators.twig']
         ],
         /**
          * HTML
          */
         doctype: [
             [/[^>]+/, 'metatag.content.html'],
-            [/>/, 'metatag.html', '@pop'],
+            [/>/, 'metatag.html', '@pop']
         ],
         comment: [
             [/-->/, 'comment.html', '@pop'],
@@ -184,7 +219,7 @@ export var language = {
             [/'([^']*)'/, 'attribute.value.html'],
             [/[\w\-]+/, 'attribute.name.html'],
             [/=/, 'delimiter.html'],
-            [/[ \t\r\n]+/],
+            [/[ \t\r\n]+/] // whitespace
         ],
         // -- BEGIN <script> tags handling
         // After <script
@@ -194,28 +229,71 @@ export var language = {
             [/'([^']*)'/, 'attribute.value.html'],
             [/[\w\-]+/, 'attribute.name.html'],
             [/=/, 'delimiter.html'],
-            [/>/, { token: 'delimiter.html', next: '@scriptEmbedded', nextEmbedded: 'text/javascript' }],
+            [
+                />/,
+                {
+                    token: 'delimiter.html',
+                    next: '@scriptEmbedded',
+                    nextEmbedded: 'text/javascript'
+                }
+            ],
             [/[ \t\r\n]+/],
-            [/(<\/)(script\s*)(>)/, ['delimiter.html', 'tag.html', { token: 'delimiter.html', next: '@pop' }]]
+            [
+                /(<\/)(script\s*)(>)/,
+                ['delimiter.html', 'tag.html', { token: 'delimiter.html', next: '@pop' }]
+            ]
         ],
         // After <script ... type
         scriptAfterType: [
             [/=/, 'delimiter.html', '@scriptAfterTypeEquals'],
-            [/>/, { token: 'delimiter.html', next: '@scriptEmbedded', nextEmbedded: 'text/javascript' }],
+            [
+                />/,
+                {
+                    token: 'delimiter.html',
+                    next: '@scriptEmbedded',
+                    nextEmbedded: 'text/javascript'
+                }
+            ],
             [/[ \t\r\n]+/],
             [/<\/script\s*>/, { token: '@rematch', next: '@pop' }]
         ],
         // After <script ... type =
         scriptAfterTypeEquals: [
-            [/"([^"]*)"/, { token: 'attribute.value.html', switchTo: '@scriptWithCustomType.$1' }],
-            [/'([^']*)'/, { token: 'attribute.value.html', switchTo: '@scriptWithCustomType.$1' }],
-            [/>/, { token: 'delimiter.html', next: '@scriptEmbedded', nextEmbedded: 'text/javascript' }],
+            [
+                /"([^"]*)"/,
+                {
+                    token: 'attribute.value.html',
+                    switchTo: '@scriptWithCustomType.$1'
+                }
+            ],
+            [
+                /'([^']*)'/,
+                {
+                    token: 'attribute.value.html',
+                    switchTo: '@scriptWithCustomType.$1'
+                }
+            ],
+            [
+                />/,
+                {
+                    token: 'delimiter.html',
+                    next: '@scriptEmbedded',
+                    nextEmbedded: 'text/javascript'
+                }
+            ],
             [/[ \t\r\n]+/],
             [/<\/script\s*>/, { token: '@rematch', next: '@pop' }]
         ],
         // After <script ... type = $S2
         scriptWithCustomType: [
-            [/>/, { token: 'delimiter.html', next: '@scriptEmbedded.$S2', nextEmbedded: '$S2' }],
+            [
+                />/,
+                {
+                    token: 'delimiter.html',
+                    next: '@scriptEmbedded.$S2',
+                    nextEmbedded: '$S2'
+                }
+            ],
             [/"([^"]*)"/, 'attribute.value.html'],
             [/'([^']*)'/, 'attribute.value.html'],
             [/[\w\-]+/, 'attribute.name.html'],
@@ -236,28 +314,71 @@ export var language = {
             [/'([^']*)'/, 'attribute.value.html'],
             [/[\w\-]+/, 'attribute.name.html'],
             [/=/, 'delimiter.html'],
-            [/>/, { token: 'delimiter.html', next: '@styleEmbedded', nextEmbedded: 'text/css' }],
+            [
+                />/,
+                {
+                    token: 'delimiter.html',
+                    next: '@styleEmbedded',
+                    nextEmbedded: 'text/css'
+                }
+            ],
             [/[ \t\r\n]+/],
-            [/(<\/)(style\s*)(>)/, ['delimiter.html', 'tag.html', { token: 'delimiter.html', next: '@pop' }]]
+            [
+                /(<\/)(style\s*)(>)/,
+                ['delimiter.html', 'tag.html', { token: 'delimiter.html', next: '@pop' }]
+            ]
         ],
         // After <style ... type
         styleAfterType: [
             [/=/, 'delimiter.html', '@styleAfterTypeEquals'],
-            [/>/, { token: 'delimiter.html', next: '@styleEmbedded', nextEmbedded: 'text/css' }],
+            [
+                />/,
+                {
+                    token: 'delimiter.html',
+                    next: '@styleEmbedded',
+                    nextEmbedded: 'text/css'
+                }
+            ],
             [/[ \t\r\n]+/],
             [/<\/style\s*>/, { token: '@rematch', next: '@pop' }]
         ],
         // After <style ... type =
         styleAfterTypeEquals: [
-            [/"([^"]*)"/, { token: 'attribute.value.html', switchTo: '@styleWithCustomType.$1' }],
-            [/'([^']*)'/, { token: 'attribute.value.html', switchTo: '@styleWithCustomType.$1' }],
-            [/>/, { token: 'delimiter.html', next: '@styleEmbedded', nextEmbedded: 'text/css' }],
+            [
+                /"([^"]*)"/,
+                {
+                    token: 'attribute.value.html',
+                    switchTo: '@styleWithCustomType.$1'
+                }
+            ],
+            [
+                /'([^']*)'/,
+                {
+                    token: 'attribute.value.html',
+                    switchTo: '@styleWithCustomType.$1'
+                }
+            ],
+            [
+                />/,
+                {
+                    token: 'delimiter.html',
+                    next: '@styleEmbedded',
+                    nextEmbedded: 'text/css'
+                }
+            ],
             [/[ \t\r\n]+/],
             [/<\/style\s*>/, { token: '@rematch', next: '@pop' }]
         ],
         // After <style ... type = $S2
         styleWithCustomType: [
-            [/>/, { token: 'delimiter.html', next: '@styleEmbedded.$S2', nextEmbedded: '$S2' }],
+            [
+                />/,
+                {
+                    token: 'delimiter.html',
+                    next: '@styleEmbedded.$S2',
+                    nextEmbedded: '$S2'
+                }
+            ],
             [/"([^"]*)"/, 'attribute.value.html'],
             [/'([^']*)'/, 'attribute.value.html'],
             [/[\w\-]+/, 'attribute.name.html'],
@@ -268,6 +389,6 @@ export var language = {
         styleEmbedded: [
             [/<\/style/, { token: '@rematch', next: '@pop', nextEmbedded: '@pop' }],
             [/[^<]+/, '']
-        ],
+        ]
     }
 };

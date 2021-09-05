@@ -19,7 +19,8 @@ export function getSelectionRanges(document, positions, stylesheet) {
     }
     return positions.map(getSelectionRange);
     function getApplicableRanges(position) {
-        var currNode = stylesheet.findChildAtOffset(document.offsetAt(position), true);
+        var offset = document.offsetAt(position);
+        var currNode = stylesheet.findChildAtOffset(offset, true);
         if (!currNode) {
             return [];
         }
@@ -31,12 +32,14 @@ export function getSelectionRanges(document, positions, stylesheet) {
                 currNode = currNode.parent;
                 continue;
             }
+            // The `{ }` part of `.a { }`
             if (currNode.type === NodeType.Declarations) {
-                result.push([currNode.offset + 1, currNode.end - 1]);
+                if (offset > currNode.offset && offset < currNode.end) {
+                    // Return `{ }` and the range inside `{` and `}`
+                    result.push([currNode.offset + 1, currNode.end - 1]);
+                }
             }
-            else {
-                result.push([currNode.offset, currNode.end]);
-            }
+            result.push([currNode.offset, currNode.end]);
             currNode = currNode.parent;
         }
         return result;

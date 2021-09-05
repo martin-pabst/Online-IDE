@@ -17,7 +17,7 @@ export class PerformanceCollector {
         let dt = Math.round(performance.now() - startTime);
         pe.sumTime += dt;
         PerformanceCollector.performanceDataCount++;
-        console.log("Performance entry for path " + pe.url + ": " + dt + " ms, aggregated: " + pe.sumTime + " for " + pe.count + " requests.");
+        // console.log("Performance entry for path " + pe.url + ": " + dt + " ms, aggregated: " + pe.sumTime + " for " + pe.count + " requests.");
     }
 
     static sendDataToServer() {

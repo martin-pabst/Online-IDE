@@ -1,6 +1,10 @@
-import { MarkupKind } from './../vscode-languageserver-types/main.js';
-export { TextDocument } from './../vscode-languageserver-textdocument/lib/esm/main.js';
-export * from './../vscode-languageserver-types/main.js';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+import { Range, TextEdit, Color, ColorInformation, ColorPresentation, FoldingRange, FoldingRangeKind, MarkupKind, SelectionRange, Diagnostic, DiagnosticSeverity, CompletionItem, CompletionItemKind, CompletionList, Position, InsertTextFormat, MarkupContent, SymbolInformation, SymbolKind, DocumentSymbol, Location, Hover, MarkedString } from './../vscode-languageserver-types/main.js';
+import { TextDocument } from './../vscode-languageserver-textdocument/lib/esm/main.js';
+export { TextDocument, Range, TextEdit, Color, ColorInformation, ColorPresentation, FoldingRange, FoldingRangeKind, SelectionRange, Diagnostic, DiagnosticSeverity, CompletionItem, CompletionItemKind, CompletionList, Position, InsertTextFormat, MarkupContent, MarkupKind, SymbolInformation, SymbolKind, DocumentSymbol, Location, Hover, MarkedString };
 /**
  * Error codes used by diagnostics
  */
@@ -8,6 +12,7 @@ export var ErrorCode;
 (function (ErrorCode) {
     ErrorCode[ErrorCode["Undefined"] = 0] = "Undefined";
     ErrorCode[ErrorCode["EnumValueMismatch"] = 1] = "EnumValueMismatch";
+    ErrorCode[ErrorCode["Deprecated"] = 2] = "Deprecated";
     ErrorCode[ErrorCode["UnexpectedEndOfComment"] = 257] = "UnexpectedEndOfComment";
     ErrorCode[ErrorCode["UnexpectedEndOfString"] = 258] = "UnexpectedEndOfString";
     ErrorCode[ErrorCode["UnexpectedEndOfNumber"] = 259] = "UnexpectedEndOfNumber";

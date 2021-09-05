@@ -1,5 +1,5 @@
 // copied from js-beautify/js/lib/beautify-css.js
-// version: 1.10.2
+// version: 1.14.0
 /* AUTO-GENERATED. DO NOT MODIFY. */
 /*
 
@@ -64,100 +64,15 @@
 // http://www.w3.org/TR/CSS21/syndata.html#tokenization
 // http://www.w3.org/TR/css3-syntax/
 
-var legacy_beautify_css =
-/******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// define __esModule on exports
-/******/ 	__webpack_require__.r = function(exports) {
-/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 		}
-/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 	};
-/******/
-/******/ 	// create a fake namespace object
-/******/ 	// mode & 1: value is a module id, require it
-/******/ 	// mode & 2: merge all properties of value into the ns
-/******/ 	// mode & 4: return value when already ns object
-/******/ 	// mode & 8|1: behave like require
-/******/ 	__webpack_require__.t = function(value, mode) {
-/******/ 		if(mode & 1) value = __webpack_require__(value);
-/******/ 		if(mode & 8) return value;
-/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
-/******/ 		var ns = Object.create(null);
-/******/ 		__webpack_require__.r(ns);
-/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
-/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
-/******/ 		return ns;
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
-/******/
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 15);
-/******/ })
-/************************************************************************/
-/******/ ([
+var legacy_beautify_css;
+/******/ (function() { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ([
 /* 0 */,
 /* 1 */,
 /* 2 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module) {
 
-"use strict";
 /*jshint node:true */
 /*
   The MIT License (MIT)
@@ -584,9 +499,8 @@ module.exports.Output = Output;
 /* 4 */,
 /* 5 */,
 /* 6 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -656,10 +570,10 @@ function Options(options, merge_child_field) {
 
   this.indent_empty_lines = this._get_boolean('indent_empty_lines');
 
-  // valid templating languages ['django', 'erb', 'handlebars', 'php']
+  // valid templating languages ['django', 'erb', 'handlebars', 'php', 'smarty']
   // For now, 'auto' = all off for javascript, all on for html (and inline javascript).
   // other values ignored
-  this.templating = this._get_selection_list('templating', ['auto', 'none', 'django', 'erb', 'handlebars', 'php'], ['auto']);
+  this.templating = this._get_selection_list('templating', ['auto', 'none', 'django', 'erb', 'handlebars', 'php', 'smarty'], ['auto']);
 }
 
 Options.prototype._get_array = function(name, default_value) {
@@ -785,9 +699,8 @@ module.exports.mergeOpts = _mergeOpts;
 /***/ }),
 /* 7 */,
 /* 8 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -988,9 +901,8 @@ module.exports.InputScanner = InputScanner;
 /* 11 */,
 /* 12 */,
 /* 13 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -1058,9 +970,8 @@ module.exports.Directives = Directives;
 /***/ }),
 /* 14 */,
 /* 15 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -1107,9 +1018,8 @@ module.exports.defaultOptions = function() {
 
 /***/ }),
 /* 16 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -1203,13 +1113,12 @@ Beautifier.prototype.eatString = function(endChars) {
 // the first newline will be output
 Beautifier.prototype.eatWhitespace = function(allowAtLeastOneNewLine) {
   var result = whitespaceChar.test(this._input.peek());
-  var isFirstNewLine = true;
-
+  var newline_count = 0;
   while (whitespaceChar.test(this._input.peek())) {
     this._ch = this._input.next();
     if (allowAtLeastOneNewLine && this._ch === '\n') {
-      if (this._options.preserve_newlines || isFirstNewLine) {
-        isFirstNewLine = false;
+      if (newline_count === 0 || newline_count < this._options.max_preserve_newlines) {
+        newline_count++;
         this._output.add_new_line(true);
       }
     }
@@ -1403,23 +1312,34 @@ Beautifier.prototype.beautify = function() {
         insidePropertyValue = false;
         this.outdent();
       }
-      this.indent();
-      this._output.space_before_token = true;
-      this.print_string(this._ch);
 
       // when entering conditional groups, only rulesets are allowed
       if (enteringConditionalGroup) {
         enteringConditionalGroup = false;
-        insideRule = (this._indentLevel > this._nestedLevel);
+        insideRule = (this._indentLevel >= this._nestedLevel);
       } else {
         // otherwise, declarations are also allowed
-        insideRule = (this._indentLevel >= this._nestedLevel);
+        insideRule = (this._indentLevel >= this._nestedLevel - 1);
       }
       if (this._options.newline_between_rules && insideRule) {
         if (this._output.previous_line && this._output.previous_line.item(-1) !== '{') {
           this._output.ensure_empty_line_above('/', ',');
         }
       }
+
+      this._output.space_before_token = true;
+
+      // The difference in print_string and indent order is necessary to indent the '{' correctly
+      if (this._options.brace_style === 'expand') {
+        this._output.add_new_line();
+        this.print_string(this._ch);
+        this.indent();
+        this._output.set_indent(this._indentLevel);
+      } else {
+        this.indent();
+        this.print_string(this._ch);
+      }
+
       this.eatWhitespace(true);
       this._output.add_new_line();
     } else if (this._ch === '}') {
@@ -1535,7 +1455,7 @@ Beautifier.prototype.beautify = function() {
     } else if (this._ch === ',') {
       this.print_string(this._ch);
       this.eatWhitespace(true);
-      if (this._options.selector_separator_newline && !insidePropertyValue && parenLevel === 0 && !insideAtImport) {
+      if (this._options.selector_separator_newline && !insidePropertyValue && parenLevel === 0 && !insideAtImport && !insideAtExtend) {
         this._output.add_new_line();
       } else {
         this._output.space_before_token = true;
@@ -1584,9 +1504,8 @@ module.exports.Beautifier = Beautifier;
 
 /***/ }),
 /* 17 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -1627,6 +1546,16 @@ function Options(options) {
   var space_around_selector_separator = this._get_boolean('space_around_selector_separator');
   this.space_around_combinator = this._get_boolean('space_around_combinator') || space_around_selector_separator;
 
+  var brace_style_split = this._get_selection_list('brace_style', ['collapse', 'expand', 'end-expand', 'none', 'preserve-inline']);
+  this.brace_style = 'collapse';
+  for (var bs = 0; bs < brace_style_split.length; bs++) {
+    if (brace_style_split[bs] !== 'expand') {
+      // default to collapse, as only collapse|expand is implemented for now
+      this.brace_style = 'collapse';
+    } else {
+      this.brace_style = brace_style_split[bs];
+    }
+  }
 }
 Options.prototype = new BaseOptions();
 
@@ -1636,6 +1565,41 @@ module.exports.Options = Options;
 
 
 /***/ })
-/******/ ]);
+/******/ 	]);
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __webpack_require__(15);
+/******/ 	legacy_beautify_css = __webpack_exports__;
+/******/ 	
+/******/ })()
+;
 
 export var css_beautify = legacy_beautify_css;

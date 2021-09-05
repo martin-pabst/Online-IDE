@@ -39,6 +39,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+import { editor } from './fillers/monaco-editor-core.js';
 var WorkerManager = /** @class */ (function () {
     function WorkerManager(modeId, defaults) {
         var _this = this;
@@ -48,7 +49,9 @@ var WorkerManager = /** @class */ (function () {
         this._client = null;
         this._configChangeListener = this._defaults.onDidChange(function () { return _this._stopWorker(); });
         this._updateExtraLibsToken = 0;
-        this._extraLibsChangeListener = this._defaults.onDidExtraLibsChange(function () { return _this._updateExtraLibs(); });
+        this._extraLibsChangeListener = this._defaults.onDidExtraLibsChange(function () {
+            return _this._updateExtraLibs();
+        });
     }
     WorkerManager.prototype._stopWorker = function () {
         if (this._worker) {
@@ -88,7 +91,7 @@ var WorkerManager = /** @class */ (function () {
     WorkerManager.prototype._getClient = function () {
         var _this = this;
         if (!this._client) {
-            this._worker = monaco.editor.createWebWorker({
+            this._worker = editor.createWebWorker({
                 // module that exports the create() method and returns a `TypeScriptWorker` instance
                 moduleId: 'vs/language/typescript/tsWorker',
                 label: this._modeId,
@@ -96,14 +99,16 @@ var WorkerManager = /** @class */ (function () {
                 // passed in to the create() method
                 createData: {
                     compilerOptions: this._defaults.getCompilerOptions(),
-                    extraLibs: this._defaults.getExtraLibs()
+                    extraLibs: this._defaults.getExtraLibs(),
+                    customWorkerPath: this._defaults.workerOptions.customWorkerPath
                 }
             });
             var p = this._worker.getProxy();
             if (this._defaults.getEagerModelSync()) {
                 p = p.then(function (worker) {
                     if (_this._worker) {
-                        return _this._worker.withSyncedResources(monaco.editor.getModels()
+                        return _this._worker.withSyncedResources(editor
+                            .getModels()
                             .filter(function (model) { return model.getModeId() === _this._modeId; })
                             .map(function (model) { return model.uri; }));
                     }
@@ -121,13 +126,16 @@ var WorkerManager = /** @class */ (function () {
             resources[_i] = arguments[_i];
         }
         var _client;
-        return this._getClient().then(function (client) {
+        return this._getClient()
+            .then(function (client) {
             _client = client;
-        }).then(function (_) {
+        })
+            .then(function (_) {
             if (_this._worker) {
                 return _this._worker.withSyncedResources(resources);
             }
-        }).then(function (_) { return _client; });
+        })
+            .then(function (_) { return _client; });
     };
     return WorkerManager;
 }());

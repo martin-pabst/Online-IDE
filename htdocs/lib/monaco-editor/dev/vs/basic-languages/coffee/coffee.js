@@ -2,9 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports"], function (require, exports) {
-    'use strict';
+define('vs/basic-languages/coffee/coffee',["require", "exports"], function (require, exports) {
+    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.language = exports.conf = void 0;
     exports.conf = {
         wordPattern: /(-?\d*\.\d\w*)|([^\`\~\!\@\#%\^\&\*\(\)\=\$\-\+\[\{\]\}\\\|\;\:\'\"\,\.\<\>\/\?\s]+)/g,
         comments: {
@@ -21,19 +22,19 @@ define(["require", "exports"], function (require, exports) {
             { open: '[', close: ']' },
             { open: '(', close: ')' },
             { open: '"', close: '"' },
-            { open: '\'', close: '\'' },
+            { open: "'", close: "'" }
         ],
         surroundingPairs: [
             { open: '{', close: '}' },
             { open: '[', close: ']' },
             { open: '(', close: ')' },
             { open: '"', close: '"' },
-            { open: '\'', close: '\'' },
+            { open: "'", close: "'" }
         ],
         folding: {
             markers: {
-                start: new RegExp("^\\s*#region\\b"),
-                end: new RegExp("^\\s*#endregion\\b")
+                start: new RegExp('^\\s*#region\\b'),
+                end: new RegExp('^\\s*#endregion\\b')
             }
         }
     };
@@ -48,13 +49,50 @@ define(["require", "exports"], function (require, exports) {
         ],
         regEx: /\/(?!\/\/)(?:[^\/\\]|\\.)*\/[igm]*/,
         keywords: [
-            'and', 'or', 'is', 'isnt', 'not', 'on', 'yes', '@', 'no', 'off',
-            'true', 'false', 'null', 'this',
-            'new', 'delete', 'typeof', 'in', 'instanceof',
-            'return', 'throw', 'break', 'continue', 'debugger',
-            'if', 'else', 'switch', 'for', 'while', 'do', 'try', 'catch', 'finally',
-            'class', 'extends', 'super',
-            'undefined', 'then', 'unless', 'until', 'loop', 'of', 'by', 'when'
+            'and',
+            'or',
+            'is',
+            'isnt',
+            'not',
+            'on',
+            'yes',
+            '@',
+            'no',
+            'off',
+            'true',
+            'false',
+            'null',
+            'this',
+            'new',
+            'delete',
+            'typeof',
+            'in',
+            'instanceof',
+            'return',
+            'throw',
+            'break',
+            'continue',
+            'debugger',
+            'if',
+            'else',
+            'switch',
+            'for',
+            'while',
+            'do',
+            'try',
+            'catch',
+            'finally',
+            'class',
+            'extends',
+            'super',
+            'undefined',
+            'then',
+            'unless',
+            'until',
+            'loop',
+            'of',
+            'by',
+            'when'
         ],
         // we include these common regular expressions
         symbols: /[=><!~?&%|+\-*\/\^\.,\:]+/,
@@ -64,13 +102,16 @@ define(["require", "exports"], function (require, exports) {
             root: [
                 // identifiers and keywords
                 [/\@[a-zA-Z_]\w*/, 'variable.predefined'],
-                [/[a-zA-Z_]\w*/, {
+                [
+                    /[a-zA-Z_]\w*/,
+                    {
                         cases: {
-                            'this': 'variable.predefined',
+                            this: 'variable.predefined',
                             '@keywords': { token: 'keyword.$0' },
                             '@default': ''
                         }
-                    }],
+                    }
+                ],
                 // whitespace
                 [/[ \t\r\n]+/, ''],
                 // Comments
@@ -91,12 +132,18 @@ define(["require", "exports"], function (require, exports) {
                 [/(\{)(\s*)(@regEx)/, ['@brackets', '', 'regexp']],
                 [/(\;)(\s*)(@regEx)/, ['', '', 'regexp']],
                 // delimiters
-                [/}/, {
+                [
+                    /}/,
+                    {
                         cases: {
-                            '$S2==interpolatedstring': { token: 'string', next: '@pop' },
+                            '$S2==interpolatedstring': {
+                                token: 'string',
+                                next: '@pop'
+                            },
                             '@default': '@brackets'
                         }
-                    }],
+                    }
+                ],
                 [/[{}()\[\]]/, '@brackets'],
                 [/@symbols/, 'delimiter'],
                 // numbers
@@ -109,46 +156,64 @@ define(["require", "exports"], function (require, exports) {
                 [/[,.]/, 'delimiter'],
                 // strings:
                 [/"""/, 'string', '@herestring."""'],
-                [/'''/, 'string', '@herestring.\'\'\''],
-                [/"/, {
+                [/'''/, 'string', "@herestring.'''"],
+                [
+                    /"/,
+                    {
                         cases: {
                             '@eos': 'string',
                             '@default': { token: 'string', next: '@string."' }
                         }
-                    }],
-                [/'/, {
+                    }
+                ],
+                [
+                    /'/,
+                    {
                         cases: {
                             '@eos': 'string',
-                            '@default': { token: 'string', next: '@string.\'' }
+                            '@default': { token: 'string', next: "@string.'" }
                         }
-                    }],
+                    }
+                ]
             ],
             string: [
                 [/[^"'\#\\]+/, 'string'],
                 [/@escapes/, 'string.escape'],
                 [/\./, 'string.escape.invalid'],
                 [/\./, 'string.escape.invalid'],
-                [/#{/, {
+                [
+                    /#{/,
+                    {
                         cases: {
-                            '$S2=="': { token: 'string', next: 'root.interpolatedstring' },
+                            '$S2=="': {
+                                token: 'string',
+                                next: 'root.interpolatedstring'
+                            },
                             '@default': 'string'
                         }
-                    }],
-                [/["']/, {
+                    }
+                ],
+                [
+                    /["']/,
+                    {
                         cases: {
                             '$#==$S2': { token: 'string', next: '@pop' },
                             '@default': 'string'
                         }
-                    }],
+                    }
+                ],
                 [/#/, 'string']
             ],
             herestring: [
-                [/("""|''')/, {
+                [
+                    /("""|''')/,
+                    {
                         cases: {
                             '$1==$S2': { token: 'string', next: '@pop' },
                             '@default': 'string'
                         }
-                    }],
+                    }
+                ],
                 [/[^#\\'"]+/, 'string'],
                 [/['"]+/, 'string'],
                 [/@escapes/, 'string.escape'],
@@ -157,17 +222,18 @@ define(["require", "exports"], function (require, exports) {
                 [/#/, 'string']
             ],
             comment: [
-                [/[^#]+/, 'comment',],
+                [/[^#]+/, 'comment'],
                 [/###/, 'comment', '@pop'],
-                [/#/, 'comment'],
+                [/#/, 'comment']
             ],
             hereregexp: [
                 [/[^\\\/#]+/, 'regexp'],
                 [/\\./, 'regexp'],
                 [/#.*$/, 'comment'],
                 ['///[igm]*', { token: 'regexp', next: '@pop' }],
-                [/\//, 'regexp'],
-            ],
-        },
+                [/\//, 'regexp']
+            ]
+        }
     };
 });
+

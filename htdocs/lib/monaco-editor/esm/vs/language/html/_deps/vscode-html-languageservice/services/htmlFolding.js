@@ -2,8 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { FoldingRangeKind } from './../_deps/vscode-languageserver-types/main.js';
-import { TokenType } from '../htmlLanguageTypes.js';
+import { TokenType, FoldingRangeKind } from '../htmlLanguageTypes.js';
 import { createScanner } from '../parser/htmlScanner.js';
 import { isVoidElement } from '../languageFacts/fact.js';
 function limitRanges(ranges, rangeLimit) {

@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 export var conf = {
     wordPattern: /(#?-?\d*\.\d\w*%?)|([@#!.:]?[\w-?]+%?)|[@#!.]/g,
     comments: {
@@ -12,26 +11,26 @@ export var conf = {
     brackets: [
         ['{', '}'],
         ['[', ']'],
-        ['(', ')'],
+        ['(', ')']
     ],
     autoClosingPairs: [
         { open: '{', close: '}', notIn: ['string', 'comment'] },
         { open: '[', close: ']', notIn: ['string', 'comment'] },
         { open: '(', close: ')', notIn: ['string', 'comment'] },
         { open: '"', close: '"', notIn: ['string', 'comment'] },
-        { open: '\'', close: '\'', notIn: ['string', 'comment'] },
+        { open: "'", close: "'", notIn: ['string', 'comment'] }
     ],
     surroundingPairs: [
         { open: '{', close: '}' },
         { open: '[', close: ']' },
         { open: '(', close: ')' },
         { open: '"', close: '"' },
-        { open: '\'', close: '\'' },
+        { open: "'", close: "'" }
     ],
     folding: {
         markers: {
-            start: new RegExp("^\\s*\\/\\*\\s*#region\\b\\s*(.*?)\\s*\\*\\/"),
-            end: new RegExp("^\\s*\\/\\*\\s*#endregion\\b.*\\*\\/")
+            start: new RegExp('^\\s*\\/\\*\\s*#region\\b\\s*(.*?)\\s*\\*\\/'),
+            end: new RegExp('^\\s*\\/\\*\\s*#endregion\\b.*\\*\\/')
         }
     }
 };
@@ -70,21 +69,36 @@ export var language = {
         ],
         nestedJSBegin: [
             ['``', 'delimiter.backtick'],
-            ['`', { token: 'delimiter.backtick', next: '@nestedJSEnd', nextEmbedded: 'text/javascript' }],
+            [
+                '`',
+                {
+                    token: 'delimiter.backtick',
+                    next: '@nestedJSEnd',
+                    nextEmbedded: 'text/javascript'
+                }
+            ]
         ],
         nestedJSEnd: [
-            ['`', { token: 'delimiter.backtick', next: '@pop', nextEmbedded: '@pop' }],
+            [
+                '`',
+                {
+                    token: 'delimiter.backtick',
+                    next: '@pop',
+                    nextEmbedded: '@pop'
+                }
+            ]
         ],
-        operators: [
-            ['[<>=\\+\\-\\*\\/\\^\\|\\~]', 'operator']
-        ],
+        operators: [['[<>=\\+\\-\\*\\/\\^\\|\\~]', 'operator']],
         keyword: [
-            ['(@[\\s]*import|![\\s]*important|true|false|when|iscolor|isnumber|isstring|iskeyword|isurl|ispixel|ispercentage|isem|hue|saturation|lightness|alpha|lighten|darken|saturate|desaturate|fadein|fadeout|fade|spin|mix|round|ceil|floor|percentage)\\b', 'keyword']
+            [
+                '(@[\\s]*import|![\\s]*important|true|false|when|iscolor|isnumber|isstring|iskeyword|isurl|ispixel|ispercentage|isem|hue|saturation|lightness|alpha|lighten|darken|saturate|desaturate|fadein|fadeout|fade|spin|mix|round|ceil|floor|percentage)\\b',
+                'keyword'
+            ]
         ],
         urldeclaration: [
             { include: '@strings' },
             ['[^)\r\n]+', 'string'],
-            ['\\)', { token: 'tag', next: '@pop' }],
+            ['\\)', { token: 'tag', next: '@pop' }]
         ],
         attribute: [
             { include: '@nestedJSBegin' },
@@ -106,22 +120,29 @@ export var language = {
         ],
         comments: [
             ['\\/\\*', 'comment', '@comment'],
-            ['\\/\\/+.*', 'comment'],
+            ['\\/\\/+.*', 'comment']
         ],
         comment: [
             ['\\*\\/', 'comment', '@pop'],
-            ['.', 'comment'],
+            ['.', 'comment']
         ],
         numbers: [
-            ['(\\d*\\.)?\\d+([eE][\\-+]?\\d+)?', { token: 'attribute.value.number', next: '@units' }],
+            [
+                '(\\d*\\.)?\\d+([eE][\\-+]?\\d+)?',
+                { token: 'attribute.value.number', next: '@units' }
+            ],
             ['#[0-9a-fA-F_]+(?!\\w)', 'attribute.value.hex']
         ],
         units: [
-            ['(em|ex|ch|rem|vmin|vmax|vw|vh|vm|cm|mm|in|px|pt|pc|deg|grad|rad|turn|s|ms|Hz|kHz|%)?', 'attribute.value.unit', '@pop']
+            [
+                '(em|ex|ch|rem|vmin|vmax|vw|vh|vm|cm|mm|in|px|pt|pc|deg|grad|rad|turn|s|ms|Hz|kHz|%)?',
+                'attribute.value.unit',
+                '@pop'
+            ]
         ],
         strings: [
             ['~?"', { token: 'string.delimiter', next: '@stringsEndDoubleQuote' }],
-            ['~?\'', { token: 'string.delimiter', next: '@stringsEndQuote' }]
+            ["~?'", { token: 'string.delimiter', next: '@stringsEndQuote' }]
         ],
         stringsEndDoubleQuote: [
             ['\\\\"', 'string'],
@@ -129,8 +150,8 @@ export var language = {
             ['.', 'string']
         ],
         stringsEndQuote: [
-            ['\\\\\'', 'string'],
-            ['\'', { token: 'string.delimiter', next: '@popall' }],
+            ["\\\\'", 'string'],
+            ["'", { token: 'string.delimiter', next: '@popall' }],
             ['.', 'string']
         ],
         atRules: [

@@ -2,13 +2,13 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 export var conf = {
     comments: {
-        lineComment: '\'',
+        lineComment: "'"
     },
     brackets: [
-        ['(', ')'], ['[', ']'],
+        ['(', ')'],
+        ['[', ']'],
         ['If', 'EndIf'],
         ['While', 'EndWhile'],
         ['For', 'EndFor'],
@@ -17,7 +17,7 @@ export var conf = {
     autoClosingPairs: [
         { open: '"', close: '"', notIn: ['string', 'comment'] },
         { open: '(', close: ')', notIn: ['string', 'comment'] },
-        { open: '[', close: ']', notIn: ['string', 'comment'] },
+        { open: '[', close: ']', notIn: ['string', 'comment'] }
     ]
 };
 export var language = {
@@ -31,15 +31,25 @@ export var language = {
         { token: 'keyword.tag-if', open: 'If', close: 'EndIf' },
         { token: 'keyword.tag-while', open: 'While', close: 'EndWhile' },
         { token: 'keyword.tag-for', open: 'For', close: 'EndFor' },
-        { token: 'keyword.tag-sub', open: 'Sub', close: 'EndSub' },
+        { token: 'keyword.tag-sub', open: 'Sub', close: 'EndSub' }
     ],
     keywords: [
-        'Else', 'ElseIf', 'EndFor', 'EndIf', 'EndSub', 'EndWhile',
-        'For', 'Goto', 'If', 'Step', 'Sub', 'Then', 'To', 'While'
+        'Else',
+        'ElseIf',
+        'EndFor',
+        'EndIf',
+        'EndSub',
+        'EndWhile',
+        'For',
+        'Goto',
+        'If',
+        'Step',
+        'Sub',
+        'Then',
+        'To',
+        'While'
     ],
-    tagwords: [
-        'If', 'Sub', 'While', 'For'
-    ],
+    tagwords: ['If', 'Sub', 'While', 'For'],
     operators: ['>', '<', '<>', '<=', '>=', 'And', 'Or', '+', '-', '*', '/', '='],
     // we include these common regular expressions
     identifier: /[a-zA-Z_][\w]*/,
@@ -53,34 +63,43 @@ export var language = {
             // classes
             [/(@identifier)(?=[.])/, 'type'],
             // identifiers, tagwords, and keywords
-            [/@identifier/, {
+            [
+                /@identifier/,
+                {
                     cases: {
                         '@keywords': { token: 'keyword.$0' },
                         '@operators': 'operator',
                         '@default': 'variable.name'
                     }
-                }],
+                }
+            ],
             // methods, properties, and events
-            [/([.])(@identifier)/, {
+            [
+                /([.])(@identifier)/,
+                {
                     cases: {
-                        '$2': ['delimiter', 'type.member'],
+                        $2: ['delimiter', 'type.member'],
                         '@default': ''
                     }
-                }],
+                }
+            ],
             // numbers
             [/\d*\.\d+/, 'number.float'],
             [/\d+/, 'number'],
             // delimiters and operators
             [/[()\[\]]/, '@brackets'],
-            [/@symbols/, {
+            [
+                /@symbols/,
+                {
                     cases: {
                         '@operators': 'operator',
                         '@default': 'delimiter'
                     }
-                }],
+                }
+            ],
             // strings
             [/"([^"\\]|\\.)*$/, 'string.invalid'],
-            [/"/, 'string', '@string'],
+            [/"/, 'string', '@string']
         ],
         whitespace: [
             [/[ \t\r\n]+/, ''],
@@ -91,6 +110,6 @@ export var language = {
             [/@escapes/, 'string.escape'],
             [/\\./, 'string.escape.invalid'],
             [/"C?/, 'string', '@pop']
-        ],
-    },
+        ]
+    }
 };

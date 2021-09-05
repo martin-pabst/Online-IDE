@@ -3,26 +3,25 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { toUint32 } from '../../../base/common/uint.js';
-var PrefixSumIndexOfResult = /** @class */ (function () {
-    function PrefixSumIndexOfResult(index, remainder) {
+export class PrefixSumIndexOfResult {
+    constructor(index, remainder) {
+        this._prefixSumIndexOfResultBrand = undefined;
         this.index = index;
         this.remainder = remainder;
     }
-    return PrefixSumIndexOfResult;
-}());
-export { PrefixSumIndexOfResult };
-var PrefixSumComputer = /** @class */ (function () {
-    function PrefixSumComputer(values) {
+}
+export class PrefixSumComputer {
+    constructor(values) {
         this.values = values;
         this.prefixSum = new Uint32Array(values.length);
         this.prefixSumValidIndex = new Int32Array(1);
         this.prefixSumValidIndex[0] = -1;
     }
-    PrefixSumComputer.prototype.insertValues = function (insertIndex, insertValues) {
+    insertValues(insertIndex, insertValues) {
         insertIndex = toUint32(insertIndex);
-        var oldValues = this.values;
-        var oldPrefixSum = this.prefixSum;
-        var insertValuesLen = insertValues.length;
+        const oldValues = this.values;
+        const oldPrefixSum = this.prefixSum;
+        const insertValuesLen = insertValues.length;
         if (insertValuesLen === 0) {
             return false;
         }
@@ -38,8 +37,8 @@ var PrefixSumComputer = /** @class */ (function () {
             this.prefixSum.set(oldPrefixSum.subarray(0, this.prefixSumValidIndex[0] + 1));
         }
         return true;
-    };
-    PrefixSumComputer.prototype.changeValue = function (index, value) {
+    }
+    changeValue(index, value) {
         index = toUint32(index);
         value = toUint32(value);
         if (this.values[index] === value) {
@@ -50,25 +49,25 @@ var PrefixSumComputer = /** @class */ (function () {
             this.prefixSumValidIndex[0] = index - 1;
         }
         return true;
-    };
-    PrefixSumComputer.prototype.removeValues = function (startIndex, cnt) {
+    }
+    removeValues(startIndex, count) {
         startIndex = toUint32(startIndex);
-        cnt = toUint32(cnt);
-        var oldValues = this.values;
-        var oldPrefixSum = this.prefixSum;
+        count = toUint32(count);
+        const oldValues = this.values;
+        const oldPrefixSum = this.prefixSum;
         if (startIndex >= oldValues.length) {
             return false;
         }
-        var maxCnt = oldValues.length - startIndex;
-        if (cnt >= maxCnt) {
-            cnt = maxCnt;
+        let maxCount = oldValues.length - startIndex;
+        if (count >= maxCount) {
+            count = maxCount;
         }
-        if (cnt === 0) {
+        if (count === 0) {
             return false;
         }
-        this.values = new Uint32Array(oldValues.length - cnt);
+        this.values = new Uint32Array(oldValues.length - count);
         this.values.set(oldValues.subarray(0, startIndex), 0);
-        this.values.set(oldValues.subarray(startIndex + cnt), startIndex);
+        this.values.set(oldValues.subarray(startIndex + count), startIndex);
         this.prefixSum = new Uint32Array(this.values.length);
         if (startIndex - 1 < this.prefixSumValidIndex[0]) {
             this.prefixSumValidIndex[0] = startIndex - 1;
@@ -77,25 +76,25 @@ var PrefixSumComputer = /** @class */ (function () {
             this.prefixSum.set(oldPrefixSum.subarray(0, this.prefixSumValidIndex[0] + 1));
         }
         return true;
-    };
-    PrefixSumComputer.prototype.getTotalValue = function () {
+    }
+    getTotalSum() {
         if (this.values.length === 0) {
             return 0;
         }
-        return this._getAccumulatedValue(this.values.length - 1);
-    };
-    PrefixSumComputer.prototype.getAccumulatedValue = function (index) {
+        return this._getPrefixSum(this.values.length - 1);
+    }
+    getPrefixSum(index) {
         if (index < 0) {
             return 0;
         }
         index = toUint32(index);
-        return this._getAccumulatedValue(index);
-    };
-    PrefixSumComputer.prototype._getAccumulatedValue = function (index) {
+        return this._getPrefixSum(index);
+    }
+    _getPrefixSum(index) {
         if (index <= this.prefixSumValidIndex[0]) {
             return this.prefixSum[index];
         }
-        var startIndex = this.prefixSumValidIndex[0] + 1;
+        let startIndex = this.prefixSumValidIndex[0] + 1;
         if (startIndex === 0) {
             this.prefixSum[0] = this.values[0];
             startIndex++;
@@ -103,37 +102,35 @@ var PrefixSumComputer = /** @class */ (function () {
         if (index >= this.values.length) {
             index = this.values.length - 1;
         }
-        for (var i = startIndex; i <= index; i++) {
+        for (let i = startIndex; i <= index; i++) {
             this.prefixSum[i] = this.prefixSum[i - 1] + this.values[i];
         }
         this.prefixSumValidIndex[0] = Math.max(this.prefixSumValidIndex[0], index);
         return this.prefixSum[index];
-    };
-    PrefixSumComputer.prototype.getIndexOf = function (accumulatedValue) {
-        accumulatedValue = Math.floor(accumulatedValue); //@perf
+    }
+    getIndexOf(sum) {
+        sum = Math.floor(sum); //@perf
         // Compute all sums (to get a fully valid prefixSum)
-        this.getTotalValue();
-        var low = 0;
-        var high = this.values.length - 1;
-        var mid = 0;
-        var midStop = 0;
-        var midStart = 0;
+        this.getTotalSum();
+        let low = 0;
+        let high = this.values.length - 1;
+        let mid = 0;
+        let midStop = 0;
+        let midStart = 0;
         while (low <= high) {
             mid = low + ((high - low) / 2) | 0;
             midStop = this.prefixSum[mid];
             midStart = midStop - this.values[mid];
-            if (accumulatedValue < midStart) {
+            if (sum < midStart) {
                 high = mid - 1;
             }
-            else if (accumulatedValue >= midStop) {
+            else if (sum >= midStop) {
                 low = mid + 1;
             }
             else {
                 break;
             }
         }
-        return new PrefixSumIndexOfResult(mid, accumulatedValue - midStart);
-    };
-    return PrefixSumComputer;
-}());
-export { PrefixSumComputer };
+        return new PrefixSumIndexOfResult(mid, sum - midStart);
+    }
+}

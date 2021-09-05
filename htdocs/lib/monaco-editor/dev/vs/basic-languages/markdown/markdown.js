@@ -2,12 +2,13 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports"], function (require, exports) {
-    'use strict';
+define('vs/basic-languages/markdown/markdown',["require", "exports"], function (require, exports) {
+    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.language = exports.conf = void 0;
     exports.conf = {
         comments: {
-            blockComment: ['<!--', '-->',]
+            blockComment: ['<!--', '-->']
         },
         brackets: [
             ['{', '}'],
@@ -23,12 +24,12 @@ define(["require", "exports"], function (require, exports) {
         surroundingPairs: [
             { open: '(', close: ')' },
             { open: '[', close: ']' },
-            { open: '`', close: '`' },
+            { open: '`', close: '`' }
         ],
         folding: {
             markers: {
-                start: new RegExp("^\\s*<!--\\s*#?region\\b.*-->"),
-                end: new RegExp("^\\s*<!--\\s*#?endregion\\b.*-->")
+                start: new RegExp('^\\s*<!--\\s*#?region\\b.*-->'),
+                end: new RegExp('^\\s*<!--\\s*#?endregion\\b.*-->')
             }
         }
     };
@@ -43,15 +44,29 @@ define(["require", "exports"], function (require, exports) {
         jsescapes: /\\(?:[btnfr\\"']|[0-7][0-7]?|[0-3][0-7]{2})/,
         // non matched elements
         empty: [
-            'area', 'base', 'basefont', 'br', 'col', 'frame',
-            'hr', 'img', 'input', 'isindex', 'link', 'meta', 'param'
+            'area',
+            'base',
+            'basefont',
+            'br',
+            'col',
+            'frame',
+            'hr',
+            'img',
+            'input',
+            'isindex',
+            'link',
+            'meta',
+            'param'
         ],
         tokenizer: {
             root: [
                 // markdown tables
                 [/^\s*\|/, '@rematch', '@table_header'],
                 // headers (with #)
-                [/^(\s{0,3})(#+)((?:[^\\#]|@escapes)+)((?:#+)?)/, ['white', 'keyword', 'keyword', 'keyword']],
+                [
+                    /^(\s{0,3})(#+)((?:[^\\#]|@escapes)+)((?:#+)?)/,
+                    ['white', 'keyword', 'keyword', 'keyword']
+                ],
                 // headers (with =)
                 [/^\s*(=+|\-+)\s*$/, 'keyword'],
                 // headers (with ***)
@@ -65,41 +80,44 @@ define(["require", "exports"], function (require, exports) {
                 // code block (3 tilde)
                 [/^\s*~~~\s*((?:\w|[\/\-#])+)?\s*$/, { token: 'string', next: '@codeblock' }],
                 // github style code blocks (with backticks and language)
-                [/^\s*```\s*((?:\w|[\/\-#])+).*$/, { token: 'string', next: '@codeblockgh', nextEmbedded: '$1' }],
+                [
+                    /^\s*```\s*((?:\w|[\/\-#])+).*$/,
+                    { token: 'string', next: '@codeblockgh', nextEmbedded: '$1' }
+                ],
                 // github style code blocks (with backticks but no language)
                 [/^\s*```\s*$/, { token: 'string', next: '@codeblock' }],
                 // markup within lines
-                { include: '@linecontent' },
+                { include: '@linecontent' }
             ],
             table_header: [
                 { include: '@table_common' },
-                [/[^\|]+/, 'keyword.table.header'],
+                [/[^\|]+/, 'keyword.table.header'] // table header
             ],
-            table_body: [
-                { include: '@table_common' },
-                { include: '@linecontent' },
-            ],
+            table_body: [{ include: '@table_common' }, { include: '@linecontent' }],
             table_common: [
                 [/\s*[\-:]+\s*/, { token: 'keyword', switchTo: 'table_body' }],
                 [/^\s*\|/, 'keyword.table.left'],
                 [/^\s*[^\|]/, '@rematch', '@pop'],
                 [/^\s*$/, '@rematch', '@pop'],
-                [/\|/, {
+                [
+                    /\|/,
+                    {
                         cases: {
                             '@eos': 'keyword.table.right',
-                            '@default': 'keyword.table.middle',
+                            '@default': 'keyword.table.middle' // inner |
                         }
-                    }],
+                    }
+                ]
             ],
             codeblock: [
                 [/^\s*~~~\s*$/, { token: 'string', next: '@pop' }],
                 [/^\s*```\s*$/, { token: 'string', next: '@pop' }],
-                [/.*$/, 'variable.source'],
+                [/.*$/, 'variable.source']
             ],
             // github style code blocks
             codeblockgh: [
-                [/```\s*$/, { token: 'variable.source', next: '@pop', nextEmbedded: '@pop' }],
-                [/[^`]+/, 'variable.source'],
+                [/```\s*$/, { token: 'string', next: '@pop', nextEmbedded: '@pop' }],
+                [/[^`]+/, 'variable.source']
             ],
             linecontent: [
                 // escapes
@@ -116,7 +134,7 @@ define(["require", "exports"], function (require, exports) {
                 [/(!?\[)((?:[^\]\\]|@escapes)*)(\]\([^\)]+\))/, ['string.link', '', 'string.link']],
                 [/(!?\[)((?:[^\]\\]|@escapes)*)(\])/, 'string.link'],
                 // or html
-                { include: 'html' },
+                { include: 'html' }
             ],
             // Note: it is tempting to rather switch to the real HTML mode instead of building our own here
             // but currently there is a limitation in Monarch that prevents us from doing it: The opening
@@ -126,12 +144,15 @@ define(["require", "exports"], function (require, exports) {
             html: [
                 // html tags
                 [/<(\w+)\/>/, 'tag'],
-                [/<(\w+)/, {
+                [
+                    /<(\w+)/,
+                    {
                         cases: {
                             '@empty': { token: 'tag', next: '@tag.$1' },
                             '@default': { token: 'tag', next: '@tag.$1' }
                         }
-                    }],
+                    }
+                ],
                 [/<\/(\w+)\s*>/, { token: 'tag' }],
                 [/<!--/, 'comment', '@comment']
             ],
@@ -144,27 +165,59 @@ define(["require", "exports"], function (require, exports) {
             // Almost full HTML tag matching, complete with embedded scripts & styles
             tag: [
                 [/[ \t\r\n]+/, 'white'],
-                [/(type)(\s*=\s*)(")([^"]+)(")/, ['attribute.name.html', 'delimiter.html', 'string.html',
+                [
+                    /(type)(\s*=\s*)(")([^"]+)(")/,
+                    [
+                        'attribute.name.html',
+                        'delimiter.html',
+                        'string.html',
                         { token: 'string.html', switchTo: '@tag.$S2.$4' },
-                        'string.html']],
-                [/(type)(\s*=\s*)(')([^']+)(')/, ['attribute.name.html', 'delimiter.html', 'string.html',
+                        'string.html'
+                    ]
+                ],
+                [
+                    /(type)(\s*=\s*)(')([^']+)(')/,
+                    [
+                        'attribute.name.html',
+                        'delimiter.html',
+                        'string.html',
                         { token: 'string.html', switchTo: '@tag.$S2.$4' },
-                        'string.html']],
-                [/(\w+)(\s*=\s*)("[^"]*"|'[^']*')/, ['attribute.name.html', 'delimiter.html', 'string.html']],
+                        'string.html'
+                    ]
+                ],
+                [
+                    /(\w+)(\s*=\s*)("[^"]*"|'[^']*')/,
+                    ['attribute.name.html', 'delimiter.html', 'string.html']
+                ],
                 [/\w+/, 'attribute.name.html'],
                 [/\/>/, 'tag', '@pop'],
-                [/>/, {
+                [
+                    />/,
+                    {
                         cases: {
-                            '$S2==style': { token: 'tag', switchTo: 'embeddedStyle', nextEmbedded: 'text/css' },
+                            '$S2==style': {
+                                token: 'tag',
+                                switchTo: 'embeddedStyle',
+                                nextEmbedded: 'text/css'
+                            },
                             '$S2==script': {
                                 cases: {
-                                    '$S3': { token: 'tag', switchTo: 'embeddedScript', nextEmbedded: '$S3' },
-                                    '@default': { token: 'tag', switchTo: 'embeddedScript', nextEmbedded: 'text/javascript' }
+                                    $S3: {
+                                        token: 'tag',
+                                        switchTo: 'embeddedScript',
+                                        nextEmbedded: '$S3'
+                                    },
+                                    '@default': {
+                                        token: 'tag',
+                                        switchTo: 'embeddedScript',
+                                        nextEmbedded: 'text/javascript'
+                                    }
                                 }
                             },
                             '@default': { token: 'tag', next: '@pop' }
                         }
-                    }],
+                    }
+                ]
             ],
             embeddedStyle: [
                 [/[^<]+/, ''],
@@ -175,7 +228,8 @@ define(["require", "exports"], function (require, exports) {
                 [/[^<]+/, ''],
                 [/<\/script\s*>/, { token: '@rematch', next: '@pop', nextEmbedded: '@pop' }],
                 [/</, '']
-            ],
+            ]
         }
     };
 });
+

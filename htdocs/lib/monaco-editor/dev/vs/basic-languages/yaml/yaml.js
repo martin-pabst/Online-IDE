@@ -1,6 +1,7 @@
-define(["require", "exports"], function (require, exports) {
+define('vs/basic-languages/yaml/yaml',["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.language = exports.conf = void 0;
     exports.conf = {
         comments: {
             lineComment: '#'
@@ -15,14 +16,14 @@ define(["require", "exports"], function (require, exports) {
             { open: '[', close: ']' },
             { open: '(', close: ')' },
             { open: '"', close: '"' },
-            { open: '\'', close: '\'' },
+            { open: "'", close: "'" }
         ],
         surroundingPairs: [
             { open: '{', close: '}' },
             { open: '[', close: ']' },
             { open: '(', close: ')' },
             { open: '"', close: '"' },
-            { open: '\'', close: '\'' },
+            { open: "'", close: "'" }
         ],
         folding: {
             offSide: true
@@ -70,12 +71,15 @@ define(["require", "exports"], function (require, exports) {
                 [/(".*?"|'.*?'|.*?)([ \t]*)(:)( |$)/, ['type', 'white', 'operators', 'white']],
                 { include: '@flowScalars' },
                 // String nodes
-                [/.+$/, {
+                [
+                    /[^#]+/,
+                    {
                         cases: {
                             '@keywords': 'keyword',
                             '@default': 'string'
                         }
-                    }]
+                    }
+                ]
             ],
             // Flow Collection: Flow Mapping
             object: [
@@ -97,12 +101,15 @@ define(["require", "exports"], function (require, exports) {
                 { include: '@anchor' },
                 { include: '@flowNumber' },
                 // Other value (keyword or string)
-                [/[^\},]+/, {
+                [
+                    /[^\},]+/,
+                    {
                         cases: {
                             '@keywords': 'keyword',
                             '@default': 'string'
                         }
-                    }]
+                    }
+                ]
             ],
             // Flow Collection: Flow Sequence
             array: [
@@ -120,34 +127,34 @@ define(["require", "exports"], function (require, exports) {
                 { include: '@anchor' },
                 { include: '@flowNumber' },
                 // Other value (keyword or string)
-                [/[^\],]+/, {
+                [
+                    /[^\],]+/,
+                    {
                         cases: {
                             '@keywords': 'keyword',
                             '@default': 'string'
                         }
-                    }]
+                    }
+                ]
             ],
             // First line of a Block Style
-            multiString: [
-                [/^( +).+$/, 'string', '@multiStringContinued.$1']
-            ],
+            multiString: [[/^( +).+$/, 'string', '@multiStringContinued.$1']],
             // Further lines of a Block Style
             //   Workaround for indentation detection
             multiStringContinued: [
-                [/^( *).+$/, {
+                [
+                    /^( *).+$/,
+                    {
                         cases: {
                             '$1==$S2': 'string',
                             '@default': { token: '@rematch', next: '@popall' }
                         }
-                    }]
+                    }
+                ]
             ],
-            whitespace: [
-                [/[ \t\r\n]+/, 'white']
-            ],
+            whitespace: [[/[ \t\r\n]+/, 'white']],
             // Only line comments
-            comment: [
-                [/#.*$/, 'comment']
-            ],
+            comment: [[/#.*$/, 'comment']],
             // Start Flow Collections
             flowCollections: [
                 [/\[/, '@brackets', '@array'],
@@ -167,9 +174,7 @@ define(["require", "exports"], function (require, exports) {
                 [/"/, 'string', '@pop']
             ],
             // Start Block Scalar
-            blockStyle: [
-                [/[>|][0-9]*[+-]?$/, 'operators', '@multiString']
-            ],
+            blockStyle: [[/[>|][0-9]*[+-]?$/, 'operators', '@multiString']],
             // Numbers in Flow Collections (terminate with ,]})
             flowNumber: [
                 [/@numberInteger(?=[ \t]*[,\]\}])/, 'number'],
@@ -180,12 +185,9 @@ define(["require", "exports"], function (require, exports) {
                 [/@numberNaN(?=[ \t]*[,\]\}])/, 'number.nan'],
                 [/@numberDate(?=[ \t]*[,\]\}])/, 'number.date']
             ],
-            tagHandle: [
-                [/\![^ ]*/, 'tag']
-            ],
-            anchor: [
-                [/[&*][^ ]+/, 'namespace']
-            ]
+            tagHandle: [[/\![^ ]*/, 'tag']],
+            anchor: [[/[&*][^ ]+/, 'namespace']]
         }
     };
 });
+

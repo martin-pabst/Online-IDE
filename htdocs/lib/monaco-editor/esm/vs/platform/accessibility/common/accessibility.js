@@ -4,5 +4,5 @@
  *--------------------------------------------------------------------------------------------*/
 import { createDecorator } from '../../instantiation/common/instantiation.js';
 import { RawContextKey } from '../../contextkey/common/contextkey.js';
-export var IAccessibilityService = createDecorator('accessibilityService');
-export var CONTEXT_ACCESSIBILITY_MODE_ENABLED = new RawContextKey('accessibilityModeEnabled', false);
+export const IAccessibilityService = createDecorator('accessibilityService');
+export const CONTEXT_ACCESSIBILITY_MODE_ENABLED = new RawContextKey('accessibilityModeEnabled', false);

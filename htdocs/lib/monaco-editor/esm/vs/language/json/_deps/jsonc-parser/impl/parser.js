@@ -205,6 +205,7 @@ export function parseTree(text, errors, options) {
             currentParent.children.push({ type: 'string', value: name, offset: offset, length: length, parent: currentParent });
         },
         onObjectEnd: function (offset, length) {
+            ensurePropertyComplete(offset + length); // in case of a missing value for a property: make sure property is complete
             currentParent.length = offset + length - currentParent.offset;
             currentParent = currentParent.parent;
             ensurePropertyComplete(offset + length);
@@ -441,16 +442,11 @@ export function visit(text, visitor, options) {
     function parseLiteral() {
         switch (_scanner.getToken()) {
             case 11 /* NumericLiteral */:
-                var value = 0;
-                try {
-                    value = JSON.parse(_scanner.getTokenValue());
-                    if (typeof value !== 'number') {
-                        handleError(2 /* InvalidNumberFormat */);
-                        value = 0;
-                    }
-                }
-                catch (e) {
+                var tokenValue = _scanner.getTokenValue();
+                var value = Number(tokenValue);
+                if (isNaN(value)) {
                     handleError(2 /* InvalidNumberFormat */);
+                    value = 0;
                 }
                 onLiteralValue(value);
                 break;

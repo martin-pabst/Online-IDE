@@ -4,19 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 import * as Types from '../../../base/common/types.js';
 import * as Assert from '../../../base/common/assert.js';
-var RegistryImpl = /** @class */ (function () {
-    function RegistryImpl() {
+class RegistryImpl {
+    constructor() {
         this.data = new Map();
     }
-    RegistryImpl.prototype.add = function (id, data) {
+    add(id, data) {
         Assert.ok(Types.isString(id));
         Assert.ok(Types.isObject(data));
         Assert.ok(!this.data.has(id), 'There is already an extension with this id');
         this.data.set(id, data);
-    };
-    RegistryImpl.prototype.as = function (id) {
+    }
+    as(id) {
         return this.data.get(id) || null;
-    };
-    return RegistryImpl;
-}());
-export var Registry = new RegistryImpl();
+    }
+}
+export const Registry = new RegistryImpl();

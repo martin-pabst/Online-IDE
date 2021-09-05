@@ -7,26 +7,17 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -64,22 +55,20 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 import { CSSNavigation } from './cssNavigation.js';
-import { FileType } from '../cssLanguageTypes.js';
 import * as nodes from '../parser/cssNodes.js';
 import { URI } from './../../vscode-uri/index.js';
+import { startsWith } from '../utils/strings.js';
 var SCSSNavigation = /** @class */ (function (_super) {
     __extends(SCSSNavigation, _super);
     function SCSSNavigation(fileSystemProvider) {
-        var _this = _super.call(this) || this;
-        _this.fileSystemProvider = fileSystemProvider;
-        return _this;
+        return _super.call(this, fileSystemProvider) || this;
     }
     SCSSNavigation.prototype.isRawStringDocumentLinkNode = function (node) {
         return (_super.prototype.isRawStringDocumentLinkNode.call(this, node) ||
             node.type === nodes.NodeType.Use ||
             node.type === nodes.NodeType.Forward);
     };
-    SCSSNavigation.prototype.findDocumentLinks2 = function (document, stylesheet, documentContext) {
+    SCSSNavigation.prototype.resolveRelativeReference = function (ref, documentUri, documentContext, isRawLink) {
         return __awaiter(this, void 0, void 0, function () {
             function toPathVariations(uri) {
                 // No valid path
@@ -121,90 +110,41 @@ var SCSSNavigation = /** @class */ (function (_super) {
                 var cssPath = documentUriWithBasename(normalizedBasename.slice(0, -5) + '.css');
                 return [normalizedPath, underScorePath, indexPath, indexUnderscoreUri, cssPath];
             }
-            function fileExists(documentUri) {
-                return __awaiter(this, void 0, void 0, function () {
-                    var stat, err_1;
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0:
-                                if (!fsProvider) {
-                                    return [2 /*return*/, false];
-                                }
-                                _a.label = 1;
-                            case 1:
-                                _a.trys.push([1, 3, , 4]);
-                                return [4 /*yield*/, fsProvider.stat(documentUri)];
-                            case 2:
-                                stat = _a.sent();
-                                if (stat.type === FileType.Unknown && stat.size === -1) {
-                                    return [2 /*return*/, false];
-                                }
-                                return [2 /*return*/, true];
-                            case 3:
-                                err_1 = _a.sent();
-                                return [2 /*return*/, false];
-                            case 4: return [2 /*return*/];
-                        }
-                    });
-                });
-            }
-            var links, fsProvider, validLinks, i, target, parsedUri, pathVariations, j;
+            var target, parsedUri, pathVariations, j, e_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        links = this.findDocumentLinks(document, stylesheet, documentContext);
-                        fsProvider = this.fileSystemProvider;
-                        validLinks = [];
-                        if (!fsProvider) return [3 /*break*/, 9];
-                        i = 0;
-                        _a.label = 1;
+                        if (startsWith(ref, 'sass:')) {
+                            return [2 /*return*/, undefined]; // sass library
+                        }
+                        return [4 /*yield*/, _super.prototype.resolveRelativeReference.call(this, ref, documentUri, documentContext, isRawLink)];
                     case 1:
-                        if (!(i < links.length)) return [3 /*break*/, 8];
-                        target = links[i].target;
-                        if (!target) {
-                            return [3 /*break*/, 7];
-                        }
-                        parsedUri = null;
-                        try {
-                            parsedUri = URI.parse(target);
-                        }
-                        catch (e) {
-                            if (e instanceof URIError) {
-                                return [3 /*break*/, 7];
-                            }
-                            throw e;
-                        }
-                        pathVariations = toPathVariations(parsedUri);
-                        if (!!pathVariations) return [3 /*break*/, 3];
-                        return [4 /*yield*/, fileExists(target)];
+                        target = _a.sent();
+                        if (!(this.fileSystemProvider && target && isRawLink)) return [3 /*break*/, 8];
+                        parsedUri = URI.parse(target);
+                        _a.label = 2;
                     case 2:
-                        if (_a.sent()) {
-                            validLinks.push(links[i]);
-                        }
-                        return [3 /*break*/, 7];
-                    case 3:
+                        _a.trys.push([2, 7, , 8]);
+                        pathVariations = toPathVariations(parsedUri);
+                        if (!pathVariations) return [3 /*break*/, 6];
                         j = 0;
-                        _a.label = 4;
+                        _a.label = 3;
+                    case 3:
+                        if (!(j < pathVariations.length)) return [3 /*break*/, 6];
+                        return [4 /*yield*/, this.fileExists(pathVariations[j])];
                     case 4:
-                        if (!(j < pathVariations.length)) return [3 /*break*/, 7];
-                        return [4 /*yield*/, fileExists(pathVariations[j])];
-                    case 5:
                         if (_a.sent()) {
-                            validLinks.push(__assign(__assign({}, links[i]), { target: pathVariations[j] }));
-                            return [3 /*break*/, 7];
+                            return [2 /*return*/, pathVariations[j]];
                         }
-                        _a.label = 6;
-                    case 6:
+                        _a.label = 5;
+                    case 5:
                         j++;
-                        return [3 /*break*/, 4];
+                        return [3 /*break*/, 3];
+                    case 6: return [3 /*break*/, 8];
                     case 7:
-                        i++;
-                        return [3 /*break*/, 1];
-                    case 8: return [3 /*break*/, 10];
-                    case 9:
-                        validLinks.push.apply(validLinks, links);
-                        _a.label = 10;
-                    case 10: return [2 /*return*/, validLinks];
+                        e_1 = _a.sent();
+                        return [3 /*break*/, 8];
+                    case 8: return [2 /*return*/, target];
                 }
             });
         });

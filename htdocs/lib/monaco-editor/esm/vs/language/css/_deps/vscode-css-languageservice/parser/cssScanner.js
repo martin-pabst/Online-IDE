@@ -338,23 +338,6 @@ var Scanner = /** @class */ (function () {
         this.stream.nextChar();
         return this.finishToken(offset, TokenType.Delim);
     };
-    Scanner.prototype._matchWordAnyCase = function (characters) {
-        var index = 0;
-        this.stream.advanceWhileChar(function (ch) {
-            var result = characters[index] === ch || characters[index + 1] === ch;
-            if (result) {
-                index += 2;
-            }
-            return result;
-        });
-        if (index === characters.length) {
-            return true;
-        }
-        else {
-            this.stream.goBack(index / 2);
-            return false;
-        }
-    };
     Scanner.prototype.trivia = function () {
         while (true) {
             var offset = this.stream.pos();

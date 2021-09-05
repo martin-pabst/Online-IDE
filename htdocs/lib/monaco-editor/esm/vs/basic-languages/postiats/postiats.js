@@ -4,18 +4,22 @@
  *
  *  Based on the ATS/Postiats lexer by Hongwei Xi.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 export var conf = {
     comments: {
         lineComment: '//',
-        blockComment: ['(*', '*)'],
+        blockComment: ['(*', '*)']
     },
-    brackets: [['{', '}'], ['[', ']'], ['(', ')'], ['<', '>']],
+    brackets: [
+        ['{', '}'],
+        ['[', ']'],
+        ['(', ')'],
+        ['<', '>']
+    ],
     autoClosingPairs: [
         { open: '"', close: '"', notIn: ['string', 'comment'] },
         { open: '{', close: '}', notIn: ['string', 'comment'] },
         { open: '[', close: ']', notIn: ['string', 'comment'] },
-        { open: '(', close: ')', notIn: ['string', 'comment'] },
+        { open: '(', close: ')', notIn: ['string', 'comment'] }
     ]
 };
 export var language = {
@@ -28,78 +32,78 @@ export var language = {
     // keyword reference: https://github.com/githwxi/ATS-Postiats/blob/master/src/pats_lexing_token.dats
     keywords: [
         //
-        "abstype",
-        "abst0ype",
-        "absprop",
-        "absview",
-        "absvtype",
-        "absviewtype",
-        "absvt0ype",
-        "absviewt0ype",
+        'abstype',
+        'abst0ype',
+        'absprop',
+        'absview',
+        'absvtype',
+        'absviewtype',
+        'absvt0ype',
+        'absviewt0ype',
         //
-        "as",
+        'as',
         //
-        "and",
+        'and',
         //
-        "assume",
+        'assume',
         //
-        "begin",
+        'begin',
         //
         /*
                 "case", // CASE
         */
         //
-        "classdec",
+        'classdec',
         //
-        "datasort",
+        'datasort',
         //
-        "datatype",
-        "dataprop",
-        "dataview",
-        "datavtype",
-        "dataviewtype",
+        'datatype',
+        'dataprop',
+        'dataview',
+        'datavtype',
+        'dataviewtype',
         //
-        "do",
+        'do',
         //
-        "end",
+        'end',
         //
-        "extern",
-        "extype",
-        "extvar",
+        'extern',
+        'extype',
+        'extvar',
         //
-        "exception",
+        'exception',
         //
-        "fn",
-        "fnx",
-        "fun",
+        'fn',
+        'fnx',
+        'fun',
         //
-        "prfn",
-        "prfun",
+        'prfn',
+        'prfun',
         //
-        "praxi",
-        "castfn",
+        'praxi',
+        'castfn',
         //
-        "if",
-        "then",
-        "else",
+        'if',
+        'then',
+        'else',
         //
-        "ifcase",
+        'ifcase',
         //
-        "in",
+        'in',
         //
-        "infix",
-        "infixl",
-        "infixr",
-        "prefix",
-        "postfix",
+        'infix',
+        'infixl',
+        'infixr',
+        'prefix',
+        'postfix',
         //
-        "implmnt",
-        "implement",
+        'implmnt',
+        'implement',
         //
-        "primplmnt",
-        "primplement",
+        'primplmnt',
+        'primplement',
         //
-        "import",
+        'import',
         //
         /*
                 "lam", // LAM
@@ -107,237 +111,241 @@ export var language = {
                 "fix", // FIX
         */
         //
-        "let",
+        'let',
         //
-        "local",
+        'local',
         //
-        "macdef",
-        "macrodef",
+        'macdef',
+        'macrodef',
         //
-        "nonfix",
+        'nonfix',
         //
-        "symelim",
-        "symintr",
-        "overload",
+        'symelim',
+        'symintr',
+        'overload',
         //
-        "of",
-        "op",
+        'of',
+        'op',
         //
-        "rec",
+        'rec',
         //
-        "sif",
-        "scase",
+        'sif',
+        'scase',
         //
-        "sortdef",
+        'sortdef',
         /*
         // HX: [sta] is now deprecated
         */
-        "sta",
-        "stacst",
-        "stadef",
-        "static",
+        'sta',
+        'stacst',
+        'stadef',
+        'static',
         /*
                 "stavar", // T_STAVAR
         */
         //
-        "staload",
-        "dynload",
+        'staload',
+        'dynload',
         //
-        "try",
+        'try',
         //
-        "tkindef",
+        'tkindef',
         //
         /*
                 "type", // TYPE
         */
-        "typedef",
-        "propdef",
-        "viewdef",
-        "vtypedef",
-        "viewtypedef",
+        'typedef',
+        'propdef',
+        'viewdef',
+        'vtypedef',
+        'viewtypedef',
         //
         /*
                 "val", // VAL
         */
-        "prval",
+        'prval',
         //
-        "var",
-        "prvar",
+        'var',
+        'prvar',
         //
-        "when",
-        "where",
+        'when',
+        'where',
         //
         /*
                 "for", // T_FOR
                 "while", // T_WHILE
         */
         //
-        "with",
+        'with',
         //
-        "withtype",
-        "withprop",
-        "withview",
-        "withvtype",
-        "withviewtype",
+        'withtype',
+        'withprop',
+        'withview',
+        'withvtype',
+        'withviewtype' // WITHVIEWTYPE
+        //
     ],
     keywords_dlr: [
-        "$delay",
-        "$ldelay",
+        '$delay',
+        '$ldelay',
         //
-        "$arrpsz",
-        "$arrptrsize",
+        '$arrpsz',
+        '$arrptrsize',
         //
-        "$d2ctype",
+        '$d2ctype',
         //
-        "$effmask",
-        "$effmask_ntm",
-        "$effmask_exn",
-        "$effmask_ref",
-        "$effmask_wrt",
-        "$effmask_all",
+        '$effmask',
+        '$effmask_ntm',
+        '$effmask_exn',
+        '$effmask_ref',
+        '$effmask_wrt',
+        '$effmask_all',
         //
-        "$extern",
-        "$extkind",
-        "$extype",
-        "$extype_struct",
+        '$extern',
+        '$extkind',
+        '$extype',
+        '$extype_struct',
         //
-        "$extval",
-        "$extfcall",
-        "$extmcall",
+        '$extval',
+        '$extfcall',
+        '$extmcall',
         //
-        "$literal",
+        '$literal',
         //
-        "$myfilename",
-        "$mylocation",
-        "$myfunction",
+        '$myfilename',
+        '$mylocation',
+        '$myfunction',
         //
-        "$lst",
-        "$lst_t",
-        "$lst_vt",
-        "$list",
-        "$list_t",
-        "$list_vt",
+        '$lst',
+        '$lst_t',
+        '$lst_vt',
+        '$list',
+        '$list_t',
+        '$list_vt',
         //
-        "$rec",
-        "$rec_t",
-        "$rec_vt",
-        "$record",
-        "$record_t",
-        "$record_vt",
+        '$rec',
+        '$rec_t',
+        '$rec_vt',
+        '$record',
+        '$record_t',
+        '$record_vt',
         //
-        "$tup",
-        "$tup_t",
-        "$tup_vt",
-        "$tuple",
-        "$tuple_t",
-        "$tuple_vt",
+        '$tup',
+        '$tup_t',
+        '$tup_vt',
+        '$tuple',
+        '$tuple_t',
+        '$tuple_vt',
         //
-        "$break",
-        "$continue",
+        '$break',
+        '$continue',
         //
-        "$raise",
+        '$raise',
         //
-        "$showtype",
+        '$showtype',
         //
-        "$vcopyenv_v",
-        "$vcopyenv_vt",
+        '$vcopyenv_v',
+        '$vcopyenv_vt',
         //
-        "$tempenver",
+        '$tempenver',
         //
-        "$solver_assert",
-        "$solver_verify",
+        '$solver_assert',
+        '$solver_verify' // T_DLRSOLVERIFY
     ],
     keywords_srp: [
         //
-        "#if",
-        "#ifdef",
-        "#ifndef",
+        '#if',
+        '#ifdef',
+        '#ifndef',
         //
-        "#then",
+        '#then',
         //
-        "#elif",
-        "#elifdef",
-        "#elifndef",
+        '#elif',
+        '#elifdef',
+        '#elifndef',
         //
-        "#else",
-        "#endif",
+        '#else',
+        '#endif',
         //
-        "#error",
+        '#error',
         //
-        "#prerr",
-        "#print",
+        '#prerr',
+        '#print',
         //
-        "#assert",
+        '#assert',
         //
-        "#undef",
-        "#define",
+        '#undef',
+        '#define',
         //
-        "#include",
-        "#require",
+        '#include',
+        '#require',
         //
-        "#pragma",
-        "#codegen2",
-        "#codegen3",
+        '#pragma',
+        '#codegen2',
+        '#codegen3' // T_SRPCODEGEN3 // for level-3 codegen
+        //
+        // HX: end of special tokens
+        //
     ],
     irregular_keyword_list: [
-        "val+",
-        "val-",
-        "val",
-        "case+",
-        "case-",
-        "case",
-        "addr@",
-        "addr",
-        "fold@",
-        "free@",
-        "fix@",
-        "fix",
-        "lam@",
-        "lam",
-        "llam@",
-        "llam",
-        "viewt@ype+",
-        "viewt@ype-",
-        "viewt@ype",
-        "viewtype+",
-        "viewtype-",
-        "viewtype",
-        "view+",
-        "view-",
-        "view@",
-        "view",
-        "type+",
-        "type-",
-        "type",
-        "vtype+",
-        "vtype-",
-        "vtype",
-        "vt@ype+",
-        "vt@ype-",
-        "vt@ype",
-        "viewt@ype+",
-        "viewt@ype-",
-        "viewt@ype",
-        "viewtype+",
-        "viewtype-",
-        "viewtype",
-        "prop+",
-        "prop-",
-        "prop",
-        "type+",
-        "type-",
-        "type",
-        "t@ype",
-        "t@ype+",
-        "t@ype-",
-        "abst@ype",
-        "abstype",
-        "absviewt@ype",
-        "absvt@ype",
-        "for*",
-        "for",
-        "while*",
-        "while"
+        'val+',
+        'val-',
+        'val',
+        'case+',
+        'case-',
+        'case',
+        'addr@',
+        'addr',
+        'fold@',
+        'free@',
+        'fix@',
+        'fix',
+        'lam@',
+        'lam',
+        'llam@',
+        'llam',
+        'viewt@ype+',
+        'viewt@ype-',
+        'viewt@ype',
+        'viewtype+',
+        'viewtype-',
+        'viewtype',
+        'view+',
+        'view-',
+        'view@',
+        'view',
+        'type+',
+        'type-',
+        'type',
+        'vtype+',
+        'vtype-',
+        'vtype',
+        'vt@ype+',
+        'vt@ype-',
+        'vt@ype',
+        'viewt@ype+',
+        'viewt@ype-',
+        'viewt@ype',
+        'viewtype+',
+        'viewtype-',
+        'viewtype',
+        'prop+',
+        'prop-',
+        'prop',
+        'type+',
+        'type-',
+        'type',
+        't@ype',
+        't@ype+',
+        't@ype-',
+        'abst@ype',
+        'abstype',
+        'absviewt@ype',
+        'absvt@ype',
+        'for*',
+        'for',
+        'while*',
+        'while'
     ],
     keywords_types: [
         'bool',
@@ -355,59 +363,63 @@ export var language = {
     ],
     // TODO: reference for this?
     keywords_effects: [
-        "0",
-        "fun",
-        "clo",
-        "prf",
-        "funclo",
-        "cloptr",
-        "cloref",
-        "ref",
-        "ntm",
-        "1" // all effects
+        '0',
+        'fun',
+        'clo',
+        'prf',
+        'funclo',
+        'cloptr',
+        'cloref',
+        'ref',
+        'ntm',
+        '1' // all effects
     ],
     operators: [
-        "@",
-        "!",
-        "|",
-        "`",
-        ":",
-        "$",
-        ".",
-        "=",
-        "#",
-        "~",
+        '@',
+        '!',
+        '|',
+        '`',
+        ':',
+        '$',
+        '.',
+        '=',
+        '#',
+        '~',
         //
-        "..",
-        "...",
+        '..',
+        '...',
         //
-        "=>",
+        '=>',
         // "=<", // T_EQLT
-        "=<>",
-        "=/=>",
-        "=>>",
-        "=/=>>",
+        '=<>',
+        '=/=>',
+        '=>>',
+        '=/=>>',
         //
-        "<",
-        ">",
+        '<',
+        '>',
         //
-        "><",
+        '><',
         //
-        ".<",
-        ">.",
+        '.<',
+        '>.',
         //
-        ".<>.",
+        '.<>.',
         //
-        "->",
+        '->',
         //"-<", // T_MINUSLT
-        "-<>",
+        '-<>' // T_MINUSLTGT
+        //
+        /*
+                ":<", // T_COLONLT
+        */
     ],
     brackets: [
         { open: ',(', close: ')', token: 'delimiter.parenthesis' },
         { open: '`(', close: ')', token: 'delimiter.parenthesis' },
         { open: '%(', close: ')', token: 'delimiter.parenthesis' },
-        { open: '\'(', close: ')', token: 'delimiter.parenthesis' },
-        { open: '\'{', close: '}', token: 'delimiter.parenthesis' },
+        { open: "'(", close: ')', token: 'delimiter.parenthesis' },
+        { open: "'{", close: '}', token: 'delimiter.parenthesis' },
         { open: '@(', close: ')', token: 'delimiter.parenthesis' },
         { open: '@{', close: '}', token: 'delimiter.brace' },
         { open: '@[', close: ']', token: 'delimiter.square' },
@@ -443,23 +455,59 @@ export var language = {
             { regex: /[ \t\r\n]+/, action: { token: '' } },
             // NOTE: (*) is an invalid ML-like comment!
             { regex: /\(\*\)/, action: { token: 'invalid' } },
-            { regex: /\(\*/, action: { token: 'comment', next: 'lexing_COMMENT_block_ml' } },
-            { regex: /\(/, action: '@brackets' /*{ token: 'delimiter.parenthesis' }*/ },
-            { regex: /\)/, action: '@brackets' /*{ token: 'delimiter.parenthesis' }*/ },
-            { regex: /\[/, action: '@brackets' /*{ token: 'delimiter.bracket' }*/ },
-            { regex: /\]/, action: '@brackets' /*{ token: 'delimiter.bracket' }*/ },
-            { regex: /\{/, action: '@brackets' /*{ token: 'delimiter.brace' }*/ },
-            { regex: /\}/, action: '@brackets' /*{ token: 'delimiter.brace' }*/ },
+            {
+                regex: /\(\*/,
+                action: { token: 'comment', next: 'lexing_COMMENT_block_ml' }
+            },
+            {
+                regex: /\(/,
+                action: '@brackets' /*{ token: 'delimiter.parenthesis' }*/
+            },
+            {
+                regex: /\)/,
+                action: '@brackets' /*{ token: 'delimiter.parenthesis' }*/
+            },
+            {
+                regex: /\[/,
+                action: '@brackets' /*{ token: 'delimiter.bracket' }*/
+            },
+            {
+                regex: /\]/,
+                action: '@brackets' /*{ token: 'delimiter.bracket' }*/
+            },
+            {
+                regex: /\{/,
+                action: '@brackets' /*{ token: 'delimiter.brace' }*/
+            },
+            {
+                regex: /\}/,
+                action: '@brackets' /*{ token: 'delimiter.brace' }*/
+            },
             // lexing_COMMA
-            { regex: /,\(/, action: '@brackets' /*{ token: 'delimiter.parenthesis' }*/ },
+            {
+                regex: /,\(/,
+                action: '@brackets' /*{ token: 'delimiter.parenthesis' }*/
+            },
             { regex: /,/, action: { token: 'delimiter.comma' } },
             { regex: /;/, action: { token: 'delimiter.semicolon' } },
             // lexing_AT
-            { regex: /@\(/, action: '@brackets' /* { token: 'delimiter.parenthesis' }*/ },
-            { regex: /@\[/, action: '@brackets' /* { token: 'delimiter.bracket' }*/ },
-            { regex: /@\{/, action: '@brackets' /*{ token: 'delimiter.brace' }*/ },
+            {
+                regex: /@\(/,
+                action: '@brackets' /* { token: 'delimiter.parenthesis' }*/
+            },
+            {
+                regex: /@\[/,
+                action: '@brackets' /* { token: 'delimiter.bracket' }*/
+            },
+            {
+                regex: /@\{/,
+                action: '@brackets' /*{ token: 'delimiter.brace' }*/
+            },
             // lexing_COLON
-            { regex: /:</, action: { token: 'keyword', next: '@lexing_EFFECT_commaseq0' } },
+            {
+                regex: /:</,
+                action: { token: 'keyword', next: '@lexing_EFFECT_commaseq0' }
+            },
             /*
             lexing_DOT:
 
@@ -469,7 +517,10 @@ export var language = {
             */
             { regex: /\.@symbolic+/, action: { token: 'identifier.sym' } },
             // FLOATDOT case
-            { regex: /\.@digit*@fexponent@FLOATSP*/, action: { token: 'number.float' } },
+            {
+                regex: /\.@digit*@fexponent@FLOATSP*/,
+                action: { token: 'number.float' }
+            },
             { regex: /\.@digit+/, action: { token: 'number.float' } },
             // lexing_DOLLAR:
             // '$' IDENTFST IDENTRST* => lexing_IDENT_dlr, _ => lexing_IDENT_sym
@@ -478,7 +529,7 @@ export var language = {
                 action: {
                     cases: {
                         '@keywords_dlr': { token: 'keyword.dlr' },
-                        '@default': { token: 'namespace' },
+                        '@default': { token: 'namespace' } // most likely a module qualifier
                     }
                 }
             },
@@ -489,13 +540,20 @@ export var language = {
                 action: {
                     cases: {
                         '@keywords_srp': { token: 'keyword.srp' },
-                        '@default': { token: 'identifier' },
+                        '@default': { token: 'identifier' }
                     }
                 }
             },
             // lexing_PERCENT:
             { regex: /%\(/, action: { token: 'delimiter.parenthesis' } },
-            { regex: /^%{(#|\^|\$)?/, action: { token: 'keyword', next: '@lexing_EXTCODE', nextEmbedded: 'text/javascript' } },
+            {
+                regex: /^%{(#|\^|\$)?/,
+                action: {
+                    token: 'keyword',
+                    next: '@lexing_EXTCODE',
+                    nextEmbedded: 'text/javascript'
+                }
+            },
             { regex: /^%}/, action: { token: 'keyword' } },
             // lexing_QUOTE
             { regex: /'\(/, action: { token: 'delimiter.parenthesis' } },
@@ -506,13 +564,19 @@ export var language = {
             // lexing_DQUOTE
             [/"/, 'string.quote', '@lexing_DQUOTE'],
             // lexing_BQUOTE
-            { regex: /`\(/, action: '@brackets' /* { token: 'delimiter.parenthesis' }*/ },
+            {
+                regex: /`\(/,
+                action: '@brackets' /* { token: 'delimiter.parenthesis' }*/
+            },
             // TODO: otherwise, try lexing_IDENT_sym
             { regex: /\\/, action: { token: 'punctuation' } },
             // lexing_IDENT_alp:
             // NOTE: (?!regex) is syntax for "not-followed-by" regex
             // to resolve ambiguity such as foreach$fwork being incorrectly lexed as [for] [each$fwork]!
-            { regex: /@irregular_keywords(?!@IDENTRST)/, action: { token: 'keyword' } },
+            {
+                regex: /@irregular_keywords(?!@IDENTRST)/,
+                action: { token: 'keyword' }
+            },
             {
                 regex: /@IDENTFST@IDENTRST*[<!\[]?/,
                 action: {
@@ -530,11 +594,20 @@ export var language = {
                 }
             },
             // lexing_IDENT_sym:
-            { regex: /\/\/\/\//, action: { token: 'comment', next: '@lexing_COMMENT_rest' } },
+            {
+                regex: /\/\/\/\//,
+                action: { token: 'comment', next: '@lexing_COMMENT_rest' }
+            },
             { regex: /\/\/.*$/, action: { token: 'comment' } },
-            { regex: /\/\*/, action: { token: 'comment', next: '@lexing_COMMENT_block_c' } },
+            {
+                regex: /\/\*/,
+                action: { token: 'comment', next: '@lexing_COMMENT_block_c' }
+            },
             // AS-20160627: specifically for effect annotations
-            { regex: /-<|=</, action: { token: 'keyword', next: '@lexing_EFFECT_commaseq0' } },
+            {
+                regex: /-<|=</,
+                action: { token: 'keyword', next: '@lexing_EFFECT_commaseq0' }
+            },
             {
                 regex: /@symbolic+/,
                 action: {
@@ -551,18 +624,30 @@ export var language = {
             // - testing_fexponent_bin => lexing_FLOAT_hexiexp
             // - testing_intspseq0 => T_INT_hex
             // lexing_INT_hex:
-            { regex: /0[xX]@xdigit+(@hexiexp|@fexponent_bin)@FLOATSP*/, action: { token: 'number.float' } },
+            {
+                regex: /0[xX]@xdigit+(@hexiexp|@fexponent_bin)@FLOATSP*/,
+                action: { token: 'number.float' }
+            },
             { regex: /0[xX]@xdigit+@INTSP*/, action: { token: 'number.hex' } },
-            { regex: /0[0-7]+(?![0-9])@INTSP*/, action: { token: 'number.octal' } },
+            {
+                regex: /0[0-7]+(?![0-9])@INTSP*/,
+                action: { token: 'number.octal' }
+            },
             //{regex: /0/, action: { token: 'number' } }, // INTZERO
             // lexing_INT_dec:
             // - testing_deciexp => lexing_FLOAT_deciexp
             // - testing_fexponent => lexing_FLOAT_deciexp
             // - otherwise => intspseq0 ([0-9]*[lLuU]?)
-            { regex: /@digit+(@fexponent|@deciexp)@FLOATSP*/, action: { token: 'number.float' } },
-            { regex: /@digit@digitseq0@INTSP*/, action: { token: 'number.decimal' } },
+            {
+                regex: /@digit+(@fexponent|@deciexp)@FLOATSP*/,
+                action: { token: 'number.float' }
+            },
+            {
+                regex: /@digit@digitseq0@INTSP*/,
+                action: { token: 'number.decimal' }
+            },
             // DIGIT, if followed by digitseq0, is lexing_INT_dec
-            { regex: /@digit+@INTSP*/, action: { token: 'number' } },
+            { regex: /@digit+@INTSP*/, action: { token: 'number' } }
         ],
         lexing_COMMENT_block_ml: [
             [/[^\(\*]+/, 'comment'],
@@ -594,19 +679,36 @@ export var language = {
                 }
             },
             { regex: /,/, action: { token: 'punctuation' } },
-            { regex: />/, action: { token: '@rematch', next: '@pop' } },
+            { regex: />/, action: { token: '@rematch', next: '@pop' } }
         ],
         lexing_EXTCODE: [
-            { regex: /^%}/, action: { token: '@rematch', next: '@pop', nextEmbedded: '@pop' } },
-            { regex: /[^%]+/, action: '' },
+            {
+                regex: /^%}/,
+                action: {
+                    token: '@rematch',
+                    next: '@pop',
+                    nextEmbedded: '@pop'
+                }
+            },
+            { regex: /[^%]+/, action: '' }
         ],
         lexing_DQUOTE: [
             { regex: /"/, action: { token: 'string.quote', next: '@pop' } },
             // AS-20160628: additional hi-lighting for variables in staload/dynload strings
-            { regex: /(\{\$)(@IDENTFST@IDENTRST*)(\})/, action: [{ token: 'string.escape' }, { token: 'identifier' }, { token: 'string.escape' }] },
+            {
+                regex: /(\{\$)(@IDENTFST@IDENTRST*)(\})/,
+                action: [
+                    { token: 'string.escape' },
+                    { token: 'identifier' },
+                    { token: 'string.escape' }
+                ]
+            },
             { regex: /\\$/, action: { token: 'string.escape' } },
-            { regex: /\\(@ESCHAR|[xX]@xdigit+|@digit+)/, action: { token: 'string.escape' } },
+            {
+                regex: /\\(@ESCHAR|[xX]@xdigit+|@digit+)/,
+                action: { token: 'string.escape' }
+            },
             { regex: /[^\\"]+/, action: { token: 'string' } }
-        ],
-    },
+        ]
+    }
 };

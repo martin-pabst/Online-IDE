@@ -7,10 +7,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -23,8 +25,8 @@ import * as nls from './../../../fillers/vscode-nls.js';
 var localize = nls.loadMessageBundle();
 var SCSSCompletion = /** @class */ (function (_super) {
     __extends(SCSSCompletion, _super);
-    function SCSSCompletion(clientCapabilities) {
-        var _this = _super.call(this, '$', clientCapabilities) || this;
+    function SCSSCompletion(lsServiceOptions, cssDataManager) {
+        var _this = _super.call(this, '$', lsServiceOptions, cssDataManager) || this;
         addReferencesToDocumentation(SCSSCompletion.scssModuleLoaders);
         addReferencesToDocumentation(SCSSCompletion.scssModuleBuiltIns);
         return _this;
@@ -35,10 +37,18 @@ var SCSSCompletion = /** @class */ (function (_super) {
             || _super.prototype.isImportPathParent.call(this, type);
     };
     SCSSCompletion.prototype.getCompletionForImportPath = function (importPathNode, result) {
-        var _a;
         var parentType = importPathNode.getParent().type;
         if (parentType === nodes.NodeType.Forward || parentType === nodes.NodeType.Use) {
-            (_a = result.items).push.apply(_a, SCSSCompletion.scssModuleBuiltIns);
+            for (var _i = 0, _a = SCSSCompletion.scssModuleBuiltIns; _i < _a.length; _i++) {
+                var p = _a[_i];
+                var item = {
+                    label: p.label,
+                    documentation: p.documentation,
+                    textEdit: TextEdit.replace(this.getCompletionRange(importPathNode), "'" + p.label + "'"),
+                    kind: CompletionItemKind.Module
+                };
+                result.items.push(item);
+            }
         }
         return _super.prototype.getCompletionForImportPath.call(this, importPathNode, result);
     };
@@ -294,7 +304,7 @@ var SCSSCompletion = /** @class */ (function (_super) {
             label: "@use",
             documentation: localize("scss.builtin.@use", "Loads mixins, functions, and variables from other Sass stylesheets as 'modules', and combines CSS from multiple stylesheets together."),
             references: [{ name: 'Sass documentation', url: 'https://sass-lang.com/documentation/at-rules/use' }],
-            insertText: "@use '$0';",
+            insertText: "@use $0;",
             insertTextFormat: InsertTextFormat.Snippet,
             kind: CompletionItemKind.Keyword
         },
@@ -302,7 +312,7 @@ var SCSSCompletion = /** @class */ (function (_super) {
             label: "@forward",
             documentation: localize("scss.builtin.@forward", "Loads a Sass stylesheet and makes its mixins, functions, and variables available when this stylesheet is loaded with the @use rule."),
             references: [{ name: 'Sass documentation', url: 'https://sass-lang.com/documentation/at-rules/forward' }],
-            insertText: "@forward '$0';",
+            insertText: "@forward $0;",
             insertTextFormat: InsertTextFormat.Snippet,
             kind: CompletionItemKind.Keyword
         },
@@ -311,44 +321,37 @@ var SCSSCompletion = /** @class */ (function (_super) {
         {
             label: 'sass:math',
             documentation: localize('scss.builtin.sass:math', 'Provides functions that operate on numbers.'),
-            references: [{ name: 'Sass documentation', url: 'https://sass-lang.com/documentation/modules/math' }],
-            kind: CompletionItemKind.Module,
+            references: [{ name: 'Sass documentation', url: 'https://sass-lang.com/documentation/modules/math' }]
         },
         {
             label: 'sass:string',
             documentation: localize('scss.builtin.sass:string', 'Makes it easy to combine, search, or split apart strings.'),
-            references: [{ name: 'Sass documentation', url: 'https://sass-lang.com/documentation/modules/string' }],
-            kind: CompletionItemKind.Module,
+            references: [{ name: 'Sass documentation', url: 'https://sass-lang.com/documentation/modules/string' }]
         },
         {
             label: 'sass:color',
             documentation: localize('scss.builtin.sass:color', 'Generates new colors based on existing ones, making it easy to build color themes.'),
-            references: [{ name: 'Sass documentation', url: 'https://sass-lang.com/documentation/modules/color' }],
-            kind: CompletionItemKind.Module,
+            references: [{ name: 'Sass documentation', url: 'https://sass-lang.com/documentation/modules/color' }]
         },
         {
             label: 'sass:list',
             documentation: localize('scss.builtin.sass:list', 'Lets you access and modify values in lists.'),
-            references: [{ name: 'Sass documentation', url: 'https://sass-lang.com/documentation/modules/list' }],
-            kind: CompletionItemKind.Module,
+            references: [{ name: 'Sass documentation', url: 'https://sass-lang.com/documentation/modules/list' }]
         },
         {
             label: 'sass:map',
             documentation: localize('scss.builtin.sass:map', 'Makes it possible to look up the value associated with a key in a map, and much more.'),
-            references: [{ name: 'Sass documentation', url: 'https://sass-lang.com/documentation/modules/map' }],
-            kind: CompletionItemKind.Module,
+            references: [{ name: 'Sass documentation', url: 'https://sass-lang.com/documentation/modules/map' }]
         },
         {
             label: 'sass:selector',
             documentation: localize('scss.builtin.sass:selector', 'Provides access to Sass’s powerful selector engine.'),
-            references: [{ name: 'Sass documentation', url: 'https://sass-lang.com/documentation/modules/selector' }],
-            kind: CompletionItemKind.Module,
+            references: [{ name: 'Sass documentation', url: 'https://sass-lang.com/documentation/modules/selector' }]
         },
         {
             label: 'sass:meta',
             documentation: localize('scss.builtin.sass:meta', 'Exposes the details of Sass’s inner workings.'),
-            references: [{ name: 'Sass documentation', url: 'https://sass-lang.com/documentation/modules/meta' }],
-            kind: CompletionItemKind.Module,
+            references: [{ name: 'Sass documentation', url: 'https://sass-lang.com/documentation/modules/meta' }]
         },
     ];
     return SCSSCompletion;

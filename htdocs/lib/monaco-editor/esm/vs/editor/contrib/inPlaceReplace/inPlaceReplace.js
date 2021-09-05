@@ -2,19 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -37,52 +24,51 @@ import { editorBracketMatchBorder } from '../../common/view/editorColorRegistry.
 import { ModelDecorationOptions } from '../../common/model/textModel.js';
 import { createCancelablePromise, timeout } from '../../../base/common/async.js';
 import { onUnexpectedError } from '../../../base/common/errors.js';
-var InPlaceReplaceController = /** @class */ (function () {
-    function InPlaceReplaceController(editor, editorWorkerService) {
+let InPlaceReplaceController = class InPlaceReplaceController {
+    constructor(editor, editorWorkerService) {
         this.decorationIds = [];
         this.editor = editor;
         this.editorWorkerService = editorWorkerService;
     }
-    InPlaceReplaceController.get = function (editor) {
+    static get(editor) {
         return editor.getContribution(InPlaceReplaceController.ID);
-    };
-    InPlaceReplaceController.prototype.dispose = function () {
-    };
-    InPlaceReplaceController.prototype.run = function (source, up) {
-        var _this = this;
+    }
+    dispose() {
+    }
+    run(source, up) {
         // cancel any pending request
         if (this.currentRequest) {
             this.currentRequest.cancel();
         }
-        var editorSelection = this.editor.getSelection();
-        var model = this.editor.getModel();
+        const editorSelection = this.editor.getSelection();
+        const model = this.editor.getModel();
         if (!model || !editorSelection) {
             return undefined;
         }
-        var selection = editorSelection;
+        let selection = editorSelection;
         if (selection.startLineNumber !== selection.endLineNumber) {
             // Can't accept multiline selection
             return undefined;
         }
-        var state = new EditorState(this.editor, 1 /* Value */ | 4 /* Position */);
-        var modelURI = model.uri;
+        const state = new EditorState(this.editor, 1 /* Value */ | 4 /* Position */);
+        const modelURI = model.uri;
         if (!this.editorWorkerService.canNavigateValueSet(modelURI)) {
             return Promise.resolve(undefined);
         }
-        this.currentRequest = createCancelablePromise(function (token) { return _this.editorWorkerService.navigateValueSet(modelURI, selection, up); });
-        return this.currentRequest.then(function (result) {
+        this.currentRequest = createCancelablePromise(token => this.editorWorkerService.navigateValueSet(modelURI, selection, up));
+        return this.currentRequest.then(result => {
             if (!result || !result.range || !result.value) {
                 // No proper result
                 return;
             }
-            if (!state.validate(_this.editor)) {
+            if (!state.validate(this.editor)) {
                 // state has changed
                 return;
             }
             // Selection
-            var editRange = Range.lift(result.range);
-            var highlightRange = result.range;
-            var diff = result.value.length - (selection.endColumn - selection.startColumn);
+            let editRange = Range.lift(result.range);
+            let highlightRange = result.range;
+            let diff = result.value.length - (selection.endColumn - selection.startColumn);
             // highlight
             highlightRange = {
                 startLineNumber: highlightRange.startLineNumber,
@@ -94,36 +80,35 @@ var InPlaceReplaceController = /** @class */ (function () {
                 selection = new Selection(selection.startLineNumber, selection.startColumn, selection.endLineNumber, selection.endColumn + diff - 1);
             }
             // Insert new text
-            var command = new InPlaceReplaceCommand(editRange, selection, result.value);
-            _this.editor.pushUndoStop();
-            _this.editor.executeCommand(source, command);
-            _this.editor.pushUndoStop();
+            const command = new InPlaceReplaceCommand(editRange, selection, result.value);
+            this.editor.pushUndoStop();
+            this.editor.executeCommand(source, command);
+            this.editor.pushUndoStop();
             // add decoration
-            _this.decorationIds = _this.editor.deltaDecorations(_this.decorationIds, [{
+            this.decorationIds = this.editor.deltaDecorations(this.decorationIds, [{
                     range: highlightRange,
                     options: InPlaceReplaceController.DECORATION
                 }]);
             // remove decoration after delay
-            if (_this.decorationRemover) {
-                _this.decorationRemover.cancel();
+            if (this.decorationRemover) {
+                this.decorationRemover.cancel();
             }
-            _this.decorationRemover = timeout(350);
-            _this.decorationRemover.then(function () { return _this.decorationIds = _this.editor.deltaDecorations(_this.decorationIds, []); }).catch(onUnexpectedError);
+            this.decorationRemover = timeout(350);
+            this.decorationRemover.then(() => this.decorationIds = this.editor.deltaDecorations(this.decorationIds, [])).catch(onUnexpectedError);
         }).catch(onUnexpectedError);
-    };
-    InPlaceReplaceController.ID = 'editor.contrib.inPlaceReplaceController';
-    InPlaceReplaceController.DECORATION = ModelDecorationOptions.register({
-        className: 'valueSetReplacement'
-    });
-    InPlaceReplaceController = __decorate([
-        __param(1, IEditorWorkerService)
-    ], InPlaceReplaceController);
-    return InPlaceReplaceController;
-}());
-var InPlaceReplaceUp = /** @class */ (function (_super) {
-    __extends(InPlaceReplaceUp, _super);
-    function InPlaceReplaceUp() {
-        return _super.call(this, {
+    }
+};
+InPlaceReplaceController.ID = 'editor.contrib.inPlaceReplaceController';
+InPlaceReplaceController.DECORATION = ModelDecorationOptions.register({
+    description: 'in-place-replace',
+    className: 'valueSetReplacement'
+});
+InPlaceReplaceController = __decorate([
+    __param(1, IEditorWorkerService)
+], InPlaceReplaceController);
+class InPlaceReplaceUp extends EditorAction {
+    constructor() {
+        super({
             id: 'editor.action.inPlaceReplace.up',
             label: nls.localize('InPlaceReplaceAction.previous.label', "Replace with Previous Value"),
             alias: 'Replace with Previous Value',
@@ -133,21 +118,19 @@ var InPlaceReplaceUp = /** @class */ (function (_super) {
                 primary: 2048 /* CtrlCmd */ | 1024 /* Shift */ | 82 /* US_COMMA */,
                 weight: 100 /* EditorContrib */
             }
-        }) || this;
+        });
     }
-    InPlaceReplaceUp.prototype.run = function (accessor, editor) {
-        var controller = InPlaceReplaceController.get(editor);
+    run(accessor, editor) {
+        const controller = InPlaceReplaceController.get(editor);
         if (!controller) {
             return Promise.resolve(undefined);
         }
         return controller.run(this.id, true);
-    };
-    return InPlaceReplaceUp;
-}(EditorAction));
-var InPlaceReplaceDown = /** @class */ (function (_super) {
-    __extends(InPlaceReplaceDown, _super);
-    function InPlaceReplaceDown() {
-        return _super.call(this, {
+    }
+}
+class InPlaceReplaceDown extends EditorAction {
+    constructor() {
+        super({
             id: 'editor.action.inPlaceReplace.down',
             label: nls.localize('InPlaceReplaceAction.next.label', "Replace with Next Value"),
             alias: 'Replace with Next Value',
@@ -157,23 +140,22 @@ var InPlaceReplaceDown = /** @class */ (function (_super) {
                 primary: 2048 /* CtrlCmd */ | 1024 /* Shift */ | 84 /* US_DOT */,
                 weight: 100 /* EditorContrib */
             }
-        }) || this;
+        });
     }
-    InPlaceReplaceDown.prototype.run = function (accessor, editor) {
-        var controller = InPlaceReplaceController.get(editor);
+    run(accessor, editor) {
+        const controller = InPlaceReplaceController.get(editor);
         if (!controller) {
             return Promise.resolve(undefined);
         }
         return controller.run(this.id, false);
-    };
-    return InPlaceReplaceDown;
-}(EditorAction));
+    }
+}
 registerEditorContribution(InPlaceReplaceController.ID, InPlaceReplaceController);
 registerEditorAction(InPlaceReplaceUp);
 registerEditorAction(InPlaceReplaceDown);
-registerThemingParticipant(function (theme, collector) {
-    var border = theme.getColor(editorBracketMatchBorder);
+registerThemingParticipant((theme, collector) => {
+    const border = theme.getColor(editorBracketMatchBorder);
     if (border) {
-        collector.addRule(".monaco-editor.vs .valueSetReplacement { outline: solid 2px " + border + "; }");
+        collector.addRule(`.monaco-editor.vs .valueSetReplacement { outline: solid 2px ${border}; }`);
     }
 });

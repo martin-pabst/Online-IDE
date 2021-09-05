@@ -1,1 +1,4 @@
-export var typescriptVersion = "3.7.5";
+//
+// **NOTE**: Do not edit directly! This file is generated using `npm run import-typescript`
+//
+export var typescriptVersion = "4.3.2";

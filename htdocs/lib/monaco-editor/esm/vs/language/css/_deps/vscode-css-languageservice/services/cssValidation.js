@@ -8,7 +8,8 @@ import { LintConfigurationSettings, Rules } from './lintRules.js';
 import { LintVisitor } from './lint.js';
 import { Range, DiagnosticSeverity } from '../cssLanguageTypes.js';
 var CSSValidation = /** @class */ (function () {
-    function CSSValidation() {
+    function CSSValidation(cssDataManager) {
+        this.cssDataManager = cssDataManager;
     }
     CSSValidation.prototype.configure = function (settings) {
         this.settings = settings;
@@ -20,7 +21,7 @@ var CSSValidation = /** @class */ (function () {
         }
         var entries = [];
         entries.push.apply(entries, nodes.ParseErrorCollector.entries(stylesheet));
-        entries.push.apply(entries, LintVisitor.entries(stylesheet, document, new LintConfigurationSettings(settings && settings.lint)));
+        entries.push.apply(entries, LintVisitor.entries(stylesheet, document, new LintConfigurationSettings(settings && settings.lint), this.cssDataManager));
         var ruleIds = [];
         for (var r in Rules) {
             ruleIds.push(Rules[r].id);

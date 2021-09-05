@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 export var conf = {
     comments: {
         lineComment: 'REM'
@@ -16,17 +15,17 @@ export var conf = {
         { open: '{', close: '}' },
         { open: '[', close: ']' },
         { open: '(', close: ')' },
-        { open: '"', close: '"' },
+        { open: '"', close: '"' }
     ],
     surroundingPairs: [
         { open: '[', close: ']' },
         { open: '(', close: ')' },
-        { open: '"', close: '"' },
+        { open: '"', close: '"' }
     ],
     folding: {
         markers: {
-            start: new RegExp("^\\s*(::\\s*|REM\\s+)#region"),
-            end: new RegExp("^\\s*(::\\s*|REM\\s+)#endregion")
+            start: new RegExp('^\\s*(::\\s*|REM\\s+)#region'),
+            end: new RegExp('^\\s*(::\\s*|REM\\s+)#endregion')
         }
     }
 };
@@ -71,26 +70,32 @@ export var language = {
             [/[;,.]/, 'delimiter'],
             // strings:
             [/"/, 'string', '@string."'],
-            [/'/, 'string', '@string.\''],
+            [/'/, 'string', "@string.'"]
         ],
         string: [
-            [/[^\\"'%]+/, {
+            [
+                /[^\\"'%]+/,
+                {
                     cases: {
                         '@eos': { token: 'string', next: '@popall' },
                         '@default': 'string'
                     }
-                }],
+                }
+            ],
             [/@escapes/, 'string.escape'],
             [/\\./, 'string.escape.invalid'],
             [/%[\w ]+%/, 'variable'],
             [/%%[\w]+(?!\w)/, 'variable'],
-            [/["']/, {
+            [
+                /["']/,
+                {
                     cases: {
                         '$#==$S2': { token: 'string', next: '@pop' },
                         '@default': 'string'
                     }
-                }],
+                }
+            ],
             [/$/, 'string', '@popall']
-        ],
+        ]
     }
 };

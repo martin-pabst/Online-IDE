@@ -190,9 +190,10 @@ export class MainMenu {
                             },
                             { identifier: "-" },
                             {
-                                identifier: "Befehlspalette",
+                                identifier: "Befehlspalette (F1)",
                                 action: () => {
                                     setTimeout(() => {
+                                        that.main.getMonacoEditor().focus();
                                         editor.getAction("editor.action.quickCommand").run();
                                     }, 500);
                                 }

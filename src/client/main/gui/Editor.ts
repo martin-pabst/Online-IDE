@@ -13,6 +13,7 @@ import { MyCodeActionProvider } from "./MyCodeActionProvider.js";
 import { MyReferenceProvider } from "./MyReferenceProvider.js";
 import { Enum } from "../../compiler/types/Enum.js";
 import { Workspace } from "../../workspace/Workspace.js";
+import { MySemanticTokenProvider } from "./MySemanticTokenProvider.js";
 
 export type HistoryEntry = {
     module_id: number,
@@ -53,6 +54,9 @@ export class Editor implements monaco.languages.RenameProvider {
                 { token: 'statement', foreground: 'bb96c0', fontStyle: 'bold' },
                 { token: 'keyword', foreground: '68bed4', fontStyle: 'bold' },
                 // { token: 'comment.js', foreground: '008800', fontStyle: 'bold italic underline' },
+
+                // semantic tokens:
+                {token: 'property', foreground: 'ffffff' ,fontStyle: 'bold'},
             ],
             colors: {
                 "editor.background": "#1e1e1e",
@@ -104,6 +108,7 @@ export class Editor implements monaco.languages.RenameProvider {
             // ].join('\n'),
             // language: 'myJava',
             language: 'myJava',
+            "semanticHighlighting.enabled": true,
             lightbulb: {
                 enabled: true
             },
@@ -281,6 +286,8 @@ export class Editor implements monaco.languages.RenameProvider {
 
         });
 
+        monaco.languages.registerDocumentSemanticTokensProvider('myJava', new MySemanticTokenProvider(this.main));
+
         monaco.languages.registerRenameProvider('myJava', this);
 
         monaco.languages.registerDefinitionProvider('myJava', {
@@ -320,6 +327,8 @@ export class Editor implements monaco.languages.RenameProvider {
 
         //@ts-ignore
         this.editor.onDidType((text) => { that.onDidType(text) });
+
+        console.log(this.editor.getSupportedActions().map(a => a.id));
 
         return this.editor;
     }

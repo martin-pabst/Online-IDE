@@ -5,7 +5,7 @@ import { Attribute, Method, PrimitiveType, Type } from "../../compiler/types/Typ
 import { Main } from "../Main.js";
 import { MainBase } from "../MainBase.js";
 
-export class MySemanticTokenProvider implements monaco.languages.DocumentSemanticTokensProvider {
+export class MySemanticTokenProvider implements monaco.languages.DocumentRangeSemanticTokensProvider {
     
     tokenTypes = [
         'comment', 'string', 'keyword', 'number', 'regexp', 'operator', 'namespace',
@@ -23,64 +23,60 @@ export class MySemanticTokenProvider implements monaco.languages.DocumentSemanti
         }
     }
 
+    provideDocumentRangeSemanticTokens(model: monaco.editor.ITextModel, range: monaco.Range, token: monaco.CancellationToken): monaco.languages.ProviderResult<monaco.languages.SemanticTokens> {
+
+        let module = this.main.getCurrentlyEditedModule();
+        if(module.model.id != model.id) return {
+            data: new Uint32Array(),
+            resultId: null
+        };
+        let lastPos = {
+            line: 0,
+            column: 0
+        }
+
+        let data: number[] = [];
+
+        for(let line = range.startLineNumber; line <= range.endLineNumber; line++){
+            let identifierPositions = module.identifierPositions[line];
+            if(identifierPositions != null){
+                for(let ip of identifierPositions){
+
+                    let element = ip.element;
+
+                    if (element instanceof Klass || element instanceof Method || element instanceof Interface
+                        || element instanceof Attribute) {
+
+                            if(element instanceof Attribute){
+                                this.registerToken(ip.position, element.identifier, lastPos, data, 
+                                    this.tokenTypes.indexOf("property"), 0);
+                            }
+
+
+                    } else if (element instanceof PrimitiveType) {
+                    } else if(!(element instanceof Type)){
+                        // Variable
+                        let typeIdentifier: string = element?.type?.identifier;
+
+                    }
+
+                }
+            }
+        }
+
+        return {
+            data: new Uint32Array(data),
+            resultId: null
+        };
+
+    }
+
     onDidChange?: monaco.IEvent<void>;
 
     getLegend(): monaco.languages.SemanticTokensLegend {
         return this.legend;
     }
 
-    provideDocumentSemanticTokens(model: monaco.editor.ITextModel, lastResultId: string, 
-        token: monaco.CancellationToken): monaco.languages.ProviderResult<monaco.languages.SemanticTokens | monaco.languages.SemanticTokensEdits> {
-
-            console.log(model.getValue());
-
-            let module = this.main.getCurrentlyEditedModule();
-            if(module.model.id != model.id) return {
-                data: new Uint32Array(),
-                resultId: null
-            };
-            let lastPos = {
-                line: 0,
-                column: 0
-            }
-
-            let data: number[] = [];
-
-            for(let line = 1; line < model.getLineCount(); line++){
-                let identifierPositions = module.identifierPositions[line];
-                if(identifierPositions != null){
-                    for(let ip of identifierPositions){
-
-                        let element = ip.element;
-
-                        if (element instanceof Klass || element instanceof Method || element instanceof Interface
-                            || element instanceof Attribute) {
-
-                                if(element instanceof Attribute){
-                                    this.registerToken(ip.position, element.identifier, lastPos, data, 
-                                        this.tokenTypes.indexOf("property"), 0);
-                                }
-
-
-                        } else if (element instanceof PrimitiveType) {
-                        } else if(!(element instanceof Type)){
-                            // Variable
-                            let typeIdentifier: string = element?.type?.identifier;
-
-                        }
-
-                    }
-                }
-            }
-
-            console.log(data);
-
-            return {
-                data: new Uint32Array(data),
-                resultId: null
-            };
-
-        }
 
     registerToken(position: TextPosition, identifier: string, 
         lastPos: { line: number; column: number; }, data: number[], tokenTypeIndex: number, tokenModifierIndex: number) {

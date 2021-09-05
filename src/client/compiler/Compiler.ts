@@ -124,8 +124,6 @@ export class Compiler {
 
         this.main.getSemicolonAngel().healSemicolons();
 
-        
-
         return null;
     }
 

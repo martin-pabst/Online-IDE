@@ -23,7 +23,7 @@ export class MyCompletionItemProvider implements monaco.languages.CompletionItem
         setTimeout(() => {
             //@ts-ignore
             let sw = this.main.getMonacoEditor()._contentWidgets["editor.widget.suggestWidget"]?.widget;
-            if (sw != null && this.first) {
+            if (sw != null && sw._widget != null && this.first) {
                 sw._widget.toggleDetails();
                 this.first = false;
             }

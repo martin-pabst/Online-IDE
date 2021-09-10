@@ -286,7 +286,7 @@ export class Editor implements monaco.languages.RenameProvider {
 
         });
 
-        monaco.languages.registerDocumentRangeSemanticTokensProvider('myJava', new MySemanticTokenProvider(this.main));
+//        monaco.languages.registerDocumentRangeSemanticTokensProvider('myJava', new MySemanticTokenProvider(this.main));
 
         monaco.languages.registerRenameProvider('myJava', this);
 

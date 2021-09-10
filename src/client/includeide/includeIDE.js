@@ -45,7 +45,7 @@ window.onload = function(){
     bodyElement.style.height = "100%";
     bodyElement.style.margin = "0";
     
-    window.javaOnlineDir = "https://learnj.de/javaonline/";
+    window.javaOnlineDir = "https://embed.learnj.de/include/";
     includeJs(base + "js.webpack/javaOnline-embedded.js");
     includeJs(base + "lib/p5.js/p5.js");
 };

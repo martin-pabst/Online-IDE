@@ -151,7 +151,7 @@ export class StudentBulkImportMI extends AdminMenuItem {
         $printDiv.empty();
         this.usersToWrite.forEach((user) => {
             $printDiv.append(`<div style="page-break-inside: avoid;">
-            <div><b>URL:</b> https://www.mathe-pabst.de/java</div>
+            <div><b>URL:</b> https://www.online-ide.de</div>
             <div><b>Name:</b> ${user.rufname} ${user.familienname}</div>
             <div><b>Klasse:</b> ${this.selectedClass.name}</div>
             <div><b>Benutzername:</b> ${user.username}</div>

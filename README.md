@@ -5,7 +5,7 @@ Die IDE gibt es in zwei Varianten: als **Online-IDE für Schulen** (kommerziell)
 
 ## 1. Online-IDE für Schulen
 ![Online-IDE](images/Online-IDE.png)
-Mit der Online-IDE können Schüler/innen im Browser [in einer Java-ähnlichen Programiersprache](https://www.learnj.de/doku.php?id=unterschiede_zu_java:start) programmieren. Die Programme werden auf dem Server gespeichert, so dass zuhause dieselbe Programmierumgebung bereitsteht wie in der Schule - ganz ohne Installation.
+Mit der Online-IDE können Schüler/innen im Browser [in einer Java-ähnlichen Programmiersprache](https://www.learnj.de/doku.php?id=unterschiede_zu_java:start) programmieren. Die Programme werden auf dem Server gespeichert, so dass zuhause dieselbe Programmierumgebung bereitsteht wie in der Schule - ganz ohne Installation.
 
 Die Lehrkraft hat Zugriff auf die Workspaces der Schüler/innen, so dass sie Hausaufgaben bequem korrigieren und bei Programmfehlern schnell helfen kann.
 

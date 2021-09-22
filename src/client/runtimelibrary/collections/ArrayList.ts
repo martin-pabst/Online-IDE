@@ -378,7 +378,7 @@ export class ListHelper {
 
         let ah: ListHelper = object.intrinsicData["ListHelper"];
         if (ah != null) {
-            this.valueArray = this.valueArray.concat(ah.valueArray);
+            this.valueArray = this.valueArray.concat(ah.valueArray.map(v => {return {type: v.type, value: v.value}}));
             this.objectArray = this.objectArray.concat(ah.objectArray);
         }
 
@@ -409,11 +409,11 @@ export class ListHelper {
 
     add(r: Value, index?): boolean {
         if(index == null){
-            this.valueArray.push(r);
+            this.valueArray.push({type: r.type, value: r.value});
             this.objectArray.push(r.value);
         } else {
             if(index <= this.objectArray.length && index >= 0){
-                this.valueArray.splice(index, 0, r);
+                this.valueArray.splice(index, 0, {type: r.type, value: r.value});
                 this.objectArray.splice(index, 0, r.value);
             } else {
                 this.interpreter.throwException("Der ArrayList-Index ist außerhalb des Intervalls von 0 bis " + (this.valueArray.length - 1) + ". ")
@@ -495,12 +495,12 @@ export class ListHelper {
     };
 
     addLast(object: Value) {
-        this.valueArray.push(object);
+        this.valueArray.push({type: object.type, value: object.value});
         this.objectArray.push(object.value);
         return true;
     }
     addFirst(object: Value): any {
-        this.valueArray.splice(0, 0, object);
+        this.valueArray.splice(0, 0, {type: object.type, value: object.value});
         this.objectArray.splice(0, 0, object.value);
         return true;
     }

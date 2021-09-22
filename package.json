@@ -1,5 +1,5 @@
 {
-  "name": "Java-Online",
+  "name": "java_online",
   "version": "1.0.0",
   "description": "Online Java-Compiler",
   "main": "index.js",

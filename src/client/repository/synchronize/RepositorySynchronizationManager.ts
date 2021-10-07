@@ -289,6 +289,8 @@ export class SynchronizationManager {
 
         clearInterval(this.timer);
 
+        if(this.currentRepository == null) return;   // Testuser...
+
         let request: LeaseRepositoryLockRequest = { repository_id: this.currentRepository.id };
         ajax('leaseRepositoryLock', request, (response: LeaseRepositoryLockResponse) => {
             // console.log("Lock for repository_id " + request.repository_id + " has been released.")

@@ -71,7 +71,7 @@ export class TeachersWithClassesMI extends AdminMenuItem {
                     },
                     {
                         field: 'id', caption: 'PW', size: '40px', sortable: false, render: (e) => {
-                            return '<div class="pw_button" title="Passwort ändern" data-recid=" style="visibility: hidden"' + e.recid + '">PW!</div>';
+                            return '<div class="pw_button" title="Passwort ändern" style="visibility: hidden" data-recid="' + e.recid + '">PW!</div>';
                         }
                     }
                 ],

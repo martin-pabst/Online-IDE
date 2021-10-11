@@ -71,7 +71,11 @@ export class MyConsole {
             ].join('\n'),
             automaticLayout: false,
             renderLineHighlight: "none",
-            renderIndentGuides: false,
+            guides: {
+                bracketPairs: false,
+                highlightActiveIndentation: false,
+                indentation: false
+            },
             overviewRulerLanes: 0,
             lineNumbers: 'off',
             glyphMargin: false,

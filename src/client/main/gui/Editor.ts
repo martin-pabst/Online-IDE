@@ -158,7 +158,6 @@ export class Editor implements monaco.languages.RenameProvider {
             theme: "myCustomThemeDark",
             // automaticLayout: true
 
-
         }
         );
 

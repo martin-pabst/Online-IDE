@@ -196,7 +196,7 @@ export class Module {
         if (uriCounter > 0) path += " (" + uriCounter + ")";
         this.uri = monaco.Uri.from({ path: path, scheme: 'inmemory' });
         this.model = monaco.editor.createModel(file.text, "myJava", this.uri);
-        this.model.updateOptions({ tabSize: 3 });
+        this.model.updateOptions({ tabSize: 3, bracketColorizationOptions: {enabled: true} });
 
         this.lastSavedVersionId = this.model.getAlternativeVersionId();
 

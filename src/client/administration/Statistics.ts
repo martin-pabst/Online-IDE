@@ -114,7 +114,7 @@ class Statistics {
             sumTime += pd.sumTime;
         })
 
-        return Math.round(sumTime/count);
+        return Math.min(1000, Math.round(sumTime/count));
 
     }
 

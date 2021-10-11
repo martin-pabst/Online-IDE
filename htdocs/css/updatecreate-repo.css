@@ -103,6 +103,10 @@
     cursor: pointer;
 }
 
+.updateRepo-repoListItem>.img_delete {
+    padding-right: 5px;
+}
+
 .updateRepo-repoListItem:hover {
     background-color: var(--file-hover);
 }

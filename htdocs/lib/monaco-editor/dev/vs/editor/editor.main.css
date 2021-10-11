@@ -2963,8 +2963,8 @@
 	border-top-width: 1px;
 	border-bottom-width: 1px;
 }
-
-.monaco-editor .reference-zone-widget .inline {
+/* Martin Pabst, 04.09.2021 */
+.monaco-editor .reference-zone-widget .me_inline {
 	display: inline-block;
 	vertical-align: top;
 }
@@ -3305,8 +3305,8 @@
 	z-index: 100;
 	color: inherit;
 }
-
-.monaco-editor .rename-box.preview {
+/* Martin Pabst, 04.09.2021 */ 
+.monaco-editor .rename-box.me_preview {
 	padding: 3px 3px 0 3px;
 }
 
@@ -3319,8 +3319,8 @@
 	display: none;
 	opacity: .8;
 }
-
-.monaco-editor .rename-box.preview .rename-label {
+/* Martin Pabst, 04.09.2021 */ 
+.monaco-editor .rename-box.me_preview .rename-label {
 	display: inherit;
 }
 

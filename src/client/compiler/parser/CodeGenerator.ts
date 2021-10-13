@@ -1632,7 +1632,7 @@ export class CodeGenerator {
 
             if (type != null) {
                 if (!this.ensureAutomaticCasting(type.type, method.getReturnType(), null, node)) {
-                    this.pushError("Die Methode " + method.identifier + " erwaret einen Rückgabewert vom Typ " + method.getReturnType().identifier + ". Gefunden wurde ein Wert vom Typ " + type.type.identifier + ".", node.position);
+                    this.pushError("Die Methode " + method.identifier + " erwartet einen Rückgabewert vom Typ " + method.getReturnType().identifier + ". Gefunden wurde ein Wert vom Typ " + type.type.identifier + ".", node.position);
                 }
 
             }

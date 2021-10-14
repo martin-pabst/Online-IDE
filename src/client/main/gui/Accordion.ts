@@ -87,17 +87,7 @@ export class AccordionPanel {
                 e.stopPropagation();
                 e.preventDefault();
 
-                for(let element of that.elements){
-                    if(element.isFolder){
-                        if (element.$htmlFirstLine.hasClass('jo_expanded')) {
-                            element.$htmlFirstLine.removeClass('jo_expanded');
-                            element.$htmlFirstLine.addClass('jo_collapsed');
-                        }                        
-                    }
-                    if(element.path.length > 0){
-                        element.$htmlFirstLine.slideUp(200);
-                    }
-                }                
+                that.collapseAll();
 
             })
 
@@ -105,6 +95,20 @@ export class AccordionPanel {
 
         }
 
+    }
+
+    collapseAll(){
+        for(let element of this.elements){
+            if(element.isFolder){
+                if (element.$htmlFirstLine.hasClass('jo_expanded')) {
+                    element.$htmlFirstLine.removeClass('jo_expanded');
+                    element.$htmlFirstLine.addClass('jo_collapsed');
+                }                        
+            }
+            if(element.path.length > 0){
+                element.$htmlFirstLine.slideUp(200);
+            }
+        }                
     }
 
     remove() {

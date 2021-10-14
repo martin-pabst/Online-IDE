@@ -637,6 +637,9 @@ export class ProjectExplorer {
 
         this.workspaceListPanel.sortElements();
         this.fileListPanel.enableNewButton(workspaceList.length > 0);
+        setTimeout(() => {
+            this.workspaceListPanel.collapseAll();
+        }, 500);
 
     }
 

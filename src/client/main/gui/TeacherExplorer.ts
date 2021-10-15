@@ -144,7 +144,7 @@ export class TeacherExplorer {
                 isFolder: false,
                 path: []
             }
-            this.studentPanel.addElement(ae);
+            this.studentPanel.addElement(ae, true);
         }
 
     }
@@ -165,7 +165,7 @@ export class TeacherExplorer {
                 isFolder: false,
                 path: []
             }
-            this.classPanel.addElement(ae);
+            this.classPanel.addElement(ae, true);
         }
 
     }

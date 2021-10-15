@@ -205,7 +205,7 @@ export class AccordionPanel {
             path: path
         }
 
-        let $element = this.renderElement(ae);
+        let $element = this.renderElement(ae, true);
 
         this.insertElement(ae);
 
@@ -250,7 +250,7 @@ export class AccordionPanel {
 
                 let insertIndex = this.getElementIndex("", path);
                 this.elements.splice(insertIndex, 0, ae);
-                let $element = this.renderElement(ae);
+                let $element = this.renderElement(ae, true);
 
 
                 if (insertIndex == 0) {
@@ -350,9 +350,9 @@ export class AccordionPanel {
         this.$captionElement.addClass('jo_expanded');
     }
 
-    addElement(element: AccordionElement) {
+    addElement(element: AccordionElement, expanded: boolean) {
         this.elements.push(element);
-        element.$htmlFirstLine = this.renderElement(element);
+        element.$htmlFirstLine = this.renderElement(element, expanded);
         this.$listElement.prepend(element.$htmlFirstLine);
     }
 
@@ -378,7 +378,7 @@ export class AccordionPanel {
         this.$captionElement.find('.jo_actions').prepend($element);
     }
 
-    renderElement(element: AccordionElement): JQuery<HTMLElement> {
+    renderElement(element: AccordionElement, expanded: boolean): JQuery<HTMLElement> {
 
         let mousePointer = window.PointerEvent ? "pointer" : "mouse";
         let that = this;
@@ -388,7 +388,7 @@ export class AccordionPanel {
         if (element.iconClass == null) element.iconClass = this.defaultIconClass;
         if (element.isFolder) {
             element.iconClass = "folder";
-            expandedCollapsed = " jo_expanded";
+            expandedCollapsed = expanded ? " jo_expanded" : " jo_collapsed";
         }
 
         let pathHtml = "";
@@ -408,6 +408,10 @@ export class AccordionPanel {
            ${this.withDeleteButton ? '<div class="jo_delete img_delete jo_button jo_active' + (false ? " jo_delete_always" : "") + '"></div>' : ""}
            ${!jo_mouseDetected ? '<div class="jo_settings_button img_ellipsis-dark jo_button jo_active"></div>' : ""}
            </div>`);
+
+        if(!expanded && element.path.length > 0){
+            element.$htmlFirstLine.hide();
+        }
 
         if (this.addElementActionCallback != null) {
             let $elementAction = this.addElementActionCallback(element);
@@ -697,7 +701,7 @@ export class AccordionPanel {
             for (let el of movedElements) {
                 el.$htmlFirstLine.remove();
                 this.elements.splice(this.elements.indexOf(el), 1);
-                this.renderElement(el);
+                this.renderElement(el, true);
                 this.insertElement(el);
             }
 
@@ -706,7 +710,7 @@ export class AccordionPanel {
             elementToMove.path = destinationPath;
             elementToMove.$htmlFirstLine.remove();
             this.elements.splice(this.elements.indexOf(elementToMove), 1);
-            this.renderElement(elementToMove);
+            this.renderElement(elementToMove, true);
             this.insertElement(elementToMove);
             this.select(elementToMove.externalElement);
             elementToMove.$htmlFirstLine[0].scrollIntoView();
@@ -754,8 +758,9 @@ export class AccordionPanel {
                 if (scrollIntoView) {
                     let pathString = ae.path.join("/");
                     for (let el of this.elements) {
-
-                        if (pathString.startsWith(el.path.join("/"))) {
+                        let elPath = el.path.slice(0);
+                        if(el.isFolder) elPath.push(el.name);
+                        if (pathString.startsWith(elPath.join("/"))) {
                             if (el.isFolder) {
                                 el.$htmlFirstLine.removeClass("jo_collapsed");
                                 el.$htmlFirstLine.addClass("jo_expanded");

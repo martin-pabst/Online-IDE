@@ -591,7 +591,7 @@ export class Module {
 
         let bestFoundPosition: IdentifierPosition = null;
         for (let p of positionsOnLine) {
-            if (column >= p.position.column && column < p.position.column + p.position.length) {
+            if (column >= p.position.column && column <= p.position.column + p.position.length) {
 
                 if (p.position.length > 0) {
                     if (bestFoundPosition == null) {

@@ -654,6 +654,36 @@ export class Editor implements monaco.languages.RenameProvider {
         // this.dontDetectLastChanging = true;
     }
 
+    resolveRenameLocation(model: monaco.editor.ITextModel, position: monaco.Position,
+        token: monaco.CancellationToken): monaco.languages.ProviderResult<monaco.languages.RenameLocation & monaco.languages.Rejection> {
+
+            let currentlyEditedModule = this.getCurrentlyEditedModule();
+            if (currentlyEditedModule == null) {
+                return {
+                    range: null,
+                    text: "Dieses Symbol kann nicht umbenannt werden.",
+                    rejectReason: "Dieses Symbol kann nicht umbenannt werden."
+                };
+            }
+            
+            let element = currentlyEditedModule.getElementAtPosition(position.lineNumber, position.column);
+            if (element == null || element.declaration == null) {
+                return {
+                    range: null,
+                    text: "Dieses Symbol kann nicht umbenannt werden.",
+                    rejectReason: "Dieses Symbol kann nicht umbenannt werden."
+                };
+            }
+    
+            let pos = element.declaration.position;
+
+            return {
+                range: {startColumn: position.column, startLineNumber: position.lineNumber, endLineNumber: position.lineNumber, endColumn: position.column + pos.length},
+                text: element.identifier
+            };
+
+    }
+
     provideRenameEdits(model: monaco.editor.ITextModel, position: monaco.Position,
         newName: string, token: monaco.CancellationToken):
         monaco.languages.ProviderResult<monaco.languages.WorkspaceEdit & monaco.languages.Rejection> {

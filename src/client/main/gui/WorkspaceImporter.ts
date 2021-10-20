@@ -122,7 +122,7 @@ export class WorkspaceImporter {
                                     iconClass: "workspace",
                                     isFolder: false,
                                     path: []
-                                });
+                                }, true);
 
                                 for(let mo of wse.modules){
                                     let f: File = {

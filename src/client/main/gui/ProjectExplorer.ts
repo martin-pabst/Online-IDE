@@ -149,7 +149,7 @@ export class ProjectExplorer {
                                     externalElement: m
                                 }
                                 f.panelElement = element;
-                                that.fileListPanel.addElement(element);
+                                that.fileListPanel.addElement(element, true);
                                 that.fileListPanel.sortElements();
                                 that.setModuleActive(m);
                                 that.fileListPanel.renameElement(element);
@@ -442,7 +442,7 @@ export class ProjectExplorer {
                                     path: path
                                 };
 
-                                this.workspaceListPanel.addElement(newWorkspace.panelElement);
+                                this.workspaceListPanel.addElement(newWorkspace.panelElement, true);
                                 this.workspaceListPanel.sortElements();
                             }
                             if (error != null) {
@@ -605,7 +605,7 @@ export class ProjectExplorer {
                     path: []
                 };
 
-                this.fileListPanel.addElement(m.file.panelElement);
+                this.fileListPanel.addElement(m.file.panelElement, true);
                 this.renderHomeworkButton(m.file);
             }
 
@@ -630,13 +630,16 @@ export class ProjectExplorer {
                 path: path
             };
 
-            this.workspaceListPanel.addElement(w.panelElement);
+            this.workspaceListPanel.addElement(w.panelElement, false);
 
             w.renderSynchronizeButton(w.panelElement);
         }
 
         this.workspaceListPanel.sortElements();
         this.fileListPanel.enableNewButton(workspaceList.length > 0);
+        // setTimeout(() => {
+        //     this.workspaceListPanel.collapseAll();
+        // }, 500);
 
     }
 

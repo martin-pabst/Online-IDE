@@ -457,7 +457,7 @@ export class NetworkManager {
             iconClass: remoteWorkspace.repository_id == null ? "workspace" : "repository",
             isFolder: remoteWorkspace.isFolder,
             path: path
-        });
+        }, true);
 
         for (let fileData of remoteWorkspace.files) {
             this.createFile(w, fileData);
@@ -478,7 +478,7 @@ export class NetworkManager {
                 externalElement: null
             }
 
-            this.main.projectExplorer.fileListPanel.addElement(ae);
+            this.main.projectExplorer.fileListPanel.addElement(ae, true);
         }
 
         let f: any = { // File

@@ -87,6 +87,19 @@ export class SystemClass extends Klass {
             }
             , false, true, "Gibt die Anzahl der Millisekunden, die seit dem 01.01.1970 00:00:00 UTC vergangen sind, zurück."));
 
+        this.addMethod(new Method("exit", new Parameterlist([
+            { identifier: "status", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+        ]), voidPrimitiveType,
+            (parameters) => {
+                let console = module.main.getBottomDiv()?.console;
+                if(console != null){
+                    console.writeConsoleEntry("Das Programm wurde angehalten mit Statuswert: " + parameters[1].value, null, "#0000ff");
+                    console.showTab();
+                }
+                module.main.getInterpreter().stop();
+            }
+            , false, true, "Beendet das Programm und gibt den übergebenen Wert in der Konsole aus."));
+
     }
 
 }

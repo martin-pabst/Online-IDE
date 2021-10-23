@@ -911,9 +911,13 @@ export class StaticClass extends Type {
         let itemList: monaco.languages.CompletionItem[] = [];
 
         for (let attribute of this.getAttributes(visibilityUpTo)) {
+            
             itemList.push({
                 label: attribute.identifier,
-                kind: monaco.languages.CompletionItemKind.Field,
+                //@ts-ignore
+                detail: attribute.color? attribute.color : undefined,
+                //@ts-ignore
+                kind: attribute.color? monaco.languages.CompletionItemKind.Color : monaco.languages.CompletionItemKind.Field,
                 insertText: attribute.identifier,
                 range: rangeToReplace,
                 documentation: attribute.documentation == null ? undefined : {

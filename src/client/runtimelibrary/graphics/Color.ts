@@ -43,9 +43,14 @@ export class ColorClass extends Klass {
 
             r.intrinsicData = id;
 
-            this.addAttribute(new Attribute(colorName, this,
+            let a: Attribute = new Attribute(colorName, this,
                 (value) => { value.value = r }, true, Visibility.public, true,
-                "Die Farbe " + colorName + " (" + ColorHelper.intColorToHexRGB(intColor) + ") oder " + ColorHelper.intColorToRGB(intColor)));
+                "Die Farbe " + colorName + " (" + ColorHelper.intColorToHexRGB(intColor) + ") oder " + ColorHelper.intColorToRGB(intColor));
+
+            //@ts-ignore
+            a.color = ColorHelper.intColorToHexRGB(intColor);
+
+            this.addAttribute(a);
         }
 
         this.setupAttributeIndicesRecursive();

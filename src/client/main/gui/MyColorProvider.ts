@@ -60,18 +60,21 @@ export class MyColorProvider implements monaco.languages.DocumentColorProvider {
         var blue256 = Math.round(color.blue * 255);
         var label;
 
+        let hex6Digits = this.toHex2Digits(red256) + this.toHex2Digits(green256) + this.toHex2Digits(blue256);
+        let rgbCommaSeparated = red256 + ', ' + green256 + ', ' + blue256;
+
         if(oldColor.startsWith('#')){
-            label = '#' + this.toHex2Digits(red256) + this.toHex2Digits(green256) + this.toHex2Digits(blue256); 
+            label = '#' + hex6Digits; 
         } else if(oldColor.startsWith('0x') ){
-            label = '0x' + this.toHex2Digits(red256) + this.toHex2Digits(green256) + this.toHex2Digits(blue256);
+            label = '0x' + hex6Digits;
         } else if(oldColor.startsWith('rgb')){
             if(color.alpha < 0.999){
-                label = 'rgba(' + red256 + ', ' + green256 + ', ' + blue256 + ', ' + color.alpha + ')';
+                label = 'rgba(' + rgbCommaSeparated + ', ' + color.alpha + ')';
             } else {
-                label = 'rgb(' + red256 + ', ' + green256 + ', ' + blue256 + ')';
+                label = 'rgb(' + rgbCommaSeparated + ')';
             }
         } else if(oldColor.startsWith("new") || oldColor.startsWith('Color')){
-            label = 'new Color(' + red256 + ', ' + green256 + ', ' + blue256 + ')';
+            label = 'new Color(' + rgbCommaSeparated + ')';
         }
 
         return [

@@ -14,6 +14,7 @@ import { MyReferenceProvider } from "./MyReferenceProvider.js";
 import { Enum } from "../../compiler/types/Enum.js";
 import { Workspace } from "../../workspace/Workspace.js";
 import { MySemanticTokenProvider } from "./MySemanticTokenProvider.js";
+import { MyColorProvider } from "./MyColorProvider.js";
 
 export type HistoryEntry = {
     module_id: number,
@@ -288,6 +289,7 @@ export class Editor implements monaco.languages.RenameProvider {
 //        monaco.languages.registerDocumentRangeSemanticTokensProvider('myJava', new MySemanticTokenProvider(this.main));
 
         monaco.languages.registerRenameProvider('myJava', this);
+        monaco.languages.registerColorProvider('myJava', new MyColorProvider(this.main));
 
         monaco.languages.registerDefinitionProvider('myJava', {
             provideDefinition: (model, position, cancellationToken) => {

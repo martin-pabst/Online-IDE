@@ -305,7 +305,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
     top: 0px;
     left: calc(100% - 2px);
     cursor: col-resize;
-    z-index: 1000;
+    z-index: 10;
 }
 
 .jo_slider:active {
@@ -512,7 +512,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
     position: absolute;
     left: 0px;
     cursor: row-resize;
-    z-index: 1000;
+    z-index: 10;
 }
 
 #slider3 {
@@ -523,7 +523,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
     top: 0px;
     left: -1px;
     cursor: col-resize;
-    z-index: 1000;
+    z-index: 10;
 }
 
 #mainmenu {
@@ -8619,7 +8619,7 @@ svgns|path.dropdown-triangle:active {
     position: absolute;
     /* top: 0px;
     left: calc(100% - 2px); */
-    z-index: 1000;
+    z-index: 10;
 }
 
 .joe_slider:hover {

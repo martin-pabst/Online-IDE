@@ -1,5 +1,6 @@
 import { TokenList, specialCharList, TokenType, Token, EscapeSequenceList, keywordList, TextPosition, TokenTypeReadable } from "./Token.js";
 import { text } from "express";
+import { ColorLexer } from "./ColorLexer.js";
 
 enum LexerState {
     number, identifier, stringConstant, characterConstant, multilineComment, EndoflineComment
@@ -27,6 +28,9 @@ export class Lexer {
     nonSpaceLastTokenType: TokenType;
 
     errorList: Error[];
+    colorInformation: monaco.languages.IColorInformation[];
+    colorLexer: ColorLexer = new ColorLexer();
+
     pos: number;
     line: number;
     column: number;
@@ -53,7 +57,7 @@ export class Lexer {
         this.correspondingBracket[TokenType.rightSquareBracket] = TokenType.leftSquareBracket;
     }
 
-    lex(input: string): { tokens: TokenList, errors: Error[], bracketError: string } {
+    lex(input: string): { tokens: TokenList, errors: Error[], bracketError: string, colorInformation: monaco.languages.IColorInformation[] } {
 
         this.input = input.replace("\u00a0", " ");
         this.tokenList = [];
@@ -64,10 +68,11 @@ export class Lexer {
         this.line = 1;
         this.column = 1;
         this.nonSpaceLastTokenType = null;
+        this.colorInformation = [];
 
 
         if (input.length == 0) {
-            return { tokens: this.tokenList, errors: this.errorList, bracketError: null };
+            return { tokens: this.tokenList, errors: this.errorList, bracketError: null, colorInformation: [] };
         }
 
         this.currentChar = input.charAt(0);
@@ -89,7 +94,8 @@ export class Lexer {
         return {
             tokens: this.tokenList,
             errors: this.errorList,
-            bracketError: this.bracketError
+            bracketError: this.bracketError, 
+            colorInformation: this.colorInformation
         };
 
     }
@@ -549,6 +555,14 @@ export class Lexer {
 
         this.pushToken(TokenType.stringConstant, text, line, column, text.length + 2);
 
+        let color = this.colorLexer.getColorInfo(text);
+        if(color != null){
+            this.colorInformation.push({
+                color: color,
+                range: {startLineNumber: line, endLineNumber: line, startColumn: column + 1, endColumn: this.column - 1}
+            });
+        }
+
     }
 
     lexMultilineComment() {
@@ -704,6 +718,20 @@ export class Lexer {
         if (exponent != 0) value *= Math.pow(10, exponent);
 
         this.pushToken(tt, value, line, column);
+
+        if(radix == 16 && this.column - column == 8){
+            this.colorInformation.push({
+                color: {
+                    red: (value >> 16)/255,
+                    green: ((value >> 8) & 0xff) / 255,
+                    blue: (value & 0xff)/255,
+                    alpha: 1
+                },
+                range: {
+                    startLineNumber: line, endLineNumber: line, startColumn: column, endColumn: this.column
+                }
+            })
+        }
 
     }
 

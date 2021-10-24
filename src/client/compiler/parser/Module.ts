@@ -145,6 +145,8 @@ export class Module {
 
     errors: Error[][] = [[], [], [], []]; // 1st pass, 2nd pass, 3rd pass
 
+    colorInformation: monaco.languages.IColorInformation[] = [];
+
     // 1st pass: Lexer
     tokenList: Token[];
 

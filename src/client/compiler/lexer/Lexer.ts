@@ -1,6 +1,7 @@
 import { TokenList, specialCharList, TokenType, Token, EscapeSequenceList, keywordList, TextPosition, TokenTypeReadable } from "./Token.js";
 import { text } from "express";
 import { ColorLexer } from "./ColorLexer.js";
+import { ColorHelper } from "../../runtimelibrary/graphics/ColorHelper.js";
 
 enum LexerState {
     number, identifier, stringConstant, characterConstant, multilineComment, EndoflineComment
@@ -47,6 +48,7 @@ export class Lexer {
     bracketStack: TokenType[];
     bracketError: string;
     correspondingBracket: { [key: number]: TokenType } = {};
+    colorIndices: number[];
 
     constructor() {
         this.correspondingBracket[TokenType.leftBracket] = TokenType.rightBracket;
@@ -69,6 +71,7 @@ export class Lexer {
         this.column = 1;
         this.nonSpaceLastTokenType = null;
         this.colorInformation = [];
+        this.colorIndices = []; // indices of identifier 'Color' inside tokenList
 
 
         if (input.length == 0) {
@@ -91,6 +94,8 @@ export class Lexer {
             this.setBracketError(TokenTypeReadable[bracketOpen] + " " + TokenTypeReadable[bracketClosed]);
         }
 
+        this.processColorIndices();
+
         return {
             tokens: this.tokenList,
             errors: this.errorList,
@@ -98,6 +103,96 @@ export class Lexer {
             colorInformation: this.colorInformation
         };
 
+    }
+
+    processColorIndices() {
+
+        for(let colorIndex of this.colorIndices){
+
+            // new Color(100, 100, 100, 0.1)
+            // new Color(100, 100, 100)
+            // Color.red
+
+            let colorToken = this.tokenList[colorIndex];
+            let previousToken = this.getLastNonSpaceToken(colorIndex)
+
+            if(previousToken?.tt == TokenType.keywordNew){
+                let nextTokens = this.getNextNonSpaceTokens(colorIndex, 7);
+                if(this.compareTokenTypes(nextTokens, [TokenType.leftBracket, TokenType.integerConstant, TokenType.comma,
+                    TokenType.integerConstant, TokenType.comma,TokenType.integerConstant, 
+                TokenType.rightBracket])){
+                    this.colorInformation.push({
+                        color: {
+                            red: <number>nextTokens[1].value/255,
+                            green: <number>nextTokens[3].value/255,
+                            blue: <number>nextTokens[5].value/255,
+                            alpha: 1
+                        },
+                        range: {
+                            startLineNumber: previousToken.position.line, startColumn: previousToken.position.column,
+                            endLineNumber: nextTokens[6].position.line, endColumn: nextTokens[6].position.column + 1
+                        }
+                    })
+                }
+            } else {
+                let nextTokens = this.getNextNonSpaceTokens(colorIndex, 2);
+                if(this.compareTokenTypes(nextTokens, [TokenType.dot, TokenType.identifier])){
+                    let colorIdentifier = <string>nextTokens[1].value;
+                    let colorValue = ColorHelper.predefinedColors[colorIdentifier];
+                    if(colorValue != null){
+                        this.colorInformation.push({
+                            color: {
+                                red: (colorValue >> 16)/255,
+                                green: ((colorValue >> 8) & 0xff) / 255,
+                                blue: (colorValue & 0xff)/255,
+                                alpha: 1            
+                            }, range: { 
+                                startLineNumber: colorToken.position.line, startColumn: colorToken.position.column,
+                                endLineNumber: nextTokens[1].position.line, endColumn: nextTokens[1].position.column + colorIdentifier.length
+                            }
+                        })
+                    }
+                }
+            }
+
+
+        }
+
+    }
+
+    compareTokenTypes(tokenList: Token[], tokenTypeList: TokenType[]){
+        if(tokenList.length != tokenTypeList.length) return false;
+        for(let i = 0; i < tokenList.length; i++){
+            if(tokenList[i].tt != tokenTypeList[i]) return false;
+        }
+        return true;
+    }
+
+    getNextNonSpaceTokens(tokenIndex: number, count: number): Token[] {
+        let tokens: Token[] = [];
+        let d = tokenIndex;
+        while(tokens.length < count && d + 1 < this.tokenList.length){
+            let foundToken = this.tokenList[d + 1];
+            if([TokenType.space, TokenType.newline].indexOf(foundToken.tt) < 0){
+                tokens.push(foundToken);
+            }
+            d++;
+        }
+
+        return tokens;
+
+    }
+
+    getLastNonSpaceToken(tokenIndex: number){
+        let d = tokenIndex; 
+        while(d - 1 > 0){
+            let foundToken = this.tokenList[d - 1];
+            if([TokenType.space, TokenType.newline].indexOf(foundToken.tt) < 0){
+                return foundToken;
+            }
+            d--;
+        }
+        return null;
     }
 
     checkClosingBracket(tt: TokenType) {
@@ -556,12 +651,13 @@ export class Lexer {
         this.pushToken(TokenType.stringConstant, text, line, column, text.length + 2);
 
         let color = this.colorLexer.getColorInfo(text);
+
         if(color != null){
             this.colorInformation.push({
                 color: color,
                 range: {startLineNumber: line, endLineNumber: line, startColumn: column + 1, endColumn: this.column - 1}
             });
-        }
+        } 
 
     }
 
@@ -794,6 +890,10 @@ export class Lexer {
             }
 
             return;
+        }
+
+        if(text == 'Color'){
+            this.colorIndices.push(this.tokenList.length);
         }
 
         this.pushToken(TokenType.identifier, text, line, column);

@@ -70,7 +70,9 @@ export class MyColorProvider implements monaco.languages.DocumentColorProvider {
             } else {
                 label = 'rgb(' + red256 + ', ' + green256 + ', ' + blue256 + ')';
             }
-        } 
+        } else if(oldColor.startsWith("new") || oldColor.startsWith('Color')){
+            label = 'new Color(' + red256 + ', ' + green256 + ', ' + blue256 + ')';
+        }
 
         return [
             {

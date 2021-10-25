@@ -233,7 +233,7 @@ export class Parser {
                     }
                 }
 
-                if (invokeSemicolonAngel) {
+                if (invokeSemicolonAngel && this.errorList.length < 3) {
                     this.module.main.getSemicolonAngel().register(position, this.module);
                 }
             }

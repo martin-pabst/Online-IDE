@@ -99,7 +99,7 @@ export class Lexer {
         return {
             tokens: this.tokenList,
             errors: this.errorList,
-            bracketError: this.bracketError, 
+            bracketError: this.bracketError,
             colorInformation: this.colorInformation
         };
 
@@ -107,7 +107,7 @@ export class Lexer {
 
     processColorIndices() {
 
-        for(let colorIndex of this.colorIndices){
+        for (let colorIndex of this.colorIndices) {
 
             // new Color(100, 100, 100, 0.1)
             // new Color(100, 100, 100)
@@ -116,16 +116,16 @@ export class Lexer {
             let colorToken = this.tokenList[colorIndex];
             let previousToken = this.getLastNonSpaceToken(colorIndex)
 
-            if(previousToken?.tt == TokenType.keywordNew){
+            if (previousToken?.tt == TokenType.keywordNew) {
                 let nextTokens = this.getNextNonSpaceTokens(colorIndex, 7);
-                if(this.compareTokenTypes(nextTokens, [TokenType.leftBracket, TokenType.integerConstant, TokenType.comma,
-                    TokenType.integerConstant, TokenType.comma,TokenType.integerConstant, 
-                TokenType.rightBracket])){
+                if (this.compareTokenTypes(nextTokens, [TokenType.leftBracket, TokenType.integerConstant, TokenType.comma,
+                TokenType.integerConstant, TokenType.comma, TokenType.integerConstant,
+                TokenType.rightBracket])) {
                     this.colorInformation.push({
                         color: {
-                            red: <number>nextTokens[1].value/255,
-                            green: <number>nextTokens[3].value/255,
-                            blue: <number>nextTokens[5].value/255,
+                            red: <number>nextTokens[1].value / 255,
+                            green: <number>nextTokens[3].value / 255,
+                            blue: <number>nextTokens[5].value / 255,
                             alpha: 1
                         },
                         range: {
@@ -136,17 +136,17 @@ export class Lexer {
                 }
             } else {
                 let nextTokens = this.getNextNonSpaceTokens(colorIndex, 2);
-                if(this.compareTokenTypes(nextTokens, [TokenType.dot, TokenType.identifier])){
+                if (this.compareTokenTypes(nextTokens, [TokenType.dot, TokenType.identifier])) {
                     let colorIdentifier = <string>nextTokens[1].value;
                     let colorValue = ColorHelper.predefinedColors[colorIdentifier];
-                    if(colorValue != null){
+                    if (colorValue != null) {
                         this.colorInformation.push({
                             color: {
-                                red: (colorValue >> 16)/255,
+                                red: (colorValue >> 16) / 255,
                                 green: ((colorValue >> 8) & 0xff) / 255,
-                                blue: (colorValue & 0xff)/255,
-                                alpha: 1            
-                            }, range: { 
+                                blue: (colorValue & 0xff) / 255,
+                                alpha: 1
+                            }, range: {
                                 startLineNumber: colorToken.position.line, startColumn: colorToken.position.column,
                                 endLineNumber: nextTokens[1].position.line, endColumn: nextTokens[1].position.column + colorIdentifier.length
                             }
@@ -160,10 +160,10 @@ export class Lexer {
 
     }
 
-    compareTokenTypes(tokenList: Token[], tokenTypeList: TokenType[]){
-        if(tokenList.length != tokenTypeList.length) return false;
-        for(let i = 0; i < tokenList.length; i++){
-            if(tokenList[i].tt != tokenTypeList[i]) return false;
+    compareTokenTypes(tokenList: Token[], tokenTypeList: TokenType[]) {
+        if (tokenList.length != tokenTypeList.length) return false;
+        for (let i = 0; i < tokenList.length; i++) {
+            if (tokenList[i].tt != tokenTypeList[i]) return false;
         }
         return true;
     }
@@ -171,9 +171,9 @@ export class Lexer {
     getNextNonSpaceTokens(tokenIndex: number, count: number): Token[] {
         let tokens: Token[] = [];
         let d = tokenIndex;
-        while(tokens.length < count && d + 1 < this.tokenList.length){
+        while (tokens.length < count && d + 1 < this.tokenList.length) {
             let foundToken = this.tokenList[d + 1];
-            if([TokenType.space, TokenType.newline].indexOf(foundToken.tt) < 0){
+            if ([TokenType.space, TokenType.newline].indexOf(foundToken.tt) < 0) {
                 tokens.push(foundToken);
             }
             d++;
@@ -183,11 +183,11 @@ export class Lexer {
 
     }
 
-    getLastNonSpaceToken(tokenIndex: number){
-        let d = tokenIndex; 
-        while(d - 1 > 0){
+    getLastNonSpaceToken(tokenIndex: number) {
+        let d = tokenIndex;
+        while (d - 1 > 0) {
             let foundToken = this.tokenList[d - 1];
-            if([TokenType.space, TokenType.newline].indexOf(foundToken.tt) < 0){
+            if ([TokenType.space, TokenType.newline].indexOf(foundToken.tt) < 0) {
                 return foundToken;
             }
             d--;
@@ -358,6 +358,11 @@ export class Lexer {
                         this.next();
                         this.next();
                         return;
+                    } else if (this.isDigit(this.nextChar, 10) && !
+                        ([TokenType.identifier, TokenType.integerConstant, TokenType.floatingPointConstant, TokenType.rightBracket, TokenType.rightSquareBracket].indexOf(this.nonSpaceLastTokenType) >= 0)
+                    ) {
+                        this.lexNumber();
+                        return;
                     } else if (this.nextChar == '=') {
                         this.pushToken(TokenType.plusAssignment, '+=');
                         this.next();
@@ -428,7 +433,7 @@ export class Lexer {
                         return;
                     }
                     else if (this.isDigit(this.nextChar, 10) && !
-                        ([TokenType.identifier, TokenType.integerConstant, TokenType.floatingPointConstant, TokenType.rightBracket].indexOf(this.nonSpaceLastTokenType) >= 0)
+                        ([TokenType.identifier, TokenType.integerConstant, TokenType.floatingPointConstant, TokenType.stringConstant, TokenType.rightBracket, TokenType.rightSquareBracket].indexOf(this.nonSpaceLastTokenType) >= 0)
                     ) {
                         this.lexNumber();
                         return;
@@ -484,12 +489,12 @@ export class Lexer {
 
     }
 
-    lexShiftRight(){
+    lexShiftRight() {
         this.next(); // Consume first > of >>
 
-        if(this.nextChar == ">"){
+        if (this.nextChar == ">") {
             this.lexShiftRightUnsigned();
-        } else if(this.nextChar == "="){
+        } else if (this.nextChar == "=") {
             this.pushToken(TokenType.shiftRightAssigment, ">>=")
             this.next(); // Consume second >
             this.next(); // Consume =
@@ -500,10 +505,10 @@ export class Lexer {
         return;
     }
 
-    lexShiftRightUnsigned(){
+    lexShiftRightUnsigned() {
         this.next(); // Consume second > of >>>
 
-        if(this.nextChar == "="){
+        if (this.nextChar == "=") {
             this.pushToken(TokenType.shiftRightUnsignedAssigment, ">>>=")
             this.next(); // Consume second >
             this.next(); // Consume =
@@ -514,14 +519,14 @@ export class Lexer {
         return;
     }
 
-    lexShiftLeft(){
+    lexShiftLeft() {
         this.next(); // Consume first < of <<
 
-        if(this.nextChar == '='){
+        if (this.nextChar == '=') {
             this.pushToken(TokenType.shiftLeftAssigment, "<<=")
             this.next(); // Consume second <
             this.next(); // Consume =
-        } else{
+        } else {
             this.pushToken(TokenType.shiftLeft, "<<")
             this.next(); // Consume second <
         }
@@ -652,12 +657,12 @@ export class Lexer {
 
         let color = this.colorLexer.getColorInfo(text);
 
-        if(color != null){
+        if (color != null) {
             this.colorInformation.push({
                 color: color,
-                range: {startLineNumber: line, endLineNumber: line, startColumn: column + 1, endColumn: this.column - 1}
+                range: { startLineNumber: line, endLineNumber: line, startColumn: column + 1, endColumn: this.column - 1 }
             });
-        } 
+        }
 
     }
 
@@ -732,6 +737,8 @@ export class Lexer {
         let sign: number = 1;
         if (this.currentChar == '-') {
             sign = -1;
+            this.next();
+        } else if(this.currentChar == '+'){
             this.next();
         }
 
@@ -815,12 +822,12 @@ export class Lexer {
 
         this.pushToken(tt, value, line, column);
 
-        if(radix == 16 && this.column - column == 8){
+        if (radix == 16 && this.column - column == 8) {
             this.colorInformation.push({
                 color: {
-                    red: (value >> 16)/255,
+                    red: (value >> 16) / 255,
                     green: ((value >> 8) & 0xff) / 255,
-                    blue: (value & 0xff)/255,
+                    blue: (value & 0xff) / 255,
                     alpha: 1
                 },
                 range: {
@@ -892,7 +899,7 @@ export class Lexer {
             return;
         }
 
-        if(text == 'Color'){
+        if (text == 'Color') {
             this.colorIndices.push(this.tokenList.length);
         }
 

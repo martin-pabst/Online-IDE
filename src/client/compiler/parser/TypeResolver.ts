@@ -22,6 +22,7 @@ type TypeParameterInfo = {
 // TODO: find cyclic references in extends ...
 export class TypeResolver {
 
+    static WATCHDOG: number = 20;
     moduleStore: ModuleStore;
 
     classes: ClassDeclarationNode[];
@@ -149,20 +150,22 @@ export class TypeResolver {
 
             }
 
-            this.adjustMethodsAndAttributesToTypeParameters(ci);
+            this.adjustMethodsAndAttributesToTypeParameters(ci, TypeResolver.WATCHDOG);
 
         }
 
     }
 
-    adjustMethodsAndAttributesToTypeParameters(classOrInterface: Klass | Interface) {
+    adjustMethodsAndAttributesToTypeParameters(classOrInterface: Klass | Interface, watchdog: number) {
+
+        if(watchdog <= 0) return;
 
         if (classOrInterface != null && classOrInterface.isGenericVariantFrom != null && classOrInterface.typeVariables.length != 0) {
 
             let methodListAltered: boolean = false;
             let newMethodList: Method[] = [];
             for (let m of classOrInterface.methods) {
-                let newMethod = this.getAdjustedMethod(m, classOrInterface.typeVariables);
+                let newMethod = this.getAdjustedMethod(m, classOrInterface.typeVariables, watchdog - 1);
                 methodListAltered = methodListAltered || newMethod.altered;
                 newMethodList.push(newMethod.newMethod);
             }
@@ -176,7 +179,7 @@ export class TypeResolver {
                 let attributesAltered: boolean = false;
 
                 for (let attribute of classOrInterface.attributes) {
-                    let newAttribute = this.getAdjustedAttribute(attribute, classOrInterface.typeVariables);
+                    let newAttribute = this.getAdjustedAttribute(attribute, classOrInterface.typeVariables, watchdog - 1);
                     attributesAltered = attributesAltered || newAttribute.altered;
                     newAttributes.push(newAttribute.newAttribute);
                     newAttributeMap.set(attribute.identifier, newAttribute.newAttribute);
@@ -187,23 +190,23 @@ export class TypeResolver {
                     classOrInterface.attributeMap = newAttributeMap;
                 }
 
-                this.adjustMethodsAndAttributesToTypeParameters(classOrInterface.baseClass);
+                this.adjustMethodsAndAttributesToTypeParameters(classOrInterface.baseClass, watchdog - 1);
 
                 // for (let impl of classOrInterface.implements) {
                 //     this.adjustMethodsAndAttributesToTypeParameters(impl);
                 // }
             } else {
                 for (let ext of classOrInterface.extends) {
-                    this.adjustMethodsAndAttributesToTypeParameters(ext);
+                    this.adjustMethodsAndAttributesToTypeParameters(ext, watchdog - 1);
                 }
             }
         }
 
     }
 
-    getAdjustedAttribute(attribute: Attribute, typeVariables: TypeVariable[]): { altered: boolean, newAttribute: Attribute } {
+    getAdjustedAttribute(attribute: Attribute, typeVariables: TypeVariable[], watchdog: number): { altered: boolean, newAttribute: Attribute } {
 
-        let nt = this.getAdjustedType(attribute.type, typeVariables, true);
+        let nt = this.getAdjustedType(attribute.type, typeVariables, true, watchdog - 1);
         if (nt.altered) {
             let a: Attribute = Object.create(attribute);
             a.type = nt.newType;
@@ -214,14 +217,14 @@ export class TypeResolver {
 
     }
 
-    getAdjustedMethod(method: Method, typeVariables: TypeVariable[]): { altered: boolean, newMethod: Method } {
+    getAdjustedMethod(method: Method, typeVariables: TypeVariable[], watchdog: number): { altered: boolean, newMethod: Method } {
 
-        let nrt = this.getAdjustedType(method.returnType, typeVariables, true);
+        let nrt = this.getAdjustedType(method.returnType, typeVariables, true, watchdog - 1);
 
         let parameterAltered: boolean = false;
         let newParameters: Variable[] = [];
         for (let p of method.parameterlist.parameters) {
-            let nt = this.getAdjustedType(p.type, typeVariables, false);
+            let nt = this.getAdjustedType(p.type, typeVariables, false, watchdog - 1);
             if (nt.altered) {
                 parameterAltered = true;
                 let pNew: Variable = Object.create(p);
@@ -245,7 +248,7 @@ export class TypeResolver {
 
     }
 
-    getAdjustedType(type: Type, typeVariables: TypeVariable[], adjustMethodsAndAttributesRecursive: boolean): { altered: boolean, newType: Type } {
+    getAdjustedType(type: Type, typeVariables: TypeVariable[], adjustMethodsAndAttributesRecursive: boolean, watchdog: number): { altered: boolean, newType: Type } {
 
         if (type == null) return { altered: false, newType: type };
 
@@ -262,7 +265,7 @@ export class TypeResolver {
             let newTypeVariables: TypeVariable[] = [];
             let altered: boolean = false;
             for (let tv of type.typeVariables) {
-                let nt = this.getAdjustedType(tv.type, typeVariables, false);
+                let nt = this.getAdjustedType(tv.type, typeVariables, false, watchdog - 1);
                 if (nt.altered) {
                     newTypeVariables.push({
                         identifier: tv.identifier,
@@ -278,7 +281,7 @@ export class TypeResolver {
             if (altered) {
                 let newClassInterface = type.clone();
                 newClassInterface.typeVariables = newTypeVariables;
-                if (adjustMethodsAndAttributesRecursive) this.adjustMethodsAndAttributesToTypeParameters(newClassInterface);
+                if (adjustMethodsAndAttributesRecursive) this.adjustMethodsAndAttributesToTypeParameters(newClassInterface, watchdog - 1);
                 return { altered: true, newType: newClassInterface }
             } else {
                 return { altered: false, newType: type }
@@ -286,7 +289,7 @@ export class TypeResolver {
         }
 
         if(type instanceof ArrayType){
-            let nt = this.getAdjustedType(type.arrayOfType, typeVariables, adjustMethodsAndAttributesRecursive);
+            let nt = this.getAdjustedType(type.arrayOfType, typeVariables, adjustMethodsAndAttributesRecursive, watchdog - 1);
             return {
                 altered: nt.altered,
                 newType: nt.altered ? new ArrayType(nt.newType) : type

@@ -879,6 +879,9 @@ export class Interpreter {
             case TokenType.assignment:
                 value = stack.pop();
                 stack[stackTop - 1].value = value.value;
+                if(!(stack[stackTop - 1].type instanceof PrimitiveType)){
+                    stack[stackTop - 1].type = value.type;
+                }
                 if (!node.leaveValueOnStack) {
                     stack.pop();
                 }
@@ -1060,7 +1063,11 @@ export class Interpreter {
 
                 if (method.isAbstract || method.isVirtual && !node.isSuperCall) {
                     let object = stack[parameterBegin];
-                    method = (<Klass>(<RuntimeObject>object.value).class).getMethodBySignature(method.signature);
+                    if(object.value instanceof RuntimeObject){
+                        method = (<Klass>(<RuntimeObject>object.value).class).getMethodBySignature(method.signature);
+                    } else {
+                        method = (<Klass>object.type).getMethodBySignature(method.signature);
+                    }
                 }
 
                 if (method == null) {

@@ -3165,6 +3165,7 @@ export class CodeGenerator {
                 if (leftType.type instanceof Klass && rightType.type == stringPrimitiveType) {
                     this.insertStatements(programPosAfterLeftOpoerand, this.getToStringStatement(leftType.type, node.firstOperand.position));
                     resultType = stringPrimitiveType;
+                    leftType.type = stringPrimitiveType;
                 } else if (rightType.type instanceof Klass && leftType.type == stringPrimitiveType) {
                     this.pushStatements(this.getToStringStatement(rightType.type, node.firstOperand.position));
                     resultType = stringPrimitiveType;

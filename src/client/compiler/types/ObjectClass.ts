@@ -21,12 +21,19 @@ export class ObjectClass extends Klass {
 
         // stringPrimitiveType is used here before it is initialized. This problem is solved
         // in the constructor of StringprimitiveType.
-        this.addMethod(new Method("toString", new Parameterlist([]), stringPrimitiveType,
-            (parameters) => {
-
+        let m = new Method("toString", new Parameterlist([]), stringPrimitiveType,
+        (parameters) => {
+            if(parameters[0].value instanceof RuntimeObject){
                 return "(" + (<RuntimeObject><unknown>parameters[0].value).class.identifier + ")";
+            } else {
+                return parameters[0].value;
+            }
 
-            }, false, false));
+
+        }, false, false);
+        m.isVirtual = true;
+        
+        this.addMethod(m);
 
 
         // // Add default parameterless constructor

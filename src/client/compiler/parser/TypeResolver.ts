@@ -22,7 +22,7 @@ type TypeParameterInfo = {
 // TODO: find cyclic references in extends ...
 export class TypeResolver {
 
-    static WATCHDOG: number = 20;
+    static WATCHDOG: number = 5;
     moduleStore: ModuleStore;
 
     classes: ClassDeclarationNode[];

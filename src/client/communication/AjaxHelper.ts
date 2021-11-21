@@ -13,7 +13,7 @@ export class PerformanceCollector {
             pe = { count: 0, sumTime: 0, url: url };
             PerformanceCollector.performanceData.push(pe);
         }
-        pe.count++;
+        pe.count++; //Test
         let dt = Math.round(performance.now() - startTime);
         pe.sumTime += dt;
         PerformanceCollector.performanceDataCount++;

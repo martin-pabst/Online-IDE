@@ -165,7 +165,7 @@ type LineElement = {
 export class TurtleHelper extends FilledShapeHelper {
 
     lineElements: LineElement[] = [];
-    angle: number = 0; // in Rad
+    turtleAngleDeg: number = 0; // in Rad
 
     isFilled: boolean = false;
 
@@ -187,7 +187,7 @@ export class TurtleHelper extends FilledShapeHelper {
 
     turtleX: number = -1;
     turtleY: number = -1;
-    lastTurtleAngle: number = 0; // angle in Rad
+    lastTurtleAngleDeg: number = 0; // angle in Rad
 
     renderJobPresent: boolean = false;
 
@@ -214,13 +214,14 @@ export class TurtleHelper extends FilledShapeHelper {
         this.lineGraphic = new PIXI.Graphics();
         container.addChild(this.lineGraphic);
         this.lineGraphic.moveTo(xStart, yStart);
-        this.turtleX = xStart;
-        this.turtleY = yStart;
+        this.turtleX = 0;
+        this.turtleY = 0;
 
         this.turtle = new PIXI.Graphics();
         container.addChild(this.turtle);
         this.turtle.visible = this.showTurtle;
-        this.initTurtle(xStart, yStart, this.angle);
+        this.initTurtle(0, 0, this.turtleAngleDeg);
+        this.moveTurtleTo(xStart, yStart, this.turtleAngleDeg);
 
 
         // let g: PIXI.Graphics = <any>this.displayObject;
@@ -252,16 +253,19 @@ export class TurtleHelper extends FilledShapeHelper {
         this.turtle.visible = show;
     }
 
-    turn(angle: number) {
-        this.angle -= angle / 180 * Math.PI;
+    turn(angleDeg: number) {
+        this.turtleAngleDeg -= angleDeg;
+        if(Math.abs(this.turtleAngleDeg) > 360){
+            this.turtleAngleDeg -= Math.floor(this.turtleAngleDeg/360)*360;
+        }
         let lastLineElement: LineElement = this.lineElements[this.lineElements.length - 1];
-        this.moveTurtleTo(lastLineElement.x, lastLineElement.y, this.angle);
+        this.moveTurtleTo(lastLineElement.x, lastLineElement.y, this.turtleAngleDeg);
     }
 
     rotate(angleInDegrees: number, cx?: number, cy?: number) {
-        this.turn(this.angle);
+        this.turn(angleInDegrees);
         let lastLineElement = this.lineElements[this.lineElements.length - 1];
-        this.moveTurtleTo(lastLineElement.x, lastLineElement.y, this.angle);
+        this.moveTurtleTo(lastLineElement.x, lastLineElement.y, this.turtleAngleDeg);
         super.rotate(angleInDegrees, cx, cy);
     }
 
@@ -272,6 +276,8 @@ export class TurtleHelper extends FilledShapeHelper {
             this.showTurtle, this.worldHelper.interpreter, ro);
         ro.intrinsicData["Actor"] = rh;
 
+        rh.turtleAngleDeg = this.turtleAngleDeg;
+
         rh.copyFrom(this);
         rh.render();
 
@@ -280,14 +286,17 @@ export class TurtleHelper extends FilledShapeHelper {
 
     newTurtleX: number;
     newTurtleY: number;
-    newAngle: number;
+    newAngleDeg: number;
 
     forward(length: number) {
 
         let lastLineElement: LineElement = this.lineElements[this.lineElements.length - 1];
+
+        let turtleAngleRad = this.turtleAngleDeg/180.0*Math.PI;
+
         let newLineElement: LineElement = {
-            x: lastLineElement.x + length * Math.cos(this.angle),
-            y: lastLineElement.y + length * Math.sin(this.angle),
+            x: lastLineElement.x + length * Math.cos(turtleAngleRad),
+            y: lastLineElement.y + length * Math.sin(turtleAngleRad),
             color: this.penIsDown ? this.borderColor : null,
             alpha: this.borderAlpha,
             lineWidth: this.borderWidth
@@ -315,7 +324,7 @@ export class TurtleHelper extends FilledShapeHelper {
 
         this.newTurtleX = newLineElement.x;
         this.newTurtleY = newLineElement.y;
-        this.newAngle = this.angle;
+        this.newAngleDeg = this.turtleAngleDeg;
 
         // don't render more frequent than every 1/100 s
         if (!this.renderJobPresent) {
@@ -323,7 +332,7 @@ export class TurtleHelper extends FilledShapeHelper {
             setTimeout(() => {
                 this.renderJobPresent = false;
                 this.render();
-                this.moveTurtleTo(this.newTurtleX, this.newTurtleY, this.newAngle);
+                this.moveTurtleTo(this.newTurtleX, this.newTurtleY, this.turtleAngleDeg);
             }, 100);
         }
 
@@ -343,20 +352,22 @@ export class TurtleHelper extends FilledShapeHelper {
         this.hitPolygonDirty = true;
         this.initialHitPolygonDirty = true;
         this.calculateCenter();
-        this.moveTurtleTo(newLineElement.x, newLineElement.y, this.angle);
+        this.moveTurtleTo(newLineElement.x, newLineElement.y, this.turtleAngleDeg);
     }
 
 
-    initTurtle(x: number, y: number, angle: number): void {
+    initTurtle(x: number, y: number, angleDeg: number): void {
         this.turtle.clear();
         this.turtle.lineStyle(3, 0xff0000, 1, 0.5);
         this.turtle.moveTo(x, y);
 
-        let vx = Math.cos(angle);
-        let vy = Math.sin(angle);
+        let angleRad = angleDeg/180.0*Math.PI;
 
-        let vxp = -Math.sin(angle);
-        let vyp = Math.cos(angle);
+        let vx = Math.cos(angleRad);
+        let vy = Math.sin(angleRad);
+
+        let vxp = -Math.sin(angleRad);
+        let vyp = Math.cos(angleRad);
 
         let lengthForward = this.turtleSize / 2;
         let lengthBackward = this.turtleSize / 4;
@@ -368,15 +379,19 @@ export class TurtleHelper extends FilledShapeHelper {
         this.turtle.lineTo(x + vx * lengthForward, y + vy * lengthForward);
     }
 
-    moveTurtleTo(x: number, y: number, angle: number){
-        this.turtle.localTransform.translate(-this.turtleX, -this.turtleY);
-        this.turtle.localTransform.rotate(angle - this.lastTurtleAngle);
+    moveTurtleTo(x: number, y: number, angleDeg: number){
+        this.turtle.localTransform.identity();
+        this.turtle.localTransform.rotate(angleDeg/180.0*Math.PI);
         this.turtle.localTransform.translate(x, y);
+
+        // this.turtle.localTransform.translate(-this.turtleX, -this.turtleY);
+        // this.turtle.localTransform.rotate((angleDeg - this.lastTurtleAngleDeg)/180.0*Math.PI);
+        // this.turtle.localTransform.translate(x, y);
         //@ts-ignore
         this.turtle.transform.onChange();
         this.turtle.updateTransform();
 
-        this.lastTurtleAngle = this.angle;
+        this.lastTurtleAngleDeg = this.turtleAngleDeg;
         this.turtleX = x;
         this.turtleY = y;
     }
@@ -484,7 +499,8 @@ export class TurtleHelper extends FilledShapeHelper {
 
         this.hitPolygonInitial = [];
 
-        this.angle = 0;
+        this.turtleAngleDeg = 0;
+        this.lastTurtleAngleDeg = 0;
         this.borderColor = 0;
         this.turtleSize = 40;
         this.render();

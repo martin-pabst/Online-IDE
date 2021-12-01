@@ -29,7 +29,7 @@ export class GNGTurtleClass extends Klass {
         }, false, Visibility.private, false, "x-Position der Figur"));
 
         this.addAttribute(new Attribute("winkel", intPrimitiveType, (value: Value) => { 
-            value.value = value.object.intrinsicData["Actor"].angle 
+            value.value = value.object.intrinsicData["Actor"].turtleAngleDeg 
         }, false, Visibility.private, false, "Blickrichtung der Figur in Grad"));
 
         this.addAttribute(new Attribute("größe", intPrimitiveType, (value: Value) => { 
@@ -208,7 +208,7 @@ export class GNGTurtleClass extends Klass {
 
                 if (sh.testdestroyed("WinkelSetzen")) return;
 
-                sh.turn(winkel - sh.angle);
+                sh.turn(winkel - sh.turtleAngleDeg);
 
             }, false, false, "Setzt den Blickwinkel der Turtle. 0° => nach rechts, 90°: => nach oben, usw..", false));
 
@@ -221,7 +221,7 @@ export class GNGTurtleClass extends Klass {
 
                 if (sh.testdestroyed("WinkelGeben")) return;
 
-                return Math.round(sh.angle);
+                return Math.round(sh.turtleAngleDeg);
 
             }, false, false, "Gibt den Blickwinkel der Turtle zurück.", false));
 

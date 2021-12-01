@@ -263,9 +263,7 @@ export class TurtleHelper extends FilledShapeHelper {
     }
 
     rotate(angleInDegrees: number, cx?: number, cy?: number) {
-        this.turn(angleInDegrees);
-        let lastLineElement = this.lineElements[this.lineElements.length - 1];
-        this.moveTurtleTo(lastLineElement.x, lastLineElement.y, this.turtleAngleDeg);
+        // this.turn(angleInDegrees);
         super.rotate(angleInDegrees, cx, cy);
     }
 

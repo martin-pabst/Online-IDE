@@ -1359,6 +1359,8 @@ var AMDLoader;
          */
         ModuleManager.prototype.enqueueDefineAnonymousModule = function (dependencies, callback) {
             if (this._currentAnonymousDefineCall !== null) {
+                // Martin Pabst 02.12.2021:
+                return;
                 throw new Error('Can only have one anonymous define call per script file');
             }
             var stack = null;

@@ -26,7 +26,7 @@ export class TurtleClass extends Klass {
                 let x: number = parameters[1].value;
                 let y: number = parameters[2].value;
 
-                let ph = new TurtleHelper(x, y, false, module.main.getInterpreter(), o);
+                let ph = new TurtleHelper(x, y, true, module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = ph;
 
             }, false, false, 'Instanziert ein neues Turtle-Objekt ohne Punkte. Die Turtle blickt anfangs nach rechts. Am Ende des Streckenzugs wird eine "Schildkröte" (kleines Dreieck) gezeichnet.', true));

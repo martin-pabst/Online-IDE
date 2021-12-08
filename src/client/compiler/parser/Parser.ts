@@ -2137,6 +2137,7 @@ export class Parser {
         let isTransient = false;
 
         let done = false;
+        let asError: boolean = false;
 
         while (!done) {
 
@@ -2155,10 +2156,18 @@ export class Parser {
                     break;
                 case TokenType.keywordStatic:
                     isStatic = true;
+                    if(isAbstract && !asError){
+                        this.pushError("Die Modifier 'abstract' und 'static' können nicht kombiniert werden.");
+                        asError = true;
+                    }
                     this.nextToken();
                     break;
                 case TokenType.keywordAbstract:
                     isAbstract = true;
+                    if(isStatic && !asError){
+                        this.pushError("Die Modifier 'abstract' und 'static' können nicht kombiniert werden.");
+                        asError = true;
+                    }
                     this.nextToken();
                     break;
                 case TokenType.keywordFinal:
@@ -2173,6 +2182,7 @@ export class Parser {
             }
 
         }
+
 
         return { isAbstract: isAbstract, isStatic: isStatic, visibility: visibility, isFinal: isFinal, isTransient: isTransient };
 

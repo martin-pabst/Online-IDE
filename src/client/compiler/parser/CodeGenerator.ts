@@ -511,7 +511,7 @@ export class CodeGenerator {
 
     getSuperconstructorCalls(nodes: ASTNode[], superconstructorCallsFound: ASTNode[], isFirstStatement: boolean): boolean {
         for (let node of nodes) {
-            if(node == null) continue;
+            if (node == null) continue;
             if (node.type == TokenType.superConstructorCall) {
 
                 if (!isFirstStatement) {
@@ -2233,9 +2233,11 @@ export class CodeGenerator {
             }
 
             if (method.visibility == Visibility.private && resolvedType != classContext && resolvedType != staticClassContext) {
-                this.pushError("Die Konstruktormethode ist private und daher hier nicht sichtbar.", node.position);
+                let ok = (resolvedType == classContext || resolvedType != staticClassContext || (classContext instanceof StaticClass && resolvedType == classContext.Klass));
+                if (!ok) {
+                    this.pushError("Die Konstruktormethode ist private und daher hier nicht sichtbar.", node.position);
+                }
             }
-
 
             let destType: Type = null;
             for (let i = 0; i < parameterTypes.length; i++) {

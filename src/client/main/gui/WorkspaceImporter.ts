@@ -112,6 +112,7 @@ export class WorkspaceImporter {
                         ws.path = "";
                         ws.settings = wse.settings;
                         this.main.workspaceList.push(ws);
+                        ws.alterAdditionalLibraries();
 
                         networkManager.sendCreateWorkspace(ws, owner_id, (error: string) => {
                             count--;

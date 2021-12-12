@@ -140,7 +140,7 @@ export class GNGEreignisbehandlungHelper {
         "F11": 122,
         "F12": 123,
         "PageUp": 33,
-        "PageDown": 33,
+        "PageDown": 34,
         "Insert": 155
     }
 

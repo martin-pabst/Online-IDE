@@ -80,6 +80,7 @@ import { GNGFigurClass } from "../../runtimelibrary/gng/GNGFigur.js";
 import { RandomClass } from "../../runtimelibrary/Random.js";
 import { DirectionClass } from "../../runtimelibrary/graphics/Direction.js";
 import { Patcher } from "./Patcher.js";
+import { KeyEvent as KeyEventClass } from "../../runtimelibrary/graphics/KeyEvent.js";
 
 export type ExportedWorkspace = {
     name: string;
@@ -904,6 +905,7 @@ export class GNGModule extends Module {
         this.typeStore.addType(new GNGTextClass(this, moduleStore));
         this.typeStore.addType(new GNGTurtleClass(this, moduleStore));
         this.typeStore.addType(new GNGFigurClass(this, moduleStore));
+        this.typeStore.addType(new KeyEventClass(this, moduleStore));
 
     }
 

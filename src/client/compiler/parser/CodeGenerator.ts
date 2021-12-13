@@ -1474,7 +1474,7 @@ export class CodeGenerator {
                 }
                 let targetType = (<ArrayType>node.arrayType.resolvedType).arrayOfType;
                 if (!this.ensureAutomaticCasting(sType.type, targetType, ain.position)) {
-                    this.pushError("Der Datentyp des Terms (" + sType.type.identifier + ") kann nicht in den Datentyp " + targetType.identifier + " konvertiert werden.", ain.position);
+                    this.pushError("Der Datentyp des Terms (" + sType.type?.identifier + ") kann nicht in den Datentyp " + targetType?.identifier + " konvertiert werden.", ain.position);
                 }
             }
 

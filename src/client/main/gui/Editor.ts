@@ -728,7 +728,7 @@ export class Editor implements monaco.languages.RenameProvider {
 
         });
 
-        console.log(resourceEdits);
+//        console.log(resourceEdits);
 
         return {
             edits: resourceEdits

@@ -377,6 +377,8 @@ export class GroupHelper extends ShapeHelper {
 
     add(shape: RuntimeObject) {
 
+        if(shape == null) return;
+
         let shapeHelper: ShapeHelper = <ShapeHelper>shape.intrinsicData["Actor"];
 
         if (shapeHelper.isDestroyed) {

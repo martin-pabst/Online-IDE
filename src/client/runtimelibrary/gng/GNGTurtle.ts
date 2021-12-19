@@ -150,7 +150,7 @@ export class GNGTurtleClass extends Klass {
 
                 if (sh.testdestroyed("StiftSenken")) return;
 
-                sh.penIsDown = false;
+                sh.penIsDown = true;
 
             }, false, false, "Bewirkt, dass die Turtle beim Gehen ab jetzt wieder zeichnet.", false));
 

@@ -161,11 +161,11 @@ export class AccordionPanel {
     compareWithPath(name1: string, path1: string[], name2: string, path2: string[]) {
 
         let nameWithPath1 = path1.join("/");
-        if (nameWithPath1 != "") nameWithPath1 += "/";
+        if (nameWithPath1 != "" && name1 != "") nameWithPath1 += "/";
         nameWithPath1 += name1;
 
         let nameWithPath2 = path2.join("/");
-        if (nameWithPath2 != "") nameWithPath2 += "/";
+        if (nameWithPath2 != "" && name2 != "") nameWithPath2 += "/";
         nameWithPath2 += name2;
 
         return nameWithPath1.localeCompare(nameWithPath2);
@@ -248,7 +248,7 @@ export class AccordionPanel {
                     path: path
                 }
 
-                let insertIndex = this.getElementIndex("", path);
+                let insertIndex = this.getElementIndex("", path) + 1;
                 this.elements.splice(insertIndex, 0, ae);
                 let $element = this.renderElement(ae, true);
 
@@ -256,7 +256,7 @@ export class AccordionPanel {
                 if (insertIndex == 0) {
                     this.$listElement.prepend($element);
                 } else {
-                    let elementAtIndex = this.$listElement.find('.jo_file').get(insertIndex);
+                    let elementAtIndex = this.$listElement.find('.jo_file').get(insertIndex - 1);
                     jQuery(elementAtIndex).after($element);
                 }
 

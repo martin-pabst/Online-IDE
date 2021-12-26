@@ -171,7 +171,7 @@ export class SynchronizationManager {
         this.lastShownSynchronizationElement = null;
 
         let fileElements: FileElement[] = [];
-        let synchroFileMap: { [id: number]: FileElement } = {};
+        let synchroFileMap: { [id: string]: FileElement } = {};
 
         this.leftSynchroWorkspace.files.forEach(sfile => {
             let fileElement = {
@@ -183,13 +183,19 @@ export class SynchronizationManager {
 
             fileElements.push(fileElement);
             if (sfile.idInsideRepository != null) {
-                synchroFileMap[sfile.idInsideRepository] = fileElement;
+                synchroFileMap["r" + sfile.idInsideRepository] = fileElement;
+            } else {
+                synchroFileMap["w" + sfile.idInsideWorkspace] = fileElement;
             }
         });
 
         this.rightSynchroWorkspace.files.forEach(sfile => {
             let fileElement: FileElement = null;
-            if (sfile.idInsideRepository != null) fileElement = synchroFileMap[sfile.idInsideRepository];
+            if (sfile.idInsideRepository != null){
+                fileElement = synchroFileMap["r" + sfile.idInsideRepository];
+            }  else {
+                fileElement = synchroFileMap["w" + sfile.idInsideWorkspace];
+            }
             if (fileElement == null) {
                 fileElement = {
                     id: sfile.idInsideRepository,

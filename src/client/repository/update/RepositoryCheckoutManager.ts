@@ -124,7 +124,7 @@ export class RepositoryCheckoutManager {
             caption: "Neuen Workspace erstellen",
             object: null,
             value: -1
-        }].concat(this.main.workspaceList.filter(ws => ws.repository_id == null).map(ws => {
+        }].concat(this.main.workspaceList.filter(ws => ws.repository_id == null && !ws.isFolder).map(ws => {
             return {
                 caption: ws.name,
                 object: ws,

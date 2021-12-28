@@ -31,6 +31,7 @@ import { RepositoryCheckoutManager } from "../repository/update/RepositoryChecko
 import { WindowStateManager } from "./gui/WindowStateManager.js";
 import { TextPositionWithModule } from "../compiler/types/Types.js";
 import { checkIfMousePresent } from "../tools/HtmlTools.js";
+import { InconsistencyFixer } from "../workspace/InconsistencyFixer.js";
 
 export class Main implements MainBase {
 
@@ -416,7 +417,7 @@ export class Main implements MainBase {
         this.workspaceList.splice(this.workspaceList.indexOf(w), 1);
     }
 
-    restoreWorkspaces(workspaces: Workspaces) {
+    restoreWorkspaces(workspaces: Workspaces, fixInconsistencies: boolean) {
 
         this.workspaceList = [];
         this.currentWorkspace = null;
@@ -430,6 +431,13 @@ export class Main implements MainBase {
             if (ws.id == this.user.currentWorkspace_id) {
                 this.currentWorkspace = workspace;
             }
+        }
+
+        /**
+         * Find inconsistencies and fix them
+         */
+        if(fixInconsistencies){
+            new InconsistencyFixer().start(this.workspaceList, this.networkManager, this);
         }
 
         this.projectExplorer.renderWorkspaces(this.workspaceList);

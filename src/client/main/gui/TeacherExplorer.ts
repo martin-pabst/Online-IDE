@@ -59,7 +59,7 @@ export class TeacherExplorer {
                             that.currentOwnWorkspace = that.main.currentWorkspace;
                         }
 
-                        that.main.restoreWorkspaces(response.workspaces);
+                        that.main.restoreWorkspaces(response.workspaces, false);
                         that.main.workspacesOwnerId = ae.id;
                         that.main.projectExplorer.setExplorerColor("rgba(255, 0, 0, 0.2");
                         that.main.projectExplorer.$homeAction.show();

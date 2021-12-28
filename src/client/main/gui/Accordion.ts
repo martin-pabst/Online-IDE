@@ -158,33 +158,54 @@ export class AccordionPanel {
         return pathArray;
     }
 
-    compareWithPath(name1: string, path1: string[], name2: string, path2: string[]) {
+    compareWithPath(name1: string, path1: string[], isFolder1: boolean, name2: string, path2: string[], isFolder2: boolean) {
 
-        let nameWithPath1 = path1.join("/");
-        if (nameWithPath1 != "" && name1 != "") nameWithPath1 += "/";
-        nameWithPath1 += name1;
+            path1 = path1.slice();
+            path1.push(name1);
+            name1 = "";
 
-        let nameWithPath2 = path2.join("/");
-        if (nameWithPath2 != "" && name2 != "") nameWithPath2 += "/";
-        nameWithPath2 += name2;
+            path2 = path2.slice();
+            path2.push(name2);
+            name2 = "";
 
-        return nameWithPath1.localeCompare(nameWithPath2);
+        let i = 0;
+        while(i < path1.length && i < path2.length){
+            let cmp = path1[i].localeCompare(path2[i]);
+            if(cmp != 0) return cmp;
+            i++;
+        }
+
+        if(path1.length < path2.length) return -1;
+        if(path1.length > path2.length) return 1;
+
+        return name1.localeCompare(name2);
+
+
+        // let nameWithPath1 = path1.join("/");
+        // if (nameWithPath1 != "" && name1 != "") nameWithPath1 += "/";
+        // nameWithPath1 += name1;
+
+        // let nameWithPath2 = path2.join("/");
+        // if (nameWithPath2 != "" && name2 != "") nameWithPath2 += "/";
+        // nameWithPath2 += name2;
+
+        // return nameWithPath1.localeCompare(nameWithPath2);
     }
 
 
-    getElementIndex(name: string, path: string[]): number {
+    getElementIndex(name: string, path: string[], isFolder: boolean): number {
 
         for (let i = 0; i < this.elements.length; i++) {
             let element = this.elements[i];
 
-            if (this.compareWithPath(name, path, element.name, element.path) < 0) return i - 1;
+            if (this.compareWithPath(name, path, isFolder, element.name, element.path, element.isFolder) < 0) return i - 1;
 
         }
         return this.elements.length;
     }
 
     insertElement(ae: AccordionElement) {
-        let insertIndex = this.getElementIndex(ae.name, ae.path);
+        let insertIndex = this.getElementIndex(ae.name, ae.path, ae.isFolder);
         if(ae.path.length == 0) insertIndex = this.elements.length;
         this.elements.splice(insertIndex, 0, ae);
 
@@ -248,7 +269,7 @@ export class AccordionPanel {
                     path: path
                 }
 
-                let insertIndex = this.getElementIndex("", path) + 1;
+                let insertIndex = this.getElementIndex("", path, false) + 1;
                 this.elements.splice(insertIndex, 0, ae);
                 let $element = this.renderElement(ae, true);
 
@@ -362,7 +383,7 @@ export class AccordionPanel {
             let aName = a.sortName ? a.sortName : a.name;
             let bName = b.sortName ? b.sortName : b.name;
 
-            return this.compareWithPath(aName, a.path, bName, b.path);
+            return this.compareWithPath(aName, a.path, a.isFolder, bName, b.path, b.isFolder);
 
         });
         this.elements.forEach((element) => { this.$listElement.append(element.$htmlFirstLine) });

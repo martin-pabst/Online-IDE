@@ -32,7 +32,9 @@ export class GNGTextClass extends Klass {
                 let o: RuntimeObject = parameters[0].value;
                 o.intrinsicData["isGNG"] = true;
 
-                let rh = new TextHelper(10, 10, 12, "Text", module.main.getInterpreter(), o);
+                let rh = new TextHelper(2, -8, 12, "Text", module.main.getInterpreter(), o);
+
+                o.intrinsicData["moveAnchor"] = {x: 6, y: 16};
 
                 rh.setFillColor(0);
                 o.intrinsicData["Actor"] = rh;

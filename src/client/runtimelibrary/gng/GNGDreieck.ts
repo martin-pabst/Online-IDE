@@ -37,11 +37,14 @@ export class GNGDreieckClass extends Klass {
                 let rh = new PolygonHelper([60, 10, 110,110, 10, 110],true, module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = rh;
 
+                o.intrinsicData["moveAnchor"] = {x: 60, y: 10};
+
                 o.intrinsicData["Breite"] = 100;
                 o.intrinsicData["Höhe"] = 100;
 
                 o.intrinsicData["Farbe"] = "rot";
                 rh.setFillColor(0xff0000);
+
 
             }, false, false, 'Instanziert ein neues Dreieck-Objekt.', true));
 

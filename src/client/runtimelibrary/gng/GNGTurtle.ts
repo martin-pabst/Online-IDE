@@ -57,6 +57,8 @@ export class GNGTurtleClass extends Klass {
                 rh.setBorderColor(0);
                 o.intrinsicData["Actor"] = rh;
 
+                o.intrinsicData["moveAnchor"] = {x: 10, y: 10};
+
                 let helper: GNGEreignisbehandlungHelper = GNGEreignisbehandlung.getHelper(module);
                 helper.registerEvents(o);
 

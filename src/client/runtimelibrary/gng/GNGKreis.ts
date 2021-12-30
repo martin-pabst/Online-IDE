@@ -29,6 +29,8 @@ export class GNGKreisClass extends Klass {
 
                 let rh = new CircleHelper(60, 60, 50, module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = rh;
+                
+                o.intrinsicData["moveAnchor"] = {x: 60, y: 60};
 
                 o.intrinsicData["Farbe"] = "rot";
                 rh.setFillColor(0xff0000);

@@ -64,7 +64,7 @@ export class GNGTurtleClass extends Klass {
 
             }, false, false, 'Instanziert ein neues Turtle-Objekt.', true));
 
-        this.addMethod(new Method("größeSetzen", new Parameterlist([
+        this.addMethod(new Method("GrößeSetzen", new Parameterlist([
             { identifier: "größe", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), null,
             (parameters) => {
@@ -210,7 +210,7 @@ export class GNGTurtleClass extends Klass {
 
                 if (sh.testdestroyed("WinkelSetzen")) return;
 
-                sh.turn(winkel - sh.turtleAngleDeg);
+                sh.turn(winkel + sh.turtleAngleDeg);
 
             }, false, false, "Setzt den Blickwinkel der Turtle. 0° => nach rechts, 90°: => nach oben, usw..", false));
 
@@ -223,7 +223,7 @@ export class GNGTurtleClass extends Klass {
 
                 if (sh.testdestroyed("WinkelGeben")) return;
 
-                return Math.round(sh.turtleAngleDeg);
+                return Math.round(-sh.turtleAngleDeg);
 
             }, false, false, "Gibt den Blickwinkel der Turtle zurück.", false));
 

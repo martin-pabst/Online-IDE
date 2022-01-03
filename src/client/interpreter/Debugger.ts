@@ -25,7 +25,7 @@ export class Debugger {
 
     constructor(private main: MainBase, private $debuggerDiv: JQuery<HTMLElement>, private $projectexplorerDiv?: JQuery<HTMLElement>) {
 
-        this.accordion = new Accordion($debuggerDiv);
+        this.accordion = new Accordion(main, $debuggerDiv);
 
         this.variablePanel = new AccordionPanel(this.accordion, "Variablen", "3", null, null, "", false, false, "file", false, []);
         this.variablePanel.$listElement.css('margin-left', '4px');

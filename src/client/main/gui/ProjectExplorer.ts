@@ -34,7 +34,7 @@ export class ProjectExplorer {
 
     initGUI() {
 
-        this.accordion = new Accordion(this.$projectexplorerDiv);
+        this.accordion = new Accordion(this.main, this.$projectexplorerDiv);
 
         this.initFilelistPanel();
 

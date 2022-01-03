@@ -2,6 +2,9 @@ import { openContextMenu, makeEditable, ContextMenuItem, jo_mouseDetected, anima
 import { Helper } from "./Helper.js";
 import { escapeHtml } from "../../tools/StringTools.js";
 import { isJSDocThisTag, isThisTypeNode } from "typescript";
+import { WorkspaceImporter } from "./WorkspaceImporter.js";
+import { Main } from "../Main.js";
+import { MainBase } from "../MainBase.js";
 
 export type AccordionElement = {
     name: string;
@@ -69,10 +72,10 @@ export class AccordionPanel {
                 let pathArray: string[] = [];
 
                 this.addFolder("Neuer Ordner", pathArray, (newElement: AccordionElement) => {
-                    this.newFolderCallback(newElement, () => { 
-                         this.sortElements();
-                         newElement.$htmlFirstLine[0].scrollIntoView(); 
-                         animateToTransparent(newElement.$htmlFirstLine.find('.jo_filename'), 'background-color', [0, 255, 0], 2000);
+                    this.newFolderCallback(newElement, () => {
+                        this.sortElements();
+                        newElement.$htmlFirstLine[0].scrollIntoView();
+                        animateToTransparent(newElement.$htmlFirstLine.find('.jo_filename'), 'background-color', [0, 255, 0], 2000);
                     });
                 });
 
@@ -80,7 +83,7 @@ export class AccordionPanel {
 
             this.addAction(this.$newFolderAction);
 
-            
+
             let $collapseAllAction = jQuery('<div class="img_collapse-all-dark jo_button jo_active" style="margin-right: 4px"' +
                 ' title="Alle Ordner zusammenfalten">');
             $collapseAllAction.on(mousePointer + 'down', (e) => {
@@ -97,18 +100,18 @@ export class AccordionPanel {
 
     }
 
-    collapseAll(){
-        for(let element of this.elements){
-            if(element.isFolder){
+    collapseAll() {
+        for (let element of this.elements) {
+            if (element.isFolder) {
                 if (element.$htmlFirstLine.hasClass('jo_expanded')) {
                     element.$htmlFirstLine.removeClass('jo_expanded');
                     element.$htmlFirstLine.addClass('jo_collapsed');
-                }                        
+                }
             }
-            if(element.path.length > 0){
+            if (element.path.length > 0) {
                 element.$htmlFirstLine.slideUp(200);
             }
-        }                
+        }
     }
 
     remove() {
@@ -160,23 +163,23 @@ export class AccordionPanel {
 
     compareWithPath(name1: string, path1: string[], isFolder1: boolean, name2: string, path2: string[], isFolder2: boolean) {
 
-            path1 = path1.slice();
-            path1.push(name1);
-            name1 = "";
+        path1 = path1.slice();
+        path1.push(name1);
+        name1 = "";
 
-            path2 = path2.slice();
-            path2.push(name2);
-            name2 = "";
+        path2 = path2.slice();
+        path2.push(name2);
+        name2 = "";
 
         let i = 0;
-        while(i < path1.length && i < path2.length){
+        while (i < path1.length && i < path2.length) {
             let cmp = path1[i].localeCompare(path2[i]);
-            if(cmp != 0) return cmp;
+            if (cmp != 0) return cmp;
             i++;
         }
 
-        if(path1.length < path2.length) return -1;
-        if(path1.length > path2.length) return 1;
+        if (path1.length < path2.length) return -1;
+        if (path1.length > path2.length) return 1;
 
         return name1.localeCompare(name2);
 
@@ -205,8 +208,8 @@ export class AccordionPanel {
     }
 
     insertElement(ae: AccordionElement) {
-        let insertIndex = this.getElementIndex(ae.name, ae.path, ae.isFolder);
-        if(ae.path.length == 0) insertIndex = this.elements.length;
+        let insertIndex = this.getElementIndex(ae.name, ae.path, ae.isFolder) + 1;
+        if (ae.path.length == 0) insertIndex = this.elements.length;
         this.elements.splice(insertIndex, 0, ae);
 
         if (insertIndex == 0) {
@@ -413,7 +416,7 @@ export class AccordionPanel {
         }
 
         let pathHtml = "";
-        if(element.path == null) element.path = [];
+        if (element.path == null) element.path = [];
         for (let i = 0; i < element.path.length; i++) {
             pathHtml += '<div class="jo_folderline"></div>';
         }
@@ -430,7 +433,7 @@ export class AccordionPanel {
            ${!jo_mouseDetected ? '<div class="jo_settings_button img_ellipsis-dark jo_button jo_active"></div>' : ""}
            </div>`);
 
-        if(!expanded && element.path.length > 0){
+        if (!expanded && element.path.length > 0) {
             element.$htmlFirstLine.hide();
         }
 
@@ -585,19 +588,24 @@ export class AccordionPanel {
                             let pathArray = that.getCurrentlySelectedPath();
 
                             that.addFolder("Neuer Ordner", pathArray, (newElement: AccordionElement) => {
-                                that.newFolderCallback(newElement, () => { 
+                                that.newFolderCallback(newElement, () => {
                                     that.sortElements();
-                                    newElement.$htmlFirstLine[0].scrollIntoView(); 
+                                    newElement.$htmlFirstLine[0].scrollIntoView();
                                     animateToTransparent(newElement.$htmlFirstLine.find('.jo_filename'), 'background-color', [0, 255, 0], 2000);
-                                           });
+                                });
                             });
-            
+
                         }
                     }, {
                         caption: "Neuer Workspace...",
                         callback: () => {
                             that.select(element.externalElement);
                             that.$buttonNew.trigger(mousePointer + 'down');
+                        }
+                    }, {
+                        caption: "Workspace importieren...",
+                        callback: () => {
+                            new WorkspaceImporter(<Main>that.accordion.main, element.path.concat([element.name])).show();
                         }
                     }
                 ])
@@ -780,11 +788,13 @@ export class AccordionPanel {
                     let pathString = ae.path.join("/");
                     for (let el of this.elements) {
                         let elPath = el.path.slice(0);
-                        if(el.isFolder) elPath.push(el.name);
                         if (pathString.startsWith(elPath.join("/"))) {
                             if (el.isFolder) {
-                                el.$htmlFirstLine.removeClass("jo_collapsed");
-                                el.$htmlFirstLine.addClass("jo_expanded");
+                                elPath.push(el.name);
+                                if (pathString.startsWith(elPath.join("/"))) {
+                                    el.$htmlFirstLine.removeClass("jo_collapsed");
+                                    el.$htmlFirstLine.addClass("jo_expanded");
+                                }
                             }
                             el.$htmlFirstLine.show();
                         }
@@ -874,7 +884,7 @@ export class Accordion {
     parts: AccordionPanel[] = [];
     $html: JQuery<HTMLElement>;
 
-    constructor($html: JQuery<HTMLElement>) {
+    constructor(public main: MainBase, $html: JQuery<HTMLElement>) {
         this.$html = $html;
         $html.addClass('jo_leftpanelinner');
     }

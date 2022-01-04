@@ -518,7 +518,38 @@ export class Editor implements monaco.languages.RenameProvider {
             }
         });
 
-        //console.log(this.editor.getSupportedActions());
+        // Strg + # funktioniert bei Firefox nicht, daher:
+        this.editor.addAction({
+            // An unique identifier of the contributed action.
+            id: 'Toggle line comment',
+
+            // A label of the action that will be presented to the user.
+            label: 'Zeilenkommentar ein-/ausschalten',
+
+            // An optional array of keybindings for the action.
+            keybindings: [
+                monaco.KeyMod.CtrlCmd | monaco.KeyCode.US_COMMA ],
+
+            // A precondition for this action.
+            precondition: null,
+
+            // A rule to evaluate on top of the precondition in order to dispatch the keybindings.
+            keybindingContext: null,
+
+            contextMenuGroupId: 'insert',
+
+            contextMenuOrder: 1.5,
+
+            // Method that will be executed when the action is triggered.
+            // @param editor The editor instance is passed in as a convinience
+            run: function (ed) {
+                console.log('Hier!');
+                ed.getAction('editor.action.commentLine').run();
+                return null;
+            }
+        });
+
+        console.log(this.editor.getSupportedActions());
     }
 
     onEvaluateSelectedText(event: monaco.editor.ICursorPositionChangedEvent) {

@@ -160,7 +160,7 @@ export class GNGBaseFigurClass extends Klass {
 
                 sh.destroy();
 
-            }, false, false, "Schaltet die Sichtbarkeit der Figur ein oder aus.", false));
+            }, false, false, "Zerstört das Objekt.", false));
 
         this.addMethod(new Method("GanzNachVornBringen", new Parameterlist([
         ]), null,

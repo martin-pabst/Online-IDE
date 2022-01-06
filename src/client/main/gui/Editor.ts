@@ -518,7 +518,7 @@ export class Editor implements monaco.languages.RenameProvider {
             }
         });
 
-        // Strg + # funktioniert bei Firefox nicht, daher:
+        // Strg + # funktioniert bei Firefox nicht, daher alternativ Strg + ,:
         this.editor.addAction({
             // An unique identifier of the contributed action.
             id: 'Toggle line comment',

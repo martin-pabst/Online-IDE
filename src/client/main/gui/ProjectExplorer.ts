@@ -735,6 +735,7 @@ export class ProjectExplorer {
         if (m == null) {
             this.main.getMonacoEditor().setModel(monaco.editor.createModel("Keine Datei vorhanden.", "text"));
             this.main.getMonacoEditor().updateOptions({ readOnly: true });
+            this.fileListPanel.setCaption('Keine Datei vorhanden');
         } else {
             this.main.getMonacoEditor().updateOptions({ readOnly: false });
             this.main.getMonacoEditor().setModel(m.model);

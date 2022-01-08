@@ -201,22 +201,26 @@ export class AccordionPanel {
         for (let i = 0; i < this.elements.length; i++) {
             let element = this.elements[i];
 
-            if (this.compareWithPath(name, path, isFolder, element.name, element.path, element.isFolder) < 0) return i - 1;
+            if (this.compareWithPath(name, path, isFolder, element.name, element.path, element.isFolder) < 0) return i;
 
         }
         return this.elements.length;
     }
 
     insertElement(ae: AccordionElement) {
-        let insertIndex = this.getElementIndex(ae.name, ae.path, ae.isFolder) + 1;
-        if (ae.path.length == 0) insertIndex = this.elements.length;
+        let insertIndex = this.getElementIndex(ae.name, ae.path, ae.isFolder);
+        // if (ae.path.length == 0) insertIndex = this.elements.length;
         this.elements.splice(insertIndex, 0, ae);
+
+        let $elements = this.$listElement.find('.jo_file');
 
         if (insertIndex == 0) {
             this.$listElement.prepend(ae.$htmlFirstLine);
+        } else if(insertIndex == $elements.length){
+            this.$listElement.append(ae.$htmlFirstLine);
         } else {
-            let elementAtIndex = this.$listElement.find('.jo_file').get(insertIndex - 1);
-            jQuery(elementAtIndex).after(ae.$htmlFirstLine);
+            let elementAtIndex = $elements.get(insertIndex);
+            jQuery(elementAtIndex).before(ae.$htmlFirstLine);
         }
 
     }
@@ -272,7 +276,7 @@ export class AccordionPanel {
                     path: path
                 }
 
-                let insertIndex = this.getElementIndex("", path, false) + 1;
+                let insertIndex = this.getElementIndex("", path, false);
                 this.elements.splice(insertIndex, 0, ae);
                 let $element = this.renderElement(ae, true);
 
@@ -375,9 +379,11 @@ export class AccordionPanel {
     }
 
     addElement(element: AccordionElement, expanded: boolean) {
-        this.elements.push(element);
+        // this.elements.push(element);
+        // element.$htmlFirstLine = this.renderElement(element, expanded);
+        // this.$listElement.prepend(element.$htmlFirstLine);
         element.$htmlFirstLine = this.renderElement(element, expanded);
-        this.$listElement.prepend(element.$htmlFirstLine);
+        this.insertElement(element);
     }
 
     sortElements() {
@@ -515,7 +521,7 @@ export class AccordionPanel {
         }
 
 
-        element.$htmlFirstLine.on(mousePointer + 'down', (ev) => {
+        element.$htmlFirstLine.on(mousePointer + 'up', (ev) => {
 
             if (ev.button == 0 && that.selectCallback != null) {
                 that.selectCallback(element.externalElement);
@@ -716,6 +722,9 @@ export class AccordionPanel {
             let movedElements: AccordionElement[] = [elementToMove];
 
             let sourcePath = elementToMove.path.concat([elementToMove.name]).join("/");
+
+            if(destinationPath.join('/').indexOf(sourcePath) == 0) return;
+
             let oldPathLength = elementToMove.path.length;
             elementToMove.path = destinationPath.slice(0);
 
@@ -730,6 +739,8 @@ export class AccordionPanel {
             for (let el of movedElements) {
                 el.$htmlFirstLine.remove();
                 this.elements.splice(this.elements.indexOf(el), 1);
+            }
+            for (let el of movedElements) {
                 this.renderElement(el, true);
                 this.insertElement(el);
             }

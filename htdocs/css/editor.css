@@ -558,6 +558,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
     color: var(--fontColorNormal);
     font-family: 'Roboto', sans-serif;
     font-size: 10pt;
+    z-index: 10;
 }
 
 .jo_submenu>div, .jo_submenu>a {
@@ -570,6 +571,10 @@ body .monaco-editor-hover .monaco-tokenized-source {
 .jo_submenu>div:hover, .jo_submenu>a:hover {
     background-color: var(--submenu-hover);
     color: var(--submenu-color);
+}
+
+.jo_submenu>div:active, .jo_submenu>a:active {
+    font-weight: bold;
 }
 
 .jo_menuitemdivider {
@@ -797,6 +802,10 @@ body .monaco-editor-hover .monaco-tokenized-source {
 .jo_contextmenu>div:hover {
     background-color: var(--contextmenu-hover-background);
     color: var(--contextmenu-hover-color);
+}
+
+.jo_contextmenu>div:hover:active {
+    font-weight: bold;
 }
 
 .jo_error-filename:before {

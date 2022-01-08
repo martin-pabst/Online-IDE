@@ -335,6 +335,9 @@ export class Editor implements monaco.languages.RenameProvider {
     }
 
     getPositionForHistory(): HistoryEntry {
+        let module = this.main.getCurrentlyEditedModule();
+        if(module == null) return;
+        
         return {
             position: this.editor.getPosition(),
             workspace_id: this.main.getCurrentWorkspace().id,
@@ -344,8 +347,8 @@ export class Editor implements monaco.languages.RenameProvider {
 
     lastPushTime: number = 0;
     pushHistoryState(replace: boolean, historyEntry: HistoryEntry){
-        
-        if(this.main.isEmbedded()) return;
+
+        if(this.main.isEmbedded() || historyEntry == null) return;
 
         if(replace){
             history.replaceState(historyEntry, ""); //`Java-Online, ${module.file.name} (Zeile ${this.lastPosition.position.lineNumber}, Spalte ${this.lastPosition.position.column})`);
@@ -549,7 +552,7 @@ export class Editor implements monaco.languages.RenameProvider {
             }
         });
 
-        console.log(this.editor.getSupportedActions());
+        // console.log(this.editor.getSupportedActions());
     }
 
     onEvaluateSelectedText(event: monaco.editor.ICursorPositionChangedEvent) {

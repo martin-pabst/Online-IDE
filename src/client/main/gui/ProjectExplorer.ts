@@ -307,7 +307,10 @@ export class ProjectExplorer {
                 that.main.networkManager.sendDeleteWorkspaceOrFile("workspace", workspace.id, (error: string) => {
                     if (error == null) {
                         that.main.removeWorkspace(workspace);
-                        that.fileListPanel.enableNewButton(that.main.workspaceList.length > 0);
+                        that.fileListPanel.clear();
+                        that.fileListPanel.setCaption('Bitte Workspace selektieren');
+                        this.$synchronizeAction.hide();
+                        that.fileListPanel.enableNewButton(false);
                         successfulNetworkCommunicationCallback();
                     } else {
                         alert('Der Server ist nicht erreichbar!');

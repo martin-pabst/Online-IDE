@@ -57,12 +57,14 @@ export class GNGTurtleClass extends Klass {
                 rh.setBorderColor(0);
                 o.intrinsicData["Actor"] = rh;
 
+                o.intrinsicData["moveAnchor"] = {x: 10, y: 10};
+
                 let helper: GNGEreignisbehandlungHelper = GNGEreignisbehandlung.getHelper(module);
                 helper.registerEvents(o);
 
             }, false, false, 'Instanziert ein neues Turtle-Objekt.', true));
 
-        this.addMethod(new Method("größeSetzen", new Parameterlist([
+        this.addMethod(new Method("GrößeSetzen", new Parameterlist([
             { identifier: "größe", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), null,
             (parameters) => {
@@ -208,7 +210,7 @@ export class GNGTurtleClass extends Klass {
 
                 if (sh.testdestroyed("WinkelSetzen")) return;
 
-                sh.turn(winkel - sh.turtleAngleDeg);
+                sh.turn(winkel + sh.turtleAngleDeg);
 
             }, false, false, "Setzt den Blickwinkel der Turtle. 0° => nach rechts, 90°: => nach oben, usw..", false));
 
@@ -221,7 +223,7 @@ export class GNGTurtleClass extends Klass {
 
                 if (sh.testdestroyed("WinkelGeben")) return;
 
-                return Math.round(sh.turtleAngleDeg);
+                return Math.round(-sh.turtleAngleDeg);
 
             }, false, false, "Gibt den Blickwinkel der Turtle zurück.", false));
 
@@ -397,7 +399,7 @@ export class GNGTurtleClass extends Klass {
             null,  // no implementation!
             false, false, "Wird aufgerufen, wenn eine Sondertaste gedrückt wird."));
 
-        this.addMethod(new Method("MausGecklickt", new Parameterlist([
+        this.addMethod(new Method("MausGeklickt", new Parameterlist([
             { identifier: "x", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "anzahl", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },

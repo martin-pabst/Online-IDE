@@ -85,19 +85,27 @@ export function openContextMenu(items: ContextMenuItem[], x: number, y: number):
             $item.css('color', mi.color);
         }
         if (mi.link == null) {
-            $item.on(mousePointer + 'down.contextmenu', () => {
+            $item.on(mousePointer + 'up.contextmenu', (ev) => {
+                ev.stopPropagation();
                 jQuery('.jo_contextmenu').remove();
+                jQuery(document).off(mousePointer + "up.contextmenu");
                 jQuery(document).off(mousePointer + "down.contextmenu");
                 jQuery(document).off("keydown.contextmenu");
                 mi.callback();
             });
+            $item.on(mousePointer + 'down.contextmenu', (ev) => {
+                ev.stopPropagation();
+            });
         } else {
             let $link = $item.find('a');
-            $link.on(mousePointer + "down", (event) => {
+            $link.on(mousePointer + "up", (event) => {
                 event.stopPropagation();
                 setTimeout(() => {
                     $item.hide();
                 }, 500);
+            })
+            $link.on(mousePointer + "down", (event) => {
+                event.stopPropagation();
             })
 
         }
@@ -116,7 +124,7 @@ export function openContextMenu(items: ContextMenuItem[], x: number, y: number):
         $contextMenu.append($item);
     }
 
-    jQuery(document).on(mousePointer + "down.contextmenu", () => {
+    jQuery(document).on(mousePointer + "down.contextmenu", (e) => {
         jQuery(document).off(mousePointer + "down.contextmenu");
         jQuery(document).off("keydown.contextmenu");
         jQuery('.jo_contextmenu').remove();
@@ -124,7 +132,7 @@ export function openContextMenu(items: ContextMenuItem[], x: number, y: number):
 
     jQuery(document).on("keydown.contextmenu", (ev) => {
         if (ev.key == "Escape") {
-            jQuery(document).off(mousePointer + "down.contextmenu");
+            jQuery(document).off(mousePointer + "up.contextmenu");
             jQuery(document).off("keydown.contextmenu");
             jQuery('.jo_contextmenu').remove();
         }
@@ -251,7 +259,9 @@ export function animateToTransparent($element: JQuery<HTMLElement>, cssProperty:
 
 export function downloadFile(obj: any, filename: string) {
     var blob = new Blob([JSON.stringify(obj)], {type: 'text/plain'});
+    //@ts-ignore
     if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+        //@ts-ignore
         window.navigator.msSaveOrOpenBlob(blob, filename);
     } else{
         var e = document.createEvent('MouseEvents'),

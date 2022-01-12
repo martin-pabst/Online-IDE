@@ -199,8 +199,8 @@ export class Login {
                     }
                     
 
-                    that.main.restoreWorkspaces(response.workspaces);
                     that.main.workspacesOwnerId = user.id;
+                    that.main.restoreWorkspaces(response.workspaces, true);
 
                     that.main.networkManager.initializeTimer();
 

@@ -258,7 +258,7 @@ export class SynchronizationListElement {
                         markedAsMerged: false,
                         text: this.leftSynchroFile.text,
                         synchroWorkspace: that.rightSynchroWorkspace,
-                        idInsideWorkspace: null,
+                        idInsideWorkspace: this.leftSynchroFile.idInsideWorkspace,
                         workspaceFile: null,
                         originalText: null,
                         monacoModel: null

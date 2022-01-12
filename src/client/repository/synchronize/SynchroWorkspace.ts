@@ -256,6 +256,9 @@ export class SynchroWorkspace {
                             workspaceFile.saved = false;
                     }
                 }
+                if(workspaceFile.is_copy_of_id != null){
+                    synchroFile.idInsideRepository = workspaceFile.is_copy_of_id;
+                }
             });
             that.manager.main.networkManager.sendUpdates(() => {
                 callback(cfr.repository, null);
@@ -304,7 +307,7 @@ export class SynchroWorkspace {
         for (let module of workspace.moduleStore.getModules(false)) {
 
             let synchroFile = newIdToFileMap[module.file.id];
-            if (synchroFile != null) {
+            if (synchroFile != null && synchroFile.state != 'deleted') {
                 module.file.text = synchroFile.monacoModel.getValue(monaco.editor.EndOfLinePreference.LF, false);
                 synchroFile.text = module.file.text;
                 module.file.is_copy_of_id = synchroFile.idInsideRepository;
@@ -320,14 +323,18 @@ export class SynchroWorkspace {
 
                 main.networkManager.sendDeleteWorkspaceOrFile("file", module.file.id, (error: string) => {
                     if (error == null) {
-                        workspace.moduleStore.removeModule(module);
-                        if (main.currentWorkspace == workspace && main.projectExplorer.getCurrentlyEditedModule() == module) {
-                            main.projectExplorer.setModuleActive(null);
-                        }
                     } else {
                         alert('Der Server ist nicht erreichbar!');
                     }
                 });
+
+                this.files.splice(this.files.indexOf(synchroFile), 1);
+                workspace.moduleStore.removeModule(module);
+                main.projectExplorer.fileListPanel.removeElement(module);
+                if (main.currentWorkspace == workspace && main.projectExplorer.getCurrentlyEditedModule() == module) {
+                    main.projectExplorer.setModuleActive(null);
+                }
+                
             }
 
         }

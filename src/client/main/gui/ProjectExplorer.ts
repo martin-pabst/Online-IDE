@@ -34,7 +34,7 @@ export class ProjectExplorer {
 
     initGUI() {
 
-        this.accordion = new Accordion(this.$projectexplorerDiv);
+        this.accordion = new Accordion(this.main, this.$projectexplorerDiv);
 
         this.initFilelistPanel();
 
@@ -307,7 +307,10 @@ export class ProjectExplorer {
                 that.main.networkManager.sendDeleteWorkspaceOrFile("workspace", workspace.id, (error: string) => {
                     if (error == null) {
                         that.main.removeWorkspace(workspace);
-                        that.fileListPanel.enableNewButton(that.main.workspaceList.length > 0);
+                        that.fileListPanel.clear();
+                        that.fileListPanel.setCaption('Bitte Workspace selektieren');
+                        this.$synchronizeAction.hide();
+                        that.fileListPanel.enableNewButton(false);
                         successfulNetworkCommunicationCallback();
                     } else {
                         alert('Der Server ist nicht erreichbar!');
@@ -732,6 +735,7 @@ export class ProjectExplorer {
         if (m == null) {
             this.main.getMonacoEditor().setModel(monaco.editor.createModel("Keine Datei vorhanden.", "text"));
             this.main.getMonacoEditor().updateOptions({ readOnly: true });
+            this.fileListPanel.setCaption('Keine Datei vorhanden');
         } else {
             this.main.getMonacoEditor().updateOptions({ readOnly: false });
             this.main.getMonacoEditor().setModel(m.model);

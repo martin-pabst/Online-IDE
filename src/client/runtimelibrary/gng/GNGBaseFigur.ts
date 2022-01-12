@@ -55,7 +55,9 @@ export class GNGBaseFigurClass extends Klass {
 
                 if (sh.testdestroyed("PositionSetzen")) return;
 
-                let p: PIXI.Point = new PIXI.Point(10, 10);
+                let moveAnchor: {x: number, y: number} = o.intrinsicData["moveAnchor"];
+
+                let p: PIXI.Point = new PIXI.Point(moveAnchor.x, moveAnchor.y);
                 sh.displayObject.updateTransform();
                 sh.displayObject.transform.worldTransform.apply(p, p);
         
@@ -158,7 +160,7 @@ export class GNGBaseFigurClass extends Klass {
 
                 sh.destroy();
 
-            }, false, false, "Schaltet die Sichtbarkeit der Figur ein oder aus.", false));
+            }, false, false, "Zerstört das Objekt.", false));
 
         this.addMethod(new Method("GanzNachVornBringen", new Parameterlist([
         ]), null,

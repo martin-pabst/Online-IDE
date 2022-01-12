@@ -37,11 +37,16 @@ export class GNGDreieckClass extends Klass {
                 let rh = new PolygonHelper([60, 10, 110,110, 10, 110],true, module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = rh;
 
+                o.intrinsicData["moveAnchor"] = {x: 60, y: 10};
+                rh.centerXInitial = 60;
+                rh.centerYInitial = 60;
+
                 o.intrinsicData["Breite"] = 100;
                 o.intrinsicData["Höhe"] = 100;
 
                 o.intrinsicData["Farbe"] = "rot";
                 rh.setFillColor(0xff0000);
+
 
             }, false, false, 'Instanziert ein neues Dreieck-Objekt.', true));
 
@@ -64,7 +69,11 @@ export class GNGDreieckClass extends Klass {
 
                     if (sh.testdestroyed("GrößeSetzen")) return;
     
-                    sh.setAllPointsUntransformed([60, 60 - höhe/2, 60 - breite/2, 60 + höhe/2, 60 + breite/2, 60 + höhe/2 ]);
+                    sh.setAllPointsUntransformed([60, 10, 60 - breite/2, 10 + höhe, 60 + breite/2, 10 + höhe ]);
+                    sh.centerXInitial = 60;
+                    sh.centerYInitial = 10 + höhe/2;
+                    
+                    // sh.setAllPointsUntransformed([60, 60 - höhe/2, 60 - breite/2, 60 + höhe/2, 60 + breite/2, 60 + höhe/2 ]);
     
                 }, false, false, "Setzt die Breite und Höhe des Dreiecks.", false));
     

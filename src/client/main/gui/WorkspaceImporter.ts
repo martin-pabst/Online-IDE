@@ -7,17 +7,23 @@ export class WorkspaceImporter {
 
     dialog: Dialog;
 
-    constructor(private main: Main) {
+    constructor(private main: Main, private path: string[] = []) {
 
         this.dialog = new Dialog();
         
     }
 
     show() {
+        let that = this;
         this.dialog.init();
         this.dialog.heading("Workspace importieren");
         this.dialog.description("Bitte klicken Sie auf den Button 'Datei auswählen...' oder ziehen Sie eine Datei auf das gestrichelt umrahmte Feld.")
-        
+        let pathDescription = "Dieser Workspace wird auf unterster Ordnerebene in der Workspaceliste importiert.";
+        if(this.path.length  > 0){
+            pathDescription = "Dieser Workspace wird in den Ordner " + this.path.join("/") + " importiert.";
+        }
+        this.dialog.description(pathDescription);
+
         let $fileInputButton = jQuery('<input type="file" id="file" name="file" multiple />');
         this.dialog.addDiv($fileInputButton);
         
@@ -109,7 +115,7 @@ export class WorkspaceImporter {
                         let ws: Workspace = new Workspace(wse.name, this.main, owner_id);
                         if(firstWorkspace == null) firstWorkspace = ws;
                         ws.isFolder = false;
-                        ws.path = "";
+                        ws.path = this.path.join("/");
                         ws.settings = wse.settings;
                         this.main.workspaceList.push(ws);
                         ws.alterAdditionalLibraries();
@@ -122,7 +128,7 @@ export class WorkspaceImporter {
                                     externalElement: ws,
                                     iconClass: "workspace",
                                     isFolder: false,
-                                    path: []
+                                    path: that.path
                                 }, true);
 
                                 for(let mo of wse.modules){

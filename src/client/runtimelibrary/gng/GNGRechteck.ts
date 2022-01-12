@@ -37,6 +37,8 @@ export class GNGRechteckClass extends Klass {
                 let rh = new RectangleHelper(10, 10, 100, 100, module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = rh;
 
+                o.intrinsicData["moveAnchor"] = {x: 10, y: 10};
+
                 o.intrinsicData["Farbe"] = "rot";
                 rh.setFillColor(0xff0000);
 

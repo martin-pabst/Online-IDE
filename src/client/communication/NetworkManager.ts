@@ -3,6 +3,7 @@ import { ajax, PerformanceCollector } from "./AjaxHelper.js";
 import { WorkspaceData, FileData, SendUpdatesRequest, SendUpdatesResponse, CreateOrDeleteFileOrWorkspaceRequest, CRUDResponse, UpdateUserSettingsRequest, UpdateUserSettingsResponse, DuplicateWorkspaceRequest, DuplicateWorkspaceResponse, ClassData, DistributeWorkspaceRequest, DistributeWorkspaceResponse, CollectPerformanceDataRequest } from "./Data.js";
 import { Workspace } from "../workspace/Workspace.js";
 import { Module } from "../compiler/parser/Module.js";
+import { AccordionElement, AccordionPanel } from "../main/gui/Accordion.js";
 
 export class NetworkManager {
 
@@ -451,13 +452,21 @@ export class NetworkManager {
         this.main.workspaceList.push(w);
         let path = remoteWorkspace.path.split("/");
         if (path.length == 1 && path[0] == "") path = [];
-        this.main.projectExplorer.workspaceListPanel.addElement({
+        
+        let panelElement: AccordionElement = {
             name: remoteWorkspace.name,
             externalElement: w,
             iconClass: remoteWorkspace.repository_id == null ? "workspace" : "repository",
             isFolder: remoteWorkspace.isFolder,
             path: path
-        }, true);
+        };
+
+        this.main.projectExplorer.workspaceListPanel.addElement(panelElement, true);
+        w.panelElement = panelElement;
+
+        if(w.repository_id != null){
+            w.renderSynchronizeButton(panelElement);
+        }
 
         for (let fileData of remoteWorkspace.files) {
             this.createFile(w, fileData);

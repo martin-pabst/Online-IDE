@@ -53,6 +53,7 @@ export class GNGTurtleClass extends Klass {
                 o.intrinsicData["isGNG"] = true;
 
                 let rh = new TurtleHelper(100, 200, true, module.main.getInterpreter(), o);
+                rh.borderWidth = 1;
                 rh.setShowTurtle(true);
                 rh.setBorderColor(0);
                 o.intrinsicData["Actor"] = rh;

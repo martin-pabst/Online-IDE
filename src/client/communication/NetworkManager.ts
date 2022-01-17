@@ -4,6 +4,7 @@ import { WorkspaceData, FileData, SendUpdatesRequest, SendUpdatesResponse, Creat
 import { Workspace } from "../workspace/Workspace.js";
 import { Module } from "../compiler/parser/Module.js";
 import { AccordionElement, AccordionPanel } from "../main/gui/Accordion.js";
+import {WorkspaceSettings } from "../communication/Data.js";
 
 export class NetworkManager {
 
@@ -448,6 +449,11 @@ export class NetworkManager {
         w.has_write_permission_to_repository = remoteWorkspace.has_write_permission_to_repository;
         w.path = remoteWorkspace.path;
         w.isFolder = remoteWorkspace.isFolder;
+        if(remoteWorkspace.settings != null){
+            let remoteWorkspaceSettings:WorkspaceSettings = JSON.parse(remoteWorkspace.settings);
+            w.settings = remoteWorkspaceSettings;
+            w.moduleStore.setAdditionalLibraries(remoteWorkspaceSettings.libraries);
+        }
 
         this.main.workspaceList.push(w);
         let path = remoteWorkspace.path.split("/");

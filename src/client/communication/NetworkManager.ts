@@ -449,7 +449,7 @@ export class NetworkManager {
         w.has_write_permission_to_repository = remoteWorkspace.has_write_permission_to_repository;
         w.path = remoteWorkspace.path;
         w.isFolder = remoteWorkspace.isFolder;
-        if(remoteWorkspace.settings != null){
+        if(remoteWorkspace.settings != null && remoteWorkspace.settings.startsWith("{")){
             let remoteWorkspaceSettings:WorkspaceSettings = JSON.parse(remoteWorkspace.settings);
             w.settings = remoteWorkspaceSettings;
             w.moduleStore.setAdditionalLibraries(remoteWorkspaceSettings.libraries);

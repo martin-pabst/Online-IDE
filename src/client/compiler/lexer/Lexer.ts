@@ -452,7 +452,12 @@ export class Lexer {
                     this.lexCharacterConstant();
                     return;
                 case TokenType.doubleQuote:
-                    this.lexStringConstant();
+                    // triple double quote?
+                    if (this.nextChar == "\"" && this.pos + 3 < this.input.length && this.input[this.pos + 2] == "\"") {
+                        this.lexTripleQuoteStringConstant();
+                    } else {
+                        this.lexStringConstant();
+                    }
                     return;
                 case TokenType.newline:
                     this.pushToken(TokenType.newline, '\n');
@@ -630,18 +635,7 @@ export class Lexer {
         while (true) {
             let char = this.currentChar;
             if (char == "\\") {
-                if (this.nextChar == "u") {
-                    this.next();
-
-                } else {
-                    let escapeChar = EscapeSequenceList[this.nextChar];
-                    if (escapeChar == null) {
-                        this.pushError('Die Escape-Sequenz \\' + this.nextChar + ' gibt es nicht.', 2);
-                    } else {
-                        char = escapeChar;
-                        this.next();
-                    }
-                }
+                char = this.parseStringLiteralEscapeCharacter();                
             } else if (char == '"') {
                 this.next();
                 break;
@@ -662,6 +656,105 @@ export class Lexer {
                 color: color,
                 range: { startLineNumber: line, endLineNumber: line, startColumn: column + 1, endColumn: this.column - 1 }
             });
+        }
+
+    }
+
+    lexTripleQuoteStringConstant() {
+        let line = this.line;
+        let column = this.column;
+        let StringLines: string[] = [];
+
+        // skip """ and all characters in same line
+
+        this.next(); // skip "
+        this.next(); // skip "
+        this.next(); // skip "
+        while (["\n", "\r"].indexOf(this.currentChar) < 0 && this.currentChar != endChar) {
+            this.next();
+        }
+
+        while (["\n", "\r"].indexOf(this.currentChar) >= 0) {
+            this.next();
+        }
+
+        let currentStringLine: string = "";
+
+        while (true) {
+            let char = this.currentChar;
+            if (char == "\\") {
+                currentStringLine += this.parseStringLiteralEscapeCharacter();
+            } else if (char == '"' && this.nextChar == '"' && this.pos + 2 < this.input.length && this.input[this.pos + 2] == '"') {
+                this.next();
+                this.next();
+                this.next();
+                StringLines.push(currentStringLine);
+                break;
+            } else if (char == endChar) {
+                let length = 0;
+                for(let s of StringLines) length += s.length;
+                this.pushError('Innerhalb einer String-Konstante wurde das Textende erreicht.',length, "error", line, column);
+                StringLines.push(currentStringLine);
+                break;
+            } else if (["\n", "\r"].indexOf(char) >= 0){
+                StringLines.push(currentStringLine);
+                currentStringLine = "";
+                while(["\n", "\r"].indexOf(this.currentChar) >= 0){
+                    this.next();
+                }
+                continue;
+            } else {
+                currentStringLine += char;
+            }
+            this.next();
+        }
+
+        if(StringLines.length == 0) return;
+        let lastLine = StringLines.pop();
+        let indent = 0;
+        while(lastLine.length > indent && lastLine.charAt(indent) == " "){
+            indent++;
+        }
+
+        let text: string = ""; 
+        text = StringLines.map(s => s.substring(indent)).join("\n");
+
+        this.pushToken(TokenType.stringConstant, text, line, column, text.length + 2);
+
+        let color = this.colorLexer.getColorInfo(text);
+
+        if (color != null) {
+            this.colorInformation.push({
+                color: color,
+                range: { startLineNumber: line, endLineNumber: line, startColumn: column + 1, endColumn: this.column - 1 }
+            });
+        }
+
+    }
+
+    parseStringLiteralEscapeCharacter(): string {
+        this.next(); // skip \
+        if(this.currentChar == "u"){
+            let hex: string = "";
+            this.next();
+            while("abcdef0123456789".indexOf(this.currentChar) >= 0 && hex.length < 4){
+                hex += this.currentChar;
+                this.next();
+            }
+            if(hex.length < 4){
+                this.pushError('Die Escape-Sequenz \\u' + hex + ' gibt es nicht.', 1 + hex.length);
+                return "";
+            } else {
+                return String.fromCodePoint(parseInt(hex,16));
+            }
+        } else if(EscapeSequenceList[this.currentChar] != null){
+            let c = EscapeSequenceList[this.currentChar];
+            this.next();
+            return c;
+        } else {
+            this.pushError('Die Escape-Sequenz \\' + this.currentChar + ' gibt es nicht.', 2);
+            this.next();
+            return "";
         }
 
     }
@@ -738,7 +831,7 @@ export class Lexer {
         if (this.currentChar == '-') {
             sign = -1;
             this.next();
-        } else if(this.currentChar == '+'){
+        } else if (this.currentChar == '+') {
             this.next();
         }
 

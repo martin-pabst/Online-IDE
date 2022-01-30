@@ -24,7 +24,7 @@ export function dateToString(date: Date): string{
 }
 
 export function dateToStringWithoutTime(date: Date): string{
-  return `${twoDez(date.getDate())}.${twoDez(date.getMonth())}.${date.getFullYear()}`;
+  return `${twoDez(date.getDate())}.${twoDez(date.getMonth() + 1)}.${date.getFullYear()}`;
 }
 
 function twoDez(z: number):string {
@@ -36,7 +36,7 @@ export function stringToDate(text: string): Date {
 
   let match = text.match(/^(\d{2})\.(\d{2})\.(\d{4}), (\d{2}):(\d{2})$/);
 
-  let date: Date = new Date(Number.parseInt(match[3]), Number.parseInt(match[2]), Number.parseInt(match[1]), Number.parseInt(match[4]), Number.parseInt(match[5]) );
+  let date: Date = new Date(Number.parseInt(match[3]), Number.parseInt(match[2]) - 1, Number.parseInt(match[1]), Number.parseInt(match[4]), Number.parseInt(match[5]) );
 
   return date;
 }

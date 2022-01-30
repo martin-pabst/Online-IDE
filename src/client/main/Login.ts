@@ -148,6 +148,7 @@ export class Login {
 
             if (!response.success) {
                 jQuery('#login-message').html('Fehler: Benutzername und/oder Passwort ist falsch.');
+                jQuery('#login-spinner>img').hide();
             } else {
 
                 // We don't do this anymore for security reasons - see AjaxHelper.ts
@@ -234,6 +235,7 @@ export class Login {
 
         }, (errorMessage: string) => {
             jQuery('#login-message').html('Login gescheitert: ' + errorMessage);
+            jQuery('#login-spinner>img').hide();
         }
         );
 

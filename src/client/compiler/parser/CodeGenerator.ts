@@ -2862,7 +2862,7 @@ export class CodeGenerator {
 
         if (!(
             (objectNode.type instanceof Klass) || (objectNode.type instanceof StaticClass) ||
-            (objectNode.type instanceof Interface && (node.object["variable"] != null || node.object["attribute"] != null)) || (objectNode.type instanceof Enum))) {
+            (objectNode.type instanceof Interface && (node.object["variable"] != null || node.object["attribute"] != null || node.object["termInsideBrackets"] != null)) || (objectNode.type instanceof Enum))) {
 
             if (objectNode.type == null) {
                 this.pushError("Werte dieses Datentyps besitzen keine Methoden.", node.position);

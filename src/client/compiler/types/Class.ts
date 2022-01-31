@@ -1313,7 +1313,7 @@ export class Interface extends Type {
             return false;
         } else {
             if (type instanceof Klass && type.getNonGenericIdentifier() == "Object") {
-
+                return true;
             }
             return false;
         }

@@ -33,10 +33,11 @@ export class WorkspaceImporter {
         let $workspacePreviewDiv = jQuery(`<ul></ul>`);
         
         let registerFiles = (files: FileList) => {
-            for (let f of files) {
+            for (let i = 0; i < files.length; i++) {
+                let f = files[i];
                 var reader = new FileReader();
                 reader.onload = (event) => {
-                    let text: string = <string>reader.result;
+                    let text: string = <string>event.target.result;
                     if (!text.startsWith("{")) {
                         $errorDiv.append(jQuery(`<div>Das Format der Datei ${f.name} passt nicht.</div>`));
                         return;

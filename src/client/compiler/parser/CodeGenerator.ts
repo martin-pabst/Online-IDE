@@ -1883,7 +1883,11 @@ export class CodeGenerator {
                 kind = "userDefinedIterable";
             }
             let iterableInterface = collectionType.getImplementedInterface("Iterable");
-            collectionElementType = collectionType.typeVariables[0].type;
+            if(collectionType.typeVariables.length == 0){
+                collectionElementType = objectType;
+            } else {
+                collectionElementType = collectionType.typeVariables[0].type;
+            }
         } else if (collectionType instanceof Klass && collectionType.identifier == "Group") {
             kind = "group";
             collectionElementType = this.moduleStore.getType("Shape").type;

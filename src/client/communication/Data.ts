@@ -132,6 +132,7 @@ export type GetTeacherDataResponse = {
 export type ClassData = {
     id: number,
     lehrkraft_id: number,
+    zweitlehrkraft_id: number,
     schule_id: number,
     name: string,
     students: UserData[],

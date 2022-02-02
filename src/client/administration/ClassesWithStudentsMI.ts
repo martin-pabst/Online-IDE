@@ -1,5 +1,5 @@
 import { AdminMenuItem } from "./AdminMenuItem.js";
-import { UserData, ClassData, CRUDClassRequest, CRUDUserRequest, CRUDResponse, GetClassesDataRequest, GetClassesDataResponse, ChangeClassOfStudentsRequest, ChangeClassOfStudentsResponse } from "../communication/Data.js";
+import { GetTeacherDataRequest, GetTeacherDataResponse, TeacherData, UserData, ClassData, CRUDClassRequest, CRUDUserRequest, CRUDResponse, GetClassesDataRequest, GetClassesDataResponse, ChangeClassOfStudentsRequest, ChangeClassOfStudentsResponse } from "../communication/Data.js";
 import { ajax } from "../communication/AjaxHelper.js";
 import { Administration } from "./Administration.js";
 import { TeachersWithClassesMI } from "./TeachersWithClasses.js";
@@ -14,6 +14,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
     studentGridName = "studentsGrid";
 
     allClassesList: ClassData[] = [];
+    teacherDataList: TeacherData[] = [];
 
     constructor(administration: Administration) {
         super(administration);
@@ -35,46 +36,74 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
 
         let that = this;
 
-        if (w2ui[this.classesGridName] != null) {
-            let grid: W2UI.W2Grid = w2ui[this.classesGridName];
-            grid.render();
-        } else {
-            $tableLeft.w2grid({
-                name: this.classesGridName,
-                header: 'Klassen',
-                // selectType: "cell",
-                show: {
-                    header: true,
-                    toolbar: true,
-                    toolbarAdd: true,
-                    toolbarDelete: true,
-                    footer: true,
-                    selectColumn: true,
-                    toolbarSearch: false,
-                    toolbarInput: false
-                },
-                recid: "id",
-                columns: [
-                    { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
-                    { field: 'name', caption: 'Bezeichnung', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
-                    {
-                        field: 'numberOfStudents', caption: 'Schüler/innen', size: '30%', sortable: false, resizable: true,
-                        render: function (record: ClassData) {
-                            return '<div>' + record.students.length + '</div>';
-                        }
+        this.loadTablesFromTeacherObject(() => {
+            if (w2ui[this.classesGridName] != null) {
+                let grid: W2UI.W2Grid = w2ui[this.classesGridName];
+                grid.render();
+            } else {
+                $tableLeft.w2grid({
+                    name: this.classesGridName,
+                    header: 'Klassen',
+                    // selectType: "cell",
+                    show: {
+                        header: true,
+                        toolbar: true,
+                        toolbarAdd: true,
+                        toolbarDelete: true,
+                        footer: true,
+                        selectColumn: true,
+                        toolbarSearch: false,
+                        toolbarInput: false
                     },
-                ],
-                searches: [
-                    { field: 'name', label: 'Bezeichnung', type: 'text' }
-                ],
-                sortData: [{ field: 'name', direction: 'ASC' }],
-                onSelect: (event) => { event.done(() => { that.onSelectClass(event) }) },
-                onUnselect: (event) => { event.done(() => { that.onUnselectClass(event) }) },
-                onAdd: (event) => { that.onAddClass() },
-                onChange: (event) => { that.onUpdateClass(event) },
-                onDelete: (event) => { that.onDeleteClass(event) },
-            })
-        }
+                    recid: "id",
+                    columns: [
+                        { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
+                        { field: 'name', caption: 'Bezeichnung', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
+                        {
+                            field: 'numberOfStudents', caption: 'Schüler/innen', size: '30%', sortable: false, resizable: true,
+                            render: function (record: ClassData) {
+                                return '<div>' + record.students.length + '</div>';
+                            }
+                        },
+                        {
+                            field: 'teacher', caption: 'Lehrkraft', size: '30%', sortable: true, resizable: true,
+                            render: function (record: ClassData) {
+                                let teacher = that.teacherDataList.find(td => td.userData.id == record.lehrkraft_id);
+                                if (teacher != null) {
+                                    return '<div>' + teacher.userData.rufname + " " + teacher.userData.familienname + '</div>';
+                                }
+                            }
+                        },
+                        {
+                            field: 'teacher2', caption: 'Zweitlehrkraft', size: '30%', sortable: true, resizable: true,
+                            render: function (record: ClassData) {
+                                let teacher = that.teacherDataList.find(td => td.userData.id == record.zweitlehrkraft_id);
+                                if (teacher != null) {
+                                    return '<div>' + teacher.userData.rufname + " " + teacher.userData.familienname + '</div>';
+                                }
+                            },
+                            editable: { type: 'list', items: that.teacherDataList.slice(0).concat([{
+                                //@ts-ignore
+                                userData: {id: -1, rufname: "Keine Zweitlehrkraft", familienname: ""},
+                                classes: [],
+                                id: -1,
+                                text: "Keine Zweitlehrkraft"
+                            }]), filter: false }
+                        },
+                    ],
+                    searches: [
+                        { field: 'name', label: 'Bezeichnung', type: 'text' }
+                    ],
+                    sortData: [{ field: 'name', direction: 'ASC' }],
+                    onSelect: (event) => { event.done(() => { that.onSelectClass(event) }) },
+                    onUnselect: (event) => { event.done(() => { that.onUnselectClass(event) }) },
+                    onAdd: (event) => { that.onAddClass() },
+                    onChange: (event) => { that.onUpdateClass(event) },
+                    onDelete: (event) => { that.onDeleteClass(event) },
+                })
+            }
+
+        })
 
         this.loadClassDataList(() => {
             this.loadTables();
@@ -143,7 +172,6 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                 });
             }
         });
-
 
     }
 
@@ -337,6 +365,16 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
 
         data[field] = event.value_new;
 
+        if (event.column == 4) {
+            let teacher: TeacherData = event.value_new;
+            if (teacher == null || typeof teacher == "string") {
+                return;
+            } else {
+                event.value_new = teacher.userData.rufname + " " + teacher.userData.familienname;
+                data.zweitlehrkraft_id = teacher.userData.id == -1 ? null : teacher.userData.id;
+            }
+        }
+
         let request: CRUDClassRequest = {
             type: "update",
             data: data,
@@ -370,6 +408,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                 id: -1,
                 schule_id: userData.schule_id,
                 lehrkraft_id: userData.id,
+                zweitlehrkraft_id: null,
                 name: "Name der Klasse",
                 students: []
             },
@@ -384,6 +423,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
             this.allClassesList.push({
                 id: cd.id,
                 lehrkraft_id: userData.id,
+                zweitlehrkraft_id: null,
                 schule_id: userData.schule_id,
                 name: cd.name,
                 students: []
@@ -421,6 +461,31 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
             }).css('visibility', 'visible');
         }, 1000);
     }
+
+    loadTablesFromTeacherObject(callback: () => void) {
+
+        let request: GetTeacherDataRequest = { school_id: this.administration.userData.schule_id };
+
+        ajax("getTeacherData", request, (data: GetTeacherDataResponse) => {
+            this.teacherDataList = data.teacherData;
+
+            for (let teacher of this.teacherDataList) {
+                teacher["id"] = teacher.userData.id;
+                teacher["username"] = teacher.userData.username;
+                teacher["familienname"] = teacher.userData.familienname;
+                teacher["rufname"] = teacher.userData.rufname;
+                teacher["text"] = teacher.userData.rufname + " " + teacher.userData.familienname
+            }
+
+            callback();
+
+        }, () => {
+            w2alert('Fehler beim Holen der Daten.');
+        });
+
+
+    }
+
 
     updateStudentTableToSelectedClasses() {
         let recIds: number[];
@@ -476,6 +541,9 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
 
     loadTables() {
         let classesTable = w2ui[this.classesGridName];
+        if(classesTable == null){
+            return;
+        }
         classesTable.clear();
 
         classesTable.add(this.allClassesList);

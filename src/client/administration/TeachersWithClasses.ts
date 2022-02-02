@@ -120,6 +120,21 @@ export class TeachersWithClassesMI extends AdminMenuItem {
                         field: 'teacher', caption: 'Lehrkraft', size: '30%', sortable: true, resizable: true,
                         editable: { type: 'list', items: that.teacherDataList, filter: false }
                     },
+                    {
+                        field: 'teacher2', caption: 'Zweitlehrkraft', size: '30%', sortable: true, resizable: true,
+                        render: function (record: ClassData) {
+                            let teacher = that.teacherDataList.find(td => td.userData.id == record.zweitlehrkraft_id);
+                            if (teacher != null) {
+                                return '<div>' + teacher.userData.rufname + " " + teacher.userData.familienname + '</div>';
+                            }
+                        },
+                        editable: { type: 'list', items: that.teacherDataList.slice(0).concat([{
+                            //@ts-ignore
+                            userData: {id: -1, rufname: "Keine Zweitlehrkraft", familienname: ""},
+                            classes: [],
+                            id: -1,
+                            text: "Keine Zweitlehrkraft"
+                        }]), filter: false }                    },
                 ],
                 searches: [
                     { field: 'name', label: 'Name', type: 'text' },
@@ -264,6 +279,10 @@ export class TeachersWithClassesMI extends AdminMenuItem {
         for (let sc of selectedTeachers) {
             for (let sd of sc.classes) {
                 sd["teacher"] = sc.userData.rufname + " " + sc.userData.familienname;
+                let teacher2 = this.teacherDataList.find(td => td.userData.id == sd.zweitlehrkraft_id);
+                if(teacher2 != null){
+                    sd["teacher2"] = sc.userData.rufname + " " + sc.userData.familienname;
+                }
                 classesList.push(sd);
             }
         }
@@ -298,6 +317,7 @@ export class TeachersWithClassesMI extends AdminMenuItem {
 
             if (this.classesGrid != null) {
                 this.classesGrid.columns[2]["editable"].items = this.teacherDataList;
+                this.classesGrid.columns[3]["editable"].items = this.teacherDataList;
                 this.classesGrid.clear();
             }
 
@@ -393,6 +413,7 @@ export class TeachersWithClassesMI extends AdminMenuItem {
                 id: -1,
                 name: "Name",
                 lehrkraft_id: teacherId,
+                zweitlehrkraft_id: null,
                 schule_id: teacherData.userData.schule_id,
                 students: []
             },
@@ -455,8 +476,8 @@ export class TeachersWithClassesMI extends AdminMenuItem {
             } else {
                 let teacherOld1 = this.teacherDataList.find((td) => td.userData.id == data.lehrkraft_id);
                 if (teacherOld1 != null) teacherOld1.classes = teacherOld1.classes.filter(cd => cd.id != data.id);
-                let teacherOld2 = this.teachersGrid.get(data.lehrkraft_id + "");
-                if (teacherOld2 != null) teacherOld1.classes = teacherOld1.classes.filter(cd => cd.id != data.id);
+                // let teacherOld2 = this.teachersGrid.get(data.lehrkraft_id + "");
+                // if (teacherOld2 != null) teacherOld1.classes = teacherOld1.classes.filter(cd => cd.id != data.id);
                 data.lehrkraft_id = teacher.userData.id;
                 teacher.classes.push(data);
                 let teacherNew2: TeacherData = <any>this.teachersGrid.get(teacher.userData.id + "");
@@ -464,6 +485,26 @@ export class TeachersWithClassesMI extends AdminMenuItem {
                 event.value_new = teacher.userData.rufname + " " + teacher.userData.familienname;
             }
         }
+
+        if (event.column == 3) {
+            let teacher: TeacherData = event.value_new;
+            if (teacher == null || typeof teacher == "string") {
+                this.classesGrid.refresh();
+                return;
+            } else {
+                let teacherOld1 = this.teacherDataList.find((td) => td.userData.id == data.zweitlehrkraft_id);
+                if (teacherOld1 != null) teacherOld1.classes = teacherOld1.classes.filter(cd => cd.id != data.id);
+                // let teacherOld2 = this.teachersGrid.get(data.zweitlehrkraft_id + "");
+                // if (teacherOld2 != null) teacherOld1.classes = teacherOld1.classes.filter(cd => cd.id != data.id);
+                data.zweitlehrkraft_id = teacher.userData.id == -1 ? null : teacher.userData.id;
+                teacher.classes.push(data);
+                let teacherNew2: TeacherData = <any>this.teachersGrid.get(teacher.userData.id + "");
+                if (teacherNew2 != null) teacherNew2.classes.push(data);
+                event.value_new = teacher.userData.rufname + " " + teacher.userData.familienname;
+            }
+        }
+
+
 
         let field = this.classesGrid.columns[event.column]["field"];
         data[field] = event.value_new;

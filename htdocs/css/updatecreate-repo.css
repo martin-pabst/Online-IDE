@@ -43,10 +43,44 @@
     grid-template-columns: fit-content(400px) auto;
     margin-bottom: 15px;
     padding: 10px;
+    align-items: center;
 }
 
 .createUpdateRepo-settingsLabel {
     grid-column: 1;
+}
+
+.createUpdateRepo-settingsSecret {
+    grid-column: 2;
+    display: flex;
+    flex-direction: row;
+}
+
+.createUpdateRepo-settingsSecretSecret {
+    grid-column: 2;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: 20px;
+    font-family: 'Consolas', 'Roboto Mono', monospace;
+}
+
+.jo_set_secret_button {
+    font-size: 100%;
+    padding: 2px;
+    background-color: #8a9ab5;
+    border: none;
+    border-radius: 2px;
+    margin: 5px 20px;    
+}
+
+.jo_copy_secret_button {
+    font-size: 100%;
+    padding: 2px;
+    background-color: #59ca85;
+    border: none;
+    border-radius: 2px;
+    margin: 5px 20px;    
 }
 
 .createUpdateRepo-inputcolumn {

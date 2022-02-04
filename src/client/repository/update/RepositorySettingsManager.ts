@@ -1,6 +1,6 @@
 import { Main } from "../../main/Main.js";
 import { Workspace } from "../../workspace/Workspace.js";
-import { makeDiv, SelectItem, setSelectItems, getSelectedObject, openContextMenu } from "../../tools/HtmlTools.js";
+import { makeDiv, SelectItem, setSelectItems, getSelectedObject, openContextMenu, copyTextToClipboard } from "../../tools/HtmlTools.js";
 import { RepositoryUser, GetRepositoryRequest, GetRepositoryResponse, GetRepositoryUserListRequest, GetRepositoryUserListResponse, UserData, GetRepositoryListRequest, GetRepositoryListResponse, RepositoryInfo, UpdateRepositoryRequest, UpdateRepositoryResponse, RepositoryUserWriteAccessData, UpdateRepositoryUserWriteAccessRequest, UpdateRepositoryUserWriteAccessResponse, DeleteRepositoryRequest } from "../../communication/Data.js";
 import { ajax } from "../../communication/AjaxHelper.js";
 
@@ -25,6 +25,9 @@ export class RepositorySettingsManager {
     $saveButton: JQuery<HTMLElement>;
     $deleteButton: JQuery<HTMLElement>;
 
+    $settingsSecretRead: JQuery<HTMLElement>;
+    $settingsSecretWrite: JQuery<HTMLElement>;
+
     publishedToItems: SelectItem[] = [];
 
     repositoryOwnerItems: SelectItem[] = [];
@@ -32,6 +35,7 @@ export class RepositorySettingsManager {
     users: RepositoryUser[] = [];
 
     workspace: Workspace;
+    repositoryInfo: RepositoryInfo;
 
     constructor(public main: Main) {
     }
@@ -81,6 +85,34 @@ export class RepositorySettingsManager {
         this.$settingsDiv.append(this.$repoOwner = jQuery('<select class="createUpdateRepo-inputcolumn"></select>'));
         this.$repoOwner.on("change", () => { that.enableSaveButton() });
 
+        this.$settingsDiv.append(jQuery('<div class="createUpdateRepo-settingsLabel">Code zum lesenden Zugriff aufs Repository:</div>'));
+        let $setSecrDivRead = jQuery('<div class="createUpdateRepo-settingsSecret"></div>');
+        this.$settingsDiv.append($setSecrDivRead);
+        this.$settingsSecretRead = jQuery('<div class="createUpdateRepo-settingsSecretSecret">---</div>')
+        $setSecrDivRead.append(this.$settingsSecretRead);
+
+        let $setSecrReadCopyButton = jQuery('<button class="jo_button jo_copy_secret_button jo_active">Kopieren</button>');
+        $setSecrDivRead.append($setSecrReadCopyButton);
+        $setSecrReadCopyButton.on("pointerdown", () => {copyTextToClipboard(this.$settingsSecretRead.text())})
+
+        let $setSecrReadButton = jQuery('<button class="jo_button jo_set_secret_button jo_active">Ändern</button>');
+        $setSecrDivRead.append($setSecrReadButton);
+        $setSecrReadButton.on("pointerdown", () => {that.setSecret(true, false)})
+
+        this.$settingsDiv.append(jQuery('<div class="createUpdateRepo-settingsLabel">Code zum schreibenden Zugriff aufs Repository:</div>'));
+        let $setSecrDivWrite = jQuery('<div class="createUpdateRepo-settingsSecret"></div>');
+        this.$settingsDiv.append($setSecrDivWrite);
+        this.$settingsSecretWrite = jQuery('<div class="createUpdateRepo-settingsSecretSecret">---</div>')
+        $setSecrDivWrite.append(this.$settingsSecretWrite);
+
+        let $setSecrWriteCopyButton = jQuery('<button class="jo_button jo_copy_secret_button jo_active">Kopieren</button>');
+        $setSecrDivWrite.append($setSecrWriteCopyButton);
+        $setSecrWriteCopyButton.on("pointerdown", () => {copyTextToClipboard(this.$settingsSecretWrite.text())})
+
+        let $setSecrWriteButton = jQuery('<button class="jo_button jo_set_secret_button jo_active">Ändern</button>');
+        $setSecrDivWrite.append($setSecrWriteButton);
+        $setSecrWriteButton.on("pointerdown", () => {that.setSecret(false, true)})
+
         $rightDiv.append(this.$userlistDiv = makeDiv("updateRepo-userlistDiv"));
 
         this.$userlistDiv.append(makeDiv(null, "updateRepo-userlistheading", "Benutzer, die das Repository nutzen", { "grid-column": 1 }))
@@ -93,6 +125,16 @@ export class RepositorySettingsManager {
         this.$saveButton.hide();
 
         $rightDiv.append($buttonDiv);
+
+    }
+
+    setSecret(read: boolean, write: boolean){
+
+        this.main.networkManager.sendSetSecret(this.repositoryInfo.id, read, write, (response) => {
+            let praefix = this.repositoryInfo.id + "T";
+            this.$settingsSecretRead.text(praefix + response.secret_read);
+            this.$settingsSecretWrite.text(praefix + response.secret_write);
+        })
 
     }
 
@@ -215,6 +257,8 @@ export class RepositorySettingsManager {
     }
 
     selectRepository($repoDiv: JQuery<HTMLDivElement>, repInfo: RepositoryInfo) {
+        this.repositoryInfo = repInfo;
+        
         this.emptyRepositoryInfo();
         if (this.$saveButton.is(":visible")) {
             let selectedItem = this.$repoListDiv.find('.active').first();
@@ -230,6 +274,8 @@ export class RepositorySettingsManager {
         this.$repoName.val(repInfo.name);
         this.$repoDescription.val(repInfo.description);
         this.$repoPublishedTo.val(repInfo.published_to);
+        this.$settingsSecretRead.text(repInfo.secret_read == null ? "--------" : repInfo.id + "T" + repInfo.secret_read);
+        this.$settingsSecretWrite.text(repInfo.secret_write == null ? "--------" : repInfo.id + "T" + repInfo.secret_write);
 
         this.$repoOwner.empty();
         this.$userlistDiv.children().not('.updateRepo-userlistheading').remove();

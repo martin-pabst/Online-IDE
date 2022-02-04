@@ -319,6 +319,18 @@ export type DistributeWorkspaceResponse = {
     message: string
 }
 
+export type SetRepositorySecretRequest = {
+    repository_id: number,
+    newSecretRead: boolean,
+    newSecretWrite: boolean
+}
+
+export type SetRepositorySecretResponse = {
+    success: boolean,
+    message: string,
+    secret_read: string,
+    secret_write: string
+}
 
 export type GetStatisticsRequest = {
     now: boolean
@@ -395,7 +407,11 @@ export type Repository = {
 
     version: number,
     published_to: number,
-    description: string
+    description: string,
+
+    secret_read?: string,
+    secret_write?: string
+
 }
 
 
@@ -455,7 +471,9 @@ export type RepositoryInfo = {
     klasse_id: number,
     version: number,
     published_to: number,
-    description: string
+    description: string,
+    secret_read?: string,
+    secret_write?: string
 }
 
 export type GetRepositoryListRequest = {
@@ -485,7 +503,8 @@ export type UpdateRepositoryResponse = {
 export type AttachWorkspaceToRepositoryRequest = {
     createNewWorkspace: boolean,
     workspace_id?: number,
-    repository_id: number
+    repository_id: number,
+    secret?: string
 }
 
 export type AttachWorkspaceToRepositoryResponse = { message?: string, new_workspace?: WorkspaceData };

@@ -27,6 +27,7 @@ export class RepositoryCheckoutManager {
     workspace: Workspace;
 
     repositories: RepositoryInfo[] = [];
+    $codeInput: JQuery<HTMLElement>;
 
     constructor(public main: Main) {
     }
@@ -50,6 +51,21 @@ export class RepositoryCheckoutManager {
         $chooseWorkspaceDiv.append(makeDiv("", "checkoutRepo-minorHeading", "Diesen Worspace mit dem Repository verbinden:"));
         this.$workspaceDropdown = jQuery('<select></select>');
         $chooseWorkspaceDiv.append(this.$workspaceDropdown);
+
+        let $codeDiv = makeDiv("", "checkoutRepo-chooseDiv");
+        $divBelow.append($codeDiv);
+        $codeDiv.append(makeDiv("", "checkoutRepo-minorHeading", "Alternativ zur Auswahl unten Eingabe eines Repository-Codes:"));
+        this.$codeInput = jQuery('<input type="text"></input>');
+        $codeDiv.append(this.$codeInput);
+
+        this.$codeInput.on("input", (e) => {
+            let text = that.$codeInput.val();
+            if(text == ''){
+                this.$repoListDiv.show();
+            } else {
+                this.$repoListDiv.hide();
+            }
+        });
 
         let $publishedToFilterDiv = makeDiv("", "checkoutRepo-chooseDiv");
         $divBelow.append($publishedToFilterDiv);
@@ -202,19 +218,47 @@ export class RepositoryCheckoutManager {
     }
 
     checkoutButtonClicked() {
-        let selectedItem = this.$repoListDiv.find('.active').first();
-        let repoData: RepositoryInfo = <any>selectedItem.data('repoInfo');
+
+        let repositoryId: number = -1;
+        let secret: string = null;
+
+        let combinedSecret = <string>this.$codeInput.val();
+        if(secret != ""){
+            let tIndex = combinedSecret.indexOf('T');
+            if(tIndex < 0){
+                alert("Der Code muss den Buchstaben T enthalten.");
+                return;
+            }
+            let number = Number.parseInt(combinedSecret.substring(0, tIndex));
+            if(number >= 0){
+                repositoryId = number;
+                secret = combinedSecret.substring(tIndex + 1);
+            } else {
+                alert ("Im Code muss vor dem T eine Zahl stehen.");
+                return;
+            }
+        } else {
+            let selectedItem = this.$repoListDiv.find('.active').first();
+            let repoData: RepositoryInfo = <any>selectedItem.data('repoInfo');
+            repositoryId = repoData.id;
+        }
 
         let workspace: Workspace = getSelectedObject(this.$workspaceDropdown);
 
         let request: AttachWorkspaceToRepositoryRequest = {
-            repository_id: repoData.id,
+            repository_id: repositoryId,
             createNewWorkspace: workspace == null,
-            workspace_id: workspace == null ? null : workspace.id
+            workspace_id: workspace == null ? null : workspace.id,
+            secret: secret
         }
 
         let that = this;
         ajax('attachWorkspaceToRepository', request, (response: AttachWorkspaceToRepositoryResponse) => {
+
+            if(response.message != null){
+                alert(response.message);
+                return;
+            }
 
             if(workspace == null && response.new_workspace != null){
 
@@ -227,10 +271,10 @@ export class RepositoryCheckoutManager {
 
             } else {
 
-                workspace.repository_id = repoData.id;
+                workspace.repository_id = repositoryId;
                 let explorer = that.main.projectExplorer;
                 explorer.workspaceListPanel.setElementClass(workspace.panelElement, "repository");
-                alert(`Der Workspace ${workspace.name} wurde erfolgreich mit dem Repository ${repoData.name} verknüpft.`);
+                alert(`Der Workspace ${workspace.name} wurde erfolgreich mit dem Repository verknüpft.`);
 
             }
 

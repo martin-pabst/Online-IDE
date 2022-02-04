@@ -1,10 +1,11 @@
 import { Main } from "../main/Main.js";
 import { ajax, PerformanceCollector } from "./AjaxHelper.js";
-import { WorkspaceData, FileData, SendUpdatesRequest, SendUpdatesResponse, CreateOrDeleteFileOrWorkspaceRequest, CRUDResponse, UpdateUserSettingsRequest, UpdateUserSettingsResponse, DuplicateWorkspaceRequest, DuplicateWorkspaceResponse, ClassData, DistributeWorkspaceRequest, DistributeWorkspaceResponse, CollectPerformanceDataRequest } from "./Data.js";
+import { WorkspaceData, FileData, SendUpdatesRequest, SendUpdatesResponse, CreateOrDeleteFileOrWorkspaceRequest, CRUDResponse, UpdateUserSettingsRequest, UpdateUserSettingsResponse, DuplicateWorkspaceRequest, DuplicateWorkspaceResponse, ClassData, DistributeWorkspaceRequest, DistributeWorkspaceResponse, CollectPerformanceDataRequest, SetRepositorySecretRequest, SetRepositorySecretResponse } from "./Data.js";
 import { Workspace } from "../workspace/Workspace.js";
 import { Module } from "../compiler/parser/Module.js";
 import { AccordionElement, AccordionPanel } from "../main/gui/Accordion.js";
 import {WorkspaceSettings } from "../communication/Data.js";
+import { response } from "express";
 
 export class NetworkManager {
 
@@ -264,6 +265,14 @@ export class NetworkManager {
 
     }
 
+    sendSetSecret(repositoryId: number, read: boolean, write: boolean, callback: (response: SetRepositorySecretResponse) => void){
+        let request: SetRepositorySecretRequest = {repository_id: repositoryId, newSecretRead: read, newSecretWrite: write};
+
+        ajax("setRepositorySecret", request, (response: SetRepositorySecretResponse) => {
+            callback(response)
+        }, (message) => {alert(message)});
+
+    }
 
     sendCreateRepository(ws: Workspace, publish_to: number, repoName: string, repoDescription: string, callback: (error: string, repository_id?: number) => void) {
 

@@ -223,7 +223,7 @@ export class RepositoryCheckoutManager {
         let secret: string = null;
 
         let combinedSecret = <string>this.$codeInput.val();
-        if(secret != ""){
+        if(combinedSecret != ""){
             let tIndex = combinedSecret.indexOf('T');
             if(tIndex < 0){
                 alert("Der Code muss den Buchstaben T enthalten.");
@@ -264,8 +264,9 @@ export class RepositoryCheckoutManager {
 
                 let newWorkspace = that.main.networkManager.createNewWorkspaceFromWorkspaceData(response.new_workspace);
                 that.main.projectExplorer.workspaceListPanel.sortElements();
-                // that.main.projectExplorer.workspaceListPanel.select(newWorkspace, false, true);
-                that.main.projectExplorer.setWorkspaceActive(newWorkspace, true);
+                setTimeout(() => {
+                    that.main.projectExplorer.setWorkspaceActive(newWorkspace, true);                    
+                }, 400);
 
                 alert('Der neue Workspace ' + response.new_workspace.name + " wurde erfolgreich angelegt.");
 

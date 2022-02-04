@@ -635,7 +635,9 @@ export class Lexer {
         while (true) {
             let char = this.currentChar;
             if (char == "\\") {
-                char = this.parseStringLiteralEscapeCharacter();                
+                char = this.parseStringLiteralEscapeCharacter();   
+                text += char;
+                continue;             
             } else if (char == '"') {
                 this.next();
                 break;
@@ -670,8 +672,16 @@ export class Lexer {
         this.next(); // skip "
         this.next(); // skip "
         this.next(); // skip "
+
+        let restOfLine: string = "";
         while (["\n", "\r"].indexOf(this.currentChar) < 0 && this.currentChar != endChar) {
+            restOfLine += this.currentChar;
             this.next();
+        }
+
+        restOfLine = restOfLine.trim();
+        if(restOfLine.length > 0 && !restOfLine.startsWith("//") && !restOfLine.startsWith("/*")){
+            this.pushError('Eine Java-Multiline-Stringkonstante beginnt immer mit """ und einem nachfolgenden Zeilenumbruch. Alle nach """ folgenden Zeichen werden überlesen!', restOfLine.length + 3);
         }
 
         while (["\n", "\r"].indexOf(this.currentChar) >= 0) {

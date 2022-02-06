@@ -11,19 +11,34 @@ includeJs(base + "lib/monaco-editor/dev/vs/loader.js");
 includeJs(base + "js/runtimelibrary/graphics/SpriteLibrary.js");
 includeJs(base + "lib/howler/howler.core.min.js");
 
-window.onload = function(){
-    
-    let scriptPosition = window.jo_doc.indexOf('<script');
-    let scripts = window.jo_doc.substr(scriptPosition);
-    let config = window.jo_doc.substr(0, scriptPosition);
-    
-    if(config.indexOf('{') < 0){
-        config = "{}";
+window.onload = function () {
+    if(window.jo_doc.startsWith("http")){
+        $.ajax({
+            url: window.jo_doc,
+             type:"get",
+             dataType:'text',  
+             success: function(data){
+               initScripts(data);
+             },
+             error:function() {
+               alert("Fehler beim Laden von " + jo_doc);
+             }
+         });
+    } else {
+        initScripts(window.jo_doc);
     }
     
+};
+
+function initScripts(jo_doc){
+    let scriptPosition = jo_doc.indexOf('<script');
+    let scripts = jo_doc.substr(scriptPosition);
+    let config = jo_doc.substr(0, scriptPosition);
+    if (config.indexOf('{') < 0) {
+        config = "{}";
+    }
     let htmlElement = document.getElementsByTagName('html')[0];
     let bodyElement = document.getElementsByTagName('body')[0];
-    
     /** @type HTMLDivElement */
     let divElement = document.createElement('div');
     divElement.classList.add('java-online');
@@ -32,23 +47,19 @@ window.onload = function(){
     divElement.style.width = "calc(100% - 40px)";
     divElement.style.height = "calc(100% - 45px)";
     divElement.style.top = "15px";
-    
     bodyElement.appendChild(divElement);
     divElement.innerHTML = scripts;
-
     // document.body.innerHTML = window.jo_doc;
     // divElement = document.getElementsByClassName('java-online')[0];
-
-
     htmlElement.style.height = "100%";
     htmlElement.style.margin = "0";
     bodyElement.style.height = "100%";
     bodyElement.style.margin = "0";
-    
     window.javaOnlineDir = "https://embed.learnj.de/include/";
     includeJs(base + "js.webpack/javaOnline-embedded.js");
     includeJs(base + "lib/p5.js/p5.js");
-};
+
+}
 
 function includeJs(src, callback, type) {
     var script = document.createElement('script');

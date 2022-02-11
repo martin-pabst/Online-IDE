@@ -315,6 +315,7 @@ export class SynchroWorkspace {
                 module.model.setValue(synchroFile.text);
                 module.file.identical_to_repository_version = synchroFile.identical_to_repository_version;
                 module.file.saved = false;
+                module.file.dirty = true;
                 module.file.name = synchroFile.name;
                 if(module.file.panelElement != null){
                     module.file.panelElement.$htmlFirstLine.find('.jo_filename');
@@ -344,7 +345,7 @@ export class SynchroWorkspace {
 
                 let f: File = {
                     name: synchroFile.name,
-                    dirty: false,
+                    dirty: true,
                     saved: true,
                     text: synchroFile.text,
                     text_before_revision: null,
@@ -382,6 +383,8 @@ export class SynchroWorkspace {
             }
 
         }
+
+        workspace.moduleStore.dirty = true;
 
     }
 

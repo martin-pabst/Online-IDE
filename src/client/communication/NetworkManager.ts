@@ -458,6 +458,8 @@ export class NetworkManager {
         w.has_write_permission_to_repository = remoteWorkspace.has_write_permission_to_repository;
         w.path = remoteWorkspace.path;
         w.isFolder = remoteWorkspace.isFolder;
+        w.moduleStore.dirty = true;
+
         if(remoteWorkspace.settings != null && remoteWorkspace.settings.startsWith("{")){
             let remoteWorkspaceSettings:WorkspaceSettings = JSON.parse(remoteWorkspace.settings);
             w.settings = remoteWorkspaceSettings;
@@ -508,7 +510,7 @@ export class NetworkManager {
         let f: any = { // File
             id: remoteFile.id,
             name: remoteFile.name,
-            dirty: false,
+            dirty: true,
             saved: true,
             text: remoteFile.text,
             version: remoteFile.version,

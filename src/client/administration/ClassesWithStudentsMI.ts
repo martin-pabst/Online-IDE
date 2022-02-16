@@ -602,11 +602,11 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
         if (event.column == 1) {
             let classData: ClassData = event.value_new;
             value_new_presented = classData.name;
-            data.klasse_id = event.value_new.id;
             if (event.value_new.id == null) {
                 event.preventDefault();
                 return;
             }
+            data.klasse_id = event.value_new.id;
         }
 
         let field = studentGrid.columns[event.column]["field"];

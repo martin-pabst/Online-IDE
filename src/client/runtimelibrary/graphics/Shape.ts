@@ -311,6 +311,20 @@ export class ShapeClass extends Klass {
 
             }, false, false, "Gibt genau dann true zurück, wenn das Grafikobjekt und das andere Grafikobjekt kollidieren.", false));
 
+        this.addMethod(new Method("collidesWithAnyShape", new Parameterlist([
+        ]), booleanPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+
+                let sh: ShapeHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("collidesWithAnyShape")) return;
+
+                return sh.collidesWithAnyShape();
+
+            }, false, false, "Gibt genau dann true zurück, wenn das Grafikobjekt und das andere Grafikobjekt kollidieren.", false));
+
         this.addMethod(new Method("moveBackFrom", new Parameterlist([
             { identifier: "otherShape", type: this, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "keepColliding", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -814,6 +828,42 @@ export abstract class ShapeHelper extends ActorHelper {
     setVisible(visible: boolean) {
 
         this.displayObject.visible = visible;
+    }
+
+    collidesWithAnyShape(): boolean {
+        this.displayObject.updateTransform();
+        if (this.hitPolygonDirty) this.transformHitPolygon();
+
+        for(let shapeHelper of this.worldHelper.shapes){
+            if(this == shapeHelper) continue;
+
+            if (shapeHelper["shapes"]) {
+                if (shapeHelper.collidesWith(this)) {
+                    return true;
+                } else {
+                    continue;
+                }
+            }
+
+            let bb = this.displayObject.getBounds();
+            let bb1 = shapeHelper.displayObject.getBounds();
+    
+            if (bb.left > bb1.right || bb1.left > bb.right) continue;
+    
+            if (bb.top > bb1.bottom || bb1.top > bb.bottom) continue;
+    
+            // boundig boxes collide, so check further:
+            if (shapeHelper.hitPolygonDirty) shapeHelper.transformHitPolygon();
+    
+            // return polygonBerührtPolygon(this.hitPolygonTransformed, shapeHelper.hitPolygonTransformed);
+            if(polygonBerührtPolygonExakt(this.hitPolygonTransformed, shapeHelper.hitPolygonTransformed, true, true)){
+                return true;
+            }
+    
+        }
+
+        return false;
+
     }
 
     collidesWith(shapeHelper: ShapeHelper) {

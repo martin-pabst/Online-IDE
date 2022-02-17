@@ -455,11 +455,11 @@ export class MyCompletionItemProvider implements monaco.languages.CompletionItem
                     insertText: "if($1){\n\t$0\n}",
                     detail: "Bedingung",
                     filterText: 'if',
-                    command: {
-                        id: "editor.action.triggerParameterHints",
-                        title: '123',
-                        arguments: []
-                    },
+                    // command: {
+                    //     id: "editor.action.triggerParameterHints",
+                    //     title: '123',
+                    //     arguments: []
+                    // },
                     insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
                     kind: monaco.languages.CompletionItemKind.Snippet,
                     range: undefined
@@ -469,15 +469,25 @@ export class MyCompletionItemProvider implements monaco.languages.CompletionItem
                     insertText: "if($1){\n\t$2\n}\nelse {\n\t$0\n}",
                     detail: "Zweiseitige Bedingung",
                     filterText: 'if',
-                    command: {
-                        id: "editor.action.triggerParameterHints",
-                        title: '123',
-                        arguments: []
-                    },
+                    // command: {
+                    //     id: "editor.action.triggerParameterHints",
+                    //     title: '123',
+                    //     arguments: []
+                    // },
                     insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
                     kind: monaco.languages.CompletionItemKind.Snippet,
                     range: undefined
-                }]);
+                },
+                {
+                    label: "else {}",
+                    insertText: "else {\n\t$0\n}",
+                    detail: "else-Zweig",
+                    filterText: 'el',
+                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                    kind: monaco.languages.CompletionItemKind.Snippet,
+                    range: undefined
+                },
+            ]);
 
         if (symbolTable?.classContext == null || symbolTable?.method != null) {
 

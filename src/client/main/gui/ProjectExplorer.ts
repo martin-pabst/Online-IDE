@@ -459,7 +459,7 @@ export class ProjectExplorer {
                 callback: (element: AccordionElement) => {
                     let ws: Workspace = <Workspace>element.externalElement;
                     let name: string = ws.name.replace(/\//g, "_");
-                    downloadFile((ws).toExportedWorkspace(), name + ".json")
+                    downloadFile(ws.toExportedWorkspace(), name + ".json")
                 }
             } 
             );

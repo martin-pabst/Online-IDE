@@ -1,5 +1,5 @@
 import { Compiler, CompilerStatus } from "../compiler/Compiler.js";
-import { Module, File } from "../compiler/parser/Module.js";
+import { Module, File, ExportedWorkspace } from "../compiler/parser/Module.js";
 import { Debugger } from "../interpreter/Debugger.js";
 import { Interpreter, InterpreterState } from "../interpreter/Interpreter.js";
 import { ActionManager } from "../main/gui/ActionManager.js";
@@ -10,7 +10,7 @@ import { RightDiv } from "../main/gui/RightDiv.js";
 import { MainBase } from "../main/MainBase.js";
 import { Workspace } from "../workspace/Workspace.js";
 import { JOScript } from "./EmbeddedStarter.js";
-import { makeDiv, makeTabs, openContextMenu } from "../tools/HtmlTools.js";
+import { downloadFile, makeDiv, makeTabs, openContextMenu } from "../tools/HtmlTools.js";
 import { EmbeddedSlider } from "./EmbeddedSlider.js";
 import { EmbeddedFileExplorer } from "./EmbeddedFileExplorer.js";
 import { TextPosition } from "../compiler/lexer/Token.js";
@@ -35,10 +35,10 @@ type JavaOnlineConfig = {
 export class MainEmbedded implements MainBase {
 
     pixiApp: PIXI.Application;
-    
+
     isEmbedded(): boolean { return true; }
 
-    jumpToDeclaration(module: Module, declaration: TextPositionWithModule){};
+    jumpToDeclaration(module: Module, declaration: TextPositionWithModule) { };
 
     getCompiler(): Compiler {
         return this.compiler;
@@ -126,14 +126,14 @@ export class MainEmbedded implements MainBase {
 
         this.initScripts();
 
-        if(!this.config.hideStartPanel){
+        if (!this.config.hideStartPanel) {
             this.indexedDB = new EmbeddedIndexedDB();
             this.indexedDB.open(() => {
-    
+
                 if (this.config.id != null) {
                     this.readScripts();
                 }
-    
+
             });
         }
 
@@ -166,14 +166,14 @@ export class MainEmbedded implements MainBase {
             this.config = {}
         }
 
-        if(this.config.hideEditor == null) this.config.hideEditor = false;
-        if(this.config.hideStartPanel == null) this.config.hideStartPanel = false;
+        if (this.config.hideEditor == null) this.config.hideEditor = false;
+        if (this.config.hideStartPanel == null) this.config.hideStartPanel = false;
 
-        if(this.config.withBottomPanel == null){
+        if (this.config.withBottomPanel == null) {
             this.config.withBottomPanel = this.config.withConsole || this.config.withPCode || this.config.withFileList || this.config.withErrorList;
         }
 
-        if(this.config.hideEditor){
+        if (this.config.hideEditor) {
             this.config.withBottomPanel = false;
             this.config.withFileList = false;
             this.config.withConsole = false;
@@ -181,15 +181,15 @@ export class MainEmbedded implements MainBase {
             this.config.withErrorList = false;
         }
 
-        if(this.config.withBottomPanel){
+        if (this.config.withBottomPanel) {
             if (this.config.withFileList == null) this.config.withFileList = true;
             if (this.config.withPCode == null) this.config.withPCode = true;
             if (this.config.withConsole == null) this.config.withConsole = true;
             if (this.config.withErrorList == null) this.config.withErrorList = true;
         }
 
-        if(this.config.speed == null) this.config.speed = 9;
-        if(this.config.libraries == null) this.config.libraries = [];
+        if (this.config.speed == null) this.config.speed = 9;
+        if (this.config.libraries == null) this.config.libraries = [];
 
 
     }
@@ -418,6 +418,26 @@ export class MainEmbedded implements MainBase {
         let $controlsDiv = jQuery('<div class="joe_controlsDiv"></div>');
         let $bottomDivInner = jQuery('<div class="joe_bottomDivInner"></div>');
 
+        let $buttonOpen = jQuery('<label type="file" class="img_open-file jo_button jo_active"' +
+            'style="margin-right: 8px;" title="Workspace aus Datei laden"><input type="file" style="display:none"></label>');
+
+        let that = this;
+
+        $buttonOpen.find('input').on('change', (event) => {
+            //@ts-ignore
+            var files: FileList = event.originalEvent.target.files;
+            that.loadWorkspaceFromFile(files[0]);
+        })
+
+        let $buttonSave = jQuery('<div class="img_save-dark jo_button jo_active"' +
+            'style="margin-right: 8px;" title="Workspace in Datei speichern"></div>');
+
+
+        $buttonSave.on('click', () => { that.saveWorkspaceToFile() });
+
+        $controlsDiv.append($buttonOpen, $buttonSave);
+
+
 
         if (this.config.withBottomPanel) {
             let $bottomDiv = jQuery('<div class="joe_bottomDiv"></div>');
@@ -436,12 +456,12 @@ export class MainEmbedded implements MainBase {
         } else {
             $centerDiv.prepend($editorDiv);
         }
-        
-        
+
+
 
 
         if (!this.config.withBottomPanel) {
-            if(this.config.hideEditor){
+            if (this.config.hideEditor) {
                 $rightDiv.prepend($controlsDiv);
             } else {
                 $centerDiv.prepend($controlsDiv);
@@ -456,7 +476,7 @@ export class MainEmbedded implements MainBase {
         $div.addClass('joe_javaOnlineDiv');
         $div.append($centerDiv, $rightDiv);
 
-        if(!this.config.hideEditor){
+        if (!this.config.hideEditor) {
             new EmbeddedSlider($rightDiv, true, false, () => {
                 jQuery('.jo_graphics').trigger('sizeChanged');
                 this.editor.editor.layout();
@@ -499,7 +519,8 @@ export class MainEmbedded implements MainBase {
                 link: "https://www.online-ide.de",
                 callback: () => {
                     // nothing to do.
-                }}], ev.pageX + 2, ev.pageY + 2);
+                }
+            }], ev.pageX + 2, ev.pageY + 2);
         });
 
         setTimeout(() => {
@@ -510,10 +531,10 @@ export class MainEmbedded implements MainBase {
             this.startTimer();
         }, 200);
 
-        if(this.config.hideEditor){
+        if (this.config.hideEditor) {
             $centerDiv.hide();
             $rightDiv.css("flex", "1");
-            if(!this.config.hideStartPanel){
+            if (!this.config.hideStartPanel) {
                 $div.find(".joe_rightDivInner").css('height', 'calc(100% - 24px)');
                 $div.find(".joe_controlsDiv").css('padding', '2px');
                 $div.find(".jo_speedcontrol-outer").css('z-index', '10');
@@ -677,7 +698,7 @@ export class MainEmbedded implements MainBase {
                 this.compiler.compile(this.currentWorkspace.moduleStore);
 
                 let errors = this.
-                bottomDiv?.errorManager?.showErrors(this.currentWorkspace);
+                    bottomDiv?.errorManager?.showErrors(this.currentWorkspace);
 
                 this.editor.onDidChangeCursorPosition(null); // mark occurrencies of symbol under cursor
 
@@ -691,9 +712,9 @@ export class MainEmbedded implements MainBase {
                     this.interpreter.state == InterpreterState.not_initialized) {
                     this.copyExecutableModuleStoreToInterpreter();
                     this.interpreter.setState(InterpreterState.done);
-                    if(this.config.hideStartPanel){
+                    if (this.config.hideStartPanel) {
                         this.actionManager.trigger('interpreter.start');
-                    }        
+                    }
                     // this.interpreter.init();
                 }
 
@@ -743,6 +764,18 @@ export class MainEmbedded implements MainBase {
     }
 
 
+    saveWorkspaceToFile() {
+        let filename: string = prompt("Bitte geben Sie den Dateinamen ein", "workspace.json");
+        if (filename == null) {
+            alert("Der Dateiname ist leer, daher wird nichts gespeichert.");
+            return;
+        }
+        if (!filename.endsWith(".json")) filename = filename + ".json";
+        let ws = this.currentWorkspace;
+        let name: string = ws.name.replace(/\//g, "_");
+        downloadFile(ws.toExportedWorkspace(), filename)
+    }
+
 
     makeBottomDiv($bottomDiv: JQuery<HTMLElement>, $buttonDiv: JQuery<HTMLElement>) {
 
@@ -750,13 +783,13 @@ export class MainEmbedded implements MainBase {
         $tabheadings.css('position', 'relative');
         let $thRightSide = jQuery('<div class="joe_tabheading-right jo_noHeading"></div>');
 
+        $thRightSide.append($buttonDiv);
+
         if (this.config.withConsole) {
             let $thConsoleClear = jQuery('<div class="img_clear-dark jo_button jo_active jo_console-clear"' +
-                'style="display: none; margin-right: 8px;" title="Console leeren"></div>');
+                'style="display: none; margin-left: 8px;" title="Console leeren"></div>');
             $thRightSide.append($thConsoleClear);
         }
-
-        $thRightSide.append($buttonDiv);
 
         if (this.config.withErrorList) {
             let $thErrors = jQuery('<div class="jo_tabheading jo_active" data-target="jo_errorsTab" style="line-height: 24px">Fehler</div>');
@@ -807,6 +840,56 @@ export class MainEmbedded implements MainBase {
         $bottomDiv.append($tabs);
 
     }
+    loadWorkspaceFromFile(file: globalThis.File) {
+        let that = this;
+        if (file == null) return;
+        var reader = new FileReader();
+        reader.onload = (event) => {
+            let text: string = <string>event.target.result;
+            if (!text.startsWith("{")) {
+                alert(`<div>Das Format der Datei ${file.name} passt nicht.</div>`);
+                return;
+            }
+
+            let ew: ExportedWorkspace = JSON.parse(text);
+
+            if (ew.modules == null || ew.name == null || ew.settings == null) {
+                alert(`<div>Das Format der Datei ${file.name} passt nicht.</div>`);
+                return;
+            }
+
+            let ws: Workspace = new Workspace(ew.name, this, 0);
+            ws.settings = ew.settings;
+            ws.alterAdditionalLibraries();
+
+            for (let mo of ew.modules) {
+                let f: File = {
+                    name: mo.name,
+                    dirty: false,
+                    saved: true,
+                    text: mo.text,
+                    text_before_revision: null,
+                    submitted_date: null,
+                    student_edited_after_revision: false,
+                    version: 1,
+                    is_copy_of_id: null,
+                    repository_file_version: null,
+                    identical_to_repository_version: null
+                };
+
+                let m = new Module(f, this);
+                ws.moduleStore.putModule(m);
+            }
+            that.fileExplorer.removeAllFiles();
+            that.currentWorkspace = ws;
+            ws.moduleStore.getModules(false).forEach(module => that.fileExplorer.addModule(module));
+
+            that.fileExplorer.setFirstFileActive();
+
+        };
+        reader.readAsText(file);
+
+    }
 
     makeRightDiv(): JQuery<HTMLElement> {
 
@@ -842,7 +925,7 @@ export class MainEmbedded implements MainBase {
     `);
 
 
-        if(!this.config.hideEditor){
+        if (!this.config.hideEditor) {
             let $tabheadings = jQuery('<div class="jo_tabheadings"></div>');
             $tabheadings.css('position', 'relative');
             let $thRun = jQuery('<div class="jo_tabheading jo_active" data-target="jo_run" style="line-height: 24px">Ausgabe</div>');
@@ -850,7 +933,7 @@ export class MainEmbedded implements MainBase {
             $tabheadings.append($thRun, $thVariables);
             this.$rightDivInner.append($tabheadings);
             let $vd = jQuery('<div class="jo_scrollable jo_editorFontSize jo_variablesTab"></div>');
-            
+
             let $alternativeText = jQuery(`
             <div class="jo_alternativeText jo_scrollable">
             <div style="font-weight: bold">Tipp:</div>
@@ -863,23 +946,23 @@ export class MainEmbedded implements MainBase {
                 </ul>
                 </div>
                 `);
-                
-                $vd.append(this.$debuggerDiv, $alternativeText);
-                let $tabs = jQuery('<div class="jo_tabs jo_scrollable"></div>');
-                $tabs.append(this.$runDiv, $vd);
-                this.$rightDivInner.append($tabs);
-                makeTabs($rightDiv);
-            } else {
-                this.$rightDivInner.append(this.$runDiv);
-            }
-        
+
+            $vd.append(this.$debuggerDiv, $alternativeText);
+            let $tabs = jQuery('<div class="jo_tabs jo_scrollable"></div>');
+            $tabs.append(this.$runDiv, $vd);
+            this.$rightDivInner.append($tabs);
+            makeTabs($rightDiv);
+        } else {
+            this.$rightDivInner.append(this.$runDiv);
+        }
+
         return $rightDiv;
     }
-    
-    getSemicolonAngel(): SemicolonAngel{
+
+    getSemicolonAngel(): SemicolonAngel {
         return this.semicolonAngel;
     }
-    
+
 }
 
 

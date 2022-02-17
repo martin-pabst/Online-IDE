@@ -323,7 +323,7 @@ export class ShapeClass extends Klass {
 
                 return sh.collidesWithAnyShape();
 
-            }, false, false, "Gibt genau dann true zurück, wenn das Grafikobjekt und das andere Grafikobjekt kollidieren.", false));
+            }, false, false, "Gibt genau dann true zurück, wenn das Grafikobjekt mit irgendeinem anderen Grafikobjekt kollidiert.", false));
 
         this.addMethod(new Method("moveBackFrom", new Parameterlist([
             { identifier: "otherShape", type: this, declaration: null, usagePositions: null, isFinal: true },

@@ -886,6 +886,8 @@ export class MainEmbedded implements MainBase {
 
             that.fileExplorer.setFirstFileActive();
 
+            that.saveScripts();
+
         };
         reader.readAsText(file);
 

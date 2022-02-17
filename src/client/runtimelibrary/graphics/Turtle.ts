@@ -149,6 +149,19 @@ export class TurtleClass extends Klass {
 
             }, false, false, 'Erstellt eine Kopie des Turtle-Objekts und gibt es zurück.', false));
 
+        this.addMethod(new Method("clear", new Parameterlist([
+        ]), this,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: TurtleHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("clear")) return;
+
+                return sh.clear();
+
+            }, false, false, 'Löscht alle bis jetzt mit der Turtle gezeichneten Strecken.', false));
+
 
     }
 
@@ -185,8 +198,6 @@ export class TurtleHelper extends FilledShapeHelper {
     lastColor: number = 0;
     lastAlpha: number = 0;
 
-    turtleX: number = -1;
-    turtleY: number = -1;
     lastTurtleAngleDeg: number = 0; // angle in Rad
 
     renderJobPresent: boolean = false;
@@ -214,8 +225,6 @@ export class TurtleHelper extends FilledShapeHelper {
         this.lineGraphic = new PIXI.Graphics();
         container.addChild(this.lineGraphic);
         this.lineGraphic.moveTo(xStart, yStart);
-        this.turtleX = 0;
-        this.turtleY = 0;
 
         this.turtle = new PIXI.Graphics();
         container.addChild(this.turtle);
@@ -390,8 +399,6 @@ export class TurtleHelper extends FilledShapeHelper {
         this.turtle.updateTransform();
 
         this.lastTurtleAngleDeg = this.turtleAngleDeg;
-        this.turtleX = x;
-        this.turtleY = y;
     }
 
     render(): void {
@@ -484,11 +491,16 @@ export class TurtleHelper extends FilledShapeHelper {
         this.hitPolygonInitial = this.lineElements.map((le) => { return { x: le.x, y: le.y } });
     }
 
-    clear() {
+    clear(x: number = null, y: number = null, angle: number = null) {
+        let lastLineElement = this.lineElements.pop();
+        if(x == null) x = lastLineElement.x;
+        if(y == null) y = lastLineElement.y;
+
         this.lineElements = [];
+
         this.lineElements.push({
-            x: 100,
-            y: 200,
+            x: x,
+            y: y,
             color: 0,
             alpha: 1,
             lineWidth: 1
@@ -496,13 +508,16 @@ export class TurtleHelper extends FilledShapeHelper {
         this.calculateCenter();
 
         this.hitPolygonInitial = [];
-
-        this.turtleAngleDeg = 0;
-        this.lastTurtleAngleDeg = 0;
-        this.borderColor = 0;
-        this.turtleSize = 40;
+        if(angle != null){
+            this.turtleAngleDeg = angle;
+            this.lastTurtleAngleDeg = 0;
+            this.borderColor = 0;
+            this.turtleSize = 40;
+        }
         this.render();
-        this.moveTurtleTo(100, 200, 0);
+        if(angle != null){
+            this.moveTurtleTo(x, y, angle);
+        }
     }
 
 

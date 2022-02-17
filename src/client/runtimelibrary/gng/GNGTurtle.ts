@@ -166,7 +166,7 @@ export class GNGTurtleClass extends Klass {
 
                 if (sh.testdestroyed("Löschen")) return;
 
-                sh.clear();
+                sh.clear(100, 200, 0);
 
             }, false, false, "Löscht alles von der Turtle gezeichnete und versetzt die Turtle in den Ausgangszustand.", false));
 

@@ -103,75 +103,77 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                 })
             }
 
+            this.loadClassDataList(() => {
+                if (w2ui[this.studentGridName] != null) {
+                    let grid: W2UI.W2Grid = w2ui[this.studentGridName];
+                    grid.clear();
+                    grid.render();
+                } else {
+                    $tableRight.w2grid({
+                        name: this.studentGridName,
+                        header: 'Schüler/innen',
+                        // selectType: "cell",
+                        show: {
+                            header: true,
+                            toolbar: true,
+                            toolbarAdd: true,
+                            toolbarDelete: true,
+                            footer: true,
+                            selectColumn: true,
+                            toolbarSearch: false
+                        },
+                        toolbar: {
+                            items: [
+                                { type: 'break' },
+                                { type: 'button', id: 'passwordButton', text: 'Passwort ändern...' }, //, img: 'fa-key' },
+                                { type: 'button', id: 'changeClassButton', text: 'Klasse ändern...' } //, img: 'fa-key' }
+                            ],
+                            onClick: function (target, data) {
+                                if (target == "passwordButton") {
+                                    that.changePassword();
+                                } else if (target == "changeClassButton") {
+                                    that.changeClass();
+                                }
+                            }
+                        },
+                        recid: "id",
+                        columns: [
+                            { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
+                            {
+                                field: 'klasse', caption: 'Klasse', size: '10%', sortable: true, resizable: true
+                            },
+                            { field: 'username', caption: 'Benutzername', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
+                            { field: 'rufname', caption: 'Rufname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
+                            { field: 'familienname', caption: 'Familienname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
+                            {
+                                field: 'id', caption: 'PW', size: '40px', sortable: false, render: (e) => {
+                                    return '<div class="pw_button" title="Passwort ändern" data-recid="' + e.recid + '" style="visibility: hidden">PW!</div>';
+                                }
+                            }
+                        ],
+                        searches: [
+                            { field: 'username', label: 'Benutzername', type: 'text' },
+                            { field: 'rufname', label: 'Rufname', type: 'text' },
+                            { field: 'familienname', label: 'Familienname', type: 'text' }
+                        ],
+                        sortData: [{ field: 'klasse', direction: 'asc' }, { field: 'familienname', direction: 'asc' }, { field: 'rufname', direction: 'asc' }],
+                        onAdd: (event) => { that.onAddStudent() },
+                        onChange: (event) => { that.onUpdateStudent(event) },
+                        onDelete: (event) => { that.onDeleteStudent(event) },
+                        onClick: (event) => {
+                            if (event.column == 1) {
+                                w2ui[that.studentGridName].editField(event.recid, event.column);
+                            }
+                        },
+                        onSelect: (event) => { event.done(() => { that.onSelectStudent(event) }) },
+                        onUnselect: (event) => { event.done(() => { that.onUnselectStudent(event) }) },
+                    });
+                }
+                this.loadTables();
+            });
+
         })
 
-        this.loadClassDataList(() => {
-            this.loadTables();
-            if (w2ui[this.studentGridName] != null) {
-                let grid: W2UI.W2Grid = w2ui[this.studentGridName];
-                grid.render();
-            } else {
-                $tableRight.w2grid({
-                    name: this.studentGridName,
-                    header: 'Schüler/innen',
-                    // selectType: "cell",
-                    show: {
-                        header: true,
-                        toolbar: true,
-                        toolbarAdd: true,
-                        toolbarDelete: true,
-                        footer: true,
-                        selectColumn: true,
-                        toolbarSearch: false
-                    },
-                    toolbar: {
-                        items: [
-                            { type: 'break' },
-                            { type: 'button', id: 'passwordButton', text: 'Passwort ändern...' }, //, img: 'fa-key' },
-                            { type: 'button', id: 'changeClassButton', text: 'Klasse ändern...' } //, img: 'fa-key' }
-                        ],
-                        onClick: function (target, data) {
-                            if (target == "passwordButton") {
-                                that.changePassword();
-                            } else if (target == "changeClassButton") {
-                                that.changeClass();
-                            }
-                        }
-                    },
-                    recid: "id",
-                    columns: [
-                        { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
-                        {
-                            field: 'klasse', caption: 'Klasse', size: '10%', sortable: true, resizable: true
-                        },
-                        { field: 'username', caption: 'Benutzername', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
-                        { field: 'rufname', caption: 'Rufname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
-                        { field: 'familienname', caption: 'Familienname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
-                        {
-                            field: 'id', caption: 'PW', size: '40px', sortable: false, render: (e) => {
-                                return '<div class="pw_button" title="Passwort ändern" data-recid="' + e.recid + '" style="visibility: hidden">PW!</div>';
-                            }
-                        }
-                    ],
-                    searches: [
-                        { field: 'username', label: 'Benutzername', type: 'text' },
-                        { field: 'rufname', label: 'Rufname', type: 'text' },
-                        { field: 'familienname', label: 'Familienname', type: 'text' }
-                    ],
-                    sortData: [{ field: 'klasse', direction: 'asc' }, { field: 'familienname', direction: 'asc' }, { field: 'rufname', direction: 'asc' }],
-                    onAdd: (event) => { that.onAddStudent() },
-                    onChange: (event) => { that.onUpdateStudent(event) },
-                    onDelete: (event) => { that.onDeleteStudent(event) },
-                    onClick: (event) => {
-                        if (event.column == 1) {
-                            w2ui[that.studentGridName].editField(event.recid, event.column);
-                        }
-                    },
-                    onSelect: (event) => { event.done(() => { that.onSelectStudent(event) }) },
-                    onUnselect: (event) => { event.done(() => { that.onUnselectStudent(event) }) },
-                });
-            }
-        });
 
     }
 

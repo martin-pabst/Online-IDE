@@ -18,12 +18,12 @@ export class GNGDreieckClass extends Klass {
         this.addAttribute(new Attribute("breite", intPrimitiveType, (value: Value) => { 
             let breite = value.object.intrinsicData["Breite"];
             value.value = Math.round(breite); 
-        }, false, Visibility.private, false, "Breite des Dreiecks"));
+        }, false, Visibility.protected, false, "Breite des Dreiecks"));
 
         this.addAttribute(new Attribute("höhe", intPrimitiveType, (value: Value) => { 
             let höhe = value.object.intrinsicData["Höhe"];
             value.value = Math.round(höhe); 
-        }, false, Visibility.private, false, "Höhe des Dreiecks"));
+        }, false, Visibility.protected, false, "Höhe des Dreiecks"));
 
         this.setupAttributeIndicesRecursive();
 

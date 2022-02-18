@@ -17,7 +17,7 @@ export class GNGKreisClass extends Klass {
         this.addAttribute(new Attribute("radius", intPrimitiveType, (value: Value) => { 
             let sh = value.object.intrinsicData["Actor"];
             value.value = Math.round(sh.r * sh.displayObject.scale.x); 
-        }, false, Visibility.private, false, "Radius des Kreises"));
+        }, false, Visibility.protected, false, "Radius des Kreises"));
 
         this.setupAttributeIndicesRecursive();
 

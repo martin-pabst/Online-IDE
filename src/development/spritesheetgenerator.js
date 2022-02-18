@@ -2,6 +2,7 @@
 var fs = require('fs');
 var Spritesmith = require('spritesmith');
 var SpriteLibrary = require('../../htdocs/js/runtimelibrary/graphics/SpriteLibrary.js');
+var marginExtruder = require('./marginExtruder.js');
 
 let dir = "./material/spritesheet-files/"
 let output_dir = "./htdocs/assets/graphics/"
@@ -15,6 +16,8 @@ let filenameToNameMap = {};
 let filenameToTilesMap = {};
 
 let filenameToCssInfoMap = {};
+let filenameToExtrudeMarginWidthMap = {};
+let extrudeMarginInformation = [];
 
 for (let sle of SpriteLibrary) {
     src.push(dir + sle.filename);
@@ -41,6 +44,10 @@ for (let sle of SpriteLibrary) {
     }
     filenameToNameMap[sle.filename] = name;
     filenameToCssInfoMap[sle.filename] = { name: sle.name, index: index, scale: sle.scale, indexName: sle.indexName };
+    if (sle.extrudeMarginWidth > 0) {
+        filenameToExtrudeMarginWidthMap[sle.filename] = sle.extrudeMarginWidth;
+    }
+
 }
 
 Spritesmith.run({
@@ -53,8 +60,10 @@ Spritesmith.run({
         throw err;
     }
 
+    let filename1 = output_dir + 'spritesheet.png';
+
     // Output the image
-    fs.writeFileSync(output_dir + 'spritesheet.png', result.image);
+    fs.writeFileSync(filename1, result.image);
 
     let pixi = {
         "frames": {},
@@ -75,15 +84,22 @@ Spritesmith.run({
             let data = result.coordinates[filename];
             filename = filename.replace(dir, "");
             let tiles = filenameToTilesMap[filename];
+            let emw = filenameToExtrudeMarginWidthMap[filename];
             if (typeof tiles == "undefined") {
+                let frame = { x: Math.round(data.x), y: Math.round(data.y), w: Math.round(data.width), h: Math.round(data.height) };
                 pixi.frames[filenameToNameMap[filename]] = {
-                    frame: { x: Math.round(data.x), y: Math.round(data.y), w: Math.round(data.width), h: Math.round(data.height) },
+                    frame: frame,
                     "rotated": false,
                     "trimmed": false,
                     "spriteSourceSize": { x: 0, y: 0, w: Math.round(data.width), h: Math.round(data.height) },
                     "sourceSize": { "w": Math.round(data.width), "h": Math.round(data.height) },
                     "pivot": { "x": 0.5, "y": 0.5 }
                 }
+
+                if (emw) {
+                    extrudeMarginInformation.push({ left: frame.x, top: frame.y, width: frame.w, height: frame.h, marginWidth: emw })
+                }
+
                 let cssInfo = filenameToCssInfoMap[filename];
                 cssFile += getCssPart(cssInfo.name, cssInfo.index, Math.round(data.x), Math.round(data.y), Math.round(data.width), Math.round(data.height), cssGraphicURL);
             } else {
@@ -106,6 +122,11 @@ Spritesmith.run({
                             let cssInfo = filenameToCssInfoMap[filename];
                             cssFile += getCssPart(cssInfo.name, number, x, y, w, h, cssGraphicURL);
                             number++;
+
+                            if (emw) {
+                                extrudeMarginInformation.push({ left: x, top: y, width: w, height: h, marginWidth: emw })
+                            }
+
                             if(tiles.tilesX*tiles.tilesY - tiles.skipAtEnd <= number - tiles.minIndex) break;
                         }
                         if(tiles.tilesX*tiles.tilesY - tiles.skipAtEnd <= number - tiles.minIndex) break;
@@ -126,6 +147,11 @@ Spritesmith.run({
                             let cssInfo = filenameToCssInfoMap[filename];
                             cssFile += getCssPart(cssInfo.name, number, x, y, w, h, cssGraphicURL);
                             number++;
+
+                            if (emw) {
+                                extrudeMarginInformation.push({ left: x, top: y, width: w, height: h, marginWidth: emw })
+                            }
+
                             if(tiles.tilesX*tiles.tilesY - tiles.skipAtEnd <= number - tiles.minIndex) break;
                         }
                         if(tiles.tilesX*tiles.tilesY - tiles.skipAtEnd <= number - tiles.minIndex) break;
@@ -142,6 +168,14 @@ Spritesmith.run({
     fs.writeFileSync(cssFilename, cssFile, 'utf-8');
 
     result.coordinates, result.properties; // Coordinates and properties
+
+    console.log("Extrude margins...");
+    // Avoid tile-bleeding by extruding sprite margins
+    marginExtruder.extrudeMargin(extrudeMarginInformation, filename1);
+    console.log("\u001b[1;32m Done!");
+
+
+
 });
 
 

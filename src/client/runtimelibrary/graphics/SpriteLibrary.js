@@ -5,6 +5,9 @@ var SpriteLibrary = [
     {filename: "Schaufel.png", name: "Werkzeug", index: 0, scale: 1.0},
     {filename: "minesweeper/minesweeper.png", name: "Minesweeper", tilesX: 20, tilesY: 1, spacingX: 1, scale: 1.0, index: 0},
     {filename: "minesweeper/minesweeper-numbers.png", name: "Minesweeper", tilesX: 10, tilesY: 1, scale: 1.0, index: 22},
+    
+    // Sleepy Blocks
+    {filename: "Sleepy_Blocks/sleepy_blocks.png", name: "Sleepy_Blocks", tilesX: 5, tilesY: 1, spacingX: 2, spacingY: 2, scale: 1.0, index: 0, extrudeMarginWidth: 1},
 
     { filename: "flappy_bird/bird1.png", name: "Bird", index: 0, indexName: "Bird" },
     { filename: "flappy_bird/bird2.png", name: "Bird", index: 1, indexName: "Bird" },
@@ -69,13 +72,13 @@ var SpriteLibrary = [
     { filename: "classics/satellite_2.png", name: "Space_Shooter_2", index: 22 },
     
     // Soko
-    {filename: "classics/sokoban_man_horizontal.png", name: "Soko", tilesX: 3, tilesY: 1, spacingX: 2, spacingY: 0, scale: 1.0, index: 0},
-    {filename: "classics/sokoban_man_vertical.png", name: "Soko", tilesX: 6, tilesY: 1, spacingX: 2, spacingY: 0, scale: 1.0, index: 3},
-    { filename: "classics/sokoban_box_1.png", name: "Soko", index: 9 },
-    { filename: "classics/sokoban_box_2.png", name: "Soko", index: 10 },
-    { filename: "classics/sokoban_empty.png", name: "Soko", index: 11 },
-    { filename: "classics/sokoban_wall.png", name: "Soko", index: 12 },
-    { filename: "classics/sokoban_target.png", name: "Soko", index: 13 },
+    {filename: "classics/sokoban_man_horizontal.png", name: "Soko", tilesX: 3, tilesY: 1, spacingX: 2, spacingY: 0, scale: 1.0, index: 0, extrudeMarginWidth: 1},
+    {filename: "classics/sokoban_man_vertical.png", name: "Soko", tilesX: 6, tilesY: 1, spacingX: 2, spacingY: 0, scale: 1.0, index: 3, extrudeMarginWidth: 1},
+    { filename: "classics/sokoban_box_1.png", name: "Soko", index: 9, extrudeMarginWidth: 1 },
+    { filename: "classics/sokoban_box_2.png", name: "Soko", index: 10, extrudeMarginWidth: 1 },
+    { filename: "classics/sokoban_empty.png", name: "Soko", index: 11, extrudeMarginWidth: 1 },
+    { filename: "classics/sokoban_wall.png", name: "Soko", index: 12, extrudeMarginWidth: 1 },
+    { filename: "classics/sokoban_target.png", name: "Soko", index: 13, extrudeMarginWidth: 1 },
     
     // P-Man
     {filename: "classics/pacman_characters.png", name: "PMan", tilesX: 22, tilesY: 1, spacingX: 2, spacingY: 0, scale: 1.0, index: 0},
@@ -109,10 +112,10 @@ var SpriteLibrary = [
     { filename: "classics/wuerfel_6.png", name: "Boardgames", index: 18 },
     
     // Platformer
-    {filename: "plattformer/Tiles_and_enemies_64x64.png", name: "Plattforms", tilesX: 22, tilesY: 16, spacingX: 2, spacingY: 2, scale: 1.0, index: 0},
+    {filename: "plattformer/Tiles_and_enemies_64x64.png", name: "Plattforms", tilesX: 22, tilesY: 16, spacingX: 2, spacingY: 2, scale: 1.0, index: 0, extrudeMarginWidth: 1},
     
     // Tower defense
-    {filename: "tower-defense/tower-defense.png", name: "TowerDefense", tilesX: 18, tilesY: 10, spacingX: 2, spacingY: 2, scale: 1.0, index: 0},
+    {filename: "tower-defense/tower-defense.png", name: "TowerDefense", tilesX: 18, tilesY: 10, spacingX: 2, spacingY: 2, scale: 1.0, index: 0, extrudeMarginWidth: 1},
     
     // Platformer character
     {filename: "plattformer/male.png", name: "Characters_1", tilesX: 6, tilesY: 2, spacingX: 0, spacingY: 0, scale: 1.0, index: 0},

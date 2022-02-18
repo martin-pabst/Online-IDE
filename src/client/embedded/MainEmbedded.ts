@@ -880,11 +880,15 @@ export class MainEmbedded implements MainBase {
                 let m = new Module(f, this);
                 ws.moduleStore.putModule(m);
             }
-            that.fileExplorer.removeAllFiles();
             that.currentWorkspace = ws;
-            ws.moduleStore.getModules(false).forEach(module => that.fileExplorer.addModule(module));
 
-            that.fileExplorer.setFirstFileActive();
+            if(that.fileExplorer != null){
+                that.fileExplorer.removeAllFiles();
+                ws.moduleStore.getModules(false).forEach(module => that.fileExplorer.addModule(module));
+                that.fileExplorer.setFirstFileActive();
+            } else {
+                this.setModuleActive(this.currentWorkspace.moduleStore.getFirstModule());
+            }
 
             that.saveScripts();
 

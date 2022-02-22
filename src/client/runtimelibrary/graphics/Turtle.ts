@@ -464,6 +464,7 @@ export class TurtleHelper extends FilledShapeHelper {
 
         if (this.initialHitPolygonDirty) {
             this.setupInitialHitPolygon();
+            this.transformHitPolygon();
         }
 
         let bb = this.displayObject.getBounds();

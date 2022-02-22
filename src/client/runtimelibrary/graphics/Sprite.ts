@@ -221,8 +221,9 @@ export class SpriteClass extends Klass {
 
                 let indices: number[] = [];
 
-                if (fromIndex < toIndex && toIndex - fromIndex < 10000) {
-                    for (let i = fromIndex; i <= toIndex; i++) indices.push(i);
+                if (Math.abs(toIndex - fromIndex) < 10000) {
+                    let delta = Math.sign(toIndex - fromIndex);
+                    for (let i = fromIndex; i != toIndex; i = i + delta) indices.push(i);
                 }
 
                 sh.playAnimation(indices, repeatType.enumValue.identifier, imagesPerSecond);

@@ -837,8 +837,16 @@ export abstract class ShapeHelper extends ActorHelper {
         for(let shapeHelper of this.worldHelper.shapes){
             if(this == shapeHelper) continue;
 
-            if (shapeHelper["shapes"]) {
+            if (shapeHelper["shapes"] || shapeHelper["turtle"]) {
                 if (shapeHelper.collidesWith(this)) {
+                    return true;
+                } else {
+                    continue;
+                }
+            }
+
+            if(this["turtle"]){
+                if (this.collidesWith(shapeHelper)) {
                     return true;
                 } else {
                     continue;

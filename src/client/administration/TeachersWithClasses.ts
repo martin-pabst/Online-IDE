@@ -415,6 +415,7 @@ export class TeachersWithClassesMI extends AdminMenuItem {
                 lehrkraft_id: teacherId,
                 zweitlehrkraft_id: null,
                 schule_id: teacherData.userData.schule_id,
+                aktiv: true,
                 students: []
             },
         };

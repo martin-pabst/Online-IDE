@@ -135,6 +135,7 @@ export type ClassData = {
     zweitlehrkraft_id: number,
     schule_id: number,
     name: string,
+    aktiv: boolean,
     students: UserData[],
     text?: string
 }

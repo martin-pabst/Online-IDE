@@ -32,7 +32,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
     onMenuButtonPressed($mainHeading: JQuery<HTMLElement>, $tableLeft: JQuery<HTMLElement>,
         $tableRight: JQuery<HTMLElement>, $mainFooter: JQuery<HTMLElement>) {
 
-        $tableRight.css('flex', '2');
+        $tableRight.css('flex', '1');
 
         let that = this;
 
@@ -90,6 +90,10 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                                 text: "Keine Zweitlehrkraft"
                             }]), filter: false }
                         },
+                        {
+                            field: 'aktiv', caption: 'aktiv', size: '10%', sortable: false, resizable: false, style: 'text-align: center',
+                            editable: { type: 'checkbox', style: 'text-align: center' }
+                        }
                     ],
                     searches: [
                         { field: 'name', label: 'Bezeichnung', type: 'text' }
@@ -412,6 +416,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                 lehrkraft_id: userData.id,
                 zweitlehrkraft_id: null,
                 name: "Name der Klasse",
+                aktiv: true,
                 students: []
             },
         };
@@ -428,6 +433,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                 zweitlehrkraft_id: null,
                 schule_id: userData.schule_id,
                 name: cd.name,
+                aktiv: cd.aktiv,
                 students: []
             })
 

@@ -775,6 +775,10 @@ export class Interpreter {
         while (!stepFinished && !this.additionalStepFinishedFlag && exception == null) {
 
 
+            if(typeof this.currentProgram == "undefined"){
+                debugger;
+            }
+
             if (this.currentProgramPosition > this.currentProgram.statements.length - 1) {
                 this.setState(InterpreterState.done);
                 break;

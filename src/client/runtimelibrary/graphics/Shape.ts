@@ -478,38 +478,33 @@ export class ShapeClass extends Klass {
         this.addMethod(new Method("onMouseEnter", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-        ]), null,
-            null, // no statements!
+        ]), voidPrimitiveType, () => {}, // no statements!
             false, false, "Wird aufgerufen, wenn sich der Mauspfeil in das Objekt hineinbewegt.", false));
 
         this.addMethod(new Method("onMouseLeave", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-        ]), null,
-            null, // no statements!
+        ]), voidPrimitiveType, () => {}, // no statements!
             false, false, "Wird aufgerufen, wenn sich der Mauspfeil in das Objekt hineinbewegt.", false));
 
         this.addMethod(new Method("onMouseDown", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "key", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-        ]), null,
-            null, // no statements!
+        ]), voidPrimitiveType, () => {}, // no statements!
             false, false, "Wird aufgerufen, wenn sich der Mauspfeil über dem Objekt befindet und der Benutzer eine Maustaste nach unten drückt.", false));
 
         this.addMethod(new Method("onMouseUp", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "key", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-        ]), null,
-            null, // no statements!
+        ]), voidPrimitiveType, () => {}, // no statements!
             false, false, "Wird aufgerufen, wenn sich der Mauspfeil über dem Objekt befindet und der Benutzer eine Maustaste loslässt.", false));
 
         this.addMethod(new Method("onMouseMove", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-        ]), null,
-            null, // no statements!
+        ]), voidPrimitiveType, () => {}, // no statements!
             false, false, "Wird aufgerufen, wenn sich der Mauspfeil über dem Objekt befindet und bewegt.", false));
 
         this.addMethod(new Method("tint", new Parameterlist([

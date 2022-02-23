@@ -202,31 +202,41 @@ export class Actor extends Klass {
 
         this.addMethod(new Method("act", new Parameterlist([
             { identifier: "deltaTime", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true }
-        ]), null,
-            null, // no statements!
+        ]), voidPrimitiveType,
+            () => {
+
+            }, // no statements!
             false, false, "Wird ca. 30-mal pro Sekunde aufgerufen", false));
 
         this.addMethod(new Method("act", new Parameterlist([
-        ]), null,
-            null, // no statements!
+        ]), voidPrimitiveType,
+            () => {
+                
+            },
             false, false, "Wird ca. 30-mal pro Sekunde aufgerufen", false));
 
         this.addMethod(new Method("onKeyTyped", new Parameterlist([
             { identifier: "key", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
-        ]), null,
-            null, // no statements!
+        ]), voidPrimitiveType,
+            () => {
+                
+            },
             false, false, "Wird aufgerufen, nachdem der Benutzer eine Taste gedrückt und wieder losgelassen hat.", false));
 
         this.addMethod(new Method("onKeyDown", new Parameterlist([
             { identifier: "key", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
-        ]), null,
-            null, // no statements!
+        ]), voidPrimitiveType,
+            () => {
+                
+            },
             false, false, "Wird aufgerufen, nachdem der Benutzer eine Taste gedrückt hat.", false));
 
         this.addMethod(new Method("onKeyUp", new Parameterlist([
             { identifier: "key", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
-        ]), null,
-            null, // no statements!
+        ]), voidPrimitiveType,
+            () => {
+                
+            },
             false, false, "Wird aufgerufen, nachdem der Benutzer eine Taste losgelassen hat.", false));
 
 

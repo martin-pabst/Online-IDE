@@ -64,7 +64,7 @@ export class MouseAdapterClass extends Klass {
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "button", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), voidPrimitiveType,
-            null,  // no implementation!
+            () => {}, // no implementation!
             false, false, "Wird aufgerufen, wenn eine Maustaste über dem Grafikbereich losgelassen wird."));
 
         this.addMethod(new Method("onMouseDown", new Parameterlist([
@@ -72,28 +72,28 @@ export class MouseAdapterClass extends Klass {
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "button", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), voidPrimitiveType,
-            null,  // no implementation!
+            () => {}, // no implementation!
             false, false, "Wird aufgerufen, wenn eine Maustaste über dem Grafikbereich gedrückt wird."));
 
         this.addMethod(new Method("onMouseMove", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), voidPrimitiveType,
-            null,  // no implementation!
+            () => {}, // no implementation!
             false, false, "Wird aufgerufen, wenn der Mauszeiger über dem Grafikbereich bewegt wird."));
 
         this.addMethod(new Method("onMouseEnter", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), voidPrimitiveType,
-            null,  // no implementation!
+            () => {}, // no implementation!
             false, false, "Wird aufgerufen, wenn der Mauszeiger in den Grafikbereich hineinbewegt wird."));
 
         this.addMethod(new Method("onMouseLeave", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), voidPrimitiveType,
-            null,  // no implementation!
+            () => {}, // no implementation!
             false, false, "Wird aufgerufen, wenn der Mauszeiger aus dem Grafikbereich herausbewegt wird."));
 
 

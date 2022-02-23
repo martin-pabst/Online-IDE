@@ -558,7 +558,7 @@ export class GNGFigurClass extends Klass {
             null,  // no implementation!
             false, false, "Wird aufgerufen, wenn eine Sondertaste gedrückt wird."));
 
-        this.addMethod(new Method("MausGecklickt", new Parameterlist([
+        this.addMethod(new Method("MausGeklickt", new Parameterlist([
             { identifier: "x", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "anzahl", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },

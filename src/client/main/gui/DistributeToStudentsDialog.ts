@@ -102,7 +102,7 @@ export class DistributeToStudentsDialog {
         this.main.networkManager.sendDistributeWorkspace(this.workspace, null, student_ids, (error: string) => {
             if (error == null) {
                 let networkManager = this.main.networkManager;
-                let dt = networkManager.updateFrequencyInSeconds * networkManager.forcedUpdateEvery;
+                let dt = networkManager.updateFrequencyInSeconds;
                 alert(`Der Workspace ${this.workspace.name} wurde an ${student_ids.length} Schüler/innen ausgeteilt. Er wird in maximal ${dt} s bei jedem Schüler ankommen.`);
             } else {
                 alert(error);

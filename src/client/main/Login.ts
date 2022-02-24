@@ -120,6 +120,8 @@ export class Login {
                 });
             });
 
+            this.main.networkManager.notifierClient.disconnect();
+
         });
 
 
@@ -223,6 +225,7 @@ export class Login {
         
                     }
         
+                    that.main.networkManager.initializeNotifierClient();
 
                 }
 

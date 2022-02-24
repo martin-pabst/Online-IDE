@@ -6,6 +6,7 @@ import { Module } from "../compiler/parser/Module.js";
 import { AccordionElement, AccordionPanel } from "../main/gui/Accordion.js";
 import {WorkspaceSettings } from "../communication/Data.js";
 import { response } from "express";
+import { NotifierClient } from "./NotifierClient.js";
 
 export class NetworkManager {
 
@@ -23,6 +24,10 @@ export class NetworkManager {
 
     interval: any;
 
+    counterTillForcedUpdate: number;
+
+    notifierClient: NotifierClient;
+
     constructor(private main: Main, private $updateTimerDiv: JQuery<HTMLElement>) {
 
     }
@@ -34,7 +39,7 @@ export class NetworkManager {
 
         if (this.interval != null) clearInterval(this.interval);
 
-        let counterTillForcedUpdate: number = this.forcedUpdateEvery;
+        this.counterTillForcedUpdate = this.forcedUpdateEvery;
 
         this.interval = setInterval(() => {
 
@@ -44,13 +49,13 @@ export class NetworkManager {
 
             if (that.secondsTillNextUpdate < 0) {
                 that.secondsTillNextUpdate = that.updateFrequencyInSeconds;
-                counterTillForcedUpdate--;
-                let doForceUpdate = counterTillForcedUpdate == 0;
+                that.counterTillForcedUpdate--;
+                let doForceUpdate = that.counterTillForcedUpdate == 0;
                 if (doForceUpdate) {
                     this.forcedUpdatesInARow++;
-                    counterTillForcedUpdate = this.forcedUpdateEvery;
+                    that.counterTillForcedUpdate = this.forcedUpdateEvery;
                     if (this.forcedUpdatesInARow > 50) {
-                        counterTillForcedUpdate = this.forcedUpdateEvery * 10;
+                        that.counterTillForcedUpdate = this.forcedUpdateEvery * 10;
                     }
                 }
 
@@ -77,6 +82,9 @@ export class NetworkManager {
 
     }
 
+    initializeNotifierClient(){
+        this.notifierClient = new NotifierClient(this.main, this);
+    }
 
     sendUpdates(callback?: () => void, sendIfNothingIsDirty: boolean = false, sendBeacon: boolean = false) {
 

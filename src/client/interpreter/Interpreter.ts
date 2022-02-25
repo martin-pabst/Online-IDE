@@ -95,6 +95,7 @@ export class Interpreter {
 
     webSocketsToCloseAfterProgramHalt: WebSocket[] = [];
 
+    pauseUntil?: number;
 
     actions: string[] = ["start", "pause", "stop", "stepOver",
         "stepInto", "stepOut", "restart"];
@@ -457,6 +458,8 @@ export class Interpreter {
 
         this.isFirstStatement = true;
 
+        this.pauseUntil = null;
+
         if (this.state == InterpreterState.error || this.state == InterpreterState.done) {
             this.init();
             this.resetRuntime();
@@ -775,7 +778,7 @@ export class Interpreter {
         while (!stepFinished && !this.additionalStepFinishedFlag && exception == null) {
 
 
-            if(typeof this.currentProgram == "undefined"){
+            if (typeof this.currentProgram == "undefined") {
                 debugger;
             }
 
@@ -883,7 +886,7 @@ export class Interpreter {
             case TokenType.assignment:
                 value = stack.pop();
                 stack[stackTop - 1].value = value.value;
-                if(!(stack[stackTop - 1].type instanceof PrimitiveType)){
+                if (!(stack[stackTop - 1].type instanceof PrimitiveType)) {
                     stack[stackTop - 1].type = value.type;
                 }
                 if (!node.leaveValueOnStack) {
@@ -1067,7 +1070,7 @@ export class Interpreter {
 
                 if (method.isAbstract || method.isVirtual && !node.isSuperCall) {
                     let object = stack[parameterBegin];
-                    if(object.value instanceof RuntimeObject){
+                    if (object.value instanceof RuntimeObject) {
                         method = (<Klass>(<RuntimeObject>object.value).class).getMethodBySignature(method.signature);
                     } else {
                         method = (<Klass>object.type).getMethodBySignature(method.signature);
@@ -1435,6 +1438,19 @@ export class Interpreter {
                     if (shape["isDestroyed"] == true) {
                         this.return(null, stack);
                     }
+                }
+                break;
+            case TokenType.setPauseDuration:
+                let duration = this.stack.pop().value;
+                if (this.pauseUntil == null) {
+                    this.pauseUntil = performance.now() + duration;
+                }
+                break;
+            case TokenType.pause:
+                if (this.pauseUntil != null && performance.now() < this.pauseUntil) {
+                    this.currentProgramPosition--;
+                } else {
+                    this.pauseUntil = null;
                 }
                 break;
 

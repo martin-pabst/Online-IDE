@@ -29,7 +29,9 @@ export class Actor extends Klass {
                 for (let ms of methodSignatures) {
                     let method: Method = (<Klass>r.class).getMethodBySignature(ms.signature);
 
-                    if (method?.program != null || method?.invoke != null) {
+                    if (method?.program != null 
+                        // || method?.invoke != null
+                        ) {
                         let ah: ActorHelper = <ActorHelper>r.intrinsicData['Actor'];
                         ah.worldHelper[ms.actorListIdentifier].push({
                             actorHelper: ah,

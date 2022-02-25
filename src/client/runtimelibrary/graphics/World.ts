@@ -699,6 +699,10 @@ export class WorldHelper {
                         this.actorsNotFinished++;
                         break;
                     }
+                    
+                    if(this.interpreter.pauseUntil != null){
+                        break;
+                    }
 
                     let first: boolean = true;
 

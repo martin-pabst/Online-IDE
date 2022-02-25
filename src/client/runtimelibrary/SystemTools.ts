@@ -32,6 +32,13 @@ export class SystemToolsClass extends Klass {
 
             }, false, true, "Setzt die Ausführungsgeschwindigkeit. Der Parameter speed wir in Steps/Sekunde angegeben. Eine negative Zahl bedeutet: 'maximal'."));
 
+        this.addMethod(new Method("pause", new Parameterlist([
+            {identifier: "durationInMs", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+        ]), null,
+            (parameters) => {
+
+            }, false, true, "Pausiert das Programm für die angegebene Zeit in ms."));
+
         this.addMethod(new Method("addKeyListener", new Parameterlist([
             { identifier: "keyListener", type: module.typeStore.getType("KeyListener"), declaration: null, usagePositions: null, isFinal: true }
         ]), null,

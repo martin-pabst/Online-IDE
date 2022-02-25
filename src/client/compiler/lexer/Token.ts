@@ -191,6 +191,8 @@ export enum TokenType {
     returnIfDestroyed,
     extendedForLoopInit,
     extendedForLoopCheckCounterAndGetElement,
+    setPauseDuration,
+    pause
 }
 
 export var TokenTypeReadable: {[tt: number]: string} = {

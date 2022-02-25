@@ -3020,19 +3020,42 @@ export class CodeGenerator {
             }
         }
 
+        let isSystemMethod: boolean = false;        
         if (method.isStatic && objectNode.type != null &&
-            (objectNode.type instanceof StaticClass) &&
-            (objectNode.type.Klass instanceof InputClass)) {
+            (objectNode.type instanceof StaticClass)){
+                let classIdentifier = objectNode.type.Klass.identifier;
 
-            this.pushStatements({
-                type: TokenType.callInputMethod,
-                method: method,
-                position: node.position,
-                stepFinished: true,
-                stackframeBegin: -(parameterTypes.length + 1 + stackframeDelta) // this-object followed by parameters
-            });
+                switch (classIdentifier) {
+                    case "Input":
+                        this.pushStatements({
+                            type: TokenType.callInputMethod,
+                            method: method,
+                            position: node.position,
+                            stepFinished: true,
+                            stackframeBegin: -(parameterTypes.length + 1 + stackframeDelta) // this-object followed by parameters
+                        });
+                        isSystemMethod = true;
+                        break;
+                    case "SystemTools":
+                        if(method.identifier == "pause"){
+                            this.pushStatements([{
+                                type: TokenType.setPauseDuration,
+                                position: node.position,
+                                stepFinished: true
+                            },{
+                                type: TokenType.pause,
+                                position: node.position,
+                                stepFinished: true
+                            }
+                        ]);
+                            isSystemMethod = true;    
+                        }
+                        break;
+                }
 
-        } else {
+            }
+
+            if(!isSystemMethod) {
             this.pushStatements({
                 type: TokenType.callMethod,
                 method: method,

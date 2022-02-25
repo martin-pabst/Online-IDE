@@ -31,9 +31,16 @@ export type Statement = PushValueStatement | PopAndStoreIntoLocalVariableStateme
     PushEmptyArrayStatement | PrintStatement | PushEnumValueStatement | InitializeEnumValueStatement |
     JumpOnSwitchStatement | JumpIfTrueAndLeaveOnStackStatement | JumpIfFalseAndLeaveOnStackStatement |
     DeclareHeapVariableStatement | PushFromHeapToStackStatement | ProcessPostConstructorCallbacksStatement |
-    ReturnIfDestroyedStatement | ExtendedForLoopCheckCounterAndGetElement | ExtendedForLoopInitStatement;
+    ReturnIfDestroyedStatement | ExtendedForLoopCheckCounterAndGetElement | ExtendedForLoopInitStatement| 
+    PauseElement;
 
 
+export type PauseElement = {
+    type: TokenType.pause | TokenType.setPauseDuration,
+    position: TextPosition,
+    breakpoint?: Breakpoint
+    stepFinished?: boolean
+}
 
 export type ExtendedForLoopCheckCounterAndGetElement = {
     type: TokenType.extendedForLoopCheckCounterAndGetElement,

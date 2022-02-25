@@ -203,16 +203,12 @@ export class Actor extends Klass {
         this.addMethod(new Method("act", new Parameterlist([
             { identifier: "deltaTime", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), voidPrimitiveType,
-            () => {
-
-            }, // no statements!
+            null, // no statements!
             false, false, "Wird ca. 30-mal pro Sekunde aufgerufen", false));
 
         this.addMethod(new Method("act", new Parameterlist([
         ]), voidPrimitiveType,
-            () => {
-                
-            },
+            null,
             false, false, "Wird ca. 30-mal pro Sekunde aufgerufen", false));
 
         this.addMethod(new Method("onKeyTyped", new Parameterlist([

@@ -66,6 +66,13 @@
 
 }   
 
+.monaco-editor .monaco-hover code {
+    color: #d4d4d4;
+    box-shadow: none;
+    font-size: 14px;
+    border: none;
+}
+
 body .monaco-editor-hover .monaco-tokenized-source {
     word-break: normal;
 }

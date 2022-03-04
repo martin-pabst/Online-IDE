@@ -81,6 +81,7 @@ import { RandomClass } from "../../runtimelibrary/Random.js";
 import { DirectionClass } from "../../runtimelibrary/graphics/Direction.js";
 import { Patcher } from "./Patcher.js";
 import { KeyEvent as KeyEventClass } from "../../runtimelibrary/graphics/KeyEvent.js";
+import { Formatter } from "../../main/gui/Formatter.js";
 
 export type ExportedWorkspace = {
     name: string;
@@ -200,6 +201,12 @@ export class Module {
         this.uri = monaco.Uri.from({ path: path, scheme: 'inmemory' });
         this.model = monaco.editor.createModel(file.text, "myJava", this.uri);
         this.model.updateOptions({ tabSize: 3, bracketColorizationOptions: {enabled: true} });
+        let formatter = new Formatter();
+
+        if(main.isEmbedded() && file.text != null && file.text.length > 3){
+            let edits = <monaco.languages.TextEdit[]>formatter.format(this.model);
+            this.model.applyEdits(edits);
+        }
 
         this.lastSavedVersionId = this.model.getAlternativeVersionId();
 

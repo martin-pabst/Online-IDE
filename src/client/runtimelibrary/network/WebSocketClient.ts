@@ -30,64 +30,75 @@ export class WebSocketClientClass extends Klass {
 
             }, false, false, 'Sendet Daten (message) an diesen Client. Den messageType kannst Du frei wählen. Die client bekommt ihn zusammen mit den Daten übermittelt. Tipp: Du kannst auch Objekte senden, musst sie dazu aber vorher serialisieren, d.h. mithilfe der Methode toJson in eine Zeichenkette verwandeln.', false));
 
-            this.addMethod(new Method("setUserData", new Parameterlist([
-                { identifier: "schlüssel", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-                { identifier: "wert", type: objectType, declaration: null, usagePositions: null, isFinal: true },
-            ]), voidPrimitiveType,
+        this.addMethod(new Method("setUserData", new Parameterlist([
+            { identifier: "schlüssel", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "wert", type: objectType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let wh: WebSocketClientHelper = o.intrinsicData["Helper"];
+                let key: string = parameters[1].value;
+                let value: RuntimeObject = parameters[2].value;
+
+                wh.setUserData(key, value);
+
+            }, false, false, 'Mit dieser Methode kannst Du beliebige Objektreferenzen in diesem WebSocketClient-Objekt speichern. Den Schlüssel kannst Du dabei frei wählen und später nutzen, um den Wert durch die Methode getUserData wieder zu holen.', false));
+
+        this.addMethod(new Method("getUserData", new Parameterlist([
+            { identifier: "schlüssel", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), objectType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let wh: WebSocketClientHelper = o.intrinsicData["Helper"];
+                let key: string = parameters[1].value;
+
+                return wh.getUserData(key);
+
+            }, false, false, 'Mit dieser Methode kannst Du eine Objektreferenz erhalten, die Du zuvor mit der Methode setUserData gespeichert hast. Bemerkung1: Diese Methode entfernt die Objekreferenz nicht aus dem WebSocketClient-Objekt. Bemerkung2: Damit Du alle Methoden des erhaltenen Objekts aufrufen kannst, musst Du dem Computer mitteilen, von welcher Klasse es ist ("casten"). Das geht für die Klasse MeineNutzerDaten bspw. so: MeineNutzerDaten mnd = (MeineNutzerDaten)client.getUserData("schlüssel");', false));
+
+        let getterList: { att: string, getter: string, help: string }[] = [{ att: "rufname", getter: "getFirstName", help: "Rufnamen" },
+        { att: "familienname", getter: "getLastName", help: "Familiennamen" },
+        { att: "username", getter: "getUsername", help: "Benutzernamen" }, { att: "nickname", getter: "getNickname", help: "Spielernamen" }];
+
+        for (let getter of getterList) {
+            this.addMethod(new Method(getter.getter, new Parameterlist([
+            ]), stringPrimitiveType,
                 (parameters) => {
-    
+
                     let o: RuntimeObject = parameters[0].value;
                     let wh: WebSocketClientHelper = o.intrinsicData["Helper"];
-                    let key: string = parameters[1].value;
-                    let value: RuntimeObject = parameters[2].value;
-    
-                    wh.setUserData(key, value);
-    
-                }, false, false, 'Mit dieser Methode kannst Du beliebige Objektreferenzen in diesem WebSocketClient-Objekt speichern. Den Schlüssel kannst Du dabei frei wählen und später nutzen, um den Wert durch die Methode getUserData wieder zu holen.', false));
-    
-            this.addMethod(new Method("getUserData", new Parameterlist([
-                { identifier: "schlüssel", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-            ]), objectType,
-                (parameters) => {
-    
-                    let o: RuntimeObject = parameters[0].value;
-                    let wh: WebSocketClientHelper = o.intrinsicData["Helper"];
-                    let key: string = parameters[1].value;
-    
-                    return wh.getUserData(key);
-    
-                }, false, false, 'Mit dieser Methode kannst Du eine Objektreferenz erhalten, die Du zuvor mit der Methode setUserData gespeichert hast. Bemerkung1: Diese Methode entfernt die Objekreferenz nicht aus dem WebSocketClient-Objekt. Bemerkung2: Damit Du alle Methoden des erhaltenen Objekts aufrufen kannst, musst Du dem Computer mitteilen, von welcher Klasse es ist ("casten"). Das geht für die Klasse MeineNutzerDaten bspw. so: MeineNutzerDaten mnd = (MeineNutzerDaten)client.getUserData("schlüssel");', false));
 
-            let getterList: { att: string, getter: string, help: string}[] = [{att: "rufname", getter: "getFirstName", help: "Rufnamen"},
-             {att: "familienname", getter: "getLastName", help: "Familiennamen"}, 
-            {att: "username", getter: "getUsername", help: "Benutzernamen"}, {att: "nickname", getter: "getNickname", help: "Spielernamen"}  ];
+                    return wh[getter.att];
 
-            for( let getter of getterList){
-                this.addMethod(new Method(getter.getter, new Parameterlist([
-                ]), stringPrimitiveType,
-                    (parameters) => {
-        
-                        let o: RuntimeObject = parameters[0].value;
-                        let wh: WebSocketClientHelper = o.intrinsicData["Helper"];
-        
-                        return wh[getter.att];
-        
-                    }, false, false, 'Gibt den ' + getter.help + " des Clients zurück.", false));
+                }, false, false, 'Gibt den ' + getter.help + " des Clients zurück.", false));
 
-            }
+        }
 
-            this.addMethod(new Method("getNumber", new Parameterlist([
-            ]), intPrimitiveType,
-                (parameters) => {
-    
-                    let o: RuntimeObject = parameters[0].value;
-                    let wh: WebSocketClientHelper = o.intrinsicData["Helper"];
-    
-                    return wh.index;
-    
-                }, false, false, 'Gehört ein Client zu einer mit findClient bzw. findClients gefundenen Gruppe, so erhältst Du mit dieser Methode die "Rangfolge" dieses Clients in dieser Gruppe. Allen Clients wird dieselbe Rangfolgeordnung vom Server mitgeteilt. So lässt sich bspw. einfach festlegen, welcher Client eine besondere Rolle (Server) in der Gruppe erhalten soll (z.B. Client mit Nummer 1). Bemerkung: Die Nummer ist eine Zahl zwischen 1 und der Anzahl der Clients in der Gruppe.', false));
+        this.addMethod(new Method("getNumber", new Parameterlist([
+        ]), intPrimitiveType,
+            (parameters) => {
 
-    
+                let o: RuntimeObject = parameters[0].value;
+                let wh: WebSocketClientHelper = o.intrinsicData["Helper"];
+
+                return wh.index;
+
+            }, false, false, 'Gehört ein Client zu einer mit findClient bzw. findClients gefundenen Gruppe, so erhältst Du mit dieser Methode die "Rangfolge" dieses Clients in dieser Gruppe. Allen Clients wird dieselbe Rangfolgeordnung vom Server mitgeteilt. So lässt sich bspw. einfach festlegen, welcher Client eine besondere Rolle (Server) in der Gruppe erhalten soll (z.B. Client mit Nummer 1). Bemerkung: Die Nummer ist eine Zahl zwischen 1 und der Anzahl der Clients in der Gruppe.', false));
+
+        this.addMethod(new Method("getIndex", new Parameterlist([
+        ]), intPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let wh: WebSocketClientHelper = o.intrinsicData["Helper"];
+
+                return wh.index;
+
+            }, false, false, 'Diese Methode ist veraltet. Bitte benutze stattdessen getNumber.', false));
+
+
     }
 
 
@@ -95,18 +106,18 @@ export class WebSocketClientClass extends Klass {
 
 export class WebSocketClientHelper {
 
-    keyValueStore: {[key: string]: RuntimeObject} = {};
+    keyValueStore: { [key: string]: RuntimeObject } = {};
     index: number = 0;
 
     public connected: boolean = true;
 
-    constructor(public runtimeObject: RuntimeObject, private webSocketHelper: WebSocketHelper, 
+    constructor(public runtimeObject: RuntimeObject, private webSocketHelper: WebSocketHelper,
         private id: number, public rufname: string, public familienname: string, public username: string, public nickname: string) {
 
     }
 
-    send(message: string, messageType: string){
-        this.webSocketHelper.sendToClient(this.id, message, messageType);       
+    send(message: string, messageType: string) {
+        this.webSocketHelper.sendToClient(this.id, message, messageType);
     }
 
     getUserData(key: string): any {

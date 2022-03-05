@@ -649,7 +649,9 @@ export class Klass extends Type {
             let klass: Klass = this;
             while (klass != null) {
                 for (let i of klass.implements) {
-                    if (type.getNonGenericIdentifier() == i.getNonGenericIdentifier()) {
+                    let shouldImplement = type.getNonGenericIdentifier();
+                    
+                    if (i.getThisOrExtendedInterface(shouldImplement) != null) {
                         return true;
                     }
                 }
@@ -1132,7 +1134,7 @@ export class Interface extends Type {
         return k.identifier;
     }
 
-    getThisOrExtendedInterface(identifier: String) {
+    getThisOrExtendedInterface(identifier: String): Interface {
         if (this.getNonGenericIdentifier() == identifier) return this;
         for (let if1 of this.extends) {
             let if2 = if1.getThisOrExtendedInterface(identifier);

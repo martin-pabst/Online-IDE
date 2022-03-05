@@ -74,9 +74,9 @@ export class CollectionClass extends Interface {
         ]), intPrimitiveType,
             null,  // no implementation!
             true, false, "Gibt die Anzahl der Elemente der Collection zurück."));
-
-
     
     }
 
 }
+
+

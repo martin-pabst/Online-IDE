@@ -650,7 +650,7 @@ export class Klass extends Type {
             while (klass != null) {
                 for (let i of klass.implements) {
                     let shouldImplement = type.getNonGenericIdentifier();
-                    
+                    // look recursively into interface inheritance chain:                    
                     if (i.getThisOrExtendedInterface(shouldImplement) != null) {
                         return true;
                     }

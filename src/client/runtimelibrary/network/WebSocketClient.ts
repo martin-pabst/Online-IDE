@@ -76,7 +76,7 @@ export class WebSocketClientClass extends Klass {
 
             }
 
-            this.addMethod(new Method("getIndex", new Parameterlist([
+            this.addMethod(new Method("getNumber", new Parameterlist([
             ]), intPrimitiveType,
                 (parameters) => {
     
@@ -85,7 +85,7 @@ export class WebSocketClientClass extends Klass {
     
                     return wh.index;
     
-                }, false, false, 'Gehört ein Client zu einer mit findClient bzw. findClients gefundenen Gruppe, so erhältst Du mit dieser Methode die "Rangfolge" dieses Clients in dieser Gruppe. Allen Clients wird dieselbe Rangfolgeordnung vom Server mitgeteilt. So lässt sich bspw. einfach festlegen, welcher Client eine besondere Rolle (Server) in der Gruppe erhalten soll (z.B. Client mit Index 1). Bemerkung: Der Index ist eine Zahl zwischen 1 und der Anzahl der Clients in der Gruppe.', false));
+                }, false, false, 'Gehört ein Client zu einer mit findClient bzw. findClients gefundenen Gruppe, so erhältst Du mit dieser Methode die "Rangfolge" dieses Clients in dieser Gruppe. Allen Clients wird dieselbe Rangfolgeordnung vom Server mitgeteilt. So lässt sich bspw. einfach festlegen, welcher Client eine besondere Rolle (Server) in der Gruppe erhalten soll (z.B. Client mit Nummer 1). Bemerkung: Die Nummer ist eine Zahl zwischen 1 und der Anzahl der Clients in der Gruppe.', false));
 
     
     }

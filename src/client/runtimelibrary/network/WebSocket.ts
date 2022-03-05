@@ -149,8 +149,8 @@ export class WebSocketClass extends Klass {
             false, false, "Wird immer dann aufgerufen, wenn ein anderer Client unter Nutzung desselben sessionCodes die Verbindung mit dem Server beendet hat.", false));
 
         this.addMethod(new Method("onClientsFound", new Parameterlist([
-            { identifier: "clients", type: new ArrayType(webSocketClientType), declaration: null, usagePositions: null, isFinal: true },
-            { identifier: "ownIndex", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+            { identifier: "oherClients", type: new ArrayType(webSocketClientType), declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "ownNumber", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), null,
             null, // no statements!
             false, false, "Wird aufgerufen, wenn die durch die Methoden findClient bzw. findClients zuvor gesuchten Clients gefunden wurden.", false));

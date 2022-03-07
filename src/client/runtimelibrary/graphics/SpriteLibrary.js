@@ -7,7 +7,7 @@ var SpriteLibrary = [
     {filename: "minesweeper/minesweeper-numbers.png", name: "Minesweeper", tilesX: 10, tilesY: 1, scale: 1.0, index: 22},
     
     // Sleepy Blocks
-    {filename: "Sleepy_Blocks/sleepy_blocks.png", name: "Sleepy_Blocks", tilesX: 5, tilesY: 1, spacingX: 2, spacingY: 2, scale: 1.0, index: 0, extrudeMarginWidth: 1},
+    {filename: "Sleepy_Blocks/sleepy_blocks.png", name: "Sleepy_Blocks", tilesX: 8, tilesY: 1, spacingX: 2, spacingY: 2, scale: 1.0, index: 0, extrudeMarginWidth: 1},
 
     { filename: "flappy_bird/bird1.png", name: "Bird", index: 0, indexName: "Bird" },
     { filename: "flappy_bird/bird2.png", name: "Bird", index: 1, indexName: "Bird" },

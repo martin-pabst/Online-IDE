@@ -15,259 +15,280 @@
 .Ship_1_2{
    width: 64px;
    height: 112px;
-   background-position: -1705px -1730px;
+   background-position: -1705px -1820px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Werkzeug_0{
    width: 32px;
    height: 32px;
-   background-position: -2603px -1730px;
+   background-position: -1604px -996px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_0{
    width: 32px;
    height: 32px;
-   background-position: -1850px -862px;
+   background-position: -1850px -928px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_1{
    width: 32px;
    height: 32px;
-   background-position: -1883px -862px;
+   background-position: -1883px -928px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_2{
    width: 32px;
    height: 32px;
-   background-position: -1916px -862px;
+   background-position: -1916px -928px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_3{
    width: 32px;
    height: 32px;
-   background-position: -1949px -862px;
+   background-position: -1949px -928px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_4{
    width: 32px;
    height: 32px;
-   background-position: -1982px -862px;
+   background-position: -1982px -928px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_5{
    width: 32px;
    height: 32px;
-   background-position: -2015px -862px;
+   background-position: -2015px -928px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_6{
    width: 32px;
    height: 32px;
-   background-position: -2048px -862px;
+   background-position: -2048px -928px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_7{
    width: 32px;
    height: 32px;
-   background-position: -2081px -862px;
+   background-position: -2081px -928px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_8{
    width: 32px;
    height: 32px;
-   background-position: -2114px -862px;
+   background-position: -2114px -928px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_9{
    width: 32px;
    height: 32px;
-   background-position: -2147px -862px;
+   background-position: -2147px -928px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_10{
    width: 32px;
    height: 32px;
-   background-position: -2180px -862px;
+   background-position: -2180px -928px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_11{
    width: 32px;
    height: 32px;
-   background-position: -2213px -862px;
+   background-position: -2213px -928px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_12{
    width: 32px;
    height: 32px;
-   background-position: -2246px -862px;
+   background-position: -2246px -928px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_13{
    width: 32px;
    height: 32px;
-   background-position: -2279px -862px;
+   background-position: -2279px -928px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_14{
    width: 32px;
    height: 32px;
-   background-position: -2312px -862px;
+   background-position: -2312px -928px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_15{
    width: 32px;
    height: 32px;
-   background-position: -2345px -862px;
+   background-position: -2345px -928px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_16{
    width: 32px;
    height: 32px;
-   background-position: -2378px -862px;
+   background-position: -2378px -928px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_17{
    width: 32px;
    height: 32px;
-   background-position: -2411px -862px;
+   background-position: -2411px -928px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_18{
    width: 32px;
    height: 32px;
-   background-position: -2444px -862px;
+   background-position: -2444px -928px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_19{
    width: 32px;
    height: 32px;
-   background-position: -2477px -862px;
+   background-position: -2477px -928px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_22{
    width: 32px;
    height: 64px;
-   background-position: -2269px -726px;
+   background-position: -2269px -660px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_23{
    width: 32px;
    height: 64px;
-   background-position: -2301px -726px;
+   background-position: -2301px -660px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_24{
    width: 32px;
    height: 64px;
-   background-position: -2333px -726px;
+   background-position: -2333px -660px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_25{
    width: 32px;
    height: 64px;
-   background-position: -2365px -726px;
+   background-position: -2365px -660px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_26{
    width: 32px;
    height: 64px;
-   background-position: -2397px -726px;
+   background-position: -2397px -660px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_27{
    width: 32px;
    height: 64px;
-   background-position: -2429px -726px;
+   background-position: -2429px -660px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_28{
    width: 32px;
    height: 64px;
-   background-position: -2461px -726px;
+   background-position: -2461px -660px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_29{
    width: 32px;
    height: 64px;
-   background-position: -2493px -726px;
+   background-position: -2493px -660px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_30{
    width: 32px;
    height: 64px;
-   background-position: -2525px -726px;
+   background-position: -2525px -660px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Minesweeper_31{
    width: 32px;
    height: 64px;
-   background-position: -2557px -726px;
+   background-position: -2557px -660px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Sleepy_Blocks_0{
    width: 64px;
    height: 64px;
-   background-position: -2269px -660px;
+   background-position: -1850px -862px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Sleepy_Blocks_1{
    width: 64px;
    height: 64px;
-   background-position: -2335px -660px;
+   background-position: -1916px -862px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Sleepy_Blocks_2{
    width: 64px;
    height: 64px;
-   background-position: -2401px -660px;
+   background-position: -1982px -862px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Sleepy_Blocks_3{
    width: 64px;
    height: 64px;
-   background-position: -2467px -660px;
+   background-position: -2048px -862px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Sleepy_Blocks_4{
    width: 64px;
    height: 64px;
-   background-position: -2533px -660px;
+   background-position: -2114px -862px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Sleepy_Blocks_5{
+   width: 64px;
+   height: 64px;
+   background-position: -2180px -862px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Sleepy_Blocks_6{
+   width: 64px;
+   height: 64px;
+   background-position: -2246px -862px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Sleepy_Blocks_7{
+   width: 64px;
+   height: 64px;
+   background-position: -2312px -862px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -295,21 +316,21 @@
 .Bird_3{
    width: 69px;
    height: 9px;
-   background-position: -1934px -850px;
+   background-position: -2444px -814px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Bird_4{
    width: 69px;
    height: 19px;
-   background-position: -1692px -1014px;
+   background-position: -2518px -889px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Bird_5{
    width: 28px;
    height: 7px;
-   background-position: -2005px -850px;
+   background-position: -2606px -778px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -323,42 +344,42 @@
 .Bird_7{
    width: 173px;
    height: 47px;
-   background-position: -1452px -996px;
+   background-position: -2269px -778px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_1_0{
    width: 64px;
    height: 64px;
-   background-position: -2480px -1459px;
+   background-position: -2052px -1386px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_1_1{
    width: 64px;
    height: 64px;
-   background-position: -2546px -1459px;
+   background-position: -2118px -1386px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_1_2{
    width: 64px;
    height: 64px;
-   background-position: -1920px -1623px;
+   background-position: -2184px -1386px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_1_3{
    width: 64px;
    height: 64px;
-   background-position: -1986px -1623px;
+   background-position: -2250px -1386px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_1_4{
    width: 64px;
    height: 64px;
-   background-position: -2052px -1623px;
+   background-position: -2316px -1386px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -400,161 +421,161 @@
 .Space_Shooter_1_10{
    width: 64px;
    height: 64px;
-   background-position: -2118px -1623px;
+   background-position: -2382px -1386px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_1_11{
    width: 64px;
    height: 64px;
-   background-position: -2184px -1623px;
+   background-position: -2448px -1386px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_1_12{
    width: 35px;
    height: 35px;
-   background-position: -2594px -1560px;
+   background-position: -2594px -1525px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_1_13{
    width: 35px;
    height: 35px;
-   background-position: -2580px -1623px;
+   background-position: -2594px -1562px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_1_14{
    width: 35px;
    height: 35px;
-   background-position: -2233px -1730px;
+   background-position: -2598px -1623px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_1_15{
    width: 35px;
    height: 35px;
-   background-position: -2270px -1730px;
+   background-position: -2598px -1660px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_1_16{
    width: 35px;
    height: 35px;
-   background-position: -2307px -1730px;
+   background-position: -2343px -1730px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_1_17{
    width: 35px;
    height: 35px;
-   background-position: -2344px -1730px;
+   background-position: -2380px -1730px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_1_18{
    width: 35px;
    height: 35px;
-   background-position: -2381px -1730px;
+   background-position: -2417px -1730px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_1_19{
    width: 35px;
    height: 35px;
-   background-position: -2418px -1730px;
+   background-position: -2454px -1730px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_1_20{
    width: 35px;
    height: 35px;
-   background-position: -2455px -1730px;
+   background-position: -2491px -1730px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_1_21{
    width: 35px;
    height: 35px;
-   background-position: -2492px -1730px;
+   background-position: -2528px -1730px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_1_22{
    width: 35px;
    height: 35px;
-   background-position: -2529px -1730px;
+   background-position: -2565px -1730px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_1_23{
    width: 35px;
    height: 35px;
-   background-position: -2566px -1730px;
+   background-position: -2602px -1730px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_2_0{
    width: 68px;
    height: 60px;
-   background-position: -2101px -1730px;
+   background-position: -2273px -1730px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_2_1{
    width: 37px;
    height: 59px;
-   background-position: -2601px -660px;
+   background-position: -2591px -660px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_2_2{
    width: 54px;
    height: 34px;
-   background-position: -2190px -1386px;
+   background-position: -2444px -778px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_2_3{
    width: 50px;
    height: 43px;
-   background-position: -2543px -792px;
+   background-position: -2543px -726px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_2_4{
    width: 40px;
    height: 38px;
-   background-position: -2595px -792px;
+   background-position: -2595px -726px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_2_5{
    width: 40px;
    height: 30px;
-   background-position: -2338px -1386px;
+   background-position: -2555px -928px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_2_6{
    width: 42px;
    height: 32px;
-   background-position: -2294px -1386px;
+   background-position: -2511px -928px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_2_7{
    width: 46px;
    height: 33px;
-   background-position: -2246px -1386px;
+   background-position: -1514px -996px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_2_8{
    width: 40px;
    height: 33px;
-   background-position: -2594px -1525px;
+   background-position: -1562px -996px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -645,105 +666,105 @@
 .Space_Shooter_2_21{
    width: 64px;
    height: 15px;
-   background-position: -2511px -879px;
+   background-position: -2500px -795px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_2_22{
    width: 63px;
    height: 25px;
-   background-position: -1627px -1014px;
+   background-position: -2518px -862px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Soko_0{
    width: 44px;
    height: 50px;
-   background-position: -2052px -1386px;
+   background-position: -2380px -862px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Soko_1{
    width: 44px;
    height: 50px;
-   background-position: -2098px -1386px;
+   background-position: -2426px -862px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Soko_2{
    width: 44px;
    height: 50px;
-   background-position: -2144px -1386px;
+   background-position: -2472px -862px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Soko_3{
    width: 44px;
    height: 50px;
-   background-position: -2269px -792px;
+   background-position: -2269px -726px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Soko_4{
    width: 44px;
    height: 50px;
-   background-position: -2315px -792px;
+   background-position: -2315px -726px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Soko_5{
    width: 44px;
    height: 50px;
-   background-position: -2361px -792px;
+   background-position: -2361px -726px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Soko_6{
    width: 44px;
    height: 50px;
-   background-position: -2407px -792px;
+   background-position: -2407px -726px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Soko_7{
    width: 44px;
    height: 50px;
-   background-position: -2453px -792px;
+   background-position: -2453px -726px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Soko_8{
    width: 44px;
    height: 50px;
-   background-position: -2499px -792px;
+   background-position: -2499px -726px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Soko_9{
    width: 64px;
    height: 64px;
-   background-position: -2250px -1623px;
+   background-position: -2514px -1386px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Soko_10{
    width: 64px;
    height: 64px;
-   background-position: -2316px -1623px;
+   background-position: -2480px -1459px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Soko_11{
    width: 64px;
    height: 64px;
-   background-position: -2382px -1623px;
+   background-position: -2546px -1459px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Soko_12{
    width: 64px;
    height: 64px;
-   background-position: -2448px -1623px;
+   background-position: -1811px -1730px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -911,119 +932,119 @@
 .PMan_22{
    width: 16px;
    height: 16px;
-   background-position: -1627px -996px;
+   background-position: -2269px -827px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .PMan_23{
    width: 16px;
    height: 16px;
-   background-position: -1645px -996px;
+   background-position: -2287px -827px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .PMan_24{
    width: 16px;
    height: 16px;
-   background-position: -1663px -996px;
+   background-position: -2305px -827px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .PMan_25{
    width: 16px;
    height: 16px;
-   background-position: -1681px -996px;
+   background-position: -2323px -827px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .PMan_26{
    width: 16px;
    height: 16px;
-   background-position: -1699px -996px;
+   background-position: -2341px -827px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .PMan_27{
    width: 16px;
    height: 16px;
-   background-position: -1717px -996px;
+   background-position: -2359px -827px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .PMan_28{
    width: 16px;
    height: 16px;
-   background-position: -1735px -996px;
+   background-position: -2377px -827px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .PMan_29{
    width: 16px;
    height: 16px;
-   background-position: -1753px -996px;
+   background-position: -2395px -827px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .PMan_30{
    width: 16px;
    height: 16px;
-   background-position: -1771px -996px;
+   background-position: -2413px -827px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .PMan_31{
    width: 16px;
    height: 16px;
-   background-position: -1789px -996px;
+   background-position: -2431px -827px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .PMan_32{
    width: 16px;
    height: 16px;
-   background-position: -1807px -996px;
+   background-position: -2449px -827px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .PMan_33{
    width: 16px;
    height: 16px;
-   background-position: -1825px -996px;
+   background-position: -2467px -827px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .PMan_34{
    width: 16px;
    height: 16px;
-   background-position: -1843px -996px;
+   background-position: -2485px -827px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .PMan_35{
    width: 16px;
    height: 16px;
-   background-position: -1861px -996px;
+   background-position: -2503px -827px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .PMan_36{
    width: 16px;
    height: 16px;
-   background-position: -1879px -996px;
+   background-position: -2521px -827px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Breakin_0{
    width: 104px;
    height: 15px;
-   background-position: -2511px -862px;
+   background-position: -2500px -778px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Breakin_1{
    width: 64px;
    height: 15px;
-   background-position: -1897px -996px;
+   background-position: -2566px -795px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -1044,14 +1065,14 @@
 .Breakin_4{
    width: 48px;
    height: 24px;
-   background-position: -2380px -1386px;
+   background-position: -2583px -862px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Breakin_5{
    width: 48px;
    height: 24px;
-   background-position: -2430px -1386px;
+   background-position: -1850px -962px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -1072,28 +1093,28 @@
 .Breakin_8{
    width: 36px;
    height: 35px;
-   background-position: -2601px -1165px;
+   background-position: -2601px -1203px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Breakin_9{
    width: 36px;
    height: 35px;
-   background-position: -2601px -1202px;
+   background-position: -2580px -1386px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Breakin_10{
    width: 36px;
    height: 36px;
-   background-position: -2601px -1056px;
+   background-position: -2601px -1122px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Breakin_11{
    width: 36px;
    height: 36px;
-   background-position: -2601px -1094px;
+   background-position: -2601px -1165px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -1198,49 +1219,49 @@
 .Boardgames_12{
    width: 32px;
    height: 64px;
-   background-position: -2591px -726px;
+   background-position: -2601px -1056px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boardgames_13{
    width: 64px;
    height: 64px;
-   background-position: -2514px -1623px;
+   background-position: -1877px -1730px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boardgames_14{
    width: 64px;
    height: 64px;
-   background-position: -1771px -1730px;
+   background-position: -1943px -1730px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boardgames_15{
    width: 64px;
    height: 64px;
-   background-position: -1837px -1730px;
+   background-position: -2009px -1730px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boardgames_16{
    width: 64px;
    height: 64px;
-   background-position: -1903px -1730px;
+   background-position: -2075px -1730px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boardgames_17{
    width: 64px;
    height: 64px;
-   background-position: -1969px -1730px;
+   background-position: -2141px -1730px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boardgames_18{
    width: 64px;
    height: 64px;
-   background-position: -2035px -1730px;
+   background-position: -2207px -1730px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -5104,21 +5125,21 @@
 .Background_7{
    width: 104px;
    height: 88px;
-   background-position: -1814px -1623px;
+   background-position: -1705px -1730px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Background_8{
    width: 60px;
    height: 54px;
-   background-position: -2171px -1730px;
+   background-position: -1452px -996px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Background_9{
    width: 100px;
    height: 92px;
-   background-position: -1712px -1623px;
+   background-position: -2496px -1623px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -5279,329 +5300,329 @@
 .Explosion_1_19{
    width: 96px;
    height: 96px;
-   background-position: -1850px -896px;
+   background-position: -2052px -1288px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_20{
    width: 96px;
    height: 96px;
-   background-position: -1948px -896px;
+   background-position: -2150px -1288px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_21{
    width: 96px;
    height: 96px;
-   background-position: -2046px -896px;
+   background-position: -2248px -1288px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_22{
    width: 96px;
    height: 96px;
-   background-position: -2144px -896px;
+   background-position: -2346px -1288px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_23{
    width: 96px;
    height: 96px;
-   background-position: -2242px -896px;
+   background-position: -2444px -1288px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_24{
    width: 96px;
    height: 96px;
-   background-position: -2340px -896px;
+   background-position: -2542px -1288px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_25{
    width: 96px;
    height: 96px;
-   background-position: -2438px -896px;
+   background-position: -1026px -1525px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_26{
    width: 96px;
    height: 96px;
-   background-position: -2536px -896px;
+   background-position: -1124px -1525px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_27{
    width: 96px;
    height: 96px;
-   background-position: -2052px -1288px;
+   background-position: -1222px -1525px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_28{
    width: 96px;
    height: 96px;
-   background-position: -2150px -1288px;
+   background-position: -1320px -1525px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_29{
    width: 96px;
    height: 96px;
-   background-position: -2248px -1288px;
+   background-position: -1418px -1525px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_30{
    width: 96px;
    height: 96px;
-   background-position: -2346px -1288px;
+   background-position: -1516px -1525px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_31{
    width: 96px;
    height: 96px;
-   background-position: -2444px -1288px;
+   background-position: -1614px -1525px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_32{
    width: 96px;
    height: 96px;
-   background-position: -2542px -1288px;
+   background-position: -1712px -1525px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_33{
    width: 96px;
    height: 96px;
-   background-position: -1026px -1525px;
+   background-position: -1810px -1525px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_34{
    width: 96px;
    height: 96px;
-   background-position: -1124px -1525px;
+   background-position: -1908px -1525px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_35{
    width: 96px;
    height: 96px;
-   background-position: -1222px -1525px;
+   background-position: -2006px -1525px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_36{
    width: 96px;
    height: 96px;
-   background-position: -1320px -1525px;
+   background-position: -2104px -1525px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_37{
    width: 96px;
    height: 96px;
-   background-position: -1418px -1525px;
+   background-position: -2202px -1525px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_38{
    width: 96px;
    height: 96px;
-   background-position: -1516px -1525px;
+   background-position: -2300px -1525px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_39{
    width: 96px;
    height: 96px;
-   background-position: -1614px -1525px;
+   background-position: -2398px -1525px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_40{
    width: 96px;
    height: 96px;
-   background-position: -1712px -1525px;
+   background-position: -2496px -1525px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_41{
    width: 96px;
    height: 96px;
-   background-position: -1810px -1525px;
+   background-position: -1026px -1623px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_42{
    width: 96px;
    height: 96px;
-   background-position: -1908px -1525px;
+   background-position: -1124px -1623px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_43{
    width: 96px;
    height: 96px;
-   background-position: -2006px -1525px;
+   background-position: -1222px -1623px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_44{
    width: 96px;
    height: 96px;
-   background-position: -2104px -1525px;
+   background-position: -1320px -1623px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_45{
    width: 96px;
    height: 96px;
-   background-position: -2202px -1525px;
+   background-position: -1418px -1623px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_46{
    width: 96px;
    height: 96px;
-   background-position: -2300px -1525px;
+   background-position: -1516px -1623px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_47{
    width: 96px;
    height: 96px;
-   background-position: -2398px -1525px;
+   background-position: -1614px -1623px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_48{
    width: 96px;
    height: 96px;
-   background-position: -2496px -1525px;
+   background-position: -1712px -1623px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_49{
    width: 96px;
    height: 96px;
-   background-position: -1026px -1623px;
+   background-position: -1810px -1623px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_50{
    width: 96px;
    height: 96px;
-   background-position: -1124px -1623px;
+   background-position: -1908px -1623px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_51{
    width: 96px;
    height: 96px;
-   background-position: -1222px -1623px;
+   background-position: -2006px -1623px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_52{
    width: 96px;
    height: 96px;
-   background-position: -1320px -1623px;
+   background-position: -2104px -1623px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_53{
    width: 96px;
    height: 96px;
-   background-position: -1418px -1623px;
+   background-position: -2202px -1623px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_54{
    width: 96px;
    height: 96px;
-   background-position: -1516px -1623px;
+   background-position: -2300px -1623px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Explosion_1_55{
    width: 96px;
    height: 96px;
-   background-position: -1614px -1623px;
+   background-position: -2398px -1623px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_0{
    width: 32px;
    height: 32px;
-   background-position: -1771px -1796px;
+   background-position: -1638px -996px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_1{
    width: 32px;
    height: 32px;
-   background-position: -1805px -1796px;
+   background-position: -1672px -996px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_2{
    width: 32px;
    height: 32px;
-   background-position: -1839px -1796px;
+   background-position: -1706px -996px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_3{
    width: 32px;
    height: 32px;
-   background-position: -1873px -1796px;
+   background-position: -1740px -996px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_4{
    width: 32px;
    height: 32px;
-   background-position: -1907px -1796px;
+   background-position: -1774px -996px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_5{
    width: 32px;
    height: 32px;
-   background-position: -1941px -1796px;
+   background-position: -1808px -996px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_6{
    width: 32px;
    height: 32px;
-   background-position: -1975px -1796px;
+   background-position: -1842px -996px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_7{
    width: 32px;
    height: 32px;
-   background-position: -2009px -1796px;
+   background-position: -1876px -996px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_8{
    width: 32px;
    height: 32px;
-   background-position: -2043px -1796px;
+   background-position: -1910px -996px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_9{
    width: 32px;
    height: 32px;
-   background-position: -2077px -1796px;
+   background-position: -1944px -996px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 

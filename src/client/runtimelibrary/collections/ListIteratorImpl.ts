@@ -134,13 +134,13 @@ class IteratorHelper {
                     this.interpreter.throwException("Die Methode next() des Iterators wurde aufgerufen, obwohl das letzte Element schon beim vorherigen Aufruf zurückgegeben worden war.")
                     return null;
                 }
-                return this.listHelper.objectArray[this.nextPos++];
+                return this.listHelper.objectArray[this.nextPos++].value;
             case "descending":
                 if (this.nextPos < 0) {
                     this.interpreter.throwException("Die Methode next() des Iterators wurde aufgerufen, obwohl das letzte Element schon beim vorherigen Aufruf zurückgegeben worden war.")
                     return null;
                 }
-                return this.listHelper.objectArray[this.nextPos--];
+                return this.listHelper.objectArray[this.nextPos--].value;
         }
     }
 

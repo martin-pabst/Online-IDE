@@ -55,7 +55,7 @@ function initScripts(jo_doc){
     htmlElement.style.margin = "0";
     bodyElement.style.height = "100%";
     bodyElement.style.margin = "0";
-    window.javaOnlineDir = "https://embed.learnj.de/include/";
+    window.javaOnlineDir = base;
     includeJs(base + "js.webpack/javaOnline-embedded.js");
     includeJs(base + "lib/p5.js/p5.js");
 

@@ -1,7 +1,7 @@
 import { Module } from "../../compiler/parser/Module.js";
 import { Interface, Klass, TypeVariable } from "../../compiler/types/Class.js";
 import { booleanPrimitiveType, intPrimitiveType, stringPrimitiveType, objectType, StringPrimitiveType, DoubleType } from "../../compiler/types/PrimitiveTypes.js";
-import { Method, Parameterlist, Value, PrimitiveType } from "../../compiler/types/Types.js";
+import { Method, Parameterlist, Value, PrimitiveType, getTypeIdentifier } from "../../compiler/types/Types.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { Program, Statement } from "../../compiler/parser/Program.js";
@@ -9,6 +9,7 @@ import { TokenType, TextPosition } from "../../compiler/lexer/Token.js";
 import { ArrayType } from "../../compiler/types/Array.js";
 import { ListIteratorImplClass } from "./ListIteratorImpl.js";
 import { Enum } from "../../compiler/types/Enum.js";
+import { getTypeFromValue } from "../../compiler/types/TypeHelper.js";
 
 export class ArrayListClass extends Klass {
 
@@ -19,6 +20,8 @@ export class ArrayListClass extends Klass {
         let objectType = module.typeStore.getType("Object");
 
         this.setBaseClass(<Klass>objectType);
+
+        let collectionInterface = (<Interface>module.typeStore.getType("Collection"));
 
         let typeA: Klass = (<Klass>objectType).clone();
         typeA.identifier = "A";
@@ -134,7 +137,7 @@ export class ArrayListClass extends Klass {
             }, true, false, "Gibt den Index des Elements o zurück. Gibt -1 zurück, wenn die Liste das Element o nicht enthält. WICHTIG: Das erste Element hat den Index 0, das letzte den Index size() - 1. "));
 
         this.addMethod(new Method("addAll", new Parameterlist([
-            { identifier: "c", type: this, declaration: null, usagePositions: null, isFinal: true }
+            { identifier: "c", type: collectionInterface, declaration: null, usagePositions: null, isFinal: true }
         ]), booleanPrimitiveType,
             (parameters) => {
 
@@ -142,7 +145,7 @@ export class ArrayListClass extends Klass {
                 let object: RuntimeObject = parameters[1].value;
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
-                return ah.adAll(object);
+                return ah.addAll(object);
 
             },
             true, false, "Fügt alle Elemente von c dieser Collection hinzu."));
@@ -374,17 +377,76 @@ export class ListHelper {
         return "";
     }
 
-    adAll(object: RuntimeObject): boolean {
+    addAll(object: RuntimeObject): boolean {
 
-        let ah: ListHelper = object.intrinsicData["ListHelper"];
-        if (ah != null) {
-            this.valueArray = this.valueArray.concat(ah.valueArray.map(v => {return {type: v.type, value: v.value}}));
-            this.objectArray = this.objectArray.concat(ah.objectArray);
+        if(object.intrinsicData["ListHelper"] instanceof ListHelper){
+            let ah: ListHelper = object.intrinsicData["ListHelper"];
+            if (ah != null) {
+                this.valueArray = this.valueArray.concat(ah.valueArray.map(v => {return {type: v.type, value: v.value}}));
+                this.objectArray = this.objectArray.concat(ah.objectArray);
+            }
+            return true;
         }
 
-        return true;
+        let getIteratorMethod = object.class.getMethod("iterator", new Parameterlist([]));
+        if(getIteratorMethod == null){
+            this.interpreter.throwException("Der an die Methode addAll übergebene Paramter besitzt keine Methode iterator().");
+            return false;
+        }
+
+        if(getIteratorMethod.invoke){
+
+            let iterator: RuntimeObject = getIteratorMethod.invoke([{value: object, type: object.class}]);
+            let nextMethod = iterator.class.getMethod("next", new Parameterlist([]));
+            let hasNextMethod = iterator.class.getMethod("hasNext", new Parameterlist([]));
+            let type = nextMethod.returnType;
+
+            let iteratorAsValue: Value = {value: iterator, type: iterator.class};
+
+            while(hasNextMethod.invoke([iteratorAsValue])){
+                let obj: any = nextMethod.invoke([iteratorAsValue]);
+                this.objectArray.push(obj);
+                this.valueArray.push({
+                    value: obj,
+                    type: getTypeFromValue(obj)
+                })
+            }
+
+            return;
+        } else {
+            let iteratorWithError = this.execute(getIteratorMethod, [{value: object, type: object.class}]);            
+            if(iteratorWithError.error != null){this.interpreter.throwException("Fehler beim holen des Iterators."); return false;}
+            let iterator = iteratorWithError.value.value;
+
+            let nextMethod = iterator.class.getMethod("next", new Parameterlist([]));
+            let hasNextMethod = iterator.class.getMethod("hasNext", new Parameterlist([]));
+            let type = nextMethod.returnType;
+            let iteratorAsValue: Value = {value: iterator, type: iterator.class};
+
+            while(true){
+                let hasNext = this.execute(hasNextMethod, [iteratorAsValue]);
+                if(hasNext.error != null){this.interpreter.throwException("Fehler beim Ausführen der hasNext-Methode"); return false;}
+                if(hasNext.value.value != true) break;
+                let objWithError = this.execute(nextMethod, [iteratorAsValue]);
+                if(objWithError.error != null){this.interpreter.throwException("Fehler beim Ausführen der next-Methode"); return false;}
+                let obj = objWithError.value.value;
+                this.objectArray.push(obj);
+                this.valueArray.push({value: obj, type: type});
+            }
+
+            return true;
+
+        }
+
     }
 
+    execute(method: Method, parameters: Value[]): {error: string, value: Value} {
+        if(method.invoke){
+            return {value: {value: method.invoke([]), type: method.returnType}, error: null};
+        } else {
+            return this.interpreter.executeImmediatelyInNewStackframe(method.program, parameters);
+        }
+    }
 
     get(index: number): Value {
         if (index >= 0 && index < this.valueArray.length) {

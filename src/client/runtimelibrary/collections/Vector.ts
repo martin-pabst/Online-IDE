@@ -125,7 +125,7 @@ export class VectorClass extends Klass {
                 let object: RuntimeObject = parameters[1].value;
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
 
-                return ah.adAll(object);
+                return ah.addAll(object);
 
             },
             false, false, "Fügt alle Elemente von c dieser Collection hinzu."));

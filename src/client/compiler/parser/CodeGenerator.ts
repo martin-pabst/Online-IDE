@@ -820,13 +820,11 @@ export class CodeGenerator {
 
     ensureAutomaticCasting(typeFrom: Type, typeTo: Type, position?: TextPosition, nodeFrom?: ASTNode): boolean {
 
-        if (typeFrom == null) return false;
+        if (typeFrom == null || typeTo == null) return false;
 
         if (typeFrom.equals(typeTo)) {
             return true;
         }
-
-        if (typeFrom == null || typeTo == null) return false;
 
         if (!typeFrom.canCastTo(typeTo)) {
 

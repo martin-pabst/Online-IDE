@@ -60,15 +60,15 @@ export class KeyboardTool {
             }
 
             // in ActionManager.init there is a 
-            if(that.main.isEmbedded && key == " "){
-                for(let kpc of that.keyPressedCallbacks){
-                    kpc(key);
-                }    
-            }
+            // if(that.main.isEmbedded && key == " "){
+            //     for(let kpc of that.keyPressedCallbacks){
+            //         kpc(key);
+            //     }    
+            // }
 
             return true;
         });
-        element.on("keypress", (e) => {
+        element.on("keyup", (e) => {
             let k = e.key;
             if(e.shiftKey && k.length > 1){
                 k = "[shift]+" + k;

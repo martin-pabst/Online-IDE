@@ -1447,6 +1447,7 @@ export class Interpreter {
                 }
                 break;
             case TokenType.pause:
+                node.stepFinished = true;
                 if (this.pauseUntil != null && performance.now() < this.pauseUntil) {
                     this.currentProgramPosition--;
                 } else {

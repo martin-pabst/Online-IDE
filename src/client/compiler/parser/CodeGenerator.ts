@@ -1022,7 +1022,7 @@ export class CodeGenerator {
         } else {
             this.currentProgram.statements.push(statement);
             if (statement.type == TokenType.return || statement.type == TokenType.jumpAlways) {
-                if (this.lastStatement != null) this.lastStatement.stepFinished = false;
+                if (this.lastStatement != null && this.lastStatement.type != TokenType.jumpAlways) this.lastStatement.stepFinished = false;
             }
             if (statement.position != null) {
                 this.lastPosition = statement.position;

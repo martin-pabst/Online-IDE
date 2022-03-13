@@ -767,15 +767,17 @@ export class Interpreter {
 
     }
 
+    stepFinished: boolean = false;
+
     nextStep(): string {
 
-        let stepFinished: boolean = false;
+        this.stepFinished = false;
 
         let node: Statement;
 
         let exception: string;
 
-        while (!stepFinished && !this.additionalStepFinishedFlag && exception == null) {
+        while (!this.stepFinished && !this.additionalStepFinishedFlag && exception == null) {
 
 
             if (typeof this.currentProgram == "undefined") {
@@ -790,7 +792,7 @@ export class Interpreter {
             node = this.currentProgram.statements[this.currentProgramPosition];
 
             if (node.stepFinished != null) {
-                stepFinished = node.stepFinished;
+                this.stepFinished = node.stepFinished;
             }
 
             exception = this.executeNode(node);
@@ -1482,6 +1484,10 @@ export class Interpreter {
 
         if (currentCallbackAfterReturn != null) {
             currentCallbackAfterReturn(this);
+        }
+
+        if(this.stepOverNestingLevel < 0 && this.currentProgram.statements[this.currentProgramPosition+1].type == TokenType.jumpAlways){
+            this.stepFinished = false;
         }
 
     }

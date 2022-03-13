@@ -856,6 +856,8 @@ export class WorldHelper {
 
     cacheAsBitmap() {
 
+        this.mouseListenerShapes = [];
+
         let scaleMin = 1.0;
         if (this.currentWidth * this.currentHeight > 2500000) scaleMin = Math.sqrt(2500000 / (this.currentWidth * this.currentHeight));
         if (this.currentWidth * this.currentHeight < 1024 * 1024) scaleMin = Math.sqrt(1024 * 1024 / (this.currentWidth * this.currentHeight));

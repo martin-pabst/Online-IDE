@@ -1022,7 +1022,7 @@ export class CodeGenerator {
         } else {
             this.currentProgram.statements.push(statement);
             if (statement.type == TokenType.return || statement.type == TokenType.jumpAlways) {
-                if (this.lastStatement != null && this.lastStatement.type != TokenType.jumpAlways) this.lastStatement.stepFinished = false;
+                if (this.lastStatement != null && this.lastStatement.type != TokenType.noOp) this.lastStatement.stepFinished = false;
             }
             if (statement.position != null) {
                 this.lastPosition = statement.position;
@@ -2103,8 +2103,13 @@ export class CodeGenerator {
         this.openBreakScope();
         this.openContinueScope();
 
+        let pc = this.currentProgram.statements.length;        
         let statements = this.generateStatements(node.statements);
         let withReturnStatement = statements.withReturnStatement;
+
+        if(this.currentProgram.statements.length == pc){
+            this.insertNoOp(node.scopeTo);
+        }
 
         this.closeContinueScope(conditionBeginLabel, lm);
         lm.insertJumpNode(TokenType.jumpAlways, statements.endPosition, this, conditionBeginLabel);
@@ -2119,6 +2124,14 @@ export class CodeGenerator {
 
     }
 
+    insertNoOp(position: TextPosition){
+        this.pushStatements({
+            type: TokenType.noOp,
+            position: position,
+            stepFinished: true
+        })
+    }
+
     processDo(node: DoWhileNode): StackType {
 
         let lm = this.currentProgram.labelManager;
@@ -2130,8 +2143,13 @@ export class CodeGenerator {
         this.openBreakScope();
         this.openContinueScope();
 
+        let pc = this.currentProgram.statements.length;        
         let statements = this.generateStatements(node.statements);
         let withReturnStatement = statements.withReturnStatement;
+
+        if(this.currentProgram.statements.length == pc){
+            this.insertNoOp(node.scopeTo);
+        }
 
         let continueLabelIndex = lm.markJumpDestination(1);
         this.closeContinueScope(continueLabelIndex, lm);

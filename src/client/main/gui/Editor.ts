@@ -54,6 +54,8 @@ export class Editor implements monaco.languages.RenameProvider {
                 { token: 'identifier', foreground: '9cdcfe' },
                 { token: 'statement', foreground: 'bb96c0', fontStyle: 'bold' },
                 { token: 'keyword', foreground: '68bed4', fontStyle: 'bold' },
+                { token: 'string3', foreground: 'ff0000' },
+
                 // { token: 'comment.js', foreground: '008800', fontStyle: 'bold italic underline' },
 
                 // semantic tokens:
@@ -370,7 +372,7 @@ export class Editor implements monaco.languages.RenameProvider {
     onDidType(text: string) {
         //        const endOfCommentText = " * \n */";
 
-        const insertEndOfComment = (pos, insertText: string, newLine: number, newColumn: number) => {
+        const insertTextAndSetCursor = (pos, insertText: string, newLine: number, newColumn: number) => {
             const range = new monaco.Range(
                 pos.lineNumber,
                 pos.column,
@@ -397,13 +399,47 @@ export class Editor implements monaco.languages.RenameProvider {
                 if(!nextLine.trim().startsWith("*")){
                     let spacesAtBeginningOfLine: string = prevLine.substr(0, prevLine.length - prevLine.trimLeft().length);
                     if (prevLine.trim().indexOf("/**") === 0) {
-                        insertEndOfComment(position, "\n" + spacesAtBeginningOfLine + " */", position.lineNumber, position.column + 3 + spacesAtBeginningOfLine.length);
+                        insertTextAndSetCursor(position, "\n" + spacesAtBeginningOfLine + " */", position.lineNumber, position.column + 3 + spacesAtBeginningOfLine.length);
                     } else {
-                        insertEndOfComment(position, " * \n" + spacesAtBeginningOfLine + " */", position.lineNumber, position.column + 3 + spacesAtBeginningOfLine.length);
+                        insertTextAndSetCursor(position, " * \n" + spacesAtBeginningOfLine + " */", position.lineNumber, position.column + 3 + spacesAtBeginningOfLine.length);
                     }
                 }
             }
+        } else if(text == '"') {
+            //a: x| -> x"|"
+            //d: "|x -> ""|x
+            //c: "|" -> """\n|\n"""
+            const model = this.editor.getModel();
+            const position = this.editor.getPosition();
+            const selection = this.editor.getSelection();
+
+            const isSelected = selection.startColumn != selection.endColumn || selection.startLineNumber != selection.endLineNumber;
+
+            const line = model.getLineContent(position.lineNumber);
+            let doInsert: boolean = true;
+            let charBefore: string = "x";
+            if(position.column > 1){
+                charBefore = line.charAt(position.column - 3);
+            }
+            let charAfter: string = "x";
+            if(position.column - 1 < line.length){
+                charAfter = line.charAt(position.column - 1);
+            }
+
+            if(!isSelected){
+                if(charBefore != '"'){
+                    insertTextAndSetCursor(position, '"', position.lineNumber, position.column);
+                } else if(charAfter == '"'){
+                    let pos1 = {...position, column: position.column + 1};
+                    insertTextAndSetCursor(pos1, '\n\n"""', position.lineNumber + 1, 1);
+                }
+            }
+
+
         }
+
+
+
     }
 
 

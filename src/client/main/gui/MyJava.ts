@@ -59,7 +59,7 @@ export function defineMyJava() {
             { open: '{', close: '}' },
             { open: '[', close: ']' },
             { open: '(', close: ')' },
-            { open: '"', close: '"' },
+            // { open: '"', close: '"' },
             { open: '\'', close: '\'' },
         ],
         surroundingPairs: [
@@ -156,6 +156,7 @@ export function defineMyJava() {
                 [/[;,.]/, 'delimiter'],
                 // strings
                 [/"([^"\\]|\\.)*$/, 'string.invalid'],
+                [/"""/, 'string', '@string'],
                 [/"/, 'string', '@string'],
                 // characters
                 [/'[^\\']'/, 'string'],
@@ -187,8 +188,10 @@ export function defineMyJava() {
                 [/[^\\"]+/, 'string'],
                 [/@escapes/, 'string.escape'],
                 [/\\./, 'string.escape.invalid'],
+                [/"""/, 'string', '@pop'],
                 [/"/, 'string', '@pop']
             ],
+            
         },
     };
 

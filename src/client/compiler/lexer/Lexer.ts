@@ -684,8 +684,14 @@ export class Lexer {
             this.pushError('Eine Java-Multiline-Stringkonstante beginnt immer mit """ und einem nachfolgenden Zeilenumbruch. Alle nach """ folgenden Zeichen werden überlesen!', restOfLine.length + 3);
         }
 
-        while (["\n", "\r"].indexOf(this.currentChar) >= 0) {
+        if(this.currentChar == '\r'){
             this.next();
+        }
+
+        if(this.currentChar == '\n'){
+            this.next();
+            this.line++;
+            this.column = 1;
         }
 
         let currentStringLine: string = "";
@@ -706,12 +712,16 @@ export class Lexer {
                 this.pushError('Innerhalb einer String-Konstante wurde das Textende erreicht.',length, "error", line, column);
                 StringLines.push(currentStringLine);
                 break;
-            } else if (["\n", "\r"].indexOf(char) >= 0){
+            } else 
+            if(char == "\r"){
+                this.next();
+            } else
+            if (char == "\n"){
                 StringLines.push(currentStringLine);
                 currentStringLine = "";
-                while(["\n", "\r"].indexOf(this.currentChar) >= 0){
-                    this.next();
-                }
+                this.line++;
+                this.column = 1;
+                this.next();
                 continue;
             } else {
                 currentStringLine += char;
@@ -729,16 +739,7 @@ export class Lexer {
         let text: string = ""; 
         text = StringLines.map(s => s.substring(indent)).join("\n");
 
-        this.pushToken(TokenType.stringConstant, text, line, column, text.length + 2);
-
-        let color = this.colorLexer.getColorInfo(text);
-
-        if (color != null) {
-            this.colorInformation.push({
-                color: color,
-                range: { startLineNumber: line, endLineNumber: line, startColumn: column + 1, endColumn: this.column - 1 }
-            });
-        }
+        this.pushToken(TokenType.stringConstant, text, this.line, this.column, text.length + 2);
 
     }
 

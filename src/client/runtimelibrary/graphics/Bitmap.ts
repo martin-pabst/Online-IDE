@@ -281,7 +281,7 @@ export class BitmapHelperNew extends ShapeHelper {
 
         let sprite = <PIXI.Sprite>this.displayObject;
 
-        sprite.localTransform.scale(width/anzahlY, height/anzahlY);
+        sprite.localTransform.scale(width/anzahlX, height/anzahlY);
         sprite.localTransform.translate(left, top);
         //@ts-ignore
         sprite.transform.onChange();

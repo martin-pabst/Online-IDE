@@ -732,38 +732,41 @@ export class Interpreter {
             this.resetRuntime();
             this.showProgramPointerAndVariables();
             this.setState(InterpreterState.paused);
-        } else {
-            this.stepOverNestingLevel = 10000;
-            let oldStepOverNestingLevel = this.stepOverNestingLevel;
-            let node = this.currentProgram.statements[this.currentProgramPosition];
-            let position = node.position;
-            let exception = this.nextStep();
-            if (exception != null) {
-                this.throwException(exception);
-                return;
+            // Are there static Variables to initialize?
+            if (this.currentMethod == "Hauptprogramm") {
+                // No static variable initializers
+                this.return;
             }
-
-            if (!stepInto && this.stepOverNestingLevel > oldStepOverNestingLevel) {
-                this.stepOverNestingLevel = 0;
-                if (position != null) {
-                    this.leaveLine = position.line;
-                } else {
-                    this.leaveLine = -1;
-                }
-                this.start();
-            } else
-                //@ts-ignore
-                if (this.state == InterpreterState.done) {
-                    this.main.hideProgramPointerPosition();
-                } else {
-                    this.showProgramPointerAndVariables();
-                    //@ts-ignore
-                    if (this.state != InterpreterState.waitingForInput) {
-                        this.setState(InterpreterState.paused);
-                    }
-                }
-
         }
+        this.stepOverNestingLevel = 10000;
+        let oldStepOverNestingLevel = this.stepOverNestingLevel;
+        let node = this.currentProgram.statements[this.currentProgramPosition];
+        let position = node.position;
+        let exception = this.nextStep();
+        if (exception != null) {
+            this.throwException(exception);
+            return;
+        }
+
+        if (!stepInto && this.stepOverNestingLevel > oldStepOverNestingLevel) {
+            this.stepOverNestingLevel = 0;
+            if (position != null) {
+                this.leaveLine = position.line;
+            } else {
+                this.leaveLine = -1;
+            }
+            this.start();
+        } else
+            //@ts-ignore
+            if (this.state == InterpreterState.done) {
+                this.main.hideProgramPointerPosition();
+            } else {
+                this.showProgramPointerAndVariables();
+                //@ts-ignore
+                if (this.state != InterpreterState.waitingForInput) {
+                    this.setState(InterpreterState.paused);
+                }
+            }
 
     }
 
@@ -1486,7 +1489,7 @@ export class Interpreter {
             currentCallbackAfterReturn(this);
         }
 
-        if(this.stepOverNestingLevel < 0 && this.currentProgram.statements[this.currentProgramPosition+1].type == TokenType.jumpAlways){
+        if (this.stepOverNestingLevel < 0 && this.currentProgram.statements[this.currentProgramPosition + 1].type == TokenType.jumpAlways) {
             this.stepFinished = false;
         }
 

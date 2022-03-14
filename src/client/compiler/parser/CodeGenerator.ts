@@ -740,7 +740,7 @@ export class CodeGenerator {
             this.pushStatements({
                 type: TokenType.assignment,
                 position: attribute.initialization.position,
-                stepFinished: true,
+                stepFinished: false,
                 leaveValueOnStack: false
             });
         }
@@ -2108,7 +2108,7 @@ export class CodeGenerator {
         let withReturnStatement = statements.withReturnStatement;
 
         if(this.currentProgram.statements.length == pc){
-            this.insertNoOp(node.scopeTo);
+            this.insertNoOp(node.scopeTo, false);
         }
 
         this.closeContinueScope(conditionBeginLabel, lm);
@@ -2124,11 +2124,11 @@ export class CodeGenerator {
 
     }
 
-    insertNoOp(position: TextPosition){
+    insertNoOp(position: TextPosition, stepFinished: boolean){
         this.pushStatements({
             type: TokenType.noOp,
             position: position,
-            stepFinished: true
+            stepFinished: stepFinished
         })
     }
 
@@ -2148,7 +2148,7 @@ export class CodeGenerator {
         let withReturnStatement = statements.withReturnStatement;
 
         if(this.currentProgram.statements.length == pc){
-            this.insertNoOp(node.scopeTo);
+            this.insertNoOp(node.scopeTo, false);
         }
 
         let continueLabelIndex = lm.markJumpDestination(1);

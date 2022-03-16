@@ -61,6 +61,7 @@ export class Lexer {
 
     lex(input: string): { tokens: TokenList, errors: Error[], bracketError: string, colorInformation: monaco.languages.IColorInformation[] } {
 
+        this.input = input.replace("\uc2a0", " ");
         this.input = input.replace("\u00a0", " ");
         this.tokenList = [];
         this.errorList = [];

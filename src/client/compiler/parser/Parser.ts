@@ -731,9 +731,14 @@ export class Parser {
                 while (this.tt != TokenType.rightCurlyBracket && this.tt != TokenType.endofSourcecode
                     && this.tt != TokenType.keywordCase && this.tt != TokenType.keywordDefault
                 ) {
+                    let oldPos = this.pos;
                     let statement = this.parseStatement();
                     if (statement != null) {
                         statements = statements.concat(statement);
+                    }
+                    if(oldPos == this.pos){
+                        this.pushError(this.cct.value + " wird hier nicht erwartet.");
+                        this.nextToken();
                     }
                 }
 

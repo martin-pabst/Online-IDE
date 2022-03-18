@@ -48,7 +48,7 @@ Im Header der Webseite müssen die verwendeten Bibliotheken geladen werden:
     <script src="lib/jquery/jquery-3.3.1.js"></script>
     <script src="lib/markdownit/markdownit.min.js"></script>
     <script src="lib/monaco-editor/dev/vs/loader.js"></script>
-    <script src="js/runtimelibrary/graphics/SpriteLibrary.js"></script>
+    <script src="src/client/runtimelibrary/graphics/SpriteLibrary.js"></script>
     <script src="lib/howler/howler.core.min.js"></script>
     <script src="lib/p5.js/p5.js"></script>
 

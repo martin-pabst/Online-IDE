@@ -196,7 +196,7 @@ export class MainEmbedded implements MainBase {
 
     setModuleActive(module: Module) {
 
-        if(module.model == null) return;
+        if(module == null) return;
 
         if (this.config.withFileList && this.fileExplorer.currentFile != null) {
             this.fileExplorer.currentFile.module.editorState = this.getMonacoEditor().saveViewState();

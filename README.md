@@ -57,7 +57,8 @@ Im Header der Webseite müssen die verwendeten Bibliotheken geladen werden:
 </head>
 ```
 
-Die Bestandteile des verwendeten Monaco Editors werden dynamisch aus dem Unterverzeichnis `lib/monaco-editor/dev`nachgeladen. Falls dieser Ort ungünstig ist, kann er durch Setzen der Variablen `window.monacoEditorPath` geändert werden. Ihr Defaultwert ist `"lib/monaco-editor/dev/vs"`.
+Die Bestandteile des verwendeten Monaco Editors werden dynamisch aus dem Unterverzeichnis `window.javaOnlineDir + window.monacoEditorPath`nachgeladen, das Spritesheet aus dem Verzeichnis `window.javaOnlineDir + "assets/graphics"`. Der Defaultwert von `window.javaOnlineDir` ist "", der Defaultwert von `window.monacoEditorPath` ist `"lib/monaco-editor/dev/vs"`.
+  
 
 Alle divs innerhalb des `<body>`-Elements, die die Klasse `java-online` tragen, werden nach dem `DOMContentLoaded`-Event automatisch in Embedded-IDEs umgewandelt. Die Java-Quelltexte werden in `<script>`-Tags innerhalb der divs verpackt. 
 

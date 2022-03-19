@@ -10,7 +10,6 @@
 /package-lock.json
 /babel.config.js
 /htdocs/assets/mp3
-/htdocs/assets/fonts
 /htdocs/js.webpack/javaOnline-apiDoc*
 /htdocs/js.webpack/javaOnline.css
 /htdocs/js.webpack/javaOnline.css.map

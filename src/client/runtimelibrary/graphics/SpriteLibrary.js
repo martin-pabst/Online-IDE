@@ -135,9 +135,10 @@ var SpriteLibrary = [
     { filename: "plattformer/tree2.png", name: "Background", index: 11, scale: 0.5 },
     { filename: "plattformer/tree3.png", name: "Background", index: 12, scale: 0.5 },
     
-    
-    
-    
+    //Frogger
+    {filename: "frogger/Frogger_1.png", name: "Frogger", tilesX: 3, tilesY: 1, spacingX: 2, spacingY: 0, scale: 1.0, index: 0, extrudeMarginWidth: 1},
+    {filename: "frogger/Frogger_car.png", name: "Frogger", tilesX: 2, tilesY: 1, spacingX: 2, spacingY: 0, scale: 1.0, index: 3, extrudeMarginWidth: 1}
+
 ]
 
 function expandDigits(n, digits){

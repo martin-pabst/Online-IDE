@@ -11,6 +11,7 @@ export type JOScript = {
     type: ScriptType;
     title: string;
     text: string;
+    url?: string;
 }
 
 export class EmbeddedStarter {
@@ -104,27 +105,37 @@ export class EmbeddedStarter {
 
     }
 
-    initJavaOnlineDivs() {
+    async initJavaOnlineDivs() {
         
+        let divsWithScriptLists:[JQuery<HTMLElement>, JOScript[]][] = [];
+
         jQuery('.java-online').each((index: number, element: HTMLElement) => {
             let $div = jQuery(element);
             let scriptList: JOScript[] = [];
+            
             $div.find('script').each((index: number, element: HTMLElement) => {
                 let $script = jQuery(element);
                 let type: ScriptType = "java";
                 if($script.data('type') != null) type = <ScriptType>($script.data('type'));
+                let srcAttr = $script.attr('src');
+                let text = $script.text().trim();
                 let script: JOScript = {
                     type: type,
                     title: $script.attr('title'),
-                    text: $script.text().trim()
+                    text: text
                 };
+                if(srcAttr != null) script.url = srcAttr;
                 script.text = this.eraseDokuwikiSearchMarkup(script.text);
                 scriptList.push(script);
             });
 
-            this.initDiv($div, scriptList);
+            divsWithScriptLists.push([$div, scriptList])
 
         });
+
+        for(let dws of divsWithScriptLists){
+            await this.initDiv(dws[0], dws[1]);
+        }
 
     }
 
@@ -132,7 +143,14 @@ export class EmbeddedStarter {
         return text.replace(/<span class="search\whit">(.*?)<\/span>/g, "$1");
     }
 
-    initDiv($div: JQuery<HTMLElement>, scriptList: JOScript[]) {
+    async initDiv($div: JQuery<HTMLElement>, scriptList: JOScript[]) {
+
+        for(let script of scriptList){
+            if(script.url != null){
+                const response = await fetch(script.url)
+                script.text = await response.text()
+            }
+        }
 
         let me: MainEmbedded = new MainEmbedded($div, scriptList);
 

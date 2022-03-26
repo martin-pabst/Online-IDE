@@ -21,10 +21,13 @@
     "monaco-editor": "^0.29.0",
     "mysql": "^2.18.1",
     "pixi.js": "^6.0.2",
+    "regenerator-runtime": "^0.13.9",
     "spritesmith": "^3.4.0",
     "ts-node": "^8.6.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.8.6",
+    "@babel/preset-env": "^7.8.6",
     "@types/chart.js": "^2.9.25",
     "@types/diff": "^4.0.2",
     "@types/diff-match-patch": "^1.0.32",
@@ -37,8 +40,6 @@
     "@types/mysql": "^2.15.9",
     "@types/p5": "^0.9.1",
     "@types/w2ui": "^1.4.32",
-    "@babel/core": "^7.8.6",
-    "@babel/preset-env": "^7.8.6",
     "babel-loader": "^8.0.6",
     "dependency-cruiser": "^9.23.1",
     "file-loader": "^6.0.0",

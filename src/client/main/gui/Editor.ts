@@ -124,7 +124,8 @@ export class Editor implements monaco.languages.RenameProvider {
             quickSuggestions: true,
             quickSuggestionsDelay: 10,
             fontSize: 14,
-            fontFamily: "Consolas, Roboto Mono",
+            //@ts-ignore
+            fontFamily: window.javaOnlineFont == null ? "Consolas, Roboto Mono" : window.javaOnlineFont,
             fontWeight: "500",
             roundedSelection: true,
             selectOnLineNumbers: false,

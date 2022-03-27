@@ -2631,6 +2631,168 @@ svgns|path.dropdown-triangle:active {
     right: 150px;
     top: 4px;
 }
+/* roboto-regular - latin */
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    src: url(../assets/fonts/roboto-v20-latin-regular.eot); /* IE9 Compat Modes */
+    src: local('Roboto'), local('Roboto-Regular'),
+         url(../assets/fonts/roboto-v20-latin-regular.eot?#iefix) format('embedded-opentype'), 
+         url(../assets/fonts/roboto-v20-latin-regular.woff2) format('woff2'), 
+         url(../assets/fonts/roboto-v20-latin-regular.woff) format('woff'), 
+         url(../assets/fonts/roboto-v20-latin-regular.ttf) format('truetype'), 
+         url(../assets/fonts/roboto-v20-latin-regular.svg#Roboto) format('svg'); /* Legacy iOS */
+  }
+  /* roboto-italic - latin */
+  @font-face {
+    font-family: 'Roboto';
+    font-style: italic;
+    font-weight: 400;
+    src: url(../assets/fonts/roboto-v20-latin-italic.eot); /* IE9 Compat Modes */
+    src: local('Roboto Italic'), local('Roboto-Italic'),
+         url(../assets/fonts/roboto-v20-latin-italic.eot?#iefix) format('embedded-opentype'), 
+         url(../assets/fonts/roboto-v20-latin-italic.woff2) format('woff2'), 
+         url(../assets/fonts/roboto-v20-latin-italic.woff) format('woff'), 
+         url(../assets/fonts/roboto-v20-latin-italic.ttf) format('truetype'), 
+         url(../assets/fonts/roboto-v20-latin-italic.svg#Roboto) format('svg'); /* Legacy iOS */
+  }
+  /* roboto-500 - latin */
+  @font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 500;
+    src: url(../assets/fonts/roboto-v20-latin-500.eot); /* IE9 Compat Modes */
+    src: local('Roboto Medium'), local('Roboto-Medium'),
+         url(../assets/fonts/roboto-v20-latin-500.eot?#iefix) format('embedded-opentype'), 
+         url(../assets/fonts/roboto-v20-latin-500.woff2) format('woff2'), 
+         url(../assets/fonts/roboto-v20-latin-500.woff) format('woff'), 
+         url(../assets/fonts/roboto-v20-latin-500.ttf) format('truetype'), 
+         url(../assets/fonts/roboto-v20-latin-500.svg#Roboto) format('svg'); /* Legacy iOS */
+  }
+  /* roboto-500italic - latin */
+  @font-face {
+    font-family: 'Roboto';
+    font-style: italic;
+    font-weight: 500;
+    src: url(../assets/fonts/roboto-v20-latin-500italic.eot); /* IE9 Compat Modes */
+    src: local('Roboto Medium Italic'), local('Roboto-MediumItalic'),
+         url(../assets/fonts/roboto-v20-latin-500italic.eot?#iefix) format('embedded-opentype'), 
+         url(../assets/fonts/roboto-v20-latin-500italic.woff2) format('woff2'), 
+         url(../assets/fonts/roboto-v20-latin-500italic.woff) format('woff'), 
+         url(../assets/fonts/roboto-v20-latin-500italic.ttf) format('truetype'), 
+         url(../assets/fonts/roboto-v20-latin-500italic.svg#Roboto) format('svg'); /* Legacy iOS */
+  }
+  /* roboto-700 - latin */
+  @font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 700;
+    src: url(../assets/fonts/roboto-v20-latin-700.eot); /* IE9 Compat Modes */
+    src: local('Roboto Bold'), local('Roboto-Bold'),
+         url(../assets/fonts/roboto-v20-latin-700.eot?#iefix) format('embedded-opentype'), 
+         url(../assets/fonts/roboto-v20-latin-700.woff2) format('woff2'), 
+         url(../assets/fonts/roboto-v20-latin-700.woff) format('woff'), 
+         url(../assets/fonts/roboto-v20-latin-700.ttf) format('truetype'), 
+         url(../assets/fonts/roboto-v20-latin-700.svg#Roboto) format('svg'); /* Legacy iOS */
+  }
+  /* roboto-700italic - latin */
+  @font-face {
+    font-family: 'Roboto';
+    font-style: italic;
+    font-weight: 700;
+    src: url(../assets/fonts/roboto-v20-latin-700italic.eot); /* IE9 Compat Modes */
+    src: local('Roboto Bold Italic'), local('Roboto-BoldItalic'),
+         url(../assets/fonts/roboto-v20-latin-700italic.eot?#iefix) format('embedded-opentype'), 
+         url(../assets/fonts/roboto-v20-latin-700italic.woff2) format('woff2'), 
+         url(../assets/fonts/roboto-v20-latin-700italic.woff) format('woff'), 
+         url(../assets/fonts/roboto-v20-latin-700italic.ttf) format('truetype'), 
+         url(../assets/fonts/roboto-v20-latin-700italic.svg#Roboto) format('svg'); /* Legacy iOS */
+  }
+  /* roboto-900 - latin */
+  @font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 900;
+    src: url(../assets/fonts/roboto-v20-latin-900.eot); /* IE9 Compat Modes */
+    src: local('Roboto Black'), local('Roboto-Black'),
+         url(../assets/fonts/roboto-v20-latin-900.eot?#iefix) format('embedded-opentype'), 
+         url(../assets/fonts/roboto-v20-latin-900.woff2) format('woff2'), 
+         url(../assets/fonts/roboto-v20-latin-900.woff) format('woff'), 
+         url(../assets/fonts/roboto-v20-latin-900.ttf) format('truetype'), 
+         url(../assets/fonts/roboto-v20-latin-900.svg#Roboto) format('svg'); /* Legacy iOS */
+  }
+  /* roboto-900italic - latin */
+  @font-face {
+    font-family: 'Roboto';
+    font-style: italic;
+    font-weight: 900;
+    src: url(../assets/fonts/roboto-v20-latin-900italic.eot); /* IE9 Compat Modes */
+    src: local('Roboto Black Italic'), local('Roboto-BlackItalic'),
+         url(../assets/fonts/roboto-v20-latin-900italic.eot?#iefix) format('embedded-opentype'), 
+         url(../assets/fonts/roboto-v20-latin-900italic.woff2) format('woff2'), 
+         url(../assets/fonts/roboto-v20-latin-900italic.woff) format('woff'), 
+         url(../assets/fonts/roboto-v20-latin-900italic.ttf) format('truetype'), 
+         url(../assets/fonts/roboto-v20-latin-900italic.svg#Roboto) format('svg'); /* Legacy iOS */
+  }
+
+
+
+
+/* roboto-mono-regular - latin */
+@font-face {
+    font-family: 'Roboto Mono';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Roboto Mono'), local('RobotoMono-Regular'),
+         url(../assets/fonts/roboto-mono-v7-latin-regular.woff2) format('woff2'), 
+         url(../assets/fonts/roboto-mono-v7-latin-regular.woff) format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+  }
+  /* roboto-mono-italic - latin */
+  @font-face {
+    font-family: 'Roboto Mono';
+    font-style: italic;
+    font-weight: 400;
+    src: local('Roboto Mono Italic'), local('RobotoMono-Italic'),
+         url(../assets/fonts/roboto-mono-v7-latin-italic.woff2) format('woff2'), 
+         url(../assets/fonts/roboto-mono-v7-latin-italic.woff) format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+  }
+  /* roboto-mono-500 - latin */
+  @font-face {
+    font-family: 'Roboto Mono';
+    font-style: normal;
+    font-weight: 500;
+    src: local('Roboto Mono Medium'), local('RobotoMono-Medium'),
+         url(../assets/fonts/roboto-mono-v7-latin-500.woff2) format('woff2'), 
+         url(../assets/fonts/roboto-mono-v7-latin-500.woff) format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+  }
+  /* roboto-mono-500italic - latin */
+  @font-face {
+    font-family: 'Roboto Mono';
+    font-style: italic;
+    font-weight: 500;
+    src: local('Roboto Mono Medium Italic'), local('RobotoMono-MediumItalic'),
+         url(../assets/fonts/roboto-mono-v7-latin-500italic.woff2) format('woff2'), 
+         url(../assets/fonts/roboto-mono-v7-latin-500italic.woff) format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+  }
+  /* roboto-mono-700 - latin */
+  @font-face {
+    font-family: 'Roboto Mono';
+    font-style: normal;
+    font-weight: 700;
+    src: local('Roboto Mono Bold'), local('RobotoMono-Bold'),
+         url(../assets/fonts/roboto-mono-v7-latin-700.woff2) format('woff2'), 
+         url(../assets/fonts/roboto-mono-v7-latin-700.woff) format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+  }
+  /* roboto-mono-700italic - latin */
+  @font-face {
+    font-family: 'Roboto Mono';
+    font-style: italic;
+    font-weight: 700;
+    src: local('Roboto Mono Bold Italic'), local('RobotoMono-BoldItalic'),
+         url(../assets/fonts/roboto-mono-v7-latin-700italic.woff2) format('woff2'), 
+         url(../assets/fonts/roboto-mono-v7-latin-700italic.woff) format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+  }
 .monaco-editor {
     overflow: visible !important;
 }

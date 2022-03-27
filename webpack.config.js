@@ -84,7 +84,7 @@ const embeddedConfig = {
             './css/icons.css',
             // './css/imagesprites.css',
             './css/run.css',
-            // './assets/fonts/fonts.css',
+            './assets/fonts/fonts.css',
             './css/embedded.css',
         ],
         // style: [

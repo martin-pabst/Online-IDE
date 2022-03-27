@@ -87,7 +87,8 @@ export class MyConsole {
             language: 'myJava',
 
             fontSize: 14,
-            fontFamily: "Consolas, Roboto Mono",
+            //@ts-ignore
+            fontFamily: window.javaOnlineFont == null ? "Consolas, Roboto Mono" : window.javaOnlineFont,
             fontWeight: "500",
             roundedSelection: true,
             occurrencesHighlight: false,

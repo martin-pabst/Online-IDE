@@ -69,7 +69,7 @@ body {
 .jo_type {
     font-size: 150%;
     font-weight: bold;
-    font-family: 'Roboto Mono', monospace;
+    font-family: 'Consolas', 'Roboto Mono', monospace;
 }
 
 .jo_method-heading {
@@ -96,7 +96,7 @@ body {
 .jo_method {
     font-size: 120%;
     margin-top: 10px;
-    font-family: 'Roboto Mono', monospace;
+    font-family: 'Consolas', 'Roboto Mono', monospace;
 }
 
 .jo_documentation {

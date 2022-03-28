@@ -275,7 +275,7 @@ export class PolygonHelper extends FilledShapeHelper {
         }
 
         this.render();
-        this.addToDefaultGroup();
+        this.addToDefaultGroupAndSetDefaultVisibility();
 
     }
 

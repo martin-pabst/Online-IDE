@@ -6,6 +6,7 @@ import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { FilledShapeHelper } from "./FilledShape.js";
 import { WorldHelper } from "./World.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
+import { FilledShapeDefaults } from "./FilledShapeDefaults.js";
 
 export class RectangleClass extends Klass {
 
@@ -126,7 +127,7 @@ export class RectangleHelper extends FilledShapeHelper {
 
         this.render();
 
-        this.addToDefaultGroup();
+        this.addToDefaultGroupAndSetDefaultVisibility();
 
     }
 

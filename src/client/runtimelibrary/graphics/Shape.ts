@@ -13,6 +13,7 @@ import { GroupHelper, GroupClass } from "./Group.js";
 import { CircleHelper } from "./Circle.js";
 import { TurtleHelper } from "./Turtle.js";
 import { Enum, EnumInfo } from "src/client/compiler/types/Enum.js";
+import { FilledShapeDefaults } from "./FilledShapeDefaults.js";
 
 export class ShapeClass extends Klass {
 
@@ -445,6 +446,18 @@ export class ShapeClass extends Klass {
 
             }, false, false, "Dreht das Objekt zur angegebenen Richtung.", false));
 
+        this.addMethod(new Method("setDefaultVisibility", new Parameterlist([
+            { identifier: "visibility", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let visibility: boolean = parameters[1].value;
+
+                FilledShapeDefaults.setDefaultVisibility(visibility);
+
+            }, false, true, 'Setzt den Standardwert für das Attribut "visible". Dieser wird nachfolgend immer dann verwendet, wenn ein neues grafisches Objekt instanziert wird.', false));
+
+
         this.addMethod(new Method("setVisible", new Parameterlist([
             { identifier: "visible", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), voidPrimitiveType,
@@ -478,33 +491,33 @@ export class ShapeClass extends Klass {
         this.addMethod(new Method("onMouseEnter", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-        ]), voidPrimitiveType, () => {}, // no statements!
+        ]), voidPrimitiveType, () => { }, // no statements!
             false, false, "Wird aufgerufen, wenn sich der Mauspfeil in das Objekt hineinbewegt.", false));
 
         this.addMethod(new Method("onMouseLeave", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-        ]), voidPrimitiveType, () => {}, // no statements!
+        ]), voidPrimitiveType, () => { }, // no statements!
             false, false, "Wird aufgerufen, wenn sich der Mauspfeil in das Objekt hineinbewegt.", false));
 
         this.addMethod(new Method("onMouseDown", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "key", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-        ]), voidPrimitiveType, () => {}, // no statements!
+        ]), voidPrimitiveType, () => { }, // no statements!
             false, false, "Wird aufgerufen, wenn sich der Mauspfeil über dem Objekt befindet und der Benutzer eine Maustaste nach unten drückt.", false));
 
         this.addMethod(new Method("onMouseUp", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "key", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-        ]), voidPrimitiveType, () => {}, // no statements!
+        ]), voidPrimitiveType, () => { }, // no statements!
             false, false, "Wird aufgerufen, wenn sich der Mauspfeil über dem Objekt befindet und der Benutzer eine Maustaste loslässt.", false));
 
         this.addMethod(new Method("onMouseMove", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-        ]), voidPrimitiveType, () => {}, // no statements!
+        ]), voidPrimitiveType, () => { }, // no statements!
             false, false, "Wird aufgerufen, wenn sich der Mauspfeil über dem Objekt befindet und bewegt.", false));
 
         this.addMethod(new Method("tint", new Parameterlist([
@@ -522,7 +535,7 @@ export class ShapeClass extends Klass {
 
             }, false, false, 'Überzieht das Grafikobjekt mit einer halbdurchsichtigen Farbschicht.', false));
 
-            this.addMethod(new Method("tint", new Parameterlist([
+        this.addMethod(new Method("tint", new Parameterlist([
             { identifier: "colorAsInt", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), voidPrimitiveType,
             (parameters) => {
@@ -797,7 +810,10 @@ export abstract class ShapeHelper extends ActorHelper {
         container.setChildIndex(this.displayObject, 0);
     }
 
-    addToDefaultGroup() {
+    addToDefaultGroupAndSetDefaultVisibility() {
+
+        this.displayObject.visible = FilledShapeDefaults.defaultVisibility;
+
         if (this.worldHelper.defaultGroup != null) {
             this.runtimeObject.intrinsicData["Actor"] = this;
             let groupHelper = <GroupHelper>this.worldHelper.defaultGroup;
@@ -805,9 +821,9 @@ export abstract class ShapeHelper extends ActorHelper {
         }
     }
 
-    tint(color: string|number) {
+    tint(color: string | number) {
         let c: number;
-        if(typeof color == 'string'){
+        if (typeof color == 'string') {
             c = ColorHelper.parseColorToOpenGL(color).color;
         } else {
             c = color;
@@ -829,8 +845,8 @@ export abstract class ShapeHelper extends ActorHelper {
         this.displayObject.updateTransform();
         if (this.hitPolygonDirty) this.transformHitPolygon();
 
-        for(let shapeHelper of this.worldHelper.shapes){
-            if(this == shapeHelper) continue;
+        for (let shapeHelper of this.worldHelper.shapes) {
+            if (this == shapeHelper) continue;
 
             if (shapeHelper["shapes"] || shapeHelper["turtle"]) {
                 if (shapeHelper.collidesWith(this)) {
@@ -840,7 +856,7 @@ export abstract class ShapeHelper extends ActorHelper {
                 }
             }
 
-            if(this["turtle"]){
+            if (this["turtle"]) {
                 if (this.collidesWith(shapeHelper)) {
                     return true;
                 } else {
@@ -850,19 +866,19 @@ export abstract class ShapeHelper extends ActorHelper {
 
             let bb = this.displayObject.getBounds();
             let bb1 = shapeHelper.displayObject.getBounds();
-    
+
             if (bb.left > bb1.right || bb1.left > bb.right) continue;
-    
+
             if (bb.top > bb1.bottom || bb1.top > bb.bottom) continue;
-    
+
             // boundig boxes collide, so check further:
             if (shapeHelper.hitPolygonDirty) shapeHelper.transformHitPolygon();
-    
+
             // return polygonBerührtPolygon(this.hitPolygonTransformed, shapeHelper.hitPolygonTransformed);
-            if(polygonBerührtPolygonExakt(this.hitPolygonTransformed, shapeHelper.hitPolygonTransformed, true, true)){
+            if (polygonBerührtPolygonExakt(this.hitPolygonTransformed, shapeHelper.hitPolygonTransformed, true, true)) {
                 return true;
             }
-    
+
         }
 
         return false;
@@ -880,7 +896,7 @@ export abstract class ShapeHelper extends ActorHelper {
             return shapeHelper.collidesWith(this);
         }
 
-        if(this.displayObject == null || shapeHelper.displayObject == null) return;
+        if (this.displayObject == null || shapeHelper.displayObject == null) return;
 
         this.displayObject.updateTransform();
         shapeHelper.displayObject.updateTransform();

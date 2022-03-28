@@ -405,7 +405,7 @@ export class SpriteHelper extends ShapeHelper {
         this.centerXInitial = sprite.width / 2;
         this.centerYInitial = sprite.height / 2;
 
-        this.addToDefaultGroup();
+        this.addToDefaultGroupAndSetDefaultVisibility();
 
     }
 

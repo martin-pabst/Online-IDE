@@ -185,7 +185,7 @@ export class SectorHelper extends FilledShapeHelper {
         this.centerYInitial = my;
 
         this.render();
-        this.addToDefaultGroup();
+        this.addToDefaultGroupAndSetDefaultVisibility();
 
     }
 

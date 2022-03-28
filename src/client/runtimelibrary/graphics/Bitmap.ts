@@ -292,7 +292,7 @@ export class BitmapHelperNew extends ShapeHelper {
         this.centerYInitial = p.y;
 
 
-        this.addToDefaultGroup();
+        this.addToDefaultGroupAndSetDefaultVisibility();
     }
 
     render(): void {

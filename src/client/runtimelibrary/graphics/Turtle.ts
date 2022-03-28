@@ -237,7 +237,7 @@ export class TurtleHelper extends FilledShapeHelper {
 
         this.worldHelper.stage.addChild(this.displayObject);
 
-        this.addToDefaultGroup();
+        this.addToDefaultGroupAndSetDefaultVisibility();
 
     }
 

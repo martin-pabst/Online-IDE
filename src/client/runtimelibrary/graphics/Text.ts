@@ -177,7 +177,7 @@ export class TextHelper extends FilledShapeHelper {
         this.hitPolygonInitial = [];
 
         this.render();
-        this.addToDefaultGroup();
+        this.addToDefaultGroupAndSetDefaultVisibility();
     }
 
     getCopy(klass: Klass): RuntimeObject {

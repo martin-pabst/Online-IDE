@@ -300,7 +300,7 @@ export class GroupHelper extends ShapeHelper {
         super(interpreter, runtimeObject);
         this.displayObject = new PIXI.Container();
         this.worldHelper.stage.addChild(this.displayObject);
-        this.addToDefaultGroup();
+        this.addToDefaultGroupAndSetDefaultVisibility();
 
     }
 

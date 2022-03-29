@@ -302,14 +302,31 @@ export class RepositorySettingsManager {
             });
 
             that.$repoOwner.empty();
-            setSelectItems(that.$repoOwner, response.repositoryUserList.map(userData => {
+            let selectedItems = response.repositoryUserList.map(userData => {
                 let se: SelectItem = {
                     caption: `${userData.firstName} ${userData.lastName} (${userData.username})`,
                     object: userData,
                     value: userData.user_id + ""
                 }
                 return se;
-            }), repInfo.owner_id + "")
+            });
+
+            if(!response.repositoryUserList.some(user => user.user_id == repInfo.owner_id)){
+                selectedItems.push({
+                    caption: `${repInfo.owner_name} (${repInfo.owner_username})`,
+                    object: {
+                        user_id: repInfo.owner_id,
+                        username: repInfo.owner_username,
+                        firstName: "",
+                        lastName: "",
+                        klasse: "",
+                        canWrite: true
+                    },
+                    value: repInfo.owner_id + ""
+                })
+            }
+
+            setSelectItems(that.$repoOwner, selectedItems, repInfo.owner_id + "")
 
         });
 

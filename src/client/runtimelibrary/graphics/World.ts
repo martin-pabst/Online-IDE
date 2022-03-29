@@ -6,6 +6,7 @@ import { Interpreter, InterpreterState } from "../../interpreter/Interpreter.js"
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { ActorHelper } from "./Actor.js";
 import { ColorHelper } from "./ColorHelper.js";
+import { FilledShapeDefaults } from "./FilledShapeDefaults.js";
 import { GroupClass, GroupHelper } from "./Group.js";
 import { MouseListenerInterface } from "./MouseListener.js";
 import { ShapeClass, ShapeHelper } from "./Shape.js";
@@ -333,7 +334,6 @@ export class WorldClass extends Klass {
 
 
         if (wh != null) {
-            debugger;
             if (wh.width != breite || wh.height != höhe) {
 
                 let ratio: number = Math.round(höhe / breite * 100);
@@ -348,6 +348,7 @@ export class WorldClass extends Klass {
             return wh;
 
         } else {
+            
             return new WorldHelper(breite, höhe, this.module, worldObject);
         }
 
@@ -912,6 +913,8 @@ export class WorldHelper {
         this.interpreter.timerExtern = false;
         this.interpreter.worldHelper = null;
         this.$coordinateDiv.hide();
+        
+        FilledShapeDefaults.initDefaultValues();
     }
 
     onMouseEvent(listenerType: string, x: number, y: number, button: number) {

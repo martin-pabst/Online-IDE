@@ -247,7 +247,7 @@ export class BitmapHelper extends ShapeHelper {
         ];
 
         this.render();
-        this.addToDefaultGroup();
+        this.addToDefaultGroupAndSetDefaultVisibility();
     }
 
     render(): void {

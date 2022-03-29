@@ -110,7 +110,7 @@ export class RoundedRectangleHelper extends FilledShapeHelper {
         this.hitPolygonInitial.push({x: left + radius, y: top});
 
         this.render();
-        this.addToDefaultGroup();
+        this.addToDefaultGroupAndSetDefaultVisibility();
 
     }
 

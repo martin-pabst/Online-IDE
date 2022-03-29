@@ -199,7 +199,7 @@ export class ArcHelper extends FilledShapeHelper {
         this.centerYInitial = my;
 
         this.render();
-        this.addToDefaultGroup();
+        this.addToDefaultGroupAndSetDefaultVisibility();
 
     }
 

@@ -1,6 +1,6 @@
 import { Module } from "../../compiler/parser/Module.js";
 import { Klass, Visibility } from "../../compiler/types/Class.js";
-import { doublePrimitiveType, stringPrimitiveType, voidPrimitiveType, intPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
+import { doublePrimitiveType, stringPrimitiveType, voidPrimitiveType, intPrimitiveType, booleanPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
 import { Attribute, Method, Parameterlist } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { ColorHelper } from "./ColorHelper.js";
@@ -8,6 +8,7 @@ import { ShapeHelper } from "./Shape.js";
 import { WorldHelper } from "./World.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { ColorClassIntrinsicData } from "./Color.js";
+import { FilledShapeDefaults } from "./FilledShapeDefaults.js";
 
 export class FilledShapeClass extends Klass {
 
@@ -100,6 +101,58 @@ export class FilledShapeClass extends Klass {
                 sh.setFillColor(color);
 
             }, false, false, 'Setzt die Füllfarbe. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau', false));
+
+        this.addMethod(new Method("setDefaultBorder", new Parameterlist([
+            { identifier: "width", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "color", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let width: number = parameters[1].value;
+                let color: string = parameters[2].value;
+
+                FilledShapeDefaults.setDefaultBorder(width, color);
+
+            }, false, true, 'Setzt Default-Eigenschaften des Randes. Sie werden nachfolgend immer dann verwendet, wenn ein neues grafisches Objekt erstellt wird. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau und 0.0 <= alpha <= 1.0', false));
+
+        this.addMethod(new Method("setDefaultBorder", new Parameterlist([
+            { identifier: "width", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "color", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "alpha", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let width: number = parameters[1].value;
+                let color: number = parameters[2].value;
+                let alpha: number = parameters[3].value;
+
+                FilledShapeDefaults.setDefaultBorder(width, color, alpha);
+
+            }, false, true, 'Setzt Default-Eigenschaften des Randes. Sie werden nachfolgend immer dann verwendet, wenn ein neues grafisches Objekt erstellt wird. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau und 0.0 <= alpha <= 1.0', false));
+
+        this.addMethod(new Method("setDefaultFillColor", new Parameterlist([
+            { identifier: "color", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "alpha", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let color: number = parameters[1].value;
+                let alpha: number = parameters[2].value;
+
+                FilledShapeDefaults.setDefaultFillColor(color, alpha);
+
+            }, false, true, 'Setzt die Default-Füllfarbe. Sie wird nachfolgend immer dann verwendet, wenn ein neues grafisches Objekt erstellt wird. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau und 0.0 <= alpha <= 1.0', false));
+
+        this.addMethod(new Method("setDefaultFillColor", new Parameterlist([
+            { identifier: "color", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let color: string = parameters[1].value;
+
+                FilledShapeDefaults.setDefaultFillColor(color);
+
+            }, false, true, 'Setzt die Default-Füllfarbe. Sie wird nachfolgend immer dann verwendet, wenn ein neues grafisches Objekt erstellt wird. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau und 0.0 <= alpha <= 1.0', false));
 
         this.addMethod(new Method("setFillColor", new Parameterlist([
             { identifier: "color", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -230,7 +283,7 @@ export class FilledShapeClass extends Klass {
             }, false, false, 'Setzt die Linienbreite des Randes (Einheit: Pixel)"', false));
 
 
-            this.setupAttributeIndicesRecursive();
+        this.setupAttributeIndicesRecursive();
 
     }
 
@@ -249,15 +302,22 @@ export class FilledShapeClass extends Klass {
 
 export abstract class FilledShapeHelper extends ShapeHelper {
 
-    fillColor: number = 0x8080ff;
-    fillAlpha: number = 1.0;
+    fillColor: number;
+    fillAlpha: number;
 
-    borderColor: number = null;
-    borderAlpha: number = 1.0;
-    borderWidth: number = 10;
+    borderColor: number;
+    borderAlpha: number;
+    borderWidth: number;
+
 
     constructor(interpreter: Interpreter, runtimeObject: RuntimeObject) {
         super(interpreter, runtimeObject);
+        this.borderColor = FilledShapeDefaults.defaultBorderColor;
+        this.borderAlpha = FilledShapeDefaults.defaultBorderAlpha;
+        this.borderWidth = FilledShapeDefaults.defaultBorderWidth;
+
+        this.fillColor = FilledShapeDefaults.defaultFillColor;
+        this.fillAlpha = FilledShapeDefaults.defaultFillAlpha;
     }
 
     copyFrom(fsh: FilledShapeHelper) {
@@ -300,7 +360,7 @@ export abstract class FilledShapeHelper extends ShapeHelper {
             this.fillAlpha = alpha == null ? c.alpha : alpha;
         } else {
             this.fillColor = color;
-            if(alpha != null) this.fillAlpha = alpha;
+            if (alpha != null) this.fillAlpha = alpha;
         }
 
 

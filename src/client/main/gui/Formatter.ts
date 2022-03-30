@@ -192,7 +192,7 @@ export class Formatter implements monaco.languages.DocumentFormattingEditProvide
                     if (i > 1) {
                         let lastToken1 = tokenlist[i - 1];
                         let lastToken2 = tokenlist[i - 2];
-                        if (lastToken1.tt == TokenType.space && lastToken2.tt != TokenType.newline && !this.isBinaryOperator(lastToken2.tt)) {
+                        if (lastToken1.tt == TokenType.space && [TokenType.newline, TokenType.keywordFor].indexOf(lastToken2.tt) < 0 && !this.isBinaryOperator(lastToken2.tt)) {
                             if (lastToken1.position.length == 1) {
                                 this.deleteSpaces(edits, lastToken1.position.line, lastToken1.position.column, 1);
                             }
@@ -276,6 +276,15 @@ export class Formatter implements monaco.languages.DocumentFormattingEditProvide
                                     }
                                 }
                             }
+                        }
+                    }
+                    break;
+                case TokenType.keywordFor:
+                case TokenType.keywordWhile:
+                    if (i < tokenlist.length - 1) {
+                        let nextToken = tokenlist[i + 1];
+                        if (nextToken.tt == TokenType.leftBracket) {
+                            this.insertSpaces(edits, nextToken.position.line, nextToken.position.column, 1);
                         }
                     }
                     break;

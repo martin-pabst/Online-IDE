@@ -1,6 +1,6 @@
 import { Module } from "../../compiler/parser/Module.js";
 import { Klass } from "../../compiler/types/Class.js";
-import { doublePrimitiveType, stringPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
+import { booleanPrimitiveType, doublePrimitiveType, stringPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
 import { Method, Parameterlist } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { FilledShapeHelper } from "./FilledShape.js";
@@ -136,6 +136,24 @@ export class TextClass extends Klass {
 
             }, false, false, 'Gibt die Höhe des Textes zurück.', false));
 
+        this.addMethod(new Method("setStyle", new Parameterlist([
+            { identifier: "isBold", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "isItalic", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let isBold: boolean = parameters[1].value;
+                let isItalic: boolean = parameters[2].value;
+                let sh: TextHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("getHeight")) return;
+
+                sh.setStyle(isBold, isItalic);
+
+                return;
+
+            }, false, false, 'Gibt die Höhe des Textes zurück.', false));
 
     }
 
@@ -166,11 +184,11 @@ export class TextHelper extends FilledShapeHelper {
         this.centerXInitial = x;
         this.centerYInitial = y;
 
-        if(this.fontsize == 0) this.fontsize = 10;
+        if (this.fontsize == 0) this.fontsize = 10;
 
         this.borderColor = null;
         this.textStyle.stroke = null;
-        if(fontFamily != null){
+        if (fontFamily != null) {
             this.textStyle.fontFamily = fontFamily;
         }
 
@@ -178,6 +196,12 @@ export class TextHelper extends FilledShapeHelper {
 
         this.render();
         this.addToDefaultGroupAndSetDefaultVisibility();
+    }
+
+    setStyle(isBold: boolean, isItalic: boolean){
+        this.textStyle.fontWeight = isBold ? "bold" : "normal";
+        this.textStyle.fontStyle = isItalic ? "italic" : "normal";
+        this.render();
     }
 
     getCopy(klass: Klass): RuntimeObject {
@@ -223,9 +247,9 @@ export class TextHelper extends FilledShapeHelper {
 
         this.centerXInitial = 0;
         this.centerYInitial = 0;
-        if(this.text != null){
+        if (this.text != null) {
             let tm = PIXI.TextMetrics.measureText(this.text, this.textStyle);
-    
+
             this.centerXInitial = tm.width / 2;
             this.centerYInitial = tm.height / 2;
         }
@@ -235,7 +259,7 @@ export class TextHelper extends FilledShapeHelper {
 
     setFontsize(fontsize: number) {
         this.fontsize = fontsize;
-        if(this.fontsize == 0) this.fontsize = 10;
+        if (this.fontsize == 0) this.fontsize = 10;
         this.render();
     }
 

@@ -174,7 +174,8 @@ export class TextHelper extends FilledShapeHelper {
             strokeThickness: this.borderWidth,
             dropShadow: false,
             wordWrap: false,
-            align: "left"
+            align: "left",
+            lineJoin: 'round'
         });
 
     constructor(public x: number, public y: number, public fontsize: number,

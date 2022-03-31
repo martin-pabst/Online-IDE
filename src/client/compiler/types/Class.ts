@@ -1374,6 +1374,13 @@ function findSuitableMethods(methodList: Method[], identifier: string, parameter
 
                     if (givenType.canCastTo(mParameterType)) {
                         howManyCastings++;
+                        /**
+                         * Rechteck r; 
+                         * GNGFigur f;
+                         * Bei f.berührt(r) gibt es eine Variante mit Parametertyp String (schlecht!) und
+                         * eine mit Parametertyp Object. Letztere soll genommen werden, also:
+                         */
+                        if(mParameterType == stringPrimitiveType) howManyCastings += 0.5;
                         continue;
                     }
 
@@ -1400,6 +1407,13 @@ function findSuitableMethods(methodList: Method[], identifier: string, parameter
 
                         if (givenType.canCastTo(mParameterTypeEllispsis)) {
                             howManyCastings++;
+                        /**
+                         * Rechteck r; 
+                         * GNGFigur f;
+                         * Bei f.berührt(r) gibt es eine Variante mit Parametertyp String (schlecht!) und
+                         * eine mit Parametertyp Object. Letztere soll genommen werden, also:
+                         */
+                         if(mParameterTypeEllispsis == stringPrimitiveType) howManyCastings += 0.5;
                             continue;
                         }
 

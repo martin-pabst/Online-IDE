@@ -23,9 +23,11 @@ export class GNGFigurClass extends Klass {
 
     constructor(module: Module, moduleStore: ModuleStore) {
 
-        let objectType = moduleStore.getType("Object").type;
+        let objectType = <Klass>moduleStore.getType("Object").type;
 
         super("Figur", module, "Figur-Klasse der Graphics'n Games-Bibliothek (Cornelsen-Verlag)");
+
+        this.setBaseClass(objectType);
 
         let polygonClass: Klass = <Klass>moduleStore.getType("Polygon").type;
         let circleClass: Klass = <Klass>moduleStore.getType("Circle").type;
@@ -347,6 +349,7 @@ export class GNGFigurClass extends Klass {
                 return false;
 
             }, false, false, 'Gibt genau dann true zurück, wenn die Figur mit einem graphischen Objekt kollidiert.', false));
+    
 
         this.addMethod(new Method("Berührt", new Parameterlist([
             { identifier: "farbe", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }

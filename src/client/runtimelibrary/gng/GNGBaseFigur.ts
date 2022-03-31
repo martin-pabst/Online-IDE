@@ -14,6 +14,9 @@ export class GNGBaseFigurClass extends Klass {
 
         super("GNGBaseFigur", module, "Oberklasse der graphischen Elemente in der Graphics'n Games-Bibliothek (Cornelsen-Verlag)");
 
+        let objectType = <Klass>moduleStore.getType("Object").type;
+        this.setBaseClass(objectType);
+
         this.addAttribute(new Attribute("farbe", stringPrimitiveType, (value: Value) => { 
             let farbe = value.object.intrinsicData["Farbe"];
             value.value = farbe == null ? "schwarz" : farbe;

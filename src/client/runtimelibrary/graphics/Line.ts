@@ -83,7 +83,7 @@ export class LineClass extends Klass {
         
                         if (sh.testdestroyed("setPoints")) return;
         
-                        sh.setPoints(x1, y1, x2, y2);
+                        sh.setPoints([x1, y1, x2, y2]);
         
                     }, false, false, 'Ändert die Punkte der Strecke. (x1/y1) ist der neue Anfangspunkt, (x2/y2) ist der neue Endpunkt.', false));
         

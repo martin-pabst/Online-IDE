@@ -107,8 +107,7 @@ export class PolygonClass extends Klass {
                 o.intrinsicData["Actor"] = ph;
 
             }, false, false, 'Instanziert ein neues Polygon. Seine Punkte sind die Punkte des Hitpolygons der übergebenen Figur.', true));
-
-
+            
         this.addMethod(new Method("addPoint", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -126,6 +125,23 @@ export class PolygonClass extends Klass {
 
             }, false, false, 'Fügt dem Polygon einen Punkt hinzu."', false));
 
+            this.addMethod(new Method("setPoints", new Parameterlist([
+                { identifier: "points", type: new ArrayType(doublePrimitiveType), declaration: null, usagePositions: null, isFinal: true },
+            ]), null,
+                (parameters) => {
+    
+                    let o: RuntimeObject = parameters[0].value;
+                    let points: Value[] = parameters[1].value;
+                    let sh: PolygonHelper = o.intrinsicData["Actor"];
+    
+                    if (sh.testdestroyed("addPoints")) return;
+    
+                    let p: { x: number, y: number }[];
+    
+                    sh.setPoints(points.map(value => value.value));
+    
+                }, false, false, 'Löscht alle Punkte des Polygons und setzt komplett neue. Diese werden in einem double[] übergeben, das abwechselnd die x- und y-Koordinaten enthält."', false));
+                
         this.addMethod(new Method("addPoints", new Parameterlist([
             { identifier: "points", type: new ArrayType(doublePrimitiveType), declaration: null, usagePositions: null, isFinal: true },
         ]), null,
@@ -328,6 +344,7 @@ export class PolygonHelper extends FilledShapeHelper {
         }
     };
 
+
     addPoint(x: number, y: number, render: boolean = true) {
         let p = new PIXI.Point(x, y);
         this.displayObject.transform.worldTransform.applyInverse(p, p);
@@ -366,8 +383,13 @@ export class PolygonHelper extends FilledShapeHelper {
         }
     }
 
-    setPoints(x1: number, y1: number, x2: number, y2: number) {
-        this.hitPolygonInitial = [{ x: x1, y: y1 }, { x: x2, y: y2 }];
+    setPoints(coordinates: number[]) {
+
+        this.hitPolygonInitial = [];
+        for(let i = 0; i < coordinates.length - 1; i += 2){
+            this.hitPolygonInitial.push({x: coordinates[i], y: coordinates[i+1]});
+        }
+
         this.hitPolygonDirty = true;
         this.render();
     }

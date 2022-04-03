@@ -11,7 +11,7 @@ export class TriangleClass extends Klass {
 
         super("Triangle", module, "Dreieck");
 
-        this.setBaseClass(<Klass>module.typeStore.getType("FilledShape"));
+        this.setBaseClass(<Klass>module.typeStore.getType("Polygon"));
 
         this.addMethod(new Method("Triangle", new Parameterlist([
             { identifier: "x1", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },

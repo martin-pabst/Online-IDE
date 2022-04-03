@@ -1,36 +1,44 @@
-
 let base = "https://embed.learnj.de/include/";
 
-// includeJs("lib/monaco-editor/dev/vs/editor/editor.main.js");
-// includeJs("lib/monaco-editor/dev/vs/editor/editor.main.nls.de.js");
-includeJs(base + "lib/pixijs/pixi.js");
-includeCss(base + 'js.webpack/javaOnlineEmbedded.css');
-includeJs(base + "lib/jquery/jquery-3.3.1.js");
-includeJs(base + "lib/markdownit/markdownit.min.js");
-includeJs(base + "lib/monaco-editor/dev/vs/loader.js");
-includeJs(base + "js/runtimelibrary/graphics/SpriteLibrary.js");
-includeJs(base + "lib/howler/howler.core.min.js");
+// includeJs(base + "lib/pixijs/pixi.js");
+// includeCss(base + 'js.webpack/javaOnlineEmbedded.css');
+// includeJs(base + "lib/jquery/jquery-3.3.1.js");
+// includeJs(base + "lib/markdownit/markdownit.min.js");
+// includeJs(base + "lib/monaco-editor/dev/vs/loader.js");
+// includeJs(base + "js/runtimelibrary/graphics/SpriteLibrary.js");
+// includeJs(base + "lib/howler/howler.core.min.js");
 
-window.onload = function () {
-    if(window.jo_doc.startsWith("http")){
-        $.ajax({
-            url: window.jo_doc,
-             type:"get",
-             dataType:'text',  
-             success: function(data){
-               initScripts(data);
-             },
-             error:function() {
-               alert("Fehler beim Laden von " + jo_doc);
-             }
-         });
-    } else {
-        initScripts(window.jo_doc);
-    }
-    
-};
+let scripts = [
+    base + "lib/pixijs/pixi.js",
+    base + 'js.webpack/javaOnlineEmbedded.css',
+    base + "lib/jquery/jquery-3.3.1.js",
+    base + "lib/markdownit/markdownit.min.js",
+    base + "lib/monaco-editor/dev/vs/loader.js",
+    base + "js/runtimelibrary/graphics/SpriteLibrary.js",
+    base + "lib/howler/howler.core.min.js"
+]
 
-function initScripts(jo_doc){
+includeJsAndCss(scripts, () => {
+    window.onload = function () {
+        if (window.jo_doc.startsWith("http")) {
+            $.ajax({
+                url: window.jo_doc,
+                type: "get",
+                dataType: 'text',
+                success: function (data) {
+                    initScripts(data);
+                },
+                error: function () {
+                    alert("Fehler beim Laden von " + jo_doc);
+                }
+            });
+        } else {
+            initScripts(window.jo_doc);
+        }
+    };
+});
+
+function initScripts(jo_doc) {
     let scriptPosition = jo_doc.indexOf('<script');
     let scripts = jo_doc.substr(scriptPosition);
     let config = jo_doc.substr(0, scriptPosition);
@@ -86,4 +94,23 @@ function includeCss(src) {
     link.href = src;
     link.media = 'all';
     head.appendChild(link);
+}
+
+
+function includeJsAndCss(urlList, callback){
+
+    if(urlList.length > 0){
+        let url = urlList.shift();
+        if(url.endsWith('.js')){
+            includeJs(url, () => {
+                includeJsAndCss(urlList, callback);
+            })
+        } else {
+            includeCss(url);
+            includeJsAndCss(urlList, callback);
+        }
+    } else {
+        callback();
+    }
+
 }

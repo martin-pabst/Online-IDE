@@ -1750,12 +1750,19 @@ export class CodeGenerator {
                     label: label
                 });
             } else {
+                // default case
                 let label = lm.markJumpDestination(1);
-                this.generateStatements(caseNode.statements);
+                let statements = this.generateStatements(caseNode.statements);
+                if (statements?.withReturnStatement == null || !statements.withReturnStatement) {
+                    withReturnStatement = false;
+                }
                 switchStatement.defaultDestination = label;
             }
 
+        }
 
+        if(switchStatement.defaultDestination == null){
+            withReturnStatement = false;
         }
 
         lm.markJumpDestination(1, endLabel);

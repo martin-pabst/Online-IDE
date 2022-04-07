@@ -628,7 +628,7 @@ export class MyCompletionItemProvider implements monaco.languages.CompletionItem
         let c = classContext.baseClass;
         while (c != null) {
             methods = methods.concat(c.methods.filter((m) => {
-                if (m.isAbstract || (m.program == null && m.invoke == null)) {
+                if (m.isAbstract || (m.program == null && m.invoke == null) || m.identifier.startsWith('onMouse') || m.identifier.startsWith('onKey')) {
                     return true;
                 }
                 return false;

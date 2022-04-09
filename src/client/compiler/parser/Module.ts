@@ -82,6 +82,7 @@ import { DirectionClass } from "../../runtimelibrary/graphics/Direction.js";
 import { Patcher } from "./Patcher.js";
 import { KeyEvent as KeyEventClass } from "../../runtimelibrary/graphics/KeyEvent.js";
 import { Formatter } from "../../main/gui/Formatter.js";
+// import { RobotClass } from "../../runtimelibrary/graphics/Robot.js";
 
 export type ExportedWorkspace = {
     name: string;
@@ -868,6 +869,8 @@ export class BaseModule extends Module {
     
         this.typeStore.addType(new WebSocketClientClass(this));
         this.typeStore.addType(new WebSocketClass(this));
+
+        // this.typeStore.addType(new RobotClass(this));
 
     
 

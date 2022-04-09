@@ -140,7 +140,7 @@ export class IntegerClass extends Klass {
             { identifier: "radix", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), stringPrimitiveType,
             (parameters) => {
-                return (parameters[1].value >>> 0).toString(parameters[1].value);
+                return (parameters[1].value >>> 0).toString(parameters[2].value);
             }, false, true, "Gibt die übergebene Zahl als String-Wert zur Basis radix zurück."));
 
         this.addMethod(new Method("valueOf", new Parameterlist([

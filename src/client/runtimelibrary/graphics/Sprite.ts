@@ -535,14 +535,15 @@ export class SpriteHelper extends ShapeHelper {
 
         this.textureName = name;
 
-        let prefix = "";
-        //@ts-ignore
-        if (window.javaOnlineDir != null) {
-            //@ts-ignore
-            prefix = window.javaOnlineDir;
-        }
+        // let prefix = "";
+        // //@ts-ignore
+        // if (window.javaOnlineDir != null) {
+        //     //@ts-ignore
+        //     prefix = window.javaOnlineDir;
+        // }
 
-        let sheet = PIXI.Loader.shared.resources[prefix + "assets/graphics/spritesheet.json"].spritesheet;
+        // let sheet = PIXI.Loader.shared.resources[prefix + "assets/graphics/spritesheet.json"].spritesheet;
+        let sheet = PIXI.Loader.shared.resources["spritesheet"].spritesheet;
         let nameWithIndex = name + "#" + index;
         let texture = sheet.textures[nameWithIndex];
 

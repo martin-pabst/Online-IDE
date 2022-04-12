@@ -197,7 +197,9 @@ jQuery(function () {
 
     PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
     PIXI.Loader
-        .shared.add(prefix + "assets/graphics/spritesheet.json")
+        .shared.add("spritesheet",  prefix + "assets/graphics/spritesheet.json")
+        .add("steve", "assets/graphics/robot/minecraft_steve/scene.gltf")
+        // .add('assets/graphics/robot/minecraft_grass.png')
         .load(() => { });
 
 

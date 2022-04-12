@@ -447,6 +447,8 @@ export class WorldHelper {
 
     globalScale: number;
 
+    robotWorldHelper: any;
+
     tickerFunction: (t: number) => void;
 
     clearActorLists() {
@@ -889,9 +891,15 @@ export class WorldHelper {
 
             let sprite = new PIXI.Sprite(rt);
             sprite.localTransform.scale(this.globalScale, this.globalScale);
+            // debugger;
+            // sprite.localTransform.translate(0, rt.height);
             //@ts-ignore
             sprite.transform.onChange();
-            this.stage.projectionTransform = new PIXI.Matrix();
+            if(this.robotWorldHelper != null){
+                this.stage.projectionTransform = new PIXI.Matrix().scale(1, -1).translate(0, this.currentHeight);
+            } else {
+                this.stage.projectionTransform = new PIXI.Matrix();
+            }
             this.stage.addChild(sprite);
 
         }, 300);
@@ -906,6 +914,12 @@ export class WorldHelper {
 
         this.app.stage.children.forEach(c => c.destroy());
         this.app.stage.removeChildren();
+
+        if(this.robotWorldHelper != null){
+            this.robotWorldHelper.destroy();
+            this.robotWorldHelper = null;
+        }
+
         jQuery(this.app.view).detach();
 
         this.$containerOuter.remove();

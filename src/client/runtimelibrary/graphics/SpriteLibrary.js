@@ -137,7 +137,16 @@ var SpriteLibrary = [
     
     //Frogger
     {filename: "frogger/Frogger_1.png", name: "Frogger", tilesX: 3, tilesY: 1, spacingX: 2, spacingY: 0, scale: 1.0, index: 0, extrudeMarginWidth: 1},
-    {filename: "frogger/Frogger_car.png", name: "Frogger", tilesX: 2, tilesY: 1, spacingX: 2, spacingY: 0, scale: 1.0, index: 3, extrudeMarginWidth: 1}
+    {filename: "frogger/Frogger_car.png", name: "Frogger", tilesX: 2, tilesY: 1, spacingX: 2, spacingY: 0, scale: 1.0, index: 3, extrudeMarginWidth: 1},
+
+    // 3d
+    {filename: "3d/grass3d.png", name: "3d", tilesX: 1, tilesY: 1, index: 0},
+    {filename: "3d/tiled_grass.png", name: "3d", tilesX: 1, tilesY: 1, index: 2},
+    {filename: "3d/grass_side.png", name: "3d", tilesX: 1, tilesY: 1, index: 3},
+    {filename: "3d/brick3d_red.png", name: "3d", tilesX: 1, tilesY: 1, index: 4},
+    {filename: "3d/brick3d_yellow.png", name: "3d", tilesX: 1, tilesY: 1, index: 5},
+    {filename: "3d/brick3d_green.png", name: "3d", tilesX: 1, tilesY: 1, index: 6},
+    {filename: "3d/brick3d_blue.png", name: "3d", tilesX: 1, tilesY: 1, index: 7}
 
 ]
 

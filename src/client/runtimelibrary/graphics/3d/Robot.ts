@@ -51,8 +51,8 @@ export class RobotWorldHelper {
     displayObject: PIXI.DisplayObject;
     container3D: Pixi3d.Container3D;
     
-    markers: RobotMarker[][];    // x, y
-    bricks: RobotBrick[][][];   // x, y, height
+    markers: RobotMarker[][] = [];    // x, y
+    bricks: RobotBrick[][][] = [];   // x, y, height
 
     maximumHeight: number = 10;
 
@@ -61,18 +61,7 @@ export class RobotWorldHelper {
         
         this.robotCubeFactory = new RobotCubeFactory(this.worldHelper, this.camera);
 
-        this.markers = [];
-        this.bricks = [];
-        for(let x = 0; x < worldX; x++){
-            let markerColumn = [];
-            this.markers.push(markerColumn);
-            let brickColumn = [];
-            this.bricks.push(brickColumn);
-            for(let y = 0; y < worldY; y++){
-                markerColumn.push(null);
-                brickColumn.push([]);
-            }
-        }
+        this.setDimensions(worldX, worldY);
 
         this.render();
     }
@@ -105,15 +94,44 @@ export class RobotWorldHelper {
 
     }
 
-    addBrick(x: number, y: number, farbe: string){
+    addBrick(x: number, y: number, farbe: string): boolean {
         let oldHeight = this.bricks[x][y].length;
         if(oldHeight < this.maximumHeight){
             let brick = this.robotCubeFactory.getBrick(farbe);
             this.setToXY(x, y, oldHeight, brick);
             this.bricks[x][y].push(brick);
             this.container3D.addChild(brick);
+            this.adjustMarkerHeight(x, y);
+            return true;
+        } else {
+            return false;
         }
-        this.adjustMarkerHeight(x, y);
+    }
+
+    removeBrick(x: number, y: number): boolean {
+        if(this.bricks[x][y].length > 0){
+            let brick = this.bricks[x][y].pop();
+            brick.destroy();
+        } else {
+            return false;
+        }
+
+    }
+
+    getBrickCount(x: number, y: number){
+        return this.bricks[x][y].length;
+    }
+
+    getBrickColor(x: number, y: number): string {
+        let brickCount = this.bricks[x][y].length;
+        if(brickCount == 0) return null;
+        return this.bricks[x][y][brickCount - 1].farbe;
+    }
+
+    getMarkerColor(x: number, y: number): string {
+        let marker = this.markers[x][y];
+        if(marker == null) return null;
+        return marker.farbe;
     }
 
     setMarker(x: number, y: number, farbe: string){
@@ -127,7 +145,16 @@ export class RobotWorldHelper {
         this.adjustMarkerHeight(x, y);
     }
 
-    
+    removeMarker(x: number, y: number): boolean {
+        let marker = this.markers[x][y];
+        if(marker == null){
+            return false;
+        } else {
+            this.markers[x][y] = null;
+            marker.destroy();
+            return true;
+        }
+    }
 
     adjustMarkerHeight(x: number, y: number){
         let marker = this.markers[x][y];
@@ -137,7 +164,62 @@ export class RobotWorldHelper {
         }
     }
 
+    clear(){
+        for(let x = 0; x < this.bricks.length; x++){
+            for(let y = 0; y < this.bricks[x].length; y++){
+                let brickList = this.bricks[x][y];
+                while(brickList.length > 0){
+                    brickList.pop().destroy();
+                }
+            }
+        }
+        
+        for(let x = 0; x < this.markers.length; x++){
+            for(let y = 0; y < this.markers[x].length; y++){
+                let marker = this.markers[x][y];
+                if(marker != null){
+                    this.markers[x][y] = null;
+                    marker.destroy();
+                }
+            }
+        }
+    }
 
+    setDimensions(worldX: number, worldY: number){
+        this.clear();
+
+        this.worldX = worldX;
+        this.worldY = worldY;
+
+        this.markers = [];
+        this.bricks = [];
+        for(let x = 0; x < worldX; x++){
+            let markerColumn = [];
+            this.markers.push(markerColumn);
+            let brickColumn = [];
+            this.bricks.push(brickColumn);
+            for(let y = 0; y < worldY; y++){
+                markerColumn.push(null);
+                brickColumn.push([]);
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param initString 
+     * " ": empty 
+     * "_": no brick, yellow marker
+     * "0y", "0g", "0b": no brick, yellow/green/blue marker
+     * "1", ..., "9": 1, ..., 9 red bricks (same is "1r", "2r", ...)
+     * "1g", ..., "9g": 1, ..., 9 green bricks
+     * "1y", "1b": same in yellow, blue
+     * "1gy", ..., "9gy": 1, ...., 9 green bricks with yellog marker
+     * "1gb", "2gb": 1, ..., 9 green bricks with blue marker
+     */
+    initFromString(initString: string){
+        
+    }
 
     setToXY(x: number, y: number, height: number, mesh: Pixi3d.Mesh3D){
         mesh.x = 2*(this.worldX - x);

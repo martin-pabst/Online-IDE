@@ -54,6 +54,8 @@ export class RobotWorldHelper {
     markers: RobotMarker[][];    // x, y
     bricks: RobotBrick[][][];   // x, y, height
 
+    maximumHeight: number = 10;
+
     constructor(public worldHelper: WorldHelper, public worldX: number, public worldY: number) {
         this.camera = new Pixi3d.Camera(<PIXI.Renderer>this.worldHelper.app.renderer);
         
@@ -82,12 +84,6 @@ export class RobotWorldHelper {
         this.displayObject = this.container3D;
         this.worldHelper.stage.addChild(this.displayObject);
 
-
-        let marker = this.robotCubeFactory.getMarker("rot");
-        marker.y += 0.1;
-        this.container3D.addChild(marker);
-        
-
         let gp = this.robotCubeFactory.getGroundPlane(this.worldX, this.worldY);
         this.container3D.addChild(gp);
 
@@ -100,6 +96,7 @@ export class RobotWorldHelper {
         this.addBrick(5, 4, "blau");
         this.addBrick(5, 3, "rot");
 
+        this.setMarker(3, 2, "rot");
         
         let control = new Pixi3d.CameraOrbitControl(this.worldHelper.app.view, this.camera);
         control.angles.x = 20;
@@ -109,10 +106,35 @@ export class RobotWorldHelper {
     }
 
     addBrick(x: number, y: number, farbe: string){
-        let brick = this.robotCubeFactory.getBrick(farbe);
-        this.setToXY(x, y, this.bricks[x][y].length, brick);
-        this.bricks[x][y].push(brick);
-        this.container3D.addChild(brick);
+        let oldHeight = this.bricks[x][y].length;
+        if(oldHeight < this.maximumHeight){
+            let brick = this.robotCubeFactory.getBrick(farbe);
+            this.setToXY(x, y, oldHeight, brick);
+            this.bricks[x][y].push(brick);
+            this.container3D.addChild(brick);
+        }
+        this.adjustMarkerHeight(x, y);
+    }
+
+    setMarker(x: number, y: number, farbe: string){
+        if(this.markers[x][y] != null){
+            this.markers[x][y].destroy();
+        }
+        let marker = this.robotCubeFactory.getMarker(farbe);
+        this.markers[x][y] = marker;
+        this.container3D.addChild(marker);
+        this.setToXY(x, y, 0, marker);
+        this.adjustMarkerHeight(x, y);
+    }
+
+    
+
+    adjustMarkerHeight(x: number, y: number){
+        let marker = this.markers[x][y];
+        if(marker != null){
+            let height = this.bricks[x][y].length
+            marker.y = height + 0.1;
+        }
     }
 
 

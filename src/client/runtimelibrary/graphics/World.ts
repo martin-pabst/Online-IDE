@@ -348,7 +348,7 @@ export class WorldClass extends Klass {
             return wh;
 
         } else {
-            
+
             return new WorldHelper(breite, höhe, this.module, worldObject);
         }
 
@@ -496,7 +496,7 @@ export class WorldHelper {
 
         let f = () => {
             let $jo_tabs = $graphicsDiv.parents(".jo_tabs");
-            if($jo_tabs.length == 0){
+            if ($jo_tabs.length == 0) {
                 $jo_tabs = $graphicsDiv.parents(".joe_rightDivInner");
             }
             let maxWidth: number = $jo_tabs.width();
@@ -689,7 +689,7 @@ export class WorldHelper {
     spriteAnimations: SpriteHelper[] = [];
 
     tick(delta: any) {
-        
+
         if (this.interpreter != null) {
             switch (this.interpreter.state) {
                 case InterpreterState.running:
@@ -697,13 +697,13 @@ export class WorldHelper {
                     for (let spriteHelper of this.spriteAnimations) {
                         spriteHelper.tick(delta);
                     }
-                    
+
                     if (!this.actorsFinished) {
                         this.actorsNotFinished++;
                         break;
                     }
-                    
-                    if(this.interpreter.pauseUntil != null){
+
+                    if (this.interpreter.pauseUntil != null) {
                         break;
                     }
 
@@ -729,9 +729,9 @@ export class WorldHelper {
                     break;
             }
 
-            
+
             this.summedDelta = 0;
-            
+
             if (this.interpreter.state == InterpreterState.running) {
                 if (this.actActors.length > 0) {
                     this.interpreter.timerFunction(33.33, true, 0.5);
@@ -745,7 +745,7 @@ export class WorldHelper {
                 }
             }
         }
-            
+
         while (this.actorHelpersToDestroy.length > 0) {
 
             let actorHelper = this.actorHelpersToDestroy.pop();
@@ -859,6 +859,8 @@ export class WorldHelper {
 
     cacheAsBitmap() {
 
+        let hasRobot = this.robotWorldHelper != null;
+
         this.mouseListenerShapes = [];
 
         let scaleMin = 1.0;
@@ -877,32 +879,30 @@ export class WorldHelper {
         let transform = new PIXI.Matrix().scale(scaleMin, scaleMin);
 
         setTimeout(() => {
-            this.app.renderer.render(this.stage, {
-                renderTexture: rt,
-                transform: transform
-            });            
+            if (!hasRobot) {
+                this.app.renderer.render(this.stage, {
+                    renderTexture: rt,
+                    transform: transform
+                });
+
+                setTimeout(() => {
+                    this.stage.children.forEach(c => c.destroy());
+                    this.stage.removeChildren();
+
+                    let sprite = new PIXI.Sprite(rt);
+                    sprite.localTransform.scale(this.globalScale, this.globalScale);
+                    // debugger;
+                    // sprite.localTransform.translate(0, rt.height);
+                    //@ts-ignore
+                    sprite.transform.onChange();
+                    // this.stage.projectionTransform = new PIXI.Matrix().scale(1, -1).translate(0, this.currentHeight);
+                    this.stage.projectionTransform = new PIXI.Matrix();
+                    this.stage.addChild(sprite);
+
+                }, 300);
+            }
         }, 150);   // necessary to await Turtle's deferred rendering
 
-
-
-        setTimeout(() => {
-            this.stage.children.forEach(c => c.destroy());
-            this.stage.removeChildren();
-
-            let sprite = new PIXI.Sprite(rt);
-            sprite.localTransform.scale(this.globalScale, this.globalScale);
-            // debugger;
-            // sprite.localTransform.translate(0, rt.height);
-            //@ts-ignore
-            sprite.transform.onChange();
-            if(this.robotWorldHelper != null){
-                this.stage.projectionTransform = new PIXI.Matrix().scale(1, -1).translate(0, this.currentHeight);
-            } else {
-                this.stage.projectionTransform = new PIXI.Matrix();
-            }
-            this.stage.addChild(sprite);
-
-        }, 300);
     }
 
     destroyWorld() {
@@ -915,7 +915,7 @@ export class WorldHelper {
         this.app.stage.children.forEach(c => c.destroy());
         this.app.stage.removeChildren();
 
-        if(this.robotWorldHelper != null){
+        if (this.robotWorldHelper != null) {
             this.robotWorldHelper.destroy();
             this.robotWorldHelper = null;
         }
@@ -927,7 +927,7 @@ export class WorldHelper {
         this.interpreter.timerExtern = false;
         this.interpreter.worldHelper = null;
         this.$coordinateDiv.hide();
-        
+
         FilledShapeDefaults.initDefaultValues();
     }
 

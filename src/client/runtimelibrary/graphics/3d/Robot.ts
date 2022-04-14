@@ -19,6 +19,7 @@ export class RobotClass extends Klass {
         super("Robot", module, "Robot Karol");
 
         this.setBaseClass(<Klass>module.typeStore.getType("Object"));
+        let robotWorldType = <Klass>module.typeStore.getType("RobotWorld");
 
         // this.addAttribute(new Attribute("PI", doublePrimitiveType, (object) => { return Math.PI }, true, Visibility.public, true, "Die Kreiszahl Pi (3.1415...)"));
 
@@ -28,7 +29,7 @@ export class RobotClass extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
 
-                let rh = new RobotHelper(module.main.getInterpreter(), o, 5, 8)
+                let rh = new RobotHelper(module.main.getInterpreter(), o, 1, 1, 5, 8)
                 o.intrinsicData["Robot"] = rh;
 
             }, false, false, 'Instanziert ein neues Robot-Objekt. Der Roboter steht anfangs an der Stelle (1/1)', true));
@@ -43,12 +44,14 @@ export class RobotClass extends Klass {
                 let startX: number = parameters[1].value;
                 let startY: number = parameters[2].value;
 
-                let rh = new RobotHelper(module.main.getInterpreter(), o, 10, 10, startX, startY)
+                let rh = new RobotHelper(module.main.getInterpreter(), o, startX, startY, 5, 10)
                 o.intrinsicData["Robot"] = rh;
 
             }, false, false, 'Instanziert ein neues Robot-Objekt. Der Roboter wird anfangs an die Stelle (startX/startY) gesetzt.', true));
 
         this.addMethod(new Method("Robot", new Parameterlist([
+            { identifier: "startX", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "startY", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "worldX", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "worldY", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), null,
@@ -60,10 +63,27 @@ export class RobotClass extends Klass {
                 let worldX: number = parameters[3].value;
                 let worldY: number = parameters[4].value;
 
-                let rh = new RobotHelper(module.main.getInterpreter(), o, worldX, worldY, startX, startY)
+                let rh = new RobotHelper(module.main.getInterpreter(), o, startX, startY, worldX, worldY)
                 o.intrinsicData["Robot"] = rh;
 
             }, false, false, 'Instanziert ein neues Robot-Objekt. Der Roboter wird anfangs an die Stelle (startX/startY) gesetzt. Wenn die RobotWorld noch nicht instanziert ist, wird sie mit der Größe worldX * worldY neu erstellt.', true));
+
+        this.addMethod(new Method("Robot", new Parameterlist([
+            { identifier: "startX", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "startY", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "initialeWelt", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+        ]), null,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let startX: number = parameters[1].value;
+                let startY: number = parameters[2].value;
+                let initialeWelt: string = parameters[3].value;
+
+                let rh = new RobotHelper(module.main.getInterpreter(), o, startX, startY, 0, 0, initialeWelt)
+                o.intrinsicData["Robot"] = rh;
+
+            }, false, false, 'Instanziert ein neues Robot-Objekt. Der Roboter wird anfangs an die Stelle (startX/startY) gesetzt. Wenn die RobotWorld noch nicht instanziert ist, wird sie auf Grundlage des Strings initialeWelt erstellt.', true));
 
         this.addMethod(new Method("rechtsDrehen", new Parameterlist([
         ]), null,
@@ -374,7 +394,6 @@ export class RobotClass extends Klass {
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
-                let farbe: string = parameters[1].value;
                 let rh = <RobotHelper>o.intrinsicData["Robot"];
                 return !rh.istMarke(undefined);
 
@@ -396,12 +415,96 @@ export class RobotClass extends Klass {
                 }, false, true, "Gibt genau dann true zurück, wenn der Roboter nach " + hr + " blickt."));
         }
 
+        this.addMethod(new Method("istLeer", new Parameterlist([
+        ]), booleanPrimitiveType,
+            (parameters) => {
 
+                let o: RuntimeObject = parameters[0].value;
+                let rh = <RobotHelper>o.intrinsicData["Robot"];
+                return rh.hatSteine == 0;
 
+            }, false, true, "Gibt genau dann true zurück, wenn der Roboter keinen Stein mit sich trägt."));
+
+        this.addMethod(new Method("istVoll", new Parameterlist([
+        ]), booleanPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let rh = <RobotHelper>o.intrinsicData["Robot"];
+                return rh.hatSteine == rh.maxSteine;
+
+            }, false, true, "Gibt genau dann true zurück, wenn der Roboter die maximale Anzahl von Steinen mit sich trägt."));
+
+        this.addMethod(new Method("nichtIstLeer", new Parameterlist([
+        ]), booleanPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let rh = <RobotHelper>o.intrinsicData["Robot"];
+                return rh.hatSteine > 0;
+
+            }, false, true, "Gibt genau dann true zurück, wenn der Roboter mindestens einen Stein mit sich trägt."));
+
+        this.addMethod(new Method("hatZiegel", new Parameterlist([
+        ]), booleanPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let rh = <RobotHelper>o.intrinsicData["Robot"];
+                return rh.hatSteine > 0;
+
+            }, false, true, "Gibt genau dann true zurück, wenn der Roboter mindestens einen Stein mit sich trägt."));
+
+        this.addMethod(new Method("hatZiegel", new Parameterlist([
+            { identifier: "Anzahl", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), booleanPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let anzahl: number = parameters[1].value;
+                let rh = <RobotHelper>o.intrinsicData["Robot"];
+
+                return rh.hatSteine >= anzahl;
+
+            }, false, true, "Gibt genau dann true zurück, wenn der Roboter mindestens Anzahl Steine mit sich trägt."));
+
+        this.addMethod(new Method("nichtIstVoll", new Parameterlist([
+        ]), booleanPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let rh = <RobotHelper>o.intrinsicData["Robot"];
+                return rh.hatSteine < rh.maxSteine;
+
+            }, false, true, "Gibt genau dann true zurück, wenn der Roboter weniger als die maximale Anzahl von Steinen mit sich trägt."));
+
+        this.addMethod(new Method("setzeAnzahlSteine", new Parameterlist([
+            { identifier: "Anzahl", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), booleanPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let anzahl: number = parameters[1].value;
+                let rh = <RobotHelper>o.intrinsicData["Robot"];
+
+                return rh.hatSteine = anzahl;
+
+            }, false, true, "Befüllt den Rucksack des Roboters mit genau Anzahl Steinen."));
+
+        this.addMethod(new Method("setzeRucksackgröße", new Parameterlist([
+            { identifier: "Anzahl", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), booleanPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let anzahl: number = parameters[1].value;
+                let rh = <RobotHelper>o.intrinsicData["Robot"];
+
+                return rh.maxSteine = anzahl;
+
+            }, false, true, "Gibt dem Roboter einen Rucksack, der maximal Anzahl Steine fasst."));
 
     }
-
-
 
 }
 
@@ -427,12 +530,25 @@ export class RobotWorldClass extends Klass {
 
                 const interpreter = module.main.getInterpreter();
 
-                let rh = new RobotWorldHelper(interpreter, o, worldX, worldY);
+                let rh = new RobotWorldHelper(interpreter, o, worldX, worldY, null);
                 o.intrinsicData["RobotWorldHelper"] = rh;
 
             }, false, false, 'Instanziert eine neue Robot-Welt', true));
 
+        this.addMethod(new Method("RobotWorld", new Parameterlist([
+            { identifier: "initialeWelt", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), null,
+            (parameters) => {
 
+                let o: RuntimeObject = parameters[0].value;
+                let initialeWelt: string = parameters[1].value;
+
+                const interpreter = module.main.getInterpreter();
+
+                let rh = new RobotWorldHelper(interpreter, o, 0, 0, initialeWelt);
+                o.intrinsicData["RobotWorldHelper"] = rh;
+
+            }, false, false, 'Instanziert eine neue Robot-Welt.', true));
 
 
     }
@@ -454,7 +570,7 @@ export class RobotWorldHelper {
     maximumHeight: number = 10;
 
     constructor(public interpreter: Interpreter, public runtimeObject: RuntimeObject,
-        public worldX: number, public worldY: number) {
+        public worldX: number, public worldY: number, initialeWelt: string) {
 
         this.fetchWorld(interpreter);
 
@@ -471,6 +587,23 @@ export class RobotWorldHelper {
 
         this.markers = [];
         this.bricks = [];
+
+        this.container3D = new Pixi3d.Container3D();
+        this.displayObject = this.container3D;
+        this.worldHelper.stage.addChild(this.displayObject);
+
+        
+        if (initialeWelt != null) {
+            this.initFromString(initialeWelt);
+        } else {
+            this.initWorldArrays(worldX, worldY);
+        }
+
+        this.renderOrnamentsAndInitCamera();
+
+    }
+
+    initWorldArrays(worldX: number, worldY: number) {
         for (let x = 0; x < worldX; x++) {
             let markerColumn = [];
             this.markers.push(markerColumn);
@@ -481,8 +614,6 @@ export class RobotWorldHelper {
                 brickColumn.push([]);
             }
         }
-
-        this.render();
     }
 
     fetchWorld(interpreter: Interpreter) {
@@ -497,12 +628,8 @@ export class RobotWorldHelper {
     }
 
 
-    render() {
+    renderOrnamentsAndInitCamera() {
         this.worldHelper.app.renderer.backgroundColor = 0x8080ff;
-
-        this.container3D = new Pixi3d.Container3D();
-        this.displayObject = this.container3D;
-        this.worldHelper.stage.addChild(this.displayObject);
 
         let gp = this.robotCubeFactory.getGroundPlane(this.worldX, this.worldY);
         this.container3D.addChild(gp);
@@ -511,10 +638,6 @@ export class RobotWorldHelper {
         for (let p of sp) {
             this.container3D.addChild(p);
         }
-
-        this.addBrick(5, 3, "rot");
-        this.addBrick(5, 4, "blau");
-        this.addBrick(5, 3, "rot");
 
         let control = new Pixi3d.CameraOrbitControl(this.worldHelper.app.view, this.camera);
         control.angles.x = 45;
@@ -645,15 +768,84 @@ export class RobotWorldHelper {
      * @param initString 
      * " ": empty 
      * "_": no brick, yellow marker
-     * "0y", "0g", "0b": no brick, yellow/green/blue marker
-     * "1", ..., "9": 1, ..., 9 red bricks (same is "1r", "2r", ...)
-     * "1g", ..., "9g": 1, ..., 9 green bricks
-     * "1y", "1b": same in yellow, blue
-     * "1gy", ..., "9gy": 1, ...., 9 green bricks with yellog marker
-     * "1gb", "2gb": 1, ..., 9 green bricks with blue marker
+     * "Y", "G", "B", "R": switch marker color
+     * "y", "g", "b", "r": switch brick color
+     * "1", ..., "9": 1, ..., 9 bricks 
+     * "1m", ..., "9m": 1, ..., 9 bricks with markers on them
      */
     initFromString(initString: string) {
 
+        let lowerCaseCharToColor = { "r": "rot", "g": "grün", "b": "blau", "y": "gelb" };
+        let upperCaseCharToColor = { "R": "rot", "G": "grün", "B": "blau", "Y": "gelb" };
+        let digits = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
+
+        this.clear();
+        let rows = initString.split("\n");
+        let maxColumns = 0;
+        rows.forEach((row) => { let rowLength = this.rowLength(row); if (rowLength > maxColumns) maxColumns = rowLength });
+        this.initWorldArrays(maxColumns, rows.length);
+        
+        this.worldX = maxColumns;
+        this.worldY = rows.length;
+
+        let c1: string;
+        let c2: string;
+        let brickColor = "rot";
+        let markerColor = "gelb";
+
+        for (let y = 0; y < rows.length; y++) {
+            let row = rows[y];
+            let x = 0;
+            let pos = 0;
+            while (pos < row.length) {
+                c1 = row.charAt(pos);
+                c2 = pos < row.length - 1 ? row.charAt(pos + 1) : null;
+                pos++;
+                if (lowerCaseCharToColor[c1] != null) {
+                    brickColor = lowerCaseCharToColor[c1];
+                    continue;
+                }
+                if (upperCaseCharToColor[c1] != null) {
+                    markerColor = upperCaseCharToColor[c1];
+                    continue;
+                }
+                let index = digits.indexOf(c1);
+                if (index >= 0) {
+                    for (let i = 0; i < index + 1; i++) {
+                        this.addBrick(x, y, brickColor);
+                    }
+                    if (c2 == "m") {
+                        this.setMarker(x, y, markerColor);
+                        pos++;
+                    }
+                    x++;
+                    continue;
+                }
+                if(c1 == " "){
+                    x++;
+                    continue;
+                }
+                if(c1 == "_"){
+                    this.setMarker(x, y, markerColor);
+                    x++;
+                    continue;
+                }
+            }
+        }
+
+
+    }
+
+    rowLength(row: string){
+        let l: number = 0;
+        let forwardChars = " _1234567890";
+
+        for(let i = 0; i < row.length; i++){
+            if(forwardChars.indexOf(row.charAt(i)) >= 0){
+                l++;
+            }    
+        }
+        return l;
     }
 
     setToXY(x: number, y: number, height: number, mesh: Pixi3d.Mesh3D) {
@@ -706,12 +898,18 @@ export class RobotHelper {
     x: number;
     y: number;
 
+    hatSteine: number = 10000000;
+    maxSteine: number = 100000000;
+
     direction: Direction = new Direction();
 
     constructor(private interpreter: Interpreter, private runtimeObject: RuntimeObject,
-        private worldX: number, private worldY: number, startX: number = 1, startY: number = 1) {
+        startX: number, startY: number,
+        worldX: number, worldY: number,
+        initialeWelt: string = null
+    ) {
 
-        this.fetchRobotWorld(interpreter, worldX, worldY);
+        this.fetchRobotWorld(interpreter, worldX, worldY, initialeWelt);
 
         this.render();
 
@@ -720,13 +918,13 @@ export class RobotHelper {
 
     }
 
-    fetchRobotWorld(interpreter: Interpreter, worldX: number, worldY: number) {
+    fetchRobotWorld(interpreter: Interpreter, worldX: number, worldY: number, initialeWelt: string) {
         let worldHelper = interpreter.worldHelper;
         this.robotWorldHelper = worldHelper?.robotWorldHelper;
 
         if (this.robotWorldHelper == null) {
             let w: RuntimeObject = new RuntimeObject(<Klass>interpreter.moduleStore.getType("RobotWorld").type);
-            this.robotWorldHelper = new RobotWorldHelper(interpreter, w, worldX, worldY);
+            this.robotWorldHelper = new RobotWorldHelper(interpreter, w, worldX, worldY, initialeWelt);
             w.intrinsicData["RobotWorldHelper"] = worldHelper;
         }
 
@@ -781,6 +979,19 @@ export class RobotHelper {
             this.interpreter.throwException("Der Roboter ist gegen eine Wand geprallt!");
             return false;
         }
+        
+        let oldHeight = rw.getNumberOfBricks(this.x, this.y);
+        let newHeight = rw.getNumberOfBricks(newX, newY);
+        
+        if(newHeight < oldHeight - 1){
+            this.interpreter.throwException("Der Roboter kann maximal einen Ziegel nach unten springen.");
+            return false;
+        }
+
+        if(newHeight > oldHeight + 1){
+            this.interpreter.throwException("Der Roboter kann maximal einen Ziegel hoch springen.");
+            return false;
+        }
 
         this.moveTo(newX, newY);
         return true;
@@ -803,7 +1014,14 @@ export class RobotHelper {
             return false;
         }
 
+        if (this.hatSteine == 0) {
+            this.interpreter.throwException("Der Roboter hat keine Ziegel mehr bei sich und kann daher keinen mehr hinlegen.");
+            return false;
+        }
+
         rw.addBrick(newX, newY, farbe);
+        this.hatSteine--;
+
         return true;
     }
 
@@ -824,6 +1042,14 @@ export class RobotHelper {
         }
 
         rw.removeBrick(newX, newY);
+
+        if (this.hatSteine < this.maxSteine) {
+            this.hatSteine++;
+        } else {
+            this.interpreter.throwException("Der Roboter kann nicht mehr Steine aufheben, da er keinen Platz mehr in seinem Rucksack hat.");
+            return false;
+        }
+
         return true;
     }
 

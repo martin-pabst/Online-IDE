@@ -870,8 +870,8 @@ export class BaseModule extends Module {
         this.typeStore.addType(new WebSocketClientClass(this));
         this.typeStore.addType(new WebSocketClass(this));
 
-        this.typeStore.addType(new RobotClass(this));
         this.typeStore.addType(new RobotWorldClass(this));
+        this.typeStore.addType(new RobotClass(this));
 
     
 

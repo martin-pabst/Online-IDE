@@ -302,14 +302,14 @@
 .Bird_1{
    width: 15px;
    height: 10px;
-   background-position: -2738px -834px;
+   background-position: -2738px -945px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Bird_2{
    width: 15px;
    height: 10px;
-   background-position: -2738px -887px;
+   background-position: -2738px -957px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -386,7 +386,7 @@
 .Space_Shooter_1_5{
    width: 20px;
    height: 7px;
-   background-position: -2738px -899px;
+   background-position: -2738px -936px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -582,7 +582,7 @@
 .Space_Shooter_2_9{
    width: 8px;
    height: 29px;
-   background-position: -2738px -803px;
+   background-position: -2738px -865px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -617,14 +617,14 @@
 .Space_Shooter_2_14{
    width: 13px;
    height: 18px;
-   background-position: -2738px -847px;
+   background-position: -2738px -896px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_2_15{
    width: 8px;
    height: 29px;
-   background-position: -2748px -803px;
+   background-position: -2748px -865px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -659,7 +659,7 @@
 .Space_Shooter_2_20{
    width: 13px;
    height: 18px;
-   background-position: -2738px -867px;
+   background-position: -2738px -916px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -1121,14 +1121,14 @@
 .Breakin_12{
    width: 8px;
    height: 8px;
-   background-position: -2753px -847px;
+   background-position: -2753px -896px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Breakin_13{
    width: 8px;
    height: 8px;
-   background-position: -2753px -857px;
+   background-position: -2753px -906px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -5245,6 +5245,27 @@
    width: 48px;
    height: 16px;
    background-position: -2320px -962px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.3d_8{
+   width: 16px;
+   height: 16px;
+   background-position: -2738px -803px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.3d_9{
+   width: 16px;
+   height: 16px;
+   background-position: -2738px -821px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.3d_10{
+   width: 16px;
+   height: 16px;
+   background-position: -2738px -847px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 

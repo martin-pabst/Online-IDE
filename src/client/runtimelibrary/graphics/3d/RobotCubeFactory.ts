@@ -66,7 +66,8 @@ export class RobotCubeFactory {
 
     grassBrickMaterial: Pixi3d.StandardMaterial;
     groundPlaneMaterial: Pixi3d.StandardMaterial;
-    sidePlaneMaterial: Pixi3d.StandardMaterial;
+
+    planeMaterial: {[key: string]: Pixi3d.StandardMaterial} = {};
 
     light1: Pixi3d.Light;
     light2: Pixi3d.Light;
@@ -101,43 +102,87 @@ export class RobotCubeFactory {
         return marker;
     }
 
-    getSidePlanes(x: number, z: number): Mesh3D[]{
+    getSidePlanes(worldX: number, worldY: number, sideSprite: string, radius: number, deep: number): Mesh3D[]{
         let planes: Mesh3D[] = [];
-        let mesh1 = new Pixi3d.Mesh3D(Boxes3d.createPlane3dMesh(x, 1), this.sidePlaneMaterial);
-        mesh1.scale.x = x;
-        mesh1.x += x - 1;
-        mesh1.y -= 1;
-        mesh1.z -= 1;
+
+        let sideMaterial = this.getPlaneMaterial(sideSprite); //3d#3
+
+        let mesh1 = new Pixi3d.Mesh3D(Boxes3d.createPlane3dMesh(worldX, 1), sideMaterial);
+        mesh1.scale.x = worldX + 2*radius;
+        mesh1.x += worldX - 1;
+        mesh1.y -= 1 + 2*deep;
+        mesh1.z -= 1 + 2*radius;
         mesh1.rotationQuaternion.setEulerAngles(-90, 0, 180);
         planes.push(mesh1);
 
-        let mesh2 = new Pixi3d.Mesh3D(Boxes3d.createPlane3dMesh(x, 1), this.sidePlaneMaterial);
-        mesh2.scale.x = x;
-        mesh2.x += x - 1;
-        mesh2.y -= 1;
-        mesh2.z += 2*z - 1;
+        let mesh2 = new Pixi3d.Mesh3D(Boxes3d.createPlane3dMesh(worldX, 1), sideMaterial);
+        mesh2.scale.x = worldX + 2*radius;
+        mesh2.x += worldX - 1;
+        mesh2.y -= 1 + 2*deep;
+        mesh2.z += 2*worldY - 1 + 2*radius;
         mesh2.rotationQuaternion.setEulerAngles(90, 0, 0);
         planes.push(mesh2);
 
-        let mesh3 = new Pixi3d.Mesh3D(Boxes3d.createPlane3dMesh(z, 1), this.sidePlaneMaterial);
-        mesh3.scale.x = z;
-        mesh3.y -= 1;
-        mesh3.x -= 1;
-        mesh3.z += z - 1;
+        let mesh3 = new Pixi3d.Mesh3D(Boxes3d.createPlane3dMesh(worldY, 1), sideMaterial);
+        mesh3.scale.x = worldY + 2*radius;
+        mesh3.y -= 1 + 2*deep;
+        mesh3.x -= 1 + 2*radius;
+        mesh3.z += worldY - 1;
         mesh3.rotationQuaternion.setEulerAngles(90, -90, 0);
         planes.push(mesh3);
 
-        let mesh4 = new Pixi3d.Mesh3D(Boxes3d.createPlane3dMesh(z, 1), this.sidePlaneMaterial);
-        mesh4.scale.x = z;
-        mesh4.y -= 1;
-        mesh4.x += 2*x - 1;
-        mesh4.z += z - 1;
+        let mesh4 = new Pixi3d.Mesh3D(Boxes3d.createPlane3dMesh(worldY, 1), sideMaterial);
+        mesh4.scale.x = worldY + 2*radius;
+        mesh4.y -= 1 + 2*deep;
+        mesh4.x += 2*worldX - 1 + 2*radius;
+        mesh4.z += worldY - 1;
         mesh4.rotationQuaternion.setEulerAngles(90, 90, 0);
         planes.push(mesh4);
+
         return planes;
     }
 
-    constructor(worldHelper: WorldHelper, private camera: Pixi3d.Camera) {
+    getHorizontalPlanes(worldX: number, worldY: number, topSprite: string, radius: number, deep: number): Mesh3D[]{
+        let planes: Mesh3D[] = [];
+
+        let topMaterial = this.getPlaneMaterial(topSprite);
+
+        let mesh5 = new Pixi3d.Mesh3D(Boxes3d.createPlane3dMesh(worldY, 1), topMaterial);
+        mesh5.scale.x = worldX + 2*radius;
+        mesh5.x += worldX - 1;
+        mesh5.y -= 2 + 2*deep;
+        mesh5.z -= 2 + 2*radius;
+        mesh5.rotationQuaternion.setEulerAngles(180, 0, 180);
+        planes.push(mesh5);
+
+        let mesh6 = new Pixi3d.Mesh3D(Boxes3d.createPlane3dMesh(worldX, 1), topMaterial);
+        mesh6.scale.x = worldX + 2*radius;
+        mesh6.x += worldX - 1;
+        mesh6.y -= 2 + 2*deep;
+        mesh6.z += 2*worldY + 2*radius;
+        mesh6.rotationQuaternion.setEulerAngles(0, 0, 0);
+        planes.push(mesh6);
+
+        let mesh7 = new Pixi3d.Mesh3D(Boxes3d.createPlane3dMesh(worldY, 1), topMaterial);
+        mesh7.scale.x = worldY + 2*radius + 2;
+        mesh7.y -= 2 + 2*deep;
+        mesh7.x -= 2 + 2*radius;
+        mesh7.z += worldY - 1;
+        mesh7.rotationQuaternion.setEulerAngles(0, -90, 0);
+        planes.push(mesh7);
+
+        let mesh8 = new Pixi3d.Mesh3D(Boxes3d.createPlane3dMesh(worldY, 1), topMaterial);
+        mesh8.scale.x = worldY + 2*radius + 2;
+        mesh8.y -= 2 + 2*deep;
+        mesh8.x += 2*worldX + 2*radius;
+        mesh8.z += worldY - 1;
+        mesh8.rotationQuaternion.setEulerAngles(0, 90, 0);
+        planes.push(mesh8);
+
+        return planes;
+    }
+
+    constructor(private worldHelper: WorldHelper, private camera: Pixi3d.Camera) {
 
         let renderer = <PIXI.Renderer>worldHelper.app.renderer;
 
@@ -170,10 +215,6 @@ export class RobotCubeFactory {
         this.initMaterial(this.groundPlaneMaterial);
         this.groundPlaneMaterial.baseColorTexture = getSpritesheetTexture("3d#2", true, renderer);
 
-        this.sidePlaneMaterial = new Pixi3d.StandardMaterial();
-        this.initMaterial(this.sidePlaneMaterial);
-        this.sidePlaneMaterial.baseColorTexture = getSpritesheetTexture("3d#3", true, renderer);
-
         for(let farbe of this.farben){
             let material = new Pixi3d.StandardMaterial();
             this.initMaterial(material);
@@ -195,6 +236,20 @@ export class RobotCubeFactory {
         material.exposure = 1;
         material.roughness = 0.9;
         material.lightingEnvironment = this.lightingEnvironment;
+    }
+
+    getPlaneMaterial(spriteKey: string): Pixi3d.StandardMaterial {
+        let renderer = <PIXI.Renderer>this.worldHelper.app.renderer;
+
+        if(this.planeMaterial[spriteKey] != null) return this.planeMaterial[spriteKey];
+
+        let material = new Pixi3d.StandardMaterial();
+        this.initMaterial(material);
+        material.baseColorTexture = getSpritesheetTexture(spriteKey, true, renderer);
+        // material.doubleSided = true;
+        this.planeMaterial[spriteKey] = material;
+
+        return material;
     }
 
 }

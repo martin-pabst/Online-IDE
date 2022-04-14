@@ -592,7 +592,7 @@ export class RobotWorldHelper {
         this.displayObject = this.container3D;
         this.worldHelper.stage.addChild(this.displayObject);
 
-        
+
         if (initialeWelt != null) {
             this.initFromString(initialeWelt);
         } else {
@@ -634,10 +634,13 @@ export class RobotWorldHelper {
         let gp = this.robotCubeFactory.getGroundPlane(this.worldX, this.worldY);
         this.container3D.addChild(gp);
 
-        let sp = this.robotCubeFactory.getSidePlanes(this.worldX, this.worldY);
-        for (let p of sp) {
-            this.container3D.addChild(p);
-        }
+        let deep: number = 0;
+        let radius: number = 0;
+        this.robotCubeFactory.getSidePlanes(this.worldX, this.worldY, "3d#3", radius, deep++)
+            .forEach(p => { this.container3D.addChild(p); });
+
+            this.robotCubeFactory.getSidePlanes(this.worldX, this.worldY, "3d#10", radius, deep++)
+                .forEach(p => { this.container3D.addChild(p); });
 
         let control = new Pixi3d.CameraOrbitControl(this.worldHelper.app.view, this.camera);
         control.angles.x = 45;
@@ -784,7 +787,7 @@ export class RobotWorldHelper {
         let maxColumns = 0;
         rows.forEach((row) => { let rowLength = this.rowLength(row); if (rowLength > maxColumns) maxColumns = rowLength });
         this.initWorldArrays(maxColumns, rows.length);
-        
+
         this.worldX = maxColumns;
         this.worldY = rows.length;
 
@@ -821,11 +824,11 @@ export class RobotWorldHelper {
                     x++;
                     continue;
                 }
-                if(c1 == " "){
+                if (c1 == " ") {
                     x++;
                     continue;
                 }
-                if(c1 == "_"){
+                if (c1 == "_") {
                     this.setMarker(x, y, markerColor);
                     x++;
                     continue;
@@ -836,14 +839,14 @@ export class RobotWorldHelper {
 
     }
 
-    rowLength(row: string){
+    rowLength(row: string) {
         let l: number = 0;
         let forwardChars = " _1234567890";
 
-        for(let i = 0; i < row.length; i++){
-            if(forwardChars.indexOf(row.charAt(i)) >= 0){
+        for (let i = 0; i < row.length; i++) {
+            if (forwardChars.indexOf(row.charAt(i)) >= 0) {
                 l++;
-            }    
+            }
         }
         return l;
     }
@@ -979,16 +982,16 @@ export class RobotHelper {
             this.interpreter.throwException("Der Roboter ist gegen eine Wand geprallt!");
             return false;
         }
-        
+
         let oldHeight = rw.getNumberOfBricks(this.x, this.y);
         let newHeight = rw.getNumberOfBricks(newX, newY);
-        
-        if(newHeight < oldHeight - 1){
+
+        if (newHeight < oldHeight - 1) {
             this.interpreter.throwException("Der Roboter kann maximal einen Ziegel nach unten springen.");
             return false;
         }
 
-        if(newHeight > oldHeight + 1){
+        if (newHeight > oldHeight + 1) {
             this.interpreter.throwException("Der Roboter kann maximal einen Ziegel hoch springen.");
             return false;
         }

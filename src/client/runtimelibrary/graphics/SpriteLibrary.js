@@ -146,7 +146,10 @@ var SpriteLibrary = [
     {filename: "3d/brick3d_red.png", name: "3d", tilesX: 1, tilesY: 1, index: 4},
     {filename: "3d/brick3d_yellow.png", name: "3d", tilesX: 1, tilesY: 1, index: 5},
     {filename: "3d/brick3d_green.png", name: "3d", tilesX: 1, tilesY: 1, index: 6},
-    {filename: "3d/brick3d_blue.png", name: "3d", tilesX: 1, tilesY: 1, index: 7}
+    {filename: "3d/brick3d_blue.png", name: "3d", tilesX: 1, tilesY: 1, index: 7},
+    {filename: "3d/rock.png", name: "3d", tilesX: 1, tilesY: 1, index: 8},
+    {filename: "3d/bedrock.png", name: "3d", tilesX: 1, tilesY: 1, index: 9},
+    {filename: "3d/earth.png", name: "3d", tilesX: 1, tilesY: 1, index: 10}
 
 ]
 

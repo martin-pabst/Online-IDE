@@ -3060,7 +3060,8 @@ export class CodeGenerator {
                         isSystemMethod = true;
                         break;
                     case "SystemTools":
-                        if(method.identifier == "pause"){
+                    case "Robot":
+                        if(["pause", "warten"].indexOf(method.identifier) >= 0){
                             this.pushStatements([{
                                 type: TokenType.setPauseDuration,
                                 position: node.position,

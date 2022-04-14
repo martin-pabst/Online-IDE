@@ -16,9 +16,9 @@ export class RobotClass extends Klass {
 
     constructor(module: Module) {
 
-        super("Robot", module, "Java Karol");
+        super("Robot", module, "Robot Karol");
 
-        this.setBaseClass(<Klass>module.typeStore.getType("Shape"));
+        this.setBaseClass(<Klass>module.typeStore.getType("Object"));
 
         // this.addAttribute(new Attribute("PI", doublePrimitiveType, (object) => { return Math.PI }, true, Visibility.public, true, "Die Kreiszahl Pi (3.1415...)"));
 
@@ -43,30 +43,74 @@ export class RobotClass extends Klass {
     }
 
 }
+export class RobotWorldClass extends Klass {
+
+    constructor(module: Module) {
+
+        super("RobotWorld", module, "Welt für Robot Karol");
+
+        this.setBaseClass(<Klass>module.typeStore.getType("Object"));
+
+        // this.addAttribute(new Attribute("PI", doublePrimitiveType, (object) => { return Math.PI }, true, Visibility.public, true, "Die Kreiszahl Pi (3.1415...)"));
+
+        this.addMethod(new Method("RobotWorld", new Parameterlist([
+            { identifier: "worldX", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "worldY", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), null,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let worldX: number = parameters[1].value;
+                let worldY: number = parameters[2].value;
+
+                const interpreter = module.main.getInterpreter();
+
+                let rh = new RobotWorldHelper(interpreter, o, worldX, worldY);
+                o.intrinsicData["RobotWorldHelper"] = rh;
+
+            }, false, false, 'Instanziert eine neue Robot-Welt', true));
+
+
+
+
+    }
+
+}
 
 export class RobotWorldHelper {
+
+    worldHelper: WorldHelper;
 
     robotCubeFactory: RobotCubeFactory;
     camera: Pixi3d.Camera;
     displayObject: PIXI.DisplayObject;
     container3D: Pixi3d.Container3D;
-    
+
     markers: RobotMarker[][];    // x, y
     bricks: RobotBrick[][][];   // x, y, height
 
-    constructor(public worldHelper: WorldHelper, public worldX: number, public worldY: number) {
+    constructor(public interpreter: Interpreter, public runtimeObject: RuntimeObject,
+        public worldX: number, public worldY: number) {
+
+        this.fetchWorld(interpreter);
+
+        if (this.worldHelper.robotWorldHelper != null) {
+            this.interpreter.throwException("Es wurde bereits ein Robot-World-Objekt instanziert. Davon kann es aber nur ein einziges geben. \nTipp: Jedes Robot-Objekt kann das Robot-World-Objekt mit der getRobotWorld() holen.");
+            return;
+        }
+
         this.camera = new Pixi3d.Camera(<PIXI.Renderer>this.worldHelper.app.renderer);
-        
+
         this.robotCubeFactory = new RobotCubeFactory(this.worldHelper, this.camera);
 
         this.markers = [];
         this.bricks = [];
-        for(let x = 0; x < worldX; x++){
+        for (let x = 0; x < worldX; x++) {
             let markerColumn = [];
             this.markers.push(markerColumn);
             let brickColumn = [];
             this.bricks.push(brickColumn);
-            for(let y = 0; y < worldY; y++){
+            for (let y = 0; y < worldY; y++) {
                 markerColumn.push(null);
                 brickColumn.push([]);
             }
@@ -74,6 +118,17 @@ export class RobotWorldHelper {
 
         this.render();
     }
+
+    fetchWorld(interpreter: Interpreter) {
+        let worldHelper = interpreter.worldHelper;
+        if (worldHelper == null) {
+            let w: RuntimeObject = new RuntimeObject(<Klass>interpreter.moduleStore.getType("World").type);
+            worldHelper = new WorldHelper(800, 600, interpreter.moduleStore.getModule("Base Module"), w);
+            w.intrinsicData["World"] = worldHelper;
+        }
+        this.worldHelper = worldHelper;
+    }
+
 
     render() {
         this.worldHelper.app.renderer.backgroundColor = 0x8080ff;
@@ -86,7 +141,7 @@ export class RobotWorldHelper {
         let marker = this.robotCubeFactory.getMarker("rot");
         marker.y += 0.1;
         this.container3D.addChild(marker);
-        
+
 
         let gp = this.robotCubeFactory.getGroundPlane(this.worldX, this.worldY);
         this.container3D.addChild(gp);
@@ -100,15 +155,15 @@ export class RobotWorldHelper {
         this.addBrick(5, 4, "blau");
         this.addBrick(5, 3, "rot");
 
-        
+
         let control = new Pixi3d.CameraOrbitControl(this.worldHelper.app.view, this.camera);
         control.angles.x = 20;
-        control.target = {x: this.worldX - 1, y: 0, z: this.worldY - 1}
+        control.target = { x: this.worldX - 1, y: 0, z: this.worldY - 1 }
         control.distance = Math.max(this.worldX, this.worldY) + 8;
 
     }
 
-    addBrick(x: number, y: number, farbe: string){
+    addBrick(x: number, y: number, farbe: string) {
         let brick = this.robotCubeFactory.getBrick(farbe);
         this.setToXY(x, y, this.bricks[x][y].length, brick);
         this.bricks[x][y].push(brick);
@@ -117,77 +172,60 @@ export class RobotWorldHelper {
 
 
 
-    setToXY(x: number, y: number, height: number, mesh: Pixi3d.Mesh3D){
-        mesh.x = 2*(this.worldX - x);
-        mesh.z = 2*(y - 1);
+    setToXY(x: number, y: number, height: number, mesh: Pixi3d.Mesh3D) {
+        mesh.x = 2 * (this.worldX - x);
+        mesh.z = 2 * (y - 1);
         mesh.y = height;
     }
 
     // Wird von WorldHelper aufgerufen
-    destroy(){
+    destroy() {
 
     }
 
 }
 
-export class RobotHelper extends ShapeHelper {
+export class RobotHelper {
 
     robotWorldHelper: RobotWorldHelper;
+    model: Pixi3d.Model;
 
-    constructor(interpreter: Interpreter, runtimeObject: RuntimeObject, private worldX: number, private worldY: number) {
-        super(interpreter, runtimeObject);
+    constructor(private interpreter: Interpreter, private runtimeObject: RuntimeObject, private worldX: number, private worldY: number) {
 
-        this.centerXInitial = 0;
-        this.centerYInitial = 0;
-
-        if (this.worldHelper.robotWorldHelper == null) {
-            this.worldHelper.robotWorldHelper = new RobotWorldHelper(this.worldHelper, worldX, worldY);
-        }
-
-        this.robotWorldHelper = this.worldHelper.robotWorldHelper;
+        this.fetchRobotWorld(interpreter);
 
         this.render();
-        this.addToDefaultGroupAndSetDefaultVisibility();
 
     }
 
-    getCopy(klass: Klass): RuntimeObject {
+    fetchRobotWorld(interpreter: Interpreter) {
+        let worldHelper = interpreter.worldHelper;
+        this.robotWorldHelper = worldHelper?.robotWorldHelper;
 
-        let ro: RuntimeObject = new RuntimeObject(klass);
-        let rh = new RobotHelper(this.worldHelper.interpreter, ro, this.worldX, this.worldY);
-        ro.intrinsicData["Actor"] = rh;
+        if (this.robotWorldHelper == null) {
+            let w: RuntimeObject = new RuntimeObject(<Klass>interpreter.moduleStore.getType("RobotWorld").type);
+            this.robotWorldHelper = new RobotWorldHelper(interpreter, w, 20, 20);
+            w.intrinsicData["RobotWorldHelper"] = worldHelper;
+        }
 
-        rh.copyFrom(this);
-        rh.render();
-
-        this.addToDefaultGroupAndSetDefaultVisibility();
-
-        return ro;
     }
 
     render(): void {
 
-        this.hitPolygonInitial = [
-        ];
-
-
-        if (this.displayObject == null) {
-
-            //@ts-ignore
-            let robot = Pixi3d.Model.from(PIXI.Loader.shared.resources["steve"].gltf);
-            robot.scale.set(0.1);
-            robot.x = 5;
-            robot.z = 5;
-            robot.y = 1.6;
-            for(let mesh of robot.meshes){
-                let sm = <Pixi3d.StandardMaterial>mesh.material;
-                sm.camera = this.robotWorldHelper.camera;
-                sm.exposure = 0.5;
-                sm.lightingEnvironment = this.robotWorldHelper.robotCubeFactory.lightingEnvironment;
-            }
-            this.robotWorldHelper.container3D.addChild(robot);
-            this.displayObject = robot;
+        //@ts-ignore
+        let robot = Pixi3d.Model.from(PIXI.Loader.shared.resources["steve"].gltf);
+        robot.scale.set(0.1);
+        robot.x = 5;
+        robot.z = 5;
+        robot.y = 1.6;
+        for (let mesh of robot.meshes) {
+            let sm = <Pixi3d.StandardMaterial>mesh.material;
+            sm.camera = this.robotWorldHelper.camera;
+            sm.exposure = 0.5;
+            sm.lightingEnvironment = this.robotWorldHelper.robotCubeFactory.lightingEnvironment;
         }
+        this.robotWorldHelper.container3D.addChild(robot);
+        this.model = robot;
 
     };
 

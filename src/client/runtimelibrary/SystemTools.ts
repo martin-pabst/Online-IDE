@@ -32,6 +32,13 @@ export class SystemToolsClass extends Klass {
 
             }, false, true, "Setzt die Ausführungsgeschwindigkeit. Der Parameter speed wir in Steps/Sekunde angegeben. Eine negative Zahl bedeutet: 'maximal'."));
 
+        this.addMethod(new Method("getSpeed", new Parameterlist([
+        ]), intPrimitiveType,
+            (parameters) => {
+                return module.main.getInterpreter().controlButtons.speedControl.getSpeedInStepsPerSecond();
+
+            }, false, true, "Gibt die Ausführungsgeschwindigkeit in Steps pro Sekunde zurück."));
+
         this.addMethod(new Method("pause", new Parameterlist([
             {identifier: "durationInMs", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), null,

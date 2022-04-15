@@ -1,4 +1,3 @@
-import { Mesh3D } from "pixi3d";
 import { WorldHelper } from "../World.js";
 import { Boxes3d } from "./Boxes3d.js";
 
@@ -20,7 +19,7 @@ export function getSpritesheetTexture(identifier: string, copy: boolean = false,
             renderTexture: dynamicTexture1
         });
 
-        return new Pixi3d.StandardMaterialTexture(dynamicTexture1.baseTexture);        
+        return new Pixi3d.StandardMaterialTexture(dynamicTexture1.baseTexture);
     } else {
         let smt = new Pixi3d.StandardMaterialTexture(texture.baseTexture);
         smt.transform = new Pixi3d.TextureTransform()
@@ -40,13 +39,13 @@ export function getSpritesheetTexture(identifier: string, copy: boolean = false,
 }
 
 export class RobotMarker extends Pixi3d.Mesh3D {
-    constructor(geometry: Pixi3d.MeshGeometry3D, material: Pixi3d.Material, public farbe: string){
+    constructor(geometry: Pixi3d.MeshGeometry3D, material: Pixi3d.Material, public farbe: string) {
         super(geometry, material);
     }
 }
 
 export class RobotBrick extends Pixi3d.Mesh3D {
-    constructor(geometry: Pixi3d.MeshGeometry3D, material: Pixi3d.Material, public farbe: string){
+    constructor(geometry: Pixi3d.MeshGeometry3D, material: Pixi3d.Material, public farbe: string) {
         super(geometry, material);
     }
 }
@@ -54,20 +53,22 @@ export class RobotBrick extends Pixi3d.Mesh3D {
 export class RobotCubeFactory {
 
     farben: string[] = ["rot", "gelb", "grün", "blau"];
-    farbeToColorInfoMap: {[farbe: string] : number[]} = {
+    farbeToColorInfoMap: { [farbe: string]: number[] } = {
         "rot": [1.0, 0.0, 0.0],
         "gelb": [1.0, 1.0, 0.0],
         "grün": [0.0, 1.0, 0.0],
         "blau": [0.0, 0.0, 1.0]
     }
-    farbeToMarkerMaterialMap: {[farbe: string] : Pixi3d.StandardMaterial} = {};
-    farbeToBrickMaterialMap: {[farbe: string] : Pixi3d.StandardMaterial} = {};
+    farbeToMarkerMaterialMap: { [farbe: string]: Pixi3d.StandardMaterial } = {};
+    farbeToBrickMaterialMap: { [farbe: string]: Pixi3d.StandardMaterial } = {};
 
 
     grassBrickMaterial: Pixi3d.StandardMaterial;
     groundPlaneMaterial: Pixi3d.StandardMaterial;
 
-    planeMaterial: {[key: string]: Pixi3d.StandardMaterial} = {};
+    planeMaterial: { [key: string]: Pixi3d.StandardMaterial } = {};
+
+    cloudMaterial: Pixi3d.StandardMaterial;
 
     light1: Pixi3d.Light;
     light2: Pixi3d.Light;
@@ -83,7 +84,7 @@ export class RobotCubeFactory {
         return new Pixi3d.Mesh3D(Boxes3d.createCube3dMesh(), this.grassBrickMaterial);
     }
 
-    getGroundPlane(x: number, z: number) {
+    getGrassPlane(x: number, z: number) {
         let mesh = new Pixi3d.Mesh3D(Boxes3d.createPlane3dMesh(x, z), this.groundPlaneMaterial);
         mesh.scale.x = x;
         mesh.scale.z = z;
@@ -96,45 +97,62 @@ export class RobotCubeFactory {
         return mesh;
     }
 
-    getMarker(farbe: string){
+    makePlane(container: Pixi3d.Container3D, x: number, y: number, z: number, widthX: number, widthZ: number, spriteOrColor: string | Pixi3d.Color) {
+        let material: Pixi3d.StandardMaterial;
+        if (typeof spriteOrColor == "string") {
+            material = this.getPlaneMaterial(spriteOrColor);
+        } else {
+            material = new Pixi3d.StandardMaterial();
+            this.initMaterial(material);
+            material.baseColor = spriteOrColor;
+        }
+        let mesh = new Pixi3d.Mesh3D(Boxes3d.createPlane3dMesh(widthX, widthZ), material);
+        mesh.y = y;
+        mesh.x = x;
+        mesh.z = z;
+        mesh.scale.set(widthX, 1, widthZ);
+        container.addChild(mesh);
+    }
+
+    getMarker(farbe: string) {
         let marker = new RobotMarker(Boxes3d.createCube3dMesh(), this.farbeToMarkerMaterialMap[farbe], farbe);
         marker.scale.set(0.9, 0.1, 0.9);
         return marker;
     }
 
-    getSidePlanes(worldX: number, worldY: number, sideSprite: string, radius: number, deep: number): Mesh3D[]{
-        let planes: Mesh3D[] = [];
+    getSidePlanes(worldX: number, worldY: number, sideSprite: string, radius: number, deep: number): Pixi3d.Mesh3D[] {
+        let planes: Pixi3d.Mesh3D[] = [];
 
         let sideMaterial = this.getPlaneMaterial(sideSprite); //3d#3
 
         let mesh1 = new Pixi3d.Mesh3D(Boxes3d.createPlane3dMesh(worldX, 1), sideMaterial);
-        mesh1.scale.x = worldX + 2*radius;
+        mesh1.scale.x = worldX + 2 * radius;
         mesh1.x += worldX - 1;
-        mesh1.y -= 1 + 2*deep;
-        mesh1.z -= 1 + 2*radius;
+        mesh1.y -= 1 + 2 * deep;
+        mesh1.z -= 1 + 2 * radius;
         mesh1.rotationQuaternion.setEulerAngles(-90, 0, 180);
         planes.push(mesh1);
 
         let mesh2 = new Pixi3d.Mesh3D(Boxes3d.createPlane3dMesh(worldX, 1), sideMaterial);
-        mesh2.scale.x = worldX + 2*radius;
+        mesh2.scale.x = worldX + 2 * radius;
         mesh2.x += worldX - 1;
-        mesh2.y -= 1 + 2*deep;
-        mesh2.z += 2*worldY - 1 + 2*radius;
+        mesh2.y -= 1 + 2 * deep;
+        mesh2.z += 2 * worldY - 1 + 2 * radius;
         mesh2.rotationQuaternion.setEulerAngles(90, 0, 0);
         planes.push(mesh2);
 
         let mesh3 = new Pixi3d.Mesh3D(Boxes3d.createPlane3dMesh(worldY, 1), sideMaterial);
-        mesh3.scale.x = worldY + 2*radius;
-        mesh3.y -= 1 + 2*deep;
-        mesh3.x -= 1 + 2*radius;
+        mesh3.scale.x = worldY + 2 * radius;
+        mesh3.y -= 1 + 2 * deep;
+        mesh3.x -= 1 + 2 * radius;
         mesh3.z += worldY - 1;
         mesh3.rotationQuaternion.setEulerAngles(90, -90, 0);
         planes.push(mesh3);
 
         let mesh4 = new Pixi3d.Mesh3D(Boxes3d.createPlane3dMesh(worldY, 1), sideMaterial);
-        mesh4.scale.x = worldY + 2*radius;
-        mesh4.y -= 1 + 2*deep;
-        mesh4.x += 2*worldX - 1 + 2*radius;
+        mesh4.scale.x = worldY + 2 * radius;
+        mesh4.y -= 1 + 2 * deep;
+        mesh4.x += 2 * worldX - 1 + 2 * radius;
         mesh4.z += worldY - 1;
         mesh4.rotationQuaternion.setEulerAngles(90, 90, 0);
         planes.push(mesh4);
@@ -142,44 +160,94 @@ export class RobotCubeFactory {
         return planes;
     }
 
-    getHorizontalPlanes(worldX: number, worldY: number, topSprite: string, radius: number, deep: number): Mesh3D[]{
-        let planes: Mesh3D[] = [];
+    getHorizontalPlanes(worldX: number, worldY: number, topSprite: string, radius: number, deep: number): Pixi3d.Mesh3D[] {
+        let planes: Pixi3d.Mesh3D[] = [];
 
         let topMaterial = this.getPlaneMaterial(topSprite);
 
         let mesh5 = new Pixi3d.Mesh3D(Boxes3d.createPlane3dMesh(worldY, 1), topMaterial);
-        mesh5.scale.x = worldX + 2*radius;
+        mesh5.scale.x = worldX + 2 * radius;
         mesh5.x += worldX - 1;
-        mesh5.y -= 2 + 2*deep;
-        mesh5.z -= 2 + 2*radius;
+        mesh5.y -= 2 + 2 * deep;
+        mesh5.z -= 2 + 2 * radius;
         mesh5.rotationQuaternion.setEulerAngles(180, 0, 180);
         planes.push(mesh5);
 
         let mesh6 = new Pixi3d.Mesh3D(Boxes3d.createPlane3dMesh(worldX, 1), topMaterial);
-        mesh6.scale.x = worldX + 2*radius;
+        mesh6.scale.x = worldX + 2 * radius;
         mesh6.x += worldX - 1;
-        mesh6.y -= 2 + 2*deep;
-        mesh6.z += 2*worldY + 2*radius;
+        mesh6.y -= 2 + 2 * deep;
+        mesh6.z += 2 * worldY + 2 * radius;
         mesh6.rotationQuaternion.setEulerAngles(0, 0, 0);
         planes.push(mesh6);
 
         let mesh7 = new Pixi3d.Mesh3D(Boxes3d.createPlane3dMesh(worldY, 1), topMaterial);
-        mesh7.scale.x = worldY + 2*radius + 2;
-        mesh7.y -= 2 + 2*deep;
-        mesh7.x -= 2 + 2*radius;
+        mesh7.scale.x = worldY + 2 * radius + 2;
+        mesh7.y -= 2 + 2 * deep;
+        mesh7.x -= 2 + 2 * radius;
         mesh7.z += worldY - 1;
         mesh7.rotationQuaternion.setEulerAngles(0, -90, 0);
         planes.push(mesh7);
 
         let mesh8 = new Pixi3d.Mesh3D(Boxes3d.createPlane3dMesh(worldY, 1), topMaterial);
-        mesh8.scale.x = worldY + 2*radius + 2;
-        mesh8.y -= 2 + 2*deep;
-        mesh8.x += 2*worldX + 2*radius;
+        mesh8.scale.x = worldY + 2 * radius + 2;
+        mesh8.y -= 2 + 2 * deep;
+        mesh8.x += 2 * worldX + 2 * radius;
         mesh8.z += worldY - 1;
         mesh8.rotationQuaternion.setEulerAngles(0, 90, 0);
         planes.push(mesh8);
 
         return planes;
+    }
+
+    makeClouds(container: Pixi3d.Container3D, height: number, originX: number, originZ: number) {
+        let count = 200;
+        let numberOfBatches = 10;
+        let todo = count;
+
+        let f = () => {
+            if (todo <= 0) return;
+            let radius = 1500;
+            let maxWidth = 20;
+            for (let i = 0; i < count / numberOfBatches; i++) {
+                todo--;
+                let distance = Math.sqrt(Math.random()) * radius;
+                let angle = Math.random() * 2 * Math.PI;
+
+                let x1 = Math.floor(distance * Math.cos(angle)) + originX;
+                let z1 = Math.floor(distance * Math.sin(angle)) + originZ;
+
+                let count = Math.random() * 10 + 2;
+
+                for (let j = 0; j < count; j++) {
+                    let mesh = Boxes3d.createCube3d(this.cloudMaterial);
+
+                    let scaleX = Math.floor(Math.random() * maxWidth + 2);
+                    let scaleY = Math.floor(Math.random() * maxWidth / 4 + 2);
+                    let scaleZ = Math.floor(Math.random() * maxWidth + 2);
+
+                    let dx = Math.floor(Math.random() * 3 * (5 + count + scaleX));
+                    let dz = Math.floor(Math.random() * 3 * (5 + count + scaleZ));
+
+                    mesh.x = x1 + dx;
+                    mesh.z = z1 + dz;
+
+                    mesh.y = height + scaleY / 2;
+
+                    mesh.scale.set(scaleX, scaleY, scaleZ);
+
+                    container.addChild(mesh);
+
+                }
+
+            }
+
+            setTimeout(f, 100);
+
+        }
+
+        f();
+
     }
 
     constructor(private worldHelper: WorldHelper, private camera: Pixi3d.Camera) {
@@ -209,13 +277,17 @@ export class RobotCubeFactory {
 
         this.grassBrickMaterial = new Pixi3d.StandardMaterial();
         this.initMaterial(this.grassBrickMaterial);
-        this.grassBrickMaterial.baseColorTexture = getSpritesheetTexture("3d#0");
+        this.grassBrickMaterial.baseColorTexture = getSpritesheetTexture("robot#0");
+
+        this.cloudMaterial = new Pixi3d.StandardMaterial();
+        this.initMaterial(this.cloudMaterial);
+        this.cloudMaterial.baseColor = new Pixi3d.Color(1.0, 1.0, 1.0, 0.5);
 
         this.groundPlaneMaterial = new Pixi3d.StandardMaterial();
         this.initMaterial(this.groundPlaneMaterial);
-        this.groundPlaneMaterial.baseColorTexture = getSpritesheetTexture("3d#2", true, renderer);
+        this.groundPlaneMaterial.baseColorTexture = getSpritesheetTexture("robot#2", true, renderer);
 
-        for(let farbe of this.farben){
+        for (let farbe of this.farben) {
             let material = new Pixi3d.StandardMaterial();
             this.initMaterial(material);
             let colorInfo = this.farbeToColorInfoMap[farbe];
@@ -225,13 +297,13 @@ export class RobotCubeFactory {
             let brickMaterial = new Pixi3d.StandardMaterial();
             this.initMaterial(brickMaterial);
             let index = this.farben.indexOf(farbe) + 4;
-            brickMaterial.baseColorTexture = getSpritesheetTexture("3d#" + index);
+            brickMaterial.baseColorTexture = getSpritesheetTexture("robot#" + index);
             this.farbeToBrickMaterialMap[farbe] = brickMaterial;
         }
 
     }
 
-    initMaterial(material: Pixi3d.StandardMaterial){
+    initMaterial(material: Pixi3d.StandardMaterial) {
         material.camera = this.camera;
         material.exposure = 1;
         material.roughness = 0.9;
@@ -241,7 +313,7 @@ export class RobotCubeFactory {
     getPlaneMaterial(spriteKey: string): Pixi3d.StandardMaterial {
         let renderer = <PIXI.Renderer>this.worldHelper.app.renderer;
 
-        if(this.planeMaterial[spriteKey] != null) return this.planeMaterial[spriteKey];
+        if (this.planeMaterial[spriteKey] != null) return this.planeMaterial[spriteKey];
 
         let material = new Pixi3d.StandardMaterial();
         this.initMaterial(material);

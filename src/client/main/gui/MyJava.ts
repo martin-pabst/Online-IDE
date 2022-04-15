@@ -113,6 +113,11 @@ export function defineMyJava() {
             root: [
                 // identifiers and keywords
                 // [/[a-zA-Z_$][\w$]*/, {
+                [/\.[A-Z$ÄÖÜ][\w$äöüßÄÖÜ]*(?=\()/, {
+                    cases: {
+                        '@default': 'method'
+                    }
+                }],
                 [/[a-z_$äöü][\w$äöüßÄÖÜ]*(?=\()/, {
                     cases: {
                         '@keywords': { token: 'keyword.$0' },

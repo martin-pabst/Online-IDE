@@ -98,6 +98,10 @@ export class SpeedControl {
 
     }
 
+    getSpeedInStepsPerSecond(): number {
+        return this.interpreter.stepsPerSecond;
+    }
+
     setSpeedInStepsPerSecond(stepsPerSecond: number | "max"){
         let intervalBorders = [1, 10, 100, 1000, 10000, 100000, this.interpreter.maxStepsPerSecond];
 

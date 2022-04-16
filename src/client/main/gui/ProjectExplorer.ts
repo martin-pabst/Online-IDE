@@ -321,7 +321,7 @@ export class ProjectExplorer {
 
         this.workspaceListPanel.selectCallback =
             (workspace: Workspace) => {
-                if (!workspace.isFolder) {
+                if (workspace != null && !workspace.isFolder) {
                     that.main.networkManager.sendUpdates(() => {
                         that.setWorkspaceActive(workspace);
                     });

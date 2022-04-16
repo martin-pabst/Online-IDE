@@ -6,7 +6,7 @@ const ideConfig = {
     context: path.resolve(__dirname, 'htdocs'),
     entry: {
         home: [
-            "regenerator-runtime/runtime.js", // to get async...await working
+            // "regenerator-runtime/runtime.js", // to get async...await working
             './js/main/IDEStarter.js',
             './css/editor.css',
             './css/editorStatic.css',
@@ -39,7 +39,8 @@ const ideConfig = {
             {
                 test: /\.(js|jsx)$/,
                 exclude: /node_modules/,
-                use: ["babel-loader", "source-map-loader"],
+                // use: ["babel-loader", "source-map-loader"],
+                use: ["source-map-loader"],
                 enforce: "pre"
             }, {
                 test: /\.css$/,
@@ -58,6 +59,9 @@ const ideConfig = {
               },
         ]
     },
+    optimization: {
+        // minimize: false
+    },
     plugins: [
         new MiniCssExtractPlugin({
           // Options similar to the same options in webpackOptions.output
@@ -74,7 +78,7 @@ const embeddedConfig = {
     context: path.resolve(__dirname, 'htdocs'),
     entry: {
         home: [
-            "regenerator-runtime/runtime.js",   // to get async...await working
+            // "regenerator-runtime/runtime.js",   // to get async...await working
             './js/embedded/EmbeddedStarter.js',
             './css/editor.css',
             './css/bottomdiv.css',
@@ -104,7 +108,8 @@ const embeddedConfig = {
             {
                 test: /\.(js|jsx)$/,
                 exclude: /node_modules/,
-                use: ["babel-loader", "source-map-loader"],
+                // use: ["babel-loader", "source-map-loader"],
+                use: ["source-map-loader"],
                 enforce: "pre"
             }, {
                 test: /\.css$/,

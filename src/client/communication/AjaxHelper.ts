@@ -61,6 +61,7 @@ export function ajax(url: string, request: any, successCallback: (response: any)
             if (response.success != null && response.success == false || typeof (response) == "string" && response == '') {
                 let error = "Fehler bei der Bearbeitung der Anfrage"
                 if (response.message != null) error = response.message;
+                if (response.error != null) error = response.error;
 
                 if (error == "Not logged in") {
                     // setTimeout(() => newLogin(url, request, successCallback, errorCallback), 10000);

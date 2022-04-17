@@ -629,12 +629,13 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
         ajax("CRUDUser", request, (response: CRUDResponse) => {
             delete data["w2ui"]["changes"][field];
             studentGrid.refreshCell(data["recid"], field);
-        }, () => {
+        }, (message: string) => {
             data[field] = event.value_original;
             data.klasse_id = value_old_database;
             delete data["w2ui"]["changes"][field];
             studentGrid.refreshCell(data["recid"], field);
-        });
+            alert(message);
+        }); 
 
     }
 

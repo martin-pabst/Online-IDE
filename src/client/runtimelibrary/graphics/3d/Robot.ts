@@ -728,6 +728,12 @@ export class RobotWorldHelper {
         this.robotCubeFactory.makePlane(this.container3D, this.worldX/2, -4, this.worldY/2, 3000, 3000, 
         new Pixi3d.Color(55.0/255, 174.0/255, 77.0/255));
 
+        let northSprite = this.robotCubeFactory.makeSprite3d("robot#11", this.container3D);
+        // northSprite.position.set(this.worldX + 6, 1, this.worldY - 1);
+        northSprite.position.set(2*this.worldX + 1, -1, 2*this.worldY - 6);
+        northSprite.scale.set(257.0/40, 1, 1);
+        northSprite.rotationQuaternion.setEulerAngles(0, 90, 0);
+
         let control = new Pixi3d.CameraOrbitControl(this.worldHelper.app.view, this.camera);
         control.angles.x = 45;
         control.angles.y = -20;

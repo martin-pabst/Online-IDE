@@ -149,7 +149,8 @@ var SpriteLibrary = [
     {filename: "3d/brick3d_blue.png", name: "robot", tilesX: 1, tilesY: 1, index: 7},
     {filename: "3d/rock.png", name: "robot", tilesX: 1, tilesY: 1, index: 8},
     {filename: "3d/bedrock.png", name: "robot", tilesX: 1, tilesY: 1, index: 9},
-    {filename: "3d/earth.png", name: "robot", tilesX: 1, tilesY: 1, index: 10}
+    {filename: "3d/earth.png", name: "robot", tilesX: 1, tilesY: 1, index: 10},
+    {filename: "3d/north.png", name: "robot", tilesX: 1, tilesY: 1, index: 11}
 
 ]
 

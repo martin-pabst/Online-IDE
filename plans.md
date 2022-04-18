@@ -4,6 +4,7 @@
 ```typescript
 type RuntimeObject = {
     __attributeValues: any[],         // for all attributes including those of base classes
+    __class: Klass
 }
 ```
 Der Prototyp des RuntimeObjects ist die dazugehörige RuntimeClass:
@@ -79,4 +80,18 @@ if (typeof Object.create != 'function') {
 
 ### Instantiate Objects by class name
 https://www.stevefenton.co.uk/2014/07/creating-typescript-classes-dynamically/
+
+### Methodenaufruf (Umkehren der Werte auf dem Stack):
+```javascript
+let n = 0;
+let batch = 5;
+for(let i = 0; i < 10000/batch; i++){
+    let na = Array(batch);
+    for(let j = 0; j < batch; j++){
+      na[j] = array.pop();
+    }
+    n += na[0];
+}
+console.log(n)
+```
 

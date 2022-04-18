@@ -324,4 +324,14 @@ export class RobotCubeFactory {
         return material;
     }
 
+    makeSprite3d(textureKey: string, container: Pixi3d.Container3D){
+        let material = new Pixi3d.StandardMaterial();
+        this.initMaterial(material);
+        material.baseColorTexture = getSpritesheetTexture(textureKey, false);
+        material.alphaMode = Pixi3d.StandardMaterialAlphaMode.mask;
+        let sprite = Boxes3d.createPlane3d(1, 1, material);
+        container.addChild(sprite);
+        return sprite;
+    }
+
 }

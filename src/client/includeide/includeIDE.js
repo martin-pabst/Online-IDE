@@ -10,6 +10,7 @@ let base = "https://embed.learnj.de/include/";
 
 let scripts = [
     base + "lib/pixijs/pixi.js",
+    base + "lib/pixi3d/pixi3d.js",
     base + 'js.webpack/javaOnlineEmbedded.css',
     base + "lib/jquery/jquery-3.3.1.js",
     base + "lib/markdownit/markdownit.min.js",
@@ -72,9 +73,7 @@ function initScripts(jo_doc) {
 function includeJs(src, callback, type) {
     var script = document.createElement('script');
     if (callback) {
-        script.onload = function () {
-            //do stuff with the script
-        };
+        script.onload = callback;
     }
 
     if (type) {

@@ -154,11 +154,15 @@ export class NThread {
         }
     }
 
-    callMethod(program: NProgram, callbackAfterFinished?: (value: any) => void){
+    /**
+     * If a step calls a library method which itself calls thread.callMethod (e.g. to call toString())
+     * then this call MUST BE the last statement of this step!
+     */
+    callCompiledMethod(program: NProgram, callbackAfterFinished?: (value: any) => void){
         let state: NProgramState = {
             program: program,
             currentStepList: this.threadPool.executeMode == NExecuteMode.singleSteps ? program.stepsSingle : program.stepsMultiple,
-            stackBase: this.stack.length - program.numberOfParamters - program.numberOfLocalVariables,
+            stackBase: this.stack.length - program.numberOfParameters - program.numberOfLocalVariables,
             stepIndex: 0,
             callbackAfterFinished: callbackAfterFinished,
             exceptionInfoList: []
@@ -172,6 +176,44 @@ export class NThread {
         this.currentProgramState = state;
         this.status = NThreadStatus.callMethod;
     }
+
+    /**
+     * Preconditions: 
+     * a) all parameters are on the stack
+     * b) thread.callVirtualMethod is last statement of step
+     */
+    callVirtualMethod(runtimeObject: NRuntimeObject, signature: string, callbackAfterFinished?: (value: any) => void){
+        let method = runtimeObject.__virtualMethods[signature];
+        if(method.invoke != null){
+            this.callCompiledMethod(method, (returnValue) => {
+                if(callbackAfterFinished != null){
+                    callbackAfterFinished(returnValue);
+                } else {
+                    if(typeof returnValue != "undefined"){
+                        this.stack.push(returnValue);
+                    }    
+                }                    
+            });
+        } else {
+            let n = method.numberOfParameters;
+            let params: any[] = Array(n);
+            for(let i = 1; i <= n; i++){
+                params[n - i] = this.stack.pop();
+            }
+            let returnValue = method.invoke.call(this.stack.pop(), params);
+
+            if(callbackAfterFinished != null){
+                callbackAfterFinished(returnValue);
+            } else {
+                if(typeof returnValue != "undefined"){
+                    this.stack.push(returnValue);
+                }    
+            }
+        }
+    }
+
+
+
 }
 
 export enum NExecuteMode { singleSteps, multipleSteps};
@@ -257,7 +299,7 @@ export class NThreadPool {
     createThread(program: NProgram, initialStack: any[] = [], callbackAfterFinished?: (value: any) => void){
         
         let thread = new NThread(this, initialStack);
-        thread.callMethod(program, callbackAfterFinished);        
+        thread.callCompiledMethod(program, callbackAfterFinished);        
     }
 
     suspendThread(thread: NThread) {

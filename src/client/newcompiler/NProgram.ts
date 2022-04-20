@@ -12,18 +12,31 @@ export type NStep = {
     codeAsString: string;
     position: TextPosition;
     isBreakpoint?: boolean;
+    correspondingStepInOtherStepmode?: NStep;
 }
 
 export type NProgram = {
     module: Module;
+    
+    numberOfParameters: number;
+    
+    /**
+     * If program is compiled:
+     */
     stepsSingle: NStep[];
     stepsMultiple: NStep[];
-
+    numberOfLocalVariables: number;
+    
     methodIdentifierWithClass: string;
     helper: NHelper[];   // (function or Program or class)[]
 
     // to initially compute stack-base-offset:
-    numberOfParamters: number;
-    numberOfLocalVariables: number;
     symbolTable: NSymbolTable;
+
+    /**
+     * If program is a javascript function:
+     */
+    invoke: () => void; // with arbitrary signature...
+
+
 }

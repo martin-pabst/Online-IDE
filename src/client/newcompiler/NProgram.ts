@@ -12,6 +12,7 @@ export type NStep = {
     codeAsString: string;
     position: TextPosition;
     isBreakpoint?: boolean;
+    correspondingStepInOtherStepmode?: NStep;
 }
 
 export type NProgram = {

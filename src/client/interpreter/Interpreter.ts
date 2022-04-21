@@ -148,6 +148,7 @@ export class Interpreter {
         }
 
         this.timerId = setInterval(periodicFunction, this.timerDelayMs);
+
         let keepAliveRequest: WebSocketRequestKeepAlive = { command: 5 };
         let req = JSON.stringify(keepAliveRequest);
         setInterval(() => {

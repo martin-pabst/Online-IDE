@@ -1,3 +1,6 @@
+import { ModuleStore, Module } from "../compiler/parser/Module.js";
+import { TextPositionWithModule } from "../compiler/types/Types.js";
+import { NInterpreter } from "./NInterpreter.js";
 import { NProgram, NStep } from "./NProgram.js";
 import { NRuntimeObject } from "./NRuntimeObject.js";
 
@@ -16,8 +19,9 @@ type NProgramState = {
     exceptionInfoList: NExceptionInfo[];
 }
 
-enum NThreadStatus { running, callMethod, exited, exitedWithException, exceptionCaught}
+enum NThreadState { running, paused, exited, exitedWithException }
 
+export enum NThreadPoolLstate { done, running, paused, not_initialized }
 
 export class NThread {
     stack: any[];
@@ -27,10 +31,14 @@ export class NThread {
 
     currentlyHeldSemaphors: NSemaphor[] = [];
 
-    status: NThreadStatus;
+    state: NThreadState;
 
     exception: NRuntimeObject;
     stackTrace: NProgramState[];
+
+    stepEndsWhenProgramstackLengthLowerOrEqual: number;
+    stepEndsWhenStepIndexGreater: number;
+    stepCallback: () => void;
 
     constructor(public threadPool: NThreadPool, initialStack: any[]) {
         this.stack = initialStack;
@@ -39,14 +47,13 @@ export class NThread {
     /**
      * returns true if Thread exits
      */
-    run(maxNumberOfSteps: number): NThreadStatus {
+    run(maxNumberOfSteps: number): NThreadState {
         let numberOfSteps = 0;
         let stack = this.stack; // for performance reasons
-        this.status = NThreadStatus.running;
+        this.state = NThreadState.running;
         
         //@ts-ignore
-        while(numberOfSteps < maxNumberOfSteps && this.status != NThreadStatus.exited){
-        this.status = NThreadStatus.running;
+        while(numberOfSteps < maxNumberOfSteps && this.state != NThreadState.exited){
         // For performance reasons: store all necessary data in local variables
         let currentProgramState = this.currentProgramState;
         let stepIndex = currentProgramState.stepIndex;
@@ -54,11 +61,26 @@ export class NThread {
         let stackBase = currentProgramState.stackBase;
         let helper = currentProgramState.program.helper;
 
-            while(numberOfSteps < maxNumberOfSteps && this.status == NThreadStatus.running){
-                let step = currentStepList[stepIndex];
-                stepIndex = step.run(stack, stackBase, helper, this);
-                numberOfSteps++;
+            if(this.stepEndsWhenProgramstackLengthLowerOrEqual >= 0){
+                while(numberOfSteps < maxNumberOfSteps && 
+                    this.state == NThreadState.running && !this.isSingleStepCompleted()){
+                    let step = currentStepList[stepIndex];
+                    stepIndex = step.run(stack, stackBase, helper, this);
+                    this.currentProgramState.stepIndex = stepIndex;
+                    numberOfSteps++;
+                }
+                if(this.isSingleStepCompleted()){
+                    this.stepCallback();
+                    this.state = NThreadState.paused;
+                }
+            } else {
+                while(numberOfSteps < maxNumberOfSteps && this.state == NThreadState.running){
+                    let step = currentStepList[stepIndex];
+                    stepIndex = step.run(stack, stackBase, helper, this);
+                    numberOfSteps++;
+                }
             }
+
 
             currentProgramState.stepIndex = stepIndex;
             // this currentProgram might by now not be the same as before this inner while-loop
@@ -66,8 +88,41 @@ export class NThread {
             // step.run
         }
 
-        return this.status;
+        return this.state;
     }
+
+    isSingleStepCompleted(){
+        return this.programStack.length < this.stepEndsWhenProgramstackLengthLowerOrEqual ||
+            this.programStack.length == this.stepEndsWhenProgramstackLengthLowerOrEqual &&
+            this.currentProgramState.stepIndex > this.stepEndsWhenStepIndexGreater;
+    }
+
+    markSingleStepOver(callbackWhenSingleStepOverEnds: () => void) {
+
+        this.stepEndsWhenProgramstackLengthLowerOrEqual = this.programStack.length - 1;
+        this.stepEndsWhenStepIndexGreater = this.currentProgramState.stepIndex;
+        this.stepCallback = () => {
+            this.stepEndsWhenProgramstackLengthLowerOrEqual = -1;
+            callbackWhenSingleStepOverEnds();
+        };
+
+    }
+
+    unmarkStep() {
+        this.stepEndsWhenProgramstackLengthLowerOrEqual = -1;
+    }
+
+    markStepOut(callbackWhenStepOutEnds: () => void) {
+
+        this.stepEndsWhenProgramstackLengthLowerOrEqual = this.programStack.length - 2;
+        this.stepEndsWhenStepIndexGreater = -1;
+        this.stepCallback = () => {
+            this.stepEndsWhenProgramstackLengthLowerOrEqual = -1;
+            callbackWhenStepOutEnds();
+        };
+
+    }
+    
 
     throwException(exception: NRuntimeObject){
         let className = exception.__class.identifier;
@@ -95,7 +150,6 @@ export class NThread {
                     ps.stepIndex = exInfo.stepIndex;
                     this.stack.splice(exInfo.stackSize, this.stack.length - exInfo.stackSize);
                     this.stack.push(exception);
-                    this.status = NThreadStatus.exceptionCaught;
                     break;
                 } else {
                     stackTrace.push(ps);
@@ -108,7 +162,7 @@ export class NThread {
         if(this.programStack.length == 0){
             this.stackTrace = stackTrace;
             this.exception = exception;
-            this.status = NThreadStatus.exitedWithException;
+            this.state = NThreadState.exitedWithException;
         }
     }
 
@@ -123,7 +177,7 @@ export class NThread {
 
     aquireSemaphor(semaphor: NSemaphor){
         if(!semaphor.aquire(this)){
-            this.status = NThreadStatus.exited;
+            this.state = NThreadState.exited;
         } 
     }
 
@@ -141,7 +195,7 @@ export class NThread {
                 this.switchFromMultipleToSingleStep(this.currentProgramState);
             }
         } else {
-            this.status = NThreadStatus.exited;
+            this.state = NThreadState.exited;
         }
     }
 
@@ -174,7 +228,6 @@ export class NThread {
 
         this.programStack.push(state);
         this.currentProgramState = state;
-        this.status = NThreadStatus.callMethod;
     }
 
     /**
@@ -223,11 +276,24 @@ export class NThreadPool {
     currentThreadIndex: number = 0;
     executeMode: NExecuteMode;
     semaphors: NSemaphor[] = [];
+    state: NThreadPoolLstate;
 
-    run(numberOfStepsMax: number): NThreadStatus {
+    keepThread: boolean = false;    // for single step mode
+
+    constructor(private interpreter: NInterpreter){
+        this.setState(NThreadPoolLstate.not_initialized);
+    }
+    
+    run(numberOfStepsMax: number) {
         let stepsPerThread = Math.ceil(numberOfStepsMax/this.runningThreads.length);
         let numberOfSteps = 0;
-        if(this.runningThreads.length == 0) return;
+        if(this.runningThreads.length == 0) return NThreadState.exited;
+        
+        if([NThreadPoolLstate.done, NThreadPoolLstate.running].indexOf(this.state) < 0){
+            return;
+        }
+        
+        this.setState(NThreadPoolLstate.running);
 
         while(numberOfSteps < numberOfStepsMax){
             let currentThread = this.runningThreads[this.currentThreadIndex];
@@ -236,52 +302,83 @@ export class NThreadPool {
             numberOfSteps += stepsPerThread;
 
             switch(status){
-                case NThreadStatus.exited:
+                case NThreadState.exited:
                     
                     for(let semaphor of currentThread.currentlyHeldSemaphors){
                         semaphor.release(currentThread);
                     }
-
+                    
                     this.runningThreads.splice(this.currentThreadIndex, 1);
                     
                     if(this.runningThreads.length == 0){
-                        return NThreadStatus.exited;
+                        this.setState(NThreadPoolLstate.done);
+                        return;
                     }
                     
                     break;
-                case NThreadStatus.exitedWithException:
+                case NThreadState.exitedWithException:
                     // TODO: Print Exception
-                    return NThreadStatus.exitedWithException;
+                    this.setState(NThreadPoolLstate.done);
+                    return;
+                    case NThreadState.paused:
+                    this.setState(NThreadPoolLstate.paused);
+                    return;
             }
 
-            this.currentThreadIndex++;
-            if(this.currentThreadIndex >= this.runningThreads.length){
-                this.currentThreadIndex = 0;
+            if(!this.keepThread){
+                this.currentThreadIndex++;
+                if(this.currentThreadIndex >= this.runningThreads.length){
+                    this.currentThreadIndex = 0;
+                }
             }
         }
 
-        return NThreadStatus.running;
 
     }
 
-    runSingleStepKeepingThread(){
-        // save threadIndex
-        let threadIndex = this.currentThreadIndex;
-        let currentThread = this.runningThreads[threadIndex];
+    setState(newState: NThreadPoolLstate){
+        this.interpreter.setState(this.state, newState);
+        this.state = newState;
+    }
 
-        this.run(1);
-
-        // restore threadIndex
-        if(this.runningThreads.length > 0 && this.runningThreads[threadIndex] == currentThread){
-            this.currentThreadIndex = threadIndex;
+    runSingleStepKeepingThread(stepInto: boolean, callback: () => void){
+        this.keepThread = true;
+        if(stepInto){
+            if(this.state <= NThreadPoolLstate.paused){
+                this.run(1);
+            }
+            this.keepThread = false;        
+            callback();
+        } else {
+            let thread = this.runningThreads[this.currentThreadIndex];
+            if(thread == null) return;
+            thread.markSingleStepOver(() => {
+                this.keepThread = false;
+                callback();
+            });
         }
     }
 
+    stepOut(callback: () => void){
+        this.keepThread = true;
+        let thread = this.runningThreads[this.currentThreadIndex];
+        if(thread == null) return;
+        thread.markStepOut(() => {
+            this.keepThread = false;
+            callback();
+        });
+    }
+    
+    unmarkStep(){
+        let thread = this.runningThreads[this.currentThreadIndex];
+        thread.unmarkStep();
+    }
+    
     switchAllThreadsToSingleStepMode(){
         for(let thread of this.runningThreads){
             this.switchThreadToSingleStepMode(thread);
         }
-
+        
         for(let s of this.semaphors){
             for(let thread of s.waitingThreads){
                 this.switchThreadToSingleStepMode(thread);
@@ -311,20 +408,46 @@ export class NThreadPool {
             }
         }
     }
-
+    
     restoreThread(thread: NThread) {
         this.runningThreads.push(thread);
     }
-
+    
     /**
      * for displaying next program position in editor
      */
-    getNextStep(): NStep {
+    getNextStepPosition(): TextPositionWithModule {
         let currentThread = this.runningThreads[this.currentThreadIndex];
         let programState = currentThread.currentProgramState;
-        return programState.currentStepList[programState.stepIndex];
+        let step = programState.currentStepList[programState.stepIndex];
+        return {
+            module: programState.program.module,
+            position: step.position
+        }
     }
+    
+    init(moduleStore: ModuleStore, mainModule: Module) {
+        // TODO!!
+        
+        // Instantiate enum value-objects; initialize static attributes; call static constructors
 
+        // this.programStack.push({
+        //     program: this.mainModule.mainProgram,
+        //     programPosition: 0,
+        //     textPosition: { line: 1, column: 1, length: 0 },
+        //     method: "Hauptprogramm",
+        //     callbackAfterReturn: null,
+        //     isCalledFromOutside: "Hauptprogramm"
+
+        // })
+
+        // for (let m of this.moduleStore.getModules(false)) {
+        //     this.initializeEnums(m);
+        //     this.initializeClasses(m);
+        // }
+
+        // this.popProgram();
+    }
 }
 
 export class NSemaphor {
@@ -337,7 +460,7 @@ export class NSemaphor {
         this.counter = capacity;
         threadPool.semaphors.push(this);
     }
-
+    
     aquire(thread: NThread): boolean {
         if (this.counter > 0) {
             this.counter--;
@@ -350,7 +473,7 @@ export class NSemaphor {
             return false;
         }
     }
-
+    
     release(thread: NThread) {
         let index = this.runningThreads.indexOf(thread);
         if (index >= 0) {
@@ -364,4 +487,5 @@ export class NSemaphor {
             // Error: Thread had no token!
         }
     }
+
 }

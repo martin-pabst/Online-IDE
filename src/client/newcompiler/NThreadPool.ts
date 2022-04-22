@@ -213,6 +213,8 @@ export class NThread {
      * then this call MUST BE the last statement of this step!
      */
     callCompiledMethod(program: NProgram, callbackAfterFinished?: (value: any) => void){
+        // Object creation is faster than Object.assign, see
+        // https://measurethat.net/Benchmarks/Show/18401/0/objectassign-vs-creating-new-objects3
         let state: NProgramState = {
             program: program,
             currentStepList: this.threadPool.executeMode == NExecuteMode.singleSteps ? program.stepsSingle : program.stepsMultiple,

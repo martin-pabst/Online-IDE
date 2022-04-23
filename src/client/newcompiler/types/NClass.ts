@@ -1,6 +1,6 @@
-import { TokenType } from "../compiler/lexer/Token.js";
+import { TokenType } from "../../compiler/lexer/Token.js";
 import { NAttributeInfo, NExpression, NMethodInfo, NType } from "./NewType.js";
-import { RuntimeObjectPrototype } from "./NRuntimeObject.js";
+import { RuntimeObjectPrototype } from "../NRuntimeObject.js";
 
 export abstract class NClassLike extends NType {
 

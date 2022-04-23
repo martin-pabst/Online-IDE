@@ -516,8 +516,9 @@ export class TeachersWithClassesMI extends AdminMenuItem {
         }
 
         ajax("CRUDClass", request, (response: CRUDResponse) => {
-            // console.log(data);
-            delete data["w2ui"]["changes"][field];
+            if(data["w2ui"]["changes"][field] != null){
+                delete data["w2ui"]["changes"][field];
+            }
             this.classesGrid.refreshCell(data["recid"], field);
         }, () => {
             data[field] = event.value_original;

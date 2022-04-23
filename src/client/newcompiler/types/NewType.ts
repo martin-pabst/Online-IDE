@@ -1,7 +1,6 @@
-import { Token, TokenType } from "../compiler/lexer/Token.js";
-import { Module } from "../compiler/parser/Module.js";
-import { TextPositionWithModule, UsagePositions } from "../compiler/types/Types.js";
-import { NProgram } from "./NProgram.js";
+import { TokenType } from "src/client/compiler/lexer/Token.js";
+import { TextPositionWithModule, UsagePositions } from "src/client/compiler/types/Types.js";
+import { NProgram } from "../compiler/NProgram.js";
 
 export enum NVisibility { public, protected, private };
 

@@ -83,6 +83,8 @@ import { Patcher } from "./Patcher.js";
 import { KeyEvent as KeyEventClass } from "../../runtimelibrary/graphics/KeyEvent.js";
 import { Formatter } from "../../main/gui/Formatter.js";
 import { RobotClass, RobotWorldClass } from "../../runtimelibrary/graphics/3d/Robot.js";
+import { NSymbolTable } from "src/client/newcompiler/compiler/NSymbolTable.js";
+import { NProgram } from "src/client/newcompiler/compiler/NProgram.js";
 
 export type ExportedWorkspace = {
     name: string;
@@ -169,9 +171,9 @@ export class Module {
     2. execute main Program
     */
 
-    mainProgram?: Program;
+    mainProgram?: NProgram;
     mainProgramEnd: TextPosition;
-    mainSymbolTable: SymbolTable;
+    mainSymbolTable: NSymbolTable;
 
     identifierPositions: { [line: number]: IdentifierPosition[] } = {};
     methodCallPositions: { [line: number]: MethodCallPosition[] } = {};

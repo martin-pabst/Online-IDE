@@ -1,6 +1,6 @@
 import { Klass } from "../compiler/types/Class.js";
-import { NClass } from "./NClass.js";
-import { NProgram } from "./NProgram.js";
+import { NClass } from "./types/NClass.js";
+import { NProgram } from "./compiler/NProgram.js";
 
 
 export type RuntimeObjectPrototype = {

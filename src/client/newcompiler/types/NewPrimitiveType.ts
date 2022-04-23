@@ -1,4 +1,4 @@
-import { TokenType } from "../compiler/lexer/Token.js";
+import { TokenType } from "src/client/compiler/lexer/Token.js";
 import { NExpression, NType } from "./NewType.js";
 
 

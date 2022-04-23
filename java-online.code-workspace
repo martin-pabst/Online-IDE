@@ -6,7 +6,7 @@
 	],
 	"settings": {
 		"typescript.tsdk": "node_modules\\typescript\\lib",
-		"liveServer.settings.port": 5501,
+		"liveServer.settings.port": 5502,
 		"workbench.colorCustomizations": {
 			"activityBar.activeBackground": "#2f7c47",
 			"activityBar.activeBorder": "#422c74",

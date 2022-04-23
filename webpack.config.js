@@ -32,7 +32,7 @@ const ideConfig = {
     },
     output: {
         path: path.resolve(__dirname, 'htdocs/js.webpack'),
-        filename: 'javaOnline.js',
+        filename: 'javaOnline.js'
     },
     module: {
         rules: [
@@ -101,7 +101,7 @@ const embeddedConfig = {
     },
     output: {
         path: path.resolve(__dirname, 'htdocs/js.webpack'),
-        filename: 'javaOnline-embedded.js',
+        filename: 'javaOnline-embedded.js'
     },
     module: {
         rules: [

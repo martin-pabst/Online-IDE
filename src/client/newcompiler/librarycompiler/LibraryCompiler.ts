@@ -1,7 +1,7 @@
 import { Lexer } from "src/client/compiler/lexer/Lexer.js";
 import { Token, TokenList, TokenType, TokenTypeReadable } from "src/client/compiler/lexer/Token.js";
 import { NRuntimeObject } from "../NRuntimeObject.js";
-import { NMethodInfo, NVariable } from "../types/NAttributeMethod.js";
+import { NAttributeInfo, NMethodInfo, NVariable } from "../types/NAttributeMethod.js";
 import { NClass, NClassLike, NGenericParameter, NInterface } from "../types/NClass.js";
 import { NPrimitiveTypes } from "../types/NewPrimitiveType.js";
 import { NType } from "../types/NewType.js";
@@ -155,12 +155,20 @@ export class LibraryCompiler {
     }
 
     // TODO 24.04.2022: Static class...
-    compileAttribute(attributeSignature: string, classOrInterface: NInterface | NClass): import("../types/NAttributeMethod.js").NAttributeInfo {
+    compileAttribute(attributeSignature: string, classOrInterface: NInterface | NClass): NAttributeInfo {
         this.setTokenList(Lexer.quicklex(attributeSignature));
-        let abstractAndVisibilityModifiers = this.compileAbstractAndVisibilityModifiers();
+        let modifiers = this.compileAbstractAndVisibilityModifiers();
         let type = this.compileTypeFirstPass(classOrInterface);
         let identifier: string = "";
-
+        if(!this.comesToken(TokenType.identifier)){
+            console.log("LibraryCompiler.compileMethod: Identifier expected in signature '" + attributeSignature + "', found: " + this.foundTokenAsString() + ".");
+        } else {
+            identifier = <string>this.nextToken().value;
+        }
+        let attribute = new NAttributeInfo(identifier, type, modifiers.static, modifiers.visibility, modifiers.isFinal);
+        
+        // TODO: distinguish between static and non-static!
+        classOrInterface.attributeInfo.push(attribute);
 
     }
 
@@ -269,10 +277,11 @@ export class LibraryCompiler {
         return classLike;
     }
 
-    private compileAbstractAndVisibilityModifiers():{abstract: boolean, visibility: NVisibility, static: boolean} {
+    private compileAbstractAndVisibilityModifiers():{abstract: boolean, visibility: NVisibility, static: boolean, isFinal: boolean} {
         let visibility: NVisibility = NVisibility.public;
         let isAbstract = false;
         let isStatic = false;
+        let isFinal = false;
 
         let notDone: boolean = true;
         while (notDone) {
@@ -290,6 +299,10 @@ export class LibraryCompiler {
                     break;
                 case TokenType.keywordStatic:
                     isStatic = true;
+                    this.nextToken();
+                    break;
+                case TokenType.keywordFinal:
+                    isFinal = true;
                     this.nextToken();
                     break;
                 default:

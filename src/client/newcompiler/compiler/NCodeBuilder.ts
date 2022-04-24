@@ -3,14 +3,6 @@ import { NType } from "../types/NewType.js"
 import { NStep } from "./NProgram.js"
 
 
-export class NProgramBlock {
-    steps: NStep[] = [];
-    type: NType = null;
-    isInlineExpressionWithoutPush?: boolean;
-    withReturnStatement?: boolean;
-    endPosition?: TextPosition;
-    
-}
 
 
 
@@ -20,16 +12,10 @@ export class CodeBuilder {
     jumpDestinationMap: {[id: number]:NStep} = {};
     jumpDestinationPraefix = "__jd";
 
-    getJumpDestinationWithPlaceholder(): {step: NStep, placeholder: string} {
-        let id = this.nextId++;
+    getJumpDestinationId(): number {
 
-        let dest: NStep = {
-            codeAsString: null,
-            position: null,
-            isOnlyJumpDestination: true
-        }
+        return this.nextId++;
 
-        return { step: dest, placeholder: this.jumpDestinationPraefix + id }
     }
 
 

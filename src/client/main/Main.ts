@@ -32,6 +32,7 @@ import { WindowStateManager } from "./gui/WindowStateManager.js";
 import { TextPositionWithModule } from "../compiler/types/Types.js";
 import { checkIfMousePresent } from "../tools/HtmlTools.js";
 import { InconsistencyFixer } from "../workspace/InconsistencyFixer.js";
+import { NPrimitiveTypes } from "../newcompiler/types/NewPrimitiveType.js";
 
 export class Main implements MainBase {
 
@@ -147,6 +148,8 @@ export class Main implements MainBase {
 
     viewModeController: ViewModeController;
 
+    primitiveTypes: NPrimitiveTypes;
+
     initGUI() {
 
         checkIfMousePresent();
@@ -184,12 +187,13 @@ export class Main implements MainBase {
 
         this.debugger = new Debugger(this, jQuery('#leftpanel>.jo_debugger'), jQuery('#leftpanel>.jo_projectexplorer'));
 
+        this.primitiveTypes = new NPrimitiveTypes();
+        
         this.interpreter = new Interpreter(this, this.debugger,
             new ProgramControlButtons(jQuery('#controls'), jQuery('#editor')),
             jQuery('#rightdiv-inner .jo_run'));
         this.interpreter.initGUI();
 
-        this.initTypes();
 
         this.checkStartupComplete();
 
@@ -313,7 +317,7 @@ export class Main implements MainBase {
             that.getMonacoEditor().layout();
         }, 200);
 
-        this.compiler = new Compiler(this);
+        this.compiler = new Compiler(this, this.primitiveTypes);
 
         this.startTimer();
 

@@ -1,10 +1,20 @@
+import { RuntimeObject } from "src/client/interpreter/RuntimeObject.js";
 import { TokenType } from "../../compiler/lexer/Token.js";
-import { NAttributeInfo, NExpression, NMethodInfo, NType } from "./NewType.js";
-import { RuntimeObjectPrototype } from "../NRuntimeObject.js";
+import { NUnknownClasslike } from "../librarycompiler/UnknownClasslike.js";
+import { NMethodInfo, NAttributeInfo } from "./NAttributeMethod.js";
+import { NExpression, NType } from "./NewType.js";
+import { NVisibility } from "./NVisibility.js";
+
 
 export abstract class NClassLike extends NType {
 
+    visibility: NVisibility = NVisibility.public;
+
     allExtendedImplementedTypes: string[] = [];
+
+    genericParameters: NGenericParameter[] = [];
+
+
     abstract getAllMethods(): NMethodInfo[];
 
     compute(operator: TokenType, otherType: NType, value1: any, value2?: any) {
@@ -21,10 +31,13 @@ export class NClass extends NClassLike {
 
     methodInfoList: NMethodInfo[] = [];
     attributeInfo: NAttributeInfo[] = [];
-    extends: NClass;
-    implements: NInterface[] = [];
+    extends: NClass | NUnknownClasslike;
+    implements: (NInterface | NUnknownClasslike)[] = [];
+    isAbstract: boolean = false;
     
-    runtimeObjectPrototype: RuntimeObjectPrototype;
+    runtimeObjectPrototype: RuntimeObject;
+    runtimeObjectPrototypeIsClass: boolean = false;     // true for system classes
+    initialAttributeValues: any[];                      // used only vor non-system classes
 
     getCastExpression(otherType: NType): NExpression {
         return { e: "$1", condition: "$1.__class.allExtendedImplementedTypes.indexOf(" + otherType.identifier + ") >= 0", errormessage: "Casting nach " + otherType.identifier + " nicht möglich." }
@@ -64,7 +77,8 @@ export class NClass extends NClassLike {
 export class NInterface extends NClassLike {
 
     methodInfoList: NMethodInfo[] = [];
-    extends: NInterface[];
+    attributeInfo: NAttributeInfo[] = [];
+    extends: (NInterface|NUnknownClasslike)[];
     
 
     getCastExpression(otherType: NType): NExpression {
@@ -99,11 +113,17 @@ export class NInterface extends NClassLike {
 
 }
 
-export class NGenericType extends NClassLike {
+export class NGenericParameter extends NClassLike {
 
-    extendsClass: NClass;
-    extendsInterfaces: NInterface[];
-    super: NClass;
+    extends: (NClassLike | NInterface)[] = [];
+    super: NClass | NUnknownClasslike = null;
+
+    constructor(identifier: string, type?: (NClassLike | NInterface), public isBound: boolean = false){
+        super(identifier);
+        if(type != null){
+            this.extends.push(type);
+        }
+    }
 
     getCastExpression(otherType: NType): NExpression {
         return { e: "$1", condition: "$1.__class.allExtendedImplementedTypes.indexOf(" + otherType.identifier + ") >= 0", 

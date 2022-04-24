@@ -1,8 +1,9 @@
-import { ModuleStore, Module } from "../compiler/parser/Module.js";
-import { TextPositionWithModule } from "../compiler/types/Types.js";
+import { ModuleStore, Module } from "src/client/compiler/parser/Module.js";
+import { TextPositionWithModule } from "src/client/compiler/types/Types.js";
+import { NProgram, NStep } from "../compiler/NProgram.js";
+import { NRuntimeObject } from "../NRuntimeObject.js";
+import { NClass } from "../types/NClass.js";
 import { NInterpreter } from "./NInterpreter.js";
-import { NProgram, NStep } from "./NProgram.js";
-import { NRuntimeObject } from "./NRuntimeObject.js";
 
 type NExceptionInfo = {
     types: string[],
@@ -125,8 +126,9 @@ export class NThread {
     
 
     throwException(exception: NRuntimeObject){
-        let className = exception.__class.identifier;
-        let classNames = exception.__class.allExtendedImplementedTypes;
+        let exceptionClass: NClass = exception.__getClass();
+        let className = exceptionClass.identifier;
+        let classNames = exceptionClass.allExtendedImplementedTypes;
 
         let stackTrace: NProgramState[] = [];
         do {
@@ -238,7 +240,7 @@ export class NThread {
      * b) thread.callVirtualMethod is last statement of step
      */
     callVirtualMethod(runtimeObject: NRuntimeObject, signature: string, callbackAfterFinished?: (value: any) => void){
-        let method = runtimeObject.__virtualMethods[signature];
+        let method = runtimeObject[signature];
         if(method.invoke != null){
             this.callCompiledMethod(method, (returnValue) => {
                 if(callbackAfterFinished != null){
@@ -267,7 +269,9 @@ export class NThread {
         }
     }
 
+    callStaticMethod(classIdentifier: string, methodSignature: string){
 
+    }
 
 }
 
@@ -424,7 +428,7 @@ export class NThreadPool {
         let step = programState.currentStepList[programState.stepIndex];
         return {
             module: programState.program.module,
-            position: step.position
+            position: step.start
         }
     }
     

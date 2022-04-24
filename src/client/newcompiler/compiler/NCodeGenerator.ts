@@ -1,8 +1,10 @@
 import { TextPosition, TokenType } from "src/client/compiler/lexer/Token.js";
-import { ASTNode } from "src/client/compiler/parser/AST.js";
+import { ASTNode, ConstantNode } from "src/client/compiler/parser/AST.js";
 import { Module, ModuleStore } from "src/client/compiler/parser/Module.js";
-import { CodeBuilder, NProgramBlock } from "./NCodeBuilder.js";
-import { NProgram } from "./NProgram.js";
+import { NPrimitiveTypes } from "../types/NewPrimitiveType.js";
+import { NType } from "../types/NewType.js";
+import { CodeBuilder } from "./NCodeBuilder.js";
+import { NFragment, NProgram } from "./NProgram.js";
 import { NSymbolTable } from "./NSymbolTable.js";
 
 export class NCodeGenerator {
@@ -21,6 +23,10 @@ export class NCodeGenerator {
 
     codeBuilder: CodeBuilder;
 
+
+    constructor(private pt: NPrimitiveTypes){
+
+    }
 
     start(module: Module, moduleStore: ModuleStore) {
         this.moduleStore = moduleStore;
@@ -65,7 +71,7 @@ export class NCodeGenerator {
         if (this.module.mainProgramAst != null && this.module.mainProgramAst.length > 0) {
 
             hasMainProgram = true;
-            this.generateStatements(this.module.mainProgramAst);
+            this.processStatementsInsideBlock(this.module.mainProgramAst);
 
             let lastPosition = this.module.mainProgramEnd;
             if (lastPosition == null) lastPosition = { line: 100000, column: 0, length: 0 };
@@ -76,93 +82,179 @@ export class NCodeGenerator {
 
     }
 
-    initCurrentProgram(methodIdentier: string, symbolTable: NSymbolTable){
-        this.currentProgram = {
-            stepsSingle: [],
-            stepsMultiple: [],
+    initCurrentProgram(methodIdentierWithClass: string, symbolTable: NSymbolTable){
+        
+        this.currentProgram = new NProgram(this.module, symbolTable, methodIdentierWithClass);
 
-            module: this.module,
-            numberOfLocalVariables: 0,
-            methodIdentifierWithClass: methodIdentier,
-            helper: [],
-            invoke: null,
-            numberOfParameters: 0,
-            symbolTable: symbolTable
-        }
     }
 
-    generateStatements(nodes: ASTNode[]): NProgramBlock {
-
+    processStatementsInsideBlock(nodes: ASTNode[]): NFragment {
+        
         if (nodes == null || nodes.length == 0 || nodes[0] == null) return null;
 
-        let programBlock: NProgramBlock = this.processStatementsInsideBlock(nodes);
+        let fragment: NFragment = new NFragment("block", this.pt.void, nodes[0].position);
 
-        let lastNode = nodes[nodes.length - 1];
-        let endPosition: TextPosition;
-
-        if (lastNode != null) {
-            if (lastNode.type == TokenType.scopeNode) {
-                endPosition = lastNode.positionTo;
-            } else {
-                endPosition = Object.assign({}, lastNode.position);
-                if (endPosition != null) {
-                    endPosition.column += endPosition.length;
-                    endPosition.length = 1;
-                }
-            }
-        } else {
-            endPosition = { line: 100000, column: 0, length: 0 };
-        }
-
-        programBlock.endPosition = endPosition;
-
-        return programBlock;
-
-    }
-
-    processStatementsInsideBlock(nodes: ASTNode[]): NProgramBlock {
-        
-        let programBlock = new NProgramBlock();
-
-        let withReturnStatement = false;
-
-        for (let node of nodes) {
+        for(let node of nodes){
 
             if (node == null) continue;
-
-            let type = this.processNode(node);
-
-            if (type != null && type.withReturnStatement != null && type.withReturnStatement) {
-                withReturnStatement = true;
-            }
+            let nextFragment: NFragment = this.processNode(node);
+            if(nextFragment == null) continue;
 
             // If last Statement has value which is not used further then pop this value from stack.
             // e.g. statement 12 + 17 -7;
             // Parser issues a warning in this case, see Parser.checkIfStatementHasNoEffekt
-            if (type != null && type.type != null && type.type != voidPrimitiveType) {
+            if (nextFragment.valuePushedToStack) {
 
-                if (this.lastStatement != null &&
-                    this.lastStatement.type == TokenType.assignment && this.lastStatement.leaveValueOnStack) {
-                    this.lastStatement.leaveValueOnStack = false;
-                } else {
-                    this.pushStatements({
-                        type: TokenType.decreaseStackpointer,
-                        position: null,
-                        popCount: 1,
-                        stepFinished: true
-                    }, true)
-                }
+                nextFragment.addPop();
 
             }
 
+            fragment.addFragmentToBlock(nextFragment);
+
         }
 
-        return withReturnStatement;
-
-
-
+        return fragment;
     }
 
+    processNode(node: ASTNode, isLeftSideOfAssignment: boolean = false): NFragment {
+
+        if (node == null) return null;
+
+        switch (node.type) {
+            // case TokenType.binaryOp:
+            //     return this.processBinaryOp(node);
+            // case TokenType.unaryOp:
+            //     return this.processUnaryOp(node);
+            case TokenType.pushConstant:
+                return this.pushConstant(node);
+            // case TokenType.callMethod:
+            //     return this.callMethod(node);
+            // case TokenType.identifier:
+            //     {
+            //         let stackType = this.resolveIdentifier(node);
+            //         let v = node.variable;
+            //         if (v != null) {
+            //             if (isLeftSideOfAssignment) {
+            //                 v.initialized = true;
+            //                 if (!v.usedBeforeInitialization) {
+            //                     v.declarationError = null;
+            //                 }
+            //             } else {
+            //                 if (v.initialized != null && !v.initialized) {
+            //                     v.usedBeforeInitialization = true;
+            //                     this.pushError("Die Variable " + v.identifier + " wird hier benutzt bevor sie initialisiert wurde.", node.position, "info");
+            //                 }
+            //             }
+            //         }
+            //         return stackType;
+            //     }
+            // case TokenType.selectArrayElement:
+            //     return this.selectArrayElement(node);
+            // case TokenType.incrementDecrementBefore:
+            // case TokenType.incrementDecrementAfter:
+            //     return this.incrementDecrementBeforeOrAfter(node);
+            // case TokenType.superConstructorCall:
+            //     return this.superconstructorCall(node);
+            // case TokenType.constructorCall:
+            //     return this.superconstructorCall(node);
+            // case TokenType.keywordThis:
+            //     return this.pushThisOrSuper(node, false);
+            // case TokenType.keywordSuper:
+            //     return this.pushThisOrSuper(node, true);
+            // case TokenType.pushAttribute:
+            //     return this.pushAttribute(node);
+            // case TokenType.newObject:
+            //     return this.newObject(node);
+            // case TokenType.keywordWhile:
+            //     return this.processWhile(node);
+            // case TokenType.keywordDo:
+            //     return this.processDo(node);
+            // case TokenType.keywordFor:
+            //     return this.processFor(node);
+            // case TokenType.forLoopOverCollection:
+            //     return this.processForLoopOverCollection(node);
+            // case TokenType.keywordIf:
+            //     return this.processIf(node);
+            // case TokenType.keywordSwitch:
+            //     return this.processSwitch(node);
+            // case TokenType.keywordReturn:
+            //     return this.processReturn(node);
+            // case TokenType.localVariableDeclaration:
+            //     return this.localVariableDeclaration(node);
+            // case TokenType.arrayInitialization:
+            //     return this.processArrayLiteral(node);
+            // case TokenType.newArray:
+            //     return this.processNewArray(node);
+            // case TokenType.keywordPrint:
+            // case TokenType.keywordPrintln:
+            //     return this.processPrint(node);
+            // case TokenType.castValue:
+            //     return this.processManualCast(node);
+            // case TokenType.keywordBreak:
+            //     this.pushBreakNode({
+            //         type: TokenType.jumpAlways,
+            //         position: node.position
+            //     });
+            //     return null;
+            // case TokenType.keywordContinue:
+            //     this.pushContinueNode({
+            //         type: TokenType.jumpAlways,
+            //         position: node.position
+            //     });
+            //     return null;
+            // case TokenType.rightBracket:
+            //     let type = this.processNode(node.termInsideBrackets);
+            //     if (type != null && type.type instanceof Klass) this.pushTypePosition(node.position, type.type);
+            //     return type;
+            // case TokenType.scopeNode:
+            //     this.pushNewSymbolTable(false, node.position, node.positionTo);
+
+            //     let withReturnStatement = this.processStatementsInsideBlock(node.statements);
+
+            //     this.popSymbolTable();
+
+            //     return { type: null, isAssignable: false, withReturnStatement: withReturnStatement };
+
+        }
+
+    }
+    
+    pushConstant(node: ConstantNode): NFragment {
+
+        let type: NType;
+
+        switch (node.constantType) {
+            case TokenType.integerConstant:
+                type = intPrimitiveType;
+                break;
+            case TokenType.booleanConstant:
+                type = booleanPrimitiveType;
+                break;
+            case TokenType.floatingPointConstant:
+                type = floatPrimitiveType;
+                break;
+            case TokenType.stringConstant:
+                type = stringPrimitiveType;
+                this.pushTypePosition(node.position, type);
+                break;
+            case TokenType.charConstant:
+                type = charPrimitiveType;
+                break;
+            case TokenType.keywordNull:
+                type = nullType
+                break;
+        }
+
+        this.pushStatements({
+            type: TokenType.pushConstant,
+            dataType: type,
+            position: node.position,
+            value: node.constant
+        })
+
+        return { type: type, isAssignable: false };
+
+    }
 
 
 }

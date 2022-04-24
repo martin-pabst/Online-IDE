@@ -2,13 +2,110 @@ import { TokenType } from "src/client/compiler/lexer/Token.js";
 import { NExpression, NType } from "./NewType.js";
 
 
+
+export class NPrimitiveTypes {
+    void: VoidType = new VoidType();
+    null: NullType = new NullType();
+    int: NIntPrimitiveType = new NIntPrimitiveType();
+    float: NFloatPrimitiveType = new NFloatPrimitiveType();
+    double: NDoublePrimitiveType = new NDoublePrimitiveType();
+    boolean: NBooleanPrimitiveType = new NBooleanPrimitiveType();
+    char: NCharPrimitiveType = new NCharPrimitiveType();
+    
+    allPrimitiveTypes: NType[] = [this.void, this.null, this.int, this.float, this.double, this.boolean, this.char];
+
+    tokenTypeToTypeMap: {[tokenType: number] : NType} = {
+        [TokenType.keywordNull]: this.null,
+        [TokenType.integerConstant] : this.int,
+        [TokenType.floatingPointConstant] : this.float,
+        [TokenType.stringConstant] : this.String,
+        [TokenType.charConstant]: this.char,
+        [TokenType.booleanConstant]: this.boolean
+    }
+
+    identifierToTypeMap: {[identifier: string] : NType} = {
+        "null": this.null,
+        "int" : this.int,
+        "float" : this.float,
+        "double" : this.double,
+        "String" : this.String,
+        "char": this.char,
+        "boolean": this.boolean
+    }
+
+    getConstantTypeFromTokenType(tt: TokenType){
+        return this.tokenTypeToTypeMap[tt];
+    }
+
+    getTypeFromIdentifier(identifier: string){
+        return this.identifierToTypeMap[identifier];
+    }
+
+}
+
 export type NCastPrimitiveInformation = {
     expression?: string; // e.g. "$1 - $1%0" for casting float to int
     castFunction?: (value: any) => any;
 }
 
 
+export class VoidType extends NType {
+
+    constructor(){super("void")}
+
+    getCastExpression(otherType: NType): NExpression {
+        return {e:""};
+    }
+    castTo(otherType: NType, value: any) {
+        return value;
+    }
+    getOperatorExpression(operator: TokenType, otherType?: NType): NExpression {
+        return { e: "" };
+    }
+    getOperatorResultType(operator: TokenType, otherType: NType): NType {
+        return null;
+    }
+    compute(operator: TokenType, otherType: NType, value1: any, value2?: any) {
+        return null;
+    }
+    equals(otherType: NType): boolean {
+        return otherType == this;
+    }
+    public debugOutput(value: any, maxLength?: number): string {
+        return "void";
+    }
+
+}
+
+export class VarType extends NType {
+    constructor(){super("var")}
+    getCastExpression(otherType: NType): NExpression {
+        return {e:""};
+    }
+    castTo(otherType: NType, value: any) {
+        return value;
+    }
+    getOperatorExpression(operator: TokenType, otherType?: NType): NExpression {
+        return { e: "" };
+    }
+    getOperatorResultType(operator: TokenType, otherType: NType): NType {
+        return null;
+    }
+    compute(operator: TokenType, otherType: NType, value1: any, value2?: any) {
+        return null;
+    }
+    equals(otherType: NType): boolean {
+        return otherType == this;
+    }
+    public debugOutput(value: any, maxLength?: number): string {
+        return "void";
+    }
+
+}
+
 export class NullType extends NType {
+    constructor(){super("null")}
+
     getCastExpression(otherType: NType): NExpression {
         return {e:"$1"};
     }
@@ -35,12 +132,14 @@ export class NullType extends NType {
 
 export abstract class NPrimitiveType extends NType {
 
-    public initialValue: any = null;
-
     protected resultTypeStringTable: { [operation: number]: { [typename: string]: string } }
     protected resultTypeTable: { [operation: number]: { [typename: string]: NType } }
 
     protected canCastToMap: { [type: string]: NCastPrimitiveInformation };
+
+    constructor(identifier: string, public initialValue: any){
+        super(identifier);
+    }
 
     public isPrimitive(): boolean {
         return true;
@@ -215,8 +314,7 @@ export abstract class NPrimitiveType extends NType {
 
 export class NIntPrimitiveType extends NPrimitiveType {
     constructor() {
-        super();
-        this.identifier = "int";
+        super("int", 0);
         this.canCastToMap = {
             "double": { expression: null }, "float": { expression: null },
             "char": { expression: "String.fromCharCode($1)", castFunction: (v) => { return String.fromCharCode(v) } },
@@ -297,8 +395,7 @@ export class NIntPrimitiveType extends NPrimitiveType {
 
 export class NFloatPrimitiveType extends NPrimitiveType {
     constructor() {
-        super();
-        this.identifier = "float";
+        super("float", 0.0);
         this.canCastToMap = {
             "double": { expression: null }, "float": { expression: null },
             "String": { expression: '("" + $1)', castFunction: (v) => { return "" + v } }
@@ -347,8 +444,7 @@ export class NFloatPrimitiveType extends NPrimitiveType {
 
 export class NDoublePrimitiveType extends NPrimitiveType {
     constructor() {
-        super();
-        this.identifier = "float";
+        super("double", 0.0);
         this.canCastToMap = {
             "double": { expression: null }, "float": { expression: null },
             "String": { expression: '("" + $1)', castFunction: (v) => { return "" + v } }
@@ -397,7 +493,7 @@ export class NDoublePrimitiveType extends NPrimitiveType {
 
 export class NBooleanPrimitiveType extends NPrimitiveType {
     constructor() {
-        super();
+        super("boolean", false);
         this.identifier = "boolean";
         this.initialValue = false;
 
@@ -457,9 +553,7 @@ export class NBooleanPrimitiveType extends NPrimitiveType {
 
 export class NCharPrimitiveType extends NPrimitiveType {
     constructor() {
-        super();
-        this.identifier = "char";
-        this.initialValue = "\u0000";
+        super("char", "\u0000");
 
         this.canCastToMap = {
             "String": { expression: '$1', castFunction: (v) => { return v } }

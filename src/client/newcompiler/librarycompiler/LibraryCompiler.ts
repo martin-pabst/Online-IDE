@@ -147,7 +147,9 @@ export class LibraryCompiler {
         }
 
         for(let attributeSignature of runtimeObject.__getAttributes()){
+
             classOrInterface.attributeInfo.push(this.compileAttribute(attributeSignature, classOrInterface));           
+
         }
 
         return classOrInterface;
@@ -167,8 +169,7 @@ export class LibraryCompiler {
         }
         let attribute = new NAttributeInfo(identifier, type, modifiers.static, modifiers.visibility, modifiers.isFinal);
         
-        // TODO: distinguish between static and non-static!
-        classOrInterface.attributeInfo.push(attribute);
+        return attribute;
 
     }
 
@@ -208,6 +209,8 @@ export class LibraryCompiler {
         }
 
         this.expect(TokenType.rightBracket, true);
+
+        return method;
     }
 
     private compileClassSignature(runtimeObject: NRuntimeObject) {
@@ -311,7 +314,7 @@ export class LibraryCompiler {
             }
         }
 
-        return {abstract: isAbstract, visibility: visibility, static: isStatic}
+        return {abstract: isAbstract, visibility: visibility, static: isStatic, isFinal: isFinal}
     }
 
     compileUnboundGenericParameter(classContext: NClassLike): NGenericParameter {

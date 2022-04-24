@@ -8,6 +8,7 @@ import { MainBase } from "../main/MainBase.js";
 import { MainEmbedded } from "../embedded/MainEmbedded.js";
 import { Klass, Interface } from "./types/Class.js";
 import { SemicolonAngel } from "./parser/SemicolonAngel.js";
+import { NPrimitiveTypes } from "../newcompiler/types/NewPrimitiveType.js";
 
 export enum CompilerStatus {
     compiling, error, compiledButNothingToRun, readyToRun
@@ -19,7 +20,7 @@ export class Compiler {
 
     atLeastOneModuleIsStartable: boolean;
 
-    constructor(private main: MainBase) {
+    constructor(private main: MainBase, public primitiveTypes: NPrimitiveTypes) {
     }
 
     compile(moduleStore: ModuleStore): Error[] {

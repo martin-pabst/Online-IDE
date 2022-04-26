@@ -1,5 +1,6 @@
+import { Error, ErrorLevel, QuickFix } from "src/client/compiler/lexer/Lexer.js";
 import { TextPosition, TokenType } from "src/client/compiler/lexer/Token.js";
-import { ASTNode, ConstantNode } from "src/client/compiler/parser/AST.js";
+import { ASTNode, BinaryOpNode, ConstantNode, UnaryOpNode } from "src/client/compiler/parser/AST.js";
 import { Module, ModuleStore } from "src/client/compiler/parser/Module.js";
 import { NPrimitiveTypes } from "../types/NewPrimitiveType.js";
 import { NType } from "../types/NewType.js";
@@ -23,7 +24,10 @@ export class NCodeGenerator {
 
     codeBuilder: CodeBuilder;
 
-
+    static assignmentOperators = [TokenType.assignment, TokenType.plusAssignment, TokenType.minusAssignment,
+        TokenType.multiplicationAssignment, TokenType.divisionAssignment, TokenType.ANDAssigment, TokenType.ORAssigment,
+        TokenType.XORAssigment, TokenType.shiftLeftAssigment, TokenType.shiftRightAssigment, TokenType.shiftRightUnsignedAssigment];
+    
     constructor(private pt: NPrimitiveTypes){
 
     }
@@ -66,11 +70,8 @@ export class NCodeGenerator {
 
         this.module.mainProgram = this.currentProgram;
 
-        let hasMainProgram: boolean = false;
-
         if (this.module.mainProgramAst != null && this.module.mainProgramAst.length > 0) {
 
-            hasMainProgram = true;
             this.processStatementsInsideBlock(this.module.mainProgramAst);
 
             let lastPosition = this.module.mainProgramEnd;
@@ -79,6 +80,8 @@ export class NCodeGenerator {
             this.currentSymbolTable.positionTo = lastPosition;
 
         }
+
+
 
     }
 
@@ -103,7 +106,7 @@ export class NCodeGenerator {
             // If last Statement has value which is not used further then pop this value from stack.
             // e.g. statement 12 + 17 -7;
             // Parser issues a warning in this case, see Parser.checkIfStatementHasNoEffekt
-            if (nextFragment.valuePushedToStack) {
+            if (!nextFragment.lastPartIsExpression) {
 
                 nextFragment.addPop();
 
@@ -121,10 +124,10 @@ export class NCodeGenerator {
         if (node == null) return null;
 
         switch (node.type) {
-            // case TokenType.binaryOp:
-            //     return this.processBinaryOp(node);
-            // case TokenType.unaryOp:
-            //     return this.processUnaryOp(node);
+            case TokenType.binaryOp:
+                return this.processBinaryOp(node);
+            case TokenType.unaryOp:
+                return this.processUnaryOp(node);
             case TokenType.pushConstant:
                 return this.pushConstant(node);
             // case TokenType.callMethod:
@@ -218,43 +221,111 @@ export class NCodeGenerator {
         }
 
     }
-    
-    pushConstant(node: ConstantNode): NFragment {
 
-        let type: NType;
+    pushError(text: string, position: TextPosition, errorLevel: ErrorLevel = "error", quickFix?: QuickFix) {
+        this.errorList.push({
+            text: text,
+            position: position,
+            quickFix: quickFix,
+            level: errorLevel
+        });
+    }
 
-        switch (node.constantType) {
-            case TokenType.integerConstant:
-                type = intPrimitiveType;
-                break;
-            case TokenType.booleanConstant:
-                type = booleanPrimitiveType;
-                break;
-            case TokenType.floatingPointConstant:
-                type = floatPrimitiveType;
-                break;
-            case TokenType.stringConstant:
-                type = stringPrimitiveType;
-                this.pushTypePosition(node.position, type);
-                break;
-            case TokenType.charConstant:
-                type = charPrimitiveType;
-                break;
-            case TokenType.keywordNull:
-                type = nullType
-                break;
+    processUnaryOp(node: UnaryOpNode): NFragment {
+        let operandFragment = this.processNode(node.operand);
+
+        if ( operandFragment == null || operandFragment.dataType == null) return;
+
+        if(node.operator == TokenType.minus && !operandFragment.dataType.canCastTo(this.pt.float)){
+            this.pushError("Der Operator - ist für den Typ " + operandFragment.dataType.identifier + " nicht definiert.", node.position);
         }
 
-        this.pushStatements({
-            type: TokenType.pushConstant,
-            dataType: type,
-            position: node.position,
-            value: node.constant
-        })
+        if(node.operator == TokenType.not && !operandFragment.dataType.canCastTo(this.pt.boolean)){
+            this.checkIfAssignmentInstedOfEqual(node.operand);
+            this.pushError("Der Operator ! ist für den Typ " + operandFragment.dataType.identifier + " nicht definiert.", node.position);
+        }
 
-        return { type: type, isAssignable: false };
+        operandFragment.applyUnaryOperator(node.operator);
+
+        return operandFragment;
+
+    }
+    
+    checkIfAssignmentInstedOfEqual(nodeFrom: ASTNode, conditionType?: NType) {
+        if (nodeFrom == null) return;
+
+        if (nodeFrom.type == TokenType.binaryOp && nodeFrom.operator == TokenType.assignment) {
+            let pos = nodeFrom.position;
+            this.pushError("= ist der Zuweisungsoperator. Du willst sicher zwei Werte vergleichen. Dazu benötigst Du den Vergleichsoperator ==.",
+                pos, conditionType == this.pt.boolean ? "warning" : "error", {
+                title: '= durch == ersetzen',
+                editsProvider: (uri) => {
+                    return [{
+                        resource: uri,
+                        edit: {
+                            range: {
+                                startLineNumber: pos.line, startColumn: pos.column, endLineNumber: pos.line, endColumn: pos.column + 1,
+                                message: "",
+                                severity: monaco.MarkerSeverity.Error
+                            },
+                            text: "=="
+                        }
+                    }
+                    ];
+                }
+
+            })
+        }
 
     }
 
+
+    pushConstant(node: ConstantNode): NFragment {
+
+        let constantLiteral = this.pt.getConstantLiteral(node);
+        let type: NType = this.pt.getConstantTypeFromTokenType(node.constantType);
+
+        let fragment = new NFragment("constant", type, node.position);
+
+        fragment.constantValue = node.constant;
+        fragment.parts.push(constantLiteral);
+
+        return fragment;
+
+    }
+
+    processBinaryNode(node: BinaryOpNode): NFragment {
+        let isAssignment = NCodeGenerator.assignmentOperators.indexOf(node.operator) >= 0;
+
+        if (node.operator == TokenType.ternaryOperator) {
+            return this.processTernaryOperator(node);
+        }
+
+        let leftFragment = this.processNode(node.firstOperand, isAssignment);
+
+        let rightFragment = this.processNode(node.secondOperand);
+
+        if(leftFragment == null || rightFragment == null) return null;
+
+        let leftType = leftFragment.dataType;
+        let rightType = rightFragment.dataType;
+
+        if(leftType == null || rightType == null) return;
+
+        if(isAssignment){
+            if (!this.ensureAutomaticCasting(rightFragment, leftType, node.position, node.firstOperand)) {
+                this.pushError("Der Wert vom Datentyp " + rightType.identifier + " auf der rechten Seite kann der Variablen auf der linken Seite (Datentyp " + leftType.identifier + ") nicht zugewiesen werden.", node.position);
+                return leftFragment;
+            }
+
+            if (!leftFragment.isAssignable) {
+                this.pushError("Dem Term/der Variablen auf der linken Seite des Zuweisungsoperators (=) kann kein Wert zugewiesen werden.", node.position);
+            }
+
+            leftFragment.assign(rightFragment, node.operator);
+
+        }
+
+    }
 
 }

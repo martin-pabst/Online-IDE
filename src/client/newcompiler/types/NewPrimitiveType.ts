@@ -1,4 +1,5 @@
-import { TokenType } from "src/client/compiler/lexer/Token.js";
+import { Token, TokenType } from "src/client/compiler/lexer/Token.js";
+import { ConstantNode } from "src/client/compiler/parser/AST.js";
 import { NExpression, NType } from "./NewType.js";
 
 
@@ -13,6 +14,13 @@ export class NPrimitiveTypes {
     char: NCharPrimitiveType = new NCharPrimitiveType();
     
     allPrimitiveTypes: NType[] = [this.void, this.null, this.int, this.float, this.double, this.boolean, this.char];
+
+    stringEscapeCharacters: {[char: string]: string} = {
+        "\n" : "\\n",
+        "\\" : "\\\\",
+        "\t" : "\\t",
+        "\"" : "\\\""
+    }
 
     tokenTypeToTypeMap: {[tokenType: number] : NType} = {
         [TokenType.keywordNull]: this.null,
@@ -39,6 +47,37 @@ export class NPrimitiveTypes {
 
     getTypeFromIdentifier(identifier: string){
         return this.identifierToTypeMap[identifier];
+    }
+
+    getConstantLiteral(node: ConstantNode){
+
+        switch(node.constantType){
+            case TokenType.stringConstant: 
+            case TokenType.charConstant:
+                return "\"" + this.escapeString(node.constant) + "\"";
+            case TokenType.booleanConstant:
+                return node.constant ? "true" : "false";
+            case TokenType.keywordNull:
+                return "null";
+            default:
+                return "" + node.constant;
+
+        }
+        
+    }
+
+    escapeString(s: string){
+        let dest: string = "";
+        for(let i = 0; i < s.length - 1; i++){
+            let c = s.charAt(i);
+            let newC = this.identifierToTypeMap[c];
+            if(newC != null) {
+                dest += newC;
+            } else {
+                dest += c;
+            }
+        } 
+        return dest;
     }
 
 }

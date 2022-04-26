@@ -36,8 +36,9 @@ export abstract class NRuntimeObject {
 }
 
 export class NStaticClassObject {
-    __a: any = [];      // Attribute values
-    __class: NClass;    // reference to class
+    __a: any = [];              // Attribute values
+    __initialValues: any[] = [];  // initial attribute values
+    __class: NClass;            // reference to class
 
     /**
      * staticClassObject also contains all static methods:

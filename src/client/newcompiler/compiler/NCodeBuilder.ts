@@ -1,5 +1,3 @@
-import { TextPosition } from "src/client/compiler/lexer/Token.js";
-import { NType } from "../types/NewType.js"
 import { NStep } from "./NProgram.js"
 
 

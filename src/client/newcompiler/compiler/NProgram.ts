@@ -1,4 +1,4 @@
-import { TextPosition } from "../../compiler/lexer/Token.js";
+import { TextPosition, TokenType, TokenTypeReadable } from "../../compiler/lexer/Token.js";
 import { Module } from "../../compiler/parser/Module.js"
 import { NThread } from "../interpreter/NThreadPool.js";
 import { NType } from "../types/NewType.js";
@@ -18,16 +18,30 @@ export type NFragmentType = "constant" | "block" |
 export class NFragment {
     parts: any[] = [];      // NFragment || string || constant
 
-    valuePushedToStack: boolean = false;
+    lastPartIsExpression: boolean = true;    // if this is false then last part is statement
     ensuresReturnStatement: boolean = false;
     forceStepToEndAfterThisFragment: boolean = false;
     hasSideEffects: boolean = false;
+    isAssignable: boolean = false;
 
+    constantValue?: any;
+
+    static stackIdentifier = 's';
     static popStatement = 's.pop();';
     static peekExpression = 's[s.length - 1]';
 
     constructor(public fragmentType: NFragmentType, public dataType: NType, public start: TextPosition, public end: TextPosition = null){
         
+    }
+
+    applyUnaryOperator(operator: TokenType) {
+        let operatorString = TokenTypeReadable[operator];
+        if(this.lastPartIsExpression){
+            this.parts[this.parts.length - 1] = operatorString + this.parts[this.parts.length - 1];
+        } else {
+            this.parts.push(`${operatorString}${NFragment.popStatement}`);
+            this.lastPartIsExpression = true;
+        }
     }
 
     addFragmentToBlock(nextFragment: NFragment) {
@@ -41,11 +55,15 @@ export class NFragment {
             this.parts.pop();
         }
         this.parts.push(NFragment.popStatement);
-        this.valuePushedToStack = false;
+        this.lastPartIsExpression = true;
     }
 
     addPeek(endOfStatement: boolean) {
         this.parts.push(NFragment.peekExpression);
+    }
+
+    assign(rightFragment: NFragment, operator: TokenType) {
+        
     }
 
 }

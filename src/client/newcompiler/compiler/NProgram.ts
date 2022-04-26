@@ -28,7 +28,6 @@ export class NFragment {
 
     static stackIdentifier = 's';
     static popStatement = 's.pop();';
-    static peekExpression = 's[s.length - 1]';
 
     constructor(public fragmentType: NFragmentType, public dataType: NType, public start: TextPosition, public end: TextPosition = null){
         
@@ -50,21 +49,46 @@ export class NFragment {
         this.ensuresReturnStatement = this.ensuresReturnStatement || nextFragment.ensuresReturnStatement;
     }
 
-    addPop() {
-        if(this.parts.length > 0 && this.parts[this.parts.length - 1] == NFragment.peekExpression + ";"){
-            this.parts.pop();
-        }
+    discardTopOfStack() {
+        if(this.parts.length > 0 && !this.lastPartIsExpression){
+            let lastpart = this.parts[this.parts.length - 1];
+            if(typeof lastpart == "string"){
+                if(lastpart.startsWith("s.push(") && lastpart.endsWith(");")){
+                    this.parts[this.parts.length - 1] = lastpart.substring(7, lastpart.length - 2);
+                    this.lastPartIsExpression = true;
+                    return;
+                }
+            } 
+
+        } 
         this.parts.push(NFragment.popStatement);
         this.lastPartIsExpression = true;
     }
 
-    addPeek(endOfStatement: boolean) {
-        this.parts.push(NFragment.peekExpression);
+    applyBinaryOperator(rightFragment: NFragment, operator: TokenType, resultType: NType) {
+
+        let leftExpression = this.lastPartIsExpression ? this.parts.pop() : "s.pop();"
+        let rightExpression = rightFragment.lastPartIsExpression ? rightFragment.parts.pop() : "s.pop();"
+
+        
+        this.parts = rightFragment.parts.concat(this.parts);
+        let template = this.dataType.getOperatorExpression(operator, rightFragment.dataType);
+        if(template != null && template.e != null){
+
+            if(template.condition != null){
+                let cond: string = template.condition.replace("$1", leftExpression).replace("$2", rightExpression);
+                this.parts.push("if(thread.check(" + cond + ",'" + template.errormessage + "')) return;");
+            }
+
+            this.parts.push(template.e.replace("$1", leftExpression).replace("$2", rightExpression));
+        } else {
+            this.parts.push(leftExpression + " " + TokenTypeReadable[operator] + " " + rightExpression);
+        }
+
+        this.lastPartIsExpression = true;
+        this.dataType = resultType;
     }
 
-    assign(rightFragment: NFragment, operator: TokenType) {
-        
-    }
 
 }
 

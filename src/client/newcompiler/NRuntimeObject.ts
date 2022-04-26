@@ -26,8 +26,26 @@ export abstract class NRuntimeObject {
         return this.constructor.__class;
     }
     
+     /**
+     * NRuntimeObject also contains all methods, either itself (library objects) or in its prototype (objects of compiled classes)
+     * "signature1": program1,
+     * "signature2": program2,
+     * ...
+     */
+
 }
 
+export class NStaticClassObject {
+    __a: any = [];      // Attribute values
+    __class: NClass;    // reference to class
+
+    /**
+     * staticClassObject also contains all static methods:
+     * "signature1": program1,
+     * "signature2": program2,
+     * ...
+     */
+}
 
 class ExampleArrayListClass extends NRuntimeObject {
 

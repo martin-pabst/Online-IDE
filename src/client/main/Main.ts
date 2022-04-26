@@ -97,6 +97,9 @@ export class Main implements MainBase {
         this.editor.editor.setPosition({column: declaration.position.column, lineNumber: declaration.position.line});
     }
 
+    getPrimitiveTypes(): NPrimitiveTypes {
+        return this.primitiveTypes;
+    }
 
     workspaceList: Workspace[] = [];
     workspacesOwnerId: number;

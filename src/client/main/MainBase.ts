@@ -11,6 +11,7 @@ import { ErrorManager } from "./gui/ErrorManager.js";
 import { SemicolonAngel } from "../compiler/parser/SemicolonAngel.js";
 import { TextPositionWithModule } from "../compiler/types/Types.js";
 import {GamepadTool} from "../tools/GamepadTool.js";
+import { NPrimitiveTypes } from "../newcompiler/types/NewPrimitiveType.js";
 
 export interface MainBase {
     printProgram();
@@ -36,7 +37,7 @@ export interface MainBase {
     getSemicolonAngel(): SemicolonAngel;
     isEmbedded(): boolean;
     jumpToDeclaration(module: Module, declaration: TextPositionWithModule);
+    getPrimitiveTypes(): NPrimitiveTypes;
 
-    
 
 }

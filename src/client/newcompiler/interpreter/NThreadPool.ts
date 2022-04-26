@@ -1,7 +1,7 @@
 import { ModuleStore, Module } from "src/client/compiler/parser/Module.js";
 import { TextPositionWithModule } from "src/client/compiler/types/Types.js";
 import { NProgram, NStep } from "../compiler/NProgram.js";
-import { NRuntimeObject } from "../NRuntimeObject.js";
+import { NRuntimeObject, NStaticClassObject } from "../NRuntimeObject.js";
 import { NClass } from "../types/NClass.js";
 import { NInterpreter } from "./NInterpreter.js";
 
@@ -286,10 +286,12 @@ export class NThreadPool {
 
     keepThread: boolean = false;    // for single step mode
 
+    staticClassObjects: {[identifier: string]: NStaticClassObject};
+
     constructor(private interpreter: NInterpreter){
         this.setState(NThreadPoolLstate.not_initialized);
     }
-    
+
     run(numberOfStepsMax: number) {
         let stepsPerThread = Math.ceil(numberOfStepsMax/this.runningThreads.length);
         let numberOfSteps = 0;
@@ -433,6 +435,9 @@ export class NThreadPool {
     }
     
     init(moduleStore: ModuleStore, mainModule: Module) {
+        
+        
+        
         // TODO!!
         
         // Instantiate enum value-objects; initialize static attributes; call static constructors

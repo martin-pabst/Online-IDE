@@ -1,6 +1,6 @@
-import { RuntimeObject } from "src/client/interpreter/RuntimeObject.js";
 import { TokenType } from "../../compiler/lexer/Token.js";
 import { NUnknownClasslike } from "../librarycompiler/UnknownClasslike.js";
+import { NRuntimeObject } from "../NRuntimeObject.js";
 import { NMethodInfo, NAttributeInfo } from "./NAttributeMethod.js";
 import { NExpression, NType } from "./NewType.js";
 import { NVisibility } from "./NVisibility.js";
@@ -38,7 +38,7 @@ export class NClass extends NClassLike {
     staticMethodInfoList: NMethodInfo[] = [];
     staticAttributeInfo: NAttributeInfo[] = [];
 
-    runtimeObjectPrototype: RuntimeObject;
+    runtimeObjectPrototype: NRuntimeObject;              // contains all methods and reference to class object; contains NOT __a 
     runtimeObjectPrototypeIsClass: boolean = false;     // true for system classes
     initialAttributeValues: any[];                      // used only vor non-system classes
 

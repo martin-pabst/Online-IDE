@@ -66,7 +66,7 @@ export class NCompiler {
 
         // 4th pass: code generation
 
-        let codeGenerator = new NCodeGenerator();
+        let codeGenerator = new NCodeGenerator(this.main.getPrimitiveTypes());
 
         for (let m of moduleStore.getModules(false)) {
             codeGenerator.start(m, moduleStore);

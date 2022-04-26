@@ -34,7 +34,10 @@ export class NClass extends NClassLike {
     extends: NClass | NUnknownClasslike;
     implements: (NInterface | NUnknownClasslike)[] = [];
     isAbstract: boolean = false;
-    
+
+    staticMethodInfoList: NMethodInfo[] = [];
+    staticAttributeInfo: NAttributeInfo[] = [];
+
     runtimeObjectPrototype: RuntimeObject;
     runtimeObjectPrototypeIsClass: boolean = false;     // true for system classes
     initialAttributeValues: any[];                      // used only vor non-system classes

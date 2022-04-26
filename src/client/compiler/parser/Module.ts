@@ -85,6 +85,7 @@ import { Formatter } from "../../main/gui/Formatter.js";
 import { RobotClass, RobotWorldClass } from "../../runtimelibrary/graphics/3d/Robot.js";
 import { NSymbolTable } from "src/client/newcompiler/compiler/NSymbolTable.js";
 import { NProgram } from "src/client/newcompiler/compiler/NProgram.js";
+import { NStaticClassObject } from "src/client/newcompiler/NRuntimeObject.js";
 
 export type ExportedWorkspace = {
     name: string;
@@ -942,6 +943,9 @@ export class ModuleStore {
     private baseModule: BaseModule;
 
     dirty: boolean = false;
+
+    public staticClassObjects: {[identifier: string]: NStaticClassObject};
+
 
     constructor(private main: MainBase, withBaseModule: boolean, private additionalLibraries: string[] = []) {
         if (withBaseModule) {

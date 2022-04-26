@@ -31,6 +31,7 @@ type JavaOnlineConfig = {
     hideStartPanel?: boolean,
     hideEditor?: boolean,
     libraries?: string[],
+    jsonFilename?: string,
     jsonFilename?: string
 }
 
@@ -198,7 +199,9 @@ export class MainEmbedded implements MainBase {
 
         if (this.config.speed == null) this.config.speed = 9;
         if (this.config.libraries == null) this.config.libraries = [];
+
         if(this.config.jsonFilename == null) this.config.jsonFilename = "workspace.json";
+
 
     }
 
@@ -777,6 +780,7 @@ export class MainEmbedded implements MainBase {
 
 
     saveWorkspaceToFile() {
+        
         let filename: string = prompt("Bitte geben Sie den Dateinamen ein", this.config.jsonFilename);
         if (filename == null) {
             alert("Der Dateiname ist leer, daher wird nichts gespeichert.");

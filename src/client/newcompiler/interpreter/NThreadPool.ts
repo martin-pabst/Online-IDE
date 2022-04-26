@@ -435,9 +435,17 @@ export class NThreadPool {
     }
     
     init(moduleStore: ModuleStore, mainModule: Module) {
+                
+        let mainThread = new NThread(this, []);
+
+        this.staticClassObjects = moduleStore.staticClassObjects;
+        Object.entries(this.staticClassObjects).forEach(([identifier, staticClassObject]) => {
+            staticClassObject.__a = staticClassObject.__initialValues.slice();
+            // push initialization programs on top of program stack
+        })
+
         
-        
-        
+
         // TODO!!
         
         // Instantiate enum value-objects; initialize static attributes; call static constructors
@@ -458,6 +466,9 @@ export class NThreadPool {
         // }
 
         // this.popProgram();
+
+        this.runningThreads.push(mainThread);
+        this.currentThreadIndex = 0;
     }
 }
 

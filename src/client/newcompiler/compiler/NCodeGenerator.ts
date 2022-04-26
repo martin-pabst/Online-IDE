@@ -1,7 +1,8 @@
 import { Error, ErrorLevel, QuickFix } from "src/client/compiler/lexer/Lexer.js";
-import { TextPosition, TokenType } from "src/client/compiler/lexer/Token.js";
-import { ASTNode, BinaryOpNode, ConstantNode, UnaryOpNode } from "src/client/compiler/parser/AST.js";
+import { TextPosition, TokenType, TokenTypeReadable } from "src/client/compiler/lexer/Token.js";
+import { ASTNode, BinaryOpNode, ConstantNode, TermNode, UnaryOpNode } from "src/client/compiler/parser/AST.js";
 import { Module, ModuleStore } from "src/client/compiler/parser/Module.js";
+import { NClass } from "../types/NClass.js";
 import { NPrimitiveTypes } from "../types/NewPrimitiveType.js";
 import { NType } from "../types/NewType.js";
 import { CodeBuilder } from "./NCodeBuilder.js";
@@ -25,10 +26,10 @@ export class NCodeGenerator {
     codeBuilder: CodeBuilder;
 
     static assignmentOperators = [TokenType.assignment, TokenType.plusAssignment, TokenType.minusAssignment,
-        TokenType.multiplicationAssignment, TokenType.divisionAssignment, TokenType.ANDAssigment, TokenType.ORAssigment,
-        TokenType.XORAssigment, TokenType.shiftLeftAssigment, TokenType.shiftRightAssigment, TokenType.shiftRightUnsignedAssigment];
-    
-    constructor(private pt: NPrimitiveTypes){
+    TokenType.multiplicationAssignment, TokenType.divisionAssignment, TokenType.ANDAssigment, TokenType.ORAssigment,
+    TokenType.XORAssigment, TokenType.shiftLeftAssigment, TokenType.shiftRightAssigment, TokenType.shiftRightUnsignedAssigment];
+
+    constructor(private pt: NPrimitiveTypes) {
 
     }
 
@@ -85,30 +86,30 @@ export class NCodeGenerator {
 
     }
 
-    initCurrentProgram(methodIdentierWithClass: string, symbolTable: NSymbolTable){
-        
+    initCurrentProgram(methodIdentierWithClass: string, symbolTable: NSymbolTable) {
+
         this.currentProgram = new NProgram(this.module, symbolTable, methodIdentierWithClass);
 
     }
 
     processStatementsInsideBlock(nodes: ASTNode[]): NFragment {
-        
+
         if (nodes == null || nodes.length == 0 || nodes[0] == null) return null;
 
         let fragment: NFragment = new NFragment("block", this.pt.void, nodes[0].position);
 
-        for(let node of nodes){
+        for (let node of nodes) {
 
             if (node == null) continue;
             let nextFragment: NFragment = this.processNode(node);
-            if(nextFragment == null) continue;
+            if (nextFragment == null) continue;
 
             // If last Statement has value which is not used further then pop this value from stack.
             // e.g. statement 12 + 17 -7;
             // Parser issues a warning in this case, see Parser.checkIfStatementHasNoEffekt
             if (!nextFragment.lastPartIsExpression) {
 
-                nextFragment.addPop();
+                nextFragment.discardTopOfStack();
 
             }
 
@@ -234,13 +235,13 @@ export class NCodeGenerator {
     processUnaryOp(node: UnaryOpNode): NFragment {
         let operandFragment = this.processNode(node.operand);
 
-        if ( operandFragment == null || operandFragment.dataType == null) return;
+        if (operandFragment == null || operandFragment.dataType == null) return;
 
-        if(node.operator == TokenType.minus && !operandFragment.dataType.canCastTo(this.pt.float)){
+        if (node.operator == TokenType.minus && !operandFragment.dataType.canCastTo(this.pt.float)) {
             this.pushError("Der Operator - ist für den Typ " + operandFragment.dataType.identifier + " nicht definiert.", node.position);
         }
 
-        if(node.operator == TokenType.not && !operandFragment.dataType.canCastTo(this.pt.boolean)){
+        if (node.operator == TokenType.not && !operandFragment.dataType.canCastTo(this.pt.boolean)) {
             this.checkIfAssignmentInstedOfEqual(node.operand);
             this.pushError("Der Operator ! ist für den Typ " + operandFragment.dataType.identifier + " nicht definiert.", node.position);
         }
@@ -250,7 +251,7 @@ export class NCodeGenerator {
         return operandFragment;
 
     }
-    
+
     checkIfAssignmentInstedOfEqual(nodeFrom: ASTNode, conditionType?: NType) {
         if (nodeFrom == null) return;
 
@@ -305,15 +306,15 @@ export class NCodeGenerator {
 
         let rightFragment = this.processNode(node.secondOperand);
 
-        if(leftFragment == null || rightFragment == null) return null;
+        if (leftFragment == null || rightFragment == null) return null;
 
         let leftType = leftFragment.dataType;
         let rightType = rightFragment.dataType;
 
-        if(leftType == null || rightType == null) return;
+        if (leftType == null || rightType == null) return;
 
-        if(isAssignment){
-            if (!this.ensureAutomaticCasting(rightFragment, leftType, node.position, node.firstOperand)) {
+        if (isAssignment) {
+            if (!this.ensureAutomaticCasting(rightFragment, leftType, node.position, node.secondOperand)) {
                 this.pushError("Der Wert vom Datentyp " + rightType.identifier + " auf der rechten Seite kann der Variablen auf der linken Seite (Datentyp " + leftType.identifier + ") nicht zugewiesen werden.", node.position);
                 return leftFragment;
             }
@@ -322,10 +323,126 @@ export class NCodeGenerator {
                 this.pushError("Dem Term/der Variablen auf der linken Seite des Zuweisungsoperators (=) kann kein Wert zugewiesen werden.", node.position);
             }
 
-            leftFragment.assign(rightFragment, node.operator);
-
+            leftFragment.applyBinaryOperator(rightFragment, node.operator, leftFragment.dataType);
+            return leftFragment;
         }
+
+        // check for uninitialized variable:
+        if (node.firstOperand.type == TokenType.identifier && node.firstOperand.variable != null) {
+            let v = node.firstOperand.variable;
+            if (v.initialized != null && !v.initialized) {
+                v.usedBeforeInitialization = true;
+                this.pushError("Die Variable " + v.identifier + " wird hier benutzt bevor sie initialisiert wurde.", node.position, "info");
+            }
+        }
+
+        // check if assignment instead of equal
+        if (node.operator in [TokenType.and, TokenType.or]) {
+            this.checkIfAssignmentInstedOfEqual(node.firstOperand);
+            this.checkIfAssignmentInstedOfEqual(node.secondOperand);
+        }
+
+        let resultType = leftType.getOperatorResultType(node.operator, rightType);
+
+        // TODO: Situation Object + String: insert toString()-Method
+
+
+        if (resultType == null) {
+
+            // TODO: operator possible with unboxing?
+
+            this.binaryOperationNotFeasibleError(node, leftType, rightType);
+
+            return leftFragment;
+        }
+
+        leftFragment.applyBinaryOperator(rightFragment, node.operator, resultType);
+
+        return leftFragment;
+    }
+
+
+
+    ensureAutomaticCasting(fragmentToCast: NFragment, typeTo: NType, position: TextPosition, nodeToCast: ASTNode): boolean {
+        let typeFrom = fragmentToCast.dataType;
+
+        if (typeFrom == null || typeTo == null) return false;
+
+        if (typeFrom.equals(typeTo)) {
+            return true;
+        }
+
+        if (!typeFrom.canCastTo(typeTo)) {
+
+            if (typeTo == this.pt.boolean && fragmentToCast != null) {
+
+                this.checkIfAssignmentInstedOfEqual(nodeToCast);
+
+            }
+
+            return false;
+        }
+
+        // TODO: unboxing...
+        // if (typeFrom["unboxableAs"] != null && typeFrom["unboxableAs"].indexOf(typeTo) >= 0) {
+        //     return true;
+        // }
+
+        if (typeFrom instanceof NClass && typeTo == stringPrimitiveType) {
+
+            let toStringStatement = this.getToStringStatement(typeFrom, position);
+
+            if (toStringStatement != null) {
+                this.pushStatements(toStringStatement);
+                return true;
+            }
+
+            return false;
+        }
+
+
+        if (typeFrom instanceof PrimitiveType && (typeTo instanceof PrimitiveType || typeTo == stringPrimitiveType)) {
+            let castInfo = typeFrom.getCastInformation(typeTo);
+            if (!castInfo.automatic) {
+                return false;
+            }
+            if (castInfo.needsStatement) {
+                this.pushStatements({
+                    type: TokenType.castValue,
+                    newType: typeTo,
+                    position: position
+                });
+            }
+        }
+
+        return true;
 
     }
 
+
+    private binaryOperationNotFeasibleError(node: BinaryOpNode, leftType: NType, rightType: NType) {
+        let bitOperators = [TokenType.ampersand, TokenType.OR];
+        let booleanOperators = ["&& (boolescher UND-Operator)", "|| (boolescher ODER-Operator)"];
+        let betterOperators = ["& &", "||"];
+        let opIndex = bitOperators.indexOf(node.operator);
+        if (opIndex >= 0 && leftType == this.pt.boolean && rightType == this.pt.boolean) {
+            this.pushError("Die Operation " + TokenTypeReadable[node.operator] + " ist für die Operanden der Typen " + leftType.type.identifier + " und " + rightType.type.identifier + " nicht definiert. Du meintest wahrscheinlich den Operator " + booleanOperators[opIndex] + ".", node.position, "error",
+                {
+                    title: "Operator " + betterOperators[opIndex] + " verwenden statt " + TokenTypeReadable[node.operator],
+                    editsProvider: (uri) => {
+                        return [
+                            {
+                                resource: uri,
+                                edit: {
+                                    range: { startLineNumber: node.position.line, startColumn: node.position.column, endLineNumber: node.position.line, endColumn: node.position.column },
+                                    text: TokenTypeReadable[node.operator]
+                                }
+                            }
+                        ];
+                    }
+                });
+        } else {
+            this.pushError("Die Operation " + TokenTypeReadable[node.operator] + " ist für die Operanden der Typen " + leftType.type.identifier + " und " + rightType.type.identifier + " nicht definiert.", node.position);
+        }
+    }
 }

@@ -1,86 +1,10 @@
 import { Token, TokenType } from "src/client/compiler/lexer/Token.js";
 import { ConstantNode } from "src/client/compiler/parser/AST.js";
+import { NRuntimeObject } from "../NRuntimeObject.js";
 import { NExpression, NType } from "./NewType.js";
 
 
 
-export class NPrimitiveTypes {
-    void: VoidType = new VoidType();
-    null: NullType = new NullType();
-    int: NIntPrimitiveType = new NIntPrimitiveType();
-    float: NFloatPrimitiveType = new NFloatPrimitiveType();
-    double: NDoublePrimitiveType = new NDoublePrimitiveType();
-    boolean: NBooleanPrimitiveType = new NBooleanPrimitiveType();
-    char: NCharPrimitiveType = new NCharPrimitiveType();
-    
-    allPrimitiveTypes: NType[] = [this.void, this.null, this.int, this.float, this.double, this.boolean, this.char];
-
-    stringEscapeCharacters: {[char: string]: string} = {
-        "\n" : "\\n",
-        "\\" : "\\\\",
-        "\t" : "\\t",
-        "\"" : "\\\""
-    }
-
-    tokenTypeToTypeMap: {[tokenType: number] : NType} = {
-        [TokenType.keywordNull]: this.null,
-        [TokenType.integerConstant] : this.int,
-        [TokenType.floatingPointConstant] : this.float,
-        [TokenType.stringConstant] : this.String,
-        [TokenType.charConstant]: this.char,
-        [TokenType.booleanConstant]: this.boolean
-    }
-
-    identifierToTypeMap: {[identifier: string] : NType} = {
-        "null": this.null,
-        "int" : this.int,
-        "float" : this.float,
-        "double" : this.double,
-        "String" : this.String,
-        "char": this.char,
-        "boolean": this.boolean
-    }
-
-    getConstantTypeFromTokenType(tt: TokenType){
-        return this.tokenTypeToTypeMap[tt];
-    }
-
-    getTypeFromIdentifier(identifier: string){
-        return this.identifierToTypeMap[identifier];
-    }
-
-    getConstantLiteral(node: ConstantNode){
-
-        switch(node.constantType){
-            case TokenType.stringConstant: 
-            case TokenType.charConstant:
-                return "\"" + this.escapeString(node.constant) + "\"";
-            case TokenType.booleanConstant:
-                return node.constant ? "true" : "false";
-            case TokenType.keywordNull:
-                return "null";
-            default:
-                return "" + node.constant;
-
-        }
-        
-    }
-
-    escapeString(s: string){
-        let dest: string = "";
-        for(let i = 0; i < s.length - 1; i++){
-            let c = s.charAt(i);
-            let newC = this.identifierToTypeMap[c];
-            if(newC != null) {
-                dest += newC;
-            } else {
-                dest += c;
-            }
-        } 
-        return dest;
-    }
-
-}
 
 export type NCastPrimitiveInformation = {
     expression?: string; // e.g. "$1 - $1%0" for casting float to int
@@ -212,8 +136,7 @@ export abstract class NPrimitiveType extends NType {
 
     protected getStandardOperatorExpression(operator: TokenType, otherType?: NType): NExpression {
         let expression: string;
-        let condition: string = null;
-        let errormessage: string = null;
+
         switch (operator) {
             case TokenType.plus:
                 if (otherType.identifier == "String") {
@@ -279,7 +202,7 @@ export abstract class NPrimitiveType extends NType {
 
         }
 
-        return { e: expression, condition: condition, errormessage: errormessage };
+        return { e: expression };
     }
 
     protected standardCompute(operator: TokenType, otherType: NType, value1: any, value2?: any): any {
@@ -393,18 +316,18 @@ export class NIntPrimitiveType extends NPrimitiveType {
         switch (operator) {
             case TokenType.division:
                 if (otherType.identifier == "int") {
-                    expression = "Math.trunc($1/$2)"
+                    expression = "Math.trunc(thread.divide($1,$2))"
                 } else {
-                    expression = "$1/$2"
+                    expression = "thread.divide($1,$2)"
                 }
-                return { e: expression, condition: "$2 != 0", errormessage: "Division durch 0 ist nicht erlaubt." };
+                return { e: expression };
             case TokenType.modulo:
                 if (otherType.identifier == "int") {
-                    expression = "Math.trunc($1 % $2)"
+                    expression = "Math.trunc(thread.modulo($1,$2))"
                 } else {
                     expression = "1";
                 }
-                return { e: expression, condition: "$2 != 0", errormessage: "Modulo 0 ist nicht erlaubt." };
+                return { e: expression };
             default:
                 return this.getStandardOperatorExpression(operator, otherType);
         }
@@ -461,8 +384,8 @@ export class NFloatPrimitiveType extends NPrimitiveType {
 
         switch (operator) {
             case TokenType.division:
-                expression = "$1/$2"
-                return { e: expression, condition: "$2 != 0", errormessage: "Division durch 0 ist nicht erlaubt." };
+                expression = "thread.divide($1,$2)"
+                return { e: expression };
             default:
                 return this.getStandardOperatorExpression(operator, otherType);
         }
@@ -510,8 +433,8 @@ export class NDoublePrimitiveType extends NPrimitiveType {
 
         switch (operator) {
             case TokenType.division:
-                expression = "$1/$2"
-                return { e: expression, condition: "$2 != 0", errormessage: "Division durch 0 ist nicht erlaubt." };
+                expression = "thread.divide($1,$2)"
+                return { e: expression };
             default:
                 return this.getStandardOperatorExpression(operator, otherType);
         }

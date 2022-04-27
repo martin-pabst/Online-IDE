@@ -43,7 +43,7 @@ export class NClass extends NClassLike {
     initialAttributeValues: any[];                      // used only vor non-system classes
 
     getCastExpression(otherType: NType): NExpression {
-        return { e: "$1", condition: "$1.__class.allExtendedImplementedTypes.indexOf(" + otherType.identifier + ") >= 0", errormessage: "Casting nach " + otherType.identifier + " nicht möglich." }
+        return { e: `thread.cast($1,"${otherType.identifier}")` }
     }
 
     castTo(otherType: NType, value: any) {
@@ -85,7 +85,7 @@ export class NInterface extends NClassLike {
     
 
     getCastExpression(otherType: NType): NExpression {
-        return { e: "$1", condition: "$1.__class.allExtendedImplementedTypes.indexOf(" + otherType.identifier + ") >= 0", errormessage: "Casting nach " + otherType.identifier + " nicht möglich." }
+        return { e: `thread.cast($1,"${otherType.identifier}")` }
     }
     castTo(otherType: NType, value: any) {
         return value;
@@ -129,8 +129,7 @@ export class NGenericParameter extends NClassLike {
     }
 
     getCastExpression(otherType: NType): NExpression {
-        return { e: "$1", condition: "$1.__class.allExtendedImplementedTypes.indexOf(" + otherType.identifier + ") >= 0", 
-        errormessage: "Casting nach " + otherType.identifier + " nicht möglich." }
+        return { e: `thread.cast($1,"${otherType.identifier}")` }
     }
     castTo(otherType: NType, value: any) {
         return value;

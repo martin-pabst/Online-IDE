@@ -1,6 +1,7 @@
 import { TextPosition, TokenType, TokenTypeReadable } from "../../compiler/lexer/Token.js";
 import { Module } from "../../compiler/parser/Module.js"
 import { NThread } from "../interpreter/NThreadPool.js";
+import { NClassLike } from "../types/NClass.js";
 import { NType } from "../types/NewType.js";
 import { NSymbolTable } from "./NSymbolTable.js";
 
@@ -76,15 +77,9 @@ export class NFragment {
         this.parts = rightFragment.parts.concat(this.parts);
         let template = this.dataType.getOperatorExpression(operator, rightFragment.dataType);
         if (template != null && template.e != null) {
-
-            if (template.condition != null) {
-                let cond: string = template.condition.replace("$1", leftExpression).replace("$2", rightExpression);
-                this.parts.push("if(thread.check(" + cond + ",'" + template.errormessage + "')) return;");
-            }
-
-            this.parts.push(template.e.replace("$1", leftExpression).replace("$2", rightExpression));
+            this.addPart(template.e.replace("$1", leftExpression).replace("$2", rightExpression));
         } else {
-            this.parts.push(leftExpression + " " + TokenTypeReadable[operator] + " " + rightExpression);
+            this.addPart(leftExpression + " " + TokenTypeReadable[operator] + " " + rightExpression);
         }
 
         this.lastPartIsExpression = true;
@@ -93,7 +88,7 @@ export class NFragment {
 
     ensureLastPartIsPushedToStack() {
         if (this.lastPartIsExpression) {
-            this.parts.push(`s.push(${this.parts.pop()})`);
+            this.addPart(`s.push(${this.parts.pop()})`);
         }
     }
 
@@ -102,7 +97,7 @@ export class NFragment {
         this.ensureLastPartIsPushedToStack();
 
         // push reference to thread
-        this.parts.push("s.push(thread);");
+        this.addPart("s.push(thread);");
 
         // push parameters
         for (let pv of parameterValues) {
@@ -110,11 +105,30 @@ export class NFragment {
             this.parts = this.parts.concat(pv.parts);
         }
 
-        this.parts.push(`thread.callVirtualMethod(${parameterValues.length},${signature});`)
+        this.addPart(`thread.callVirtualMethod(${parameterValues.length},${signature});`)
 
         this.dataType = returnType;
         this.lastPartIsExpression = false;
 
+    }
+
+    checkClassCasting(typeTo: NClassLike) {
+        if(this.lastPartIsExpression){
+            this.parts[this.parts.length - 1].p = `thread.cast(${this.parts[this.parts.length - 1].p},${typeTo.identifier})`;
+        } else {
+            this.addPart(`thread.cast(s[s.length - 1],${typeTo.identifier})`);
+        }
+        this.dataType = typeTo;
+    }
+
+    applyCastExpression(expression: string, typeTo: NType) {
+        if(this.lastPartIsExpression){
+            this.parts[this.parts.length - 1].p = expression.replace("$1", this.parts[this.parts.length - 1].p);
+        } else {
+            this.addPart(expression.replace("$1", "s.pop()"));
+            this.lastPartIsExpression = true;
+        }
+        this.dataType = typeTo;
     }
 
 

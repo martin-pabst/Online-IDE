@@ -3,17 +3,18 @@ import { Token, TokenList, TokenType, TokenTypeReadable } from "src/client/compi
 import { NRuntimeObject } from "../NRuntimeObject.js";
 import { NAttributeInfo, NMethodInfo, NVariable } from "../types/NAttributeMethod.js";
 import { NClass, NClassLike, NGenericParameter, NInterface } from "../types/NClass.js";
-import { NPrimitiveTypes } from "../types/NewPrimitiveType.js";
-import { NType } from "../types/NewType.js";
+import {  } from "../types/NewPrimitiveType.js";
+import { NExpression, NType } from "../types/NewType.js";
 import { NVisibility, NVisibilityUtility } from "../types/NVisibility.js";
+import { NPrimitiveTypeManager } from "../types/PrimitiveTypeManager.js";
 import { NUnknownClasslike } from "./UnknownClasslike.js";
 
-export class LibraryCompiler {
+export class NLibraryCompiler {
 
     tokenList: TokenList;
     pos: number;
 
-    constructor(private pt: NPrimitiveTypes) {
+    constructor(private pt: NPrimitiveTypeManager) {
 
     }
 
@@ -173,7 +174,7 @@ export class LibraryCompiler {
 
     }
 
-    compileMethod(signature: string, program: any, classOrInterface: NInterface | NClass): NMethodInfo {
+    compileMethod(signature: string, functionOrNExpression: any, classOrInterface: NInterface | NClass): NMethodInfo {
         this.setTokenList(Lexer.quicklex(signature));
         let abstractAndVisibilityModifiers = this.compileAbstractAndVisibilityModifiers();
         let type = this.compileTypeFirstPass(classOrInterface);
@@ -209,6 +210,15 @@ export class LibraryCompiler {
         }
 
         this.expect(TokenType.rightBracket, true);
+
+        if(typeof functionOrNExpression == "object"){
+            let nx = <NExpression>functionOrNExpression;
+            method.expression = nx.e;
+            method.condition = nx.condition;
+            method.messageIfConditionNotFulfilled = nx.errormessage; 
+        } else {
+            let f = <()=>void> functionOrNExpression;
+        }
 
         return method;
     }

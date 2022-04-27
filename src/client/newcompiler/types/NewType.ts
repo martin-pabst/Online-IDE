@@ -4,8 +4,6 @@ import { NProgram } from "../compiler/NProgram.js";
 
 
 export type NExpression = {
-    condition?: string;
-    errormessage?: string;
     e: string; // Expression
 }
 

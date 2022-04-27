@@ -18,7 +18,7 @@ import { EmbeddedIndexedDB } from "./EmbeddedIndexedDB.js";
 import { SemicolonAngel } from "../compiler/parser/SemicolonAngel.js";
 import { TextPositionWithModule } from "../compiler/types/Types.js";
 import { HitPolygonStore } from "../runtimelibrary/graphics/PolygonStore.js";
-import { NPrimitiveTypes } from "../newcompiler/types/NewPrimitiveType.js";
+import { NPrimitiveTypeManager } from "../newcompiler/types/NewPrimitiveType.js";
 
 type JavaOnlineConfig = {
     withFileList?: boolean,
@@ -79,7 +79,7 @@ export class MainEmbedded implements MainBase {
         }
     }
 
-    getPrimitiveTypes(): NPrimitiveTypes {
+    getPrimitiveTypes(): NPrimitiveTypeManager {
         return this.primitiveTypes;
     }
 
@@ -97,7 +97,7 @@ export class MainEmbedded implements MainBase {
     interpreter: Interpreter;
     $runDiv: JQuery<HTMLElement>;
 
-    primitiveTypes: NPrimitiveTypes;
+    primitiveTypes: NPrimitiveTypeManager;
 
     debugger: Debugger;
     $debuggerDiv: JQuery<HTMLElement>;
@@ -515,7 +515,7 @@ export class MainEmbedded implements MainBase {
         this.$rightDivInner.append($rightSideContainer);
         $rightSideContainer.append($coordinates);
 
-        this.primitiveTypes = new NPrimitiveTypes();
+        this.primitiveTypes = new NPrimitiveTypeManager();
 
         this.debugger = new Debugger(this, this.$debuggerDiv, null);
 

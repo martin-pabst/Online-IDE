@@ -309,7 +309,7 @@ export class NThread {
         }
     }
 
-    cast(object: NRuntimeObject, klassOrInterface: string){
+    cast(object: NRuntimeObject, klassOrInterface: string): NRuntimeObject {
         //@ts-ignore
         if(object != null && (<NClass>object.__class).allExtendedImplementedTypes.indexOf(klassOrInterface) < 0){
             //@ts-ignore

@@ -3,6 +3,7 @@ import { TextPosition, TokenType, TokenTypeReadable } from "src/client/compiler/
 import { ASTNode, BinaryOpNode, ConstantNode, TermNode, UnaryOpNode } from "src/client/compiler/parser/AST.js";
 import { Module, ModuleStore } from "src/client/compiler/parser/Module.js";
 import { NClass, NClassLike } from "../types/NClass.js";
+import { NPrimitiveType } from "../types/NewPrimitiveType.js";
 import { NType } from "../types/NewType.js";
 import { NPrimitiveTypeManager } from "../types/PrimitiveTypeManager.js";
 import { CodeBuilder } from "./NCodeBuilder.js";
@@ -389,27 +390,36 @@ export class NCodeGenerator {
 
         if (typeFrom instanceof NClassLike && typeTo == this.pt.String) {
 
-            fragmentToCast.addVirtualMethodCall("toString()", [], this.pt.String);
+            if(typeTo == this.pt.String){
+                fragmentToCast.addVirtualMethodCall("toString()", [], this.pt.String);    
+                return true;
+            }
+
+            if(typeTo instanceof NClassLike){
+                fragmentToCast.checkClassCasting(typeTo);
+                return true;
+            }
+
+            return false;
+
+        }
+
+
+        if (typeFrom instanceof NPrimitiveType && (typeTo instanceof NPrimitiveType || typeTo == this.pt.String)) {
+            let castExpression = typeFrom.getCastExpression(typeTo);
+            if (castExpression == null) {
+                return false;
+            }
+            if(castExpression.e == null){
+                return true;
+            }
+
+            fragmentToCast.applyCastExpression(castExpression.e, typeTo);
 
             return true;
         }
 
-
-        if (typeFrom instanceof PrimitiveType && (typeTo instanceof PrimitiveType || typeTo == stringPrimitiveType)) {
-            let castInfo = typeFrom.getCastInformation(typeTo);
-            if (!castInfo.automatic) {
-                return false;
-            }
-            if (castInfo.needsStatement) {
-                this.pushStatements({
-                    type: TokenType.castValue,
-                    newType: typeTo,
-                    position: position
-                });
-            }
-        }
-
-        return true;
+        return false;
 
     }
 

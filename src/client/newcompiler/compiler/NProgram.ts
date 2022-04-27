@@ -17,7 +17,7 @@ export type NFragmentType = "constant" | "block" |
     "expression" | "jumpDestination" | "jumpStatement";
 
 export class NBlock {
-    statements: NFragment;
+    statements: NFragment[] = [];
     ensuresReturnStatement: boolean = false;
 }
 

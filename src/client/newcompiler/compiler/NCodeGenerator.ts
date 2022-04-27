@@ -95,7 +95,7 @@ export class NCodeGenerator {
 
     processStatementsInsideBlock(nodes: ASTNode[]): NBlock {
 
-        let block: NBlock = [];
+        let block = new NBlock();
         if (nodes == null || nodes.length == 0 || nodes[0] == null) return block;
 
         for (let node of nodes) {
@@ -113,7 +113,7 @@ export class NCodeGenerator {
 
             }
 
-            block.push(nextFragment);
+            block.statements.push(nextFragment);
 
         }
 
@@ -289,7 +289,7 @@ export class NCodeGenerator {
         let fragment = new NFragment("constant", type, node.position);
 
         fragment.constantValue = node.constant;
-        fragment.parts.push(constantLiteral);
+        fragment.addPart(constantLiteral);
 
         return fragment;
 
@@ -449,4 +449,7 @@ export class NCodeGenerator {
             this.pushError("Die Operation " + TokenTypeReadable[node.operator] + " ist für die Operanden der Typen " + leftType.type.identifier + " und " + rightType.type.identifier + " nicht definiert.", node.position);
         }
     }
+
+
+
 }

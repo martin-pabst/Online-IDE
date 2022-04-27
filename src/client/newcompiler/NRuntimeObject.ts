@@ -14,7 +14,7 @@ export abstract class NRuntimeObject {
 
     abstract __getSignature(): string;    // returns signature of class, e.g. "abstract class MyClass<A> extends HashMap<A, Integer> implements Comparable<A>"
     abstract __getMethods(): {[signature: string]: any };     // all methods that should be visible
-                                                              // any is of type function
+                                                              // any is of type function or NExpression
     abstract __getAttributes(): string[]; // attribute signatures, e.g. "private int count"
 
     __callMethod(methodSignature: string, parameters?: any[]): any {
@@ -71,6 +71,7 @@ class ExampleArrayListClass extends NRuntimeObject {
     constructor1(thread: NThread, count: number){
         this.__callMethod("Object()");
         this.__a[ExampleArrayListClass.__fai + 0] = count;       // set attribute value
+        return this;
     }
     
 }

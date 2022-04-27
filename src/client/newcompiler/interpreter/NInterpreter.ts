@@ -10,7 +10,7 @@ import { WorldHelper } from "../../runtimelibrary/graphics/World.js";
 import { TimerClass } from "../../runtimelibrary/Timer.js";
 import { GamepadTool } from "../../tools/GamepadTool.js";
 import { KeyboardTool } from "../../tools/KeyboardTool.js";
-import { NPrimitiveTypes } from "../types/NewPrimitiveType.js";
+import { NPrimitiveTypeManager } from "../types/NewPrimitiveType.js";
 import { NLoadController } from "./NLoadController.js";
 import { NThreadPool, NThreadPoolLstate } from "./NThreadPool.js";
 
@@ -57,7 +57,7 @@ export class NInterpreter {
 
 
 
-    constructor(public main: MainBase, public primitiveTypes: NPrimitiveTypes, public controlButtons: ProgramControlButtons, $runDiv: JQuery<HTMLElement>) {
+    constructor(public main: MainBase, public primitiveTypes: NPrimitiveTypeManager, public controlButtons: ProgramControlButtons, $runDiv: JQuery<HTMLElement>) {
 
         this.printManager = new PrintManager($runDiv, this.main);
         this.inputManager = new InputManager($runDiv, this.main);

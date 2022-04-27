@@ -2,11 +2,11 @@ import { Error, ErrorLevel, QuickFix } from "src/client/compiler/lexer/Lexer.js"
 import { TextPosition, TokenType, TokenTypeReadable } from "src/client/compiler/lexer/Token.js";
 import { ASTNode, BinaryOpNode, ConstantNode, TermNode, UnaryOpNode } from "src/client/compiler/parser/AST.js";
 import { Module, ModuleStore } from "src/client/compiler/parser/Module.js";
-import { NClass } from "../types/NClass.js";
-import { NPrimitiveTypes } from "../types/NewPrimitiveType.js";
+import { NClass, NClassLike } from "../types/NClass.js";
 import { NType } from "../types/NewType.js";
+import { NPrimitiveTypeManager } from "../types/PrimitiveTypeManager.js";
 import { CodeBuilder } from "./NCodeBuilder.js";
-import { NFragment, NProgram } from "./NProgram.js";
+import { NBlock, NFragment, NProgram } from "./NProgram.js";
 import { NSymbolTable } from "./NSymbolTable.js";
 
 export class NCodeGenerator {
@@ -29,7 +29,7 @@ export class NCodeGenerator {
     TokenType.multiplicationAssignment, TokenType.divisionAssignment, TokenType.ANDAssigment, TokenType.ORAssigment,
     TokenType.XORAssigment, TokenType.shiftLeftAssigment, TokenType.shiftRightAssigment, TokenType.shiftRightUnsignedAssigment];
 
-    constructor(private pt: NPrimitiveTypes) {
+    constructor(private pt: NPrimitiveTypeManager) {
 
     }
 
@@ -92,11 +92,10 @@ export class NCodeGenerator {
 
     }
 
-    processStatementsInsideBlock(nodes: ASTNode[]): NFragment {
+    processStatementsInsideBlock(nodes: ASTNode[]): NBlock {
 
-        if (nodes == null || nodes.length == 0 || nodes[0] == null) return null;
-
-        let fragment: NFragment = new NFragment("block", this.pt.void, nodes[0].position);
+        let block: NBlock = [];
+        if (nodes == null || nodes.length == 0 || nodes[0] == null) return block;
 
         for (let node of nodes) {
 
@@ -113,11 +112,11 @@ export class NCodeGenerator {
 
             }
 
-            fragment.addFragmentToBlock(nextFragment);
+            block.push(nextFragment);
 
         }
 
-        return fragment;
+        return block;
     }
 
     processNode(node: ASTNode, isLeftSideOfAssignment: boolean = false): NFragment {
@@ -388,16 +387,11 @@ export class NCodeGenerator {
         //     return true;
         // }
 
-        if (typeFrom instanceof NClass && typeTo == stringPrimitiveType) {
+        if (typeFrom instanceof NClassLike && typeTo == this.pt.String) {
 
-            let toStringStatement = this.getToStringStatement(typeFrom, position);
+            fragmentToCast.addVirtualMethodCall("toString()", [], this.pt.String);
 
-            if (toStringStatement != null) {
-                this.pushStatements(toStringStatement);
-                return true;
-            }
-
-            return false;
+            return true;
         }
 
 

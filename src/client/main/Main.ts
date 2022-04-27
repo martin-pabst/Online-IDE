@@ -32,7 +32,7 @@ import { WindowStateManager } from "./gui/WindowStateManager.js";
 import { TextPositionWithModule } from "../compiler/types/Types.js";
 import { checkIfMousePresent } from "../tools/HtmlTools.js";
 import { InconsistencyFixer } from "../workspace/InconsistencyFixer.js";
-import { NPrimitiveTypes } from "../newcompiler/types/NewPrimitiveType.js";
+import { NPrimitiveTypeManager } from "../newcompiler/types/NewPrimitiveType.js";
 
 export class Main implements MainBase {
 
@@ -97,7 +97,7 @@ export class Main implements MainBase {
         this.editor.editor.setPosition({column: declaration.position.column, lineNumber: declaration.position.line});
     }
 
-    getPrimitiveTypes(): NPrimitiveTypes {
+    getPrimitiveTypes(): NPrimitiveTypeManager {
         return this.primitiveTypes;
     }
 
@@ -151,7 +151,7 @@ export class Main implements MainBase {
 
     viewModeController: ViewModeController;
 
-    primitiveTypes: NPrimitiveTypes;
+    primitiveTypes: NPrimitiveTypeManager;
 
     initGUI() {
 
@@ -190,7 +190,7 @@ export class Main implements MainBase {
 
         this.debugger = new Debugger(this, jQuery('#leftpanel>.jo_debugger'), jQuery('#leftpanel>.jo_projectexplorer'));
 
-        this.primitiveTypes = new NPrimitiveTypes();
+        this.primitiveTypes = new NPrimitiveTypeManager();
         
         this.interpreter = new Interpreter(this, this.debugger,
             new ProgramControlButtons(jQuery('#controls'), jQuery('#editor')),

@@ -22,7 +22,10 @@ export class NMethodInfo {
     annotation?: string;
 
     program?: NProgram;
+
+    messageIfConditionNotFulfilled?: string;
     expression?: string;    // e.g. "$this.charAt($1)" 
+
 
     reserveStackForLocalVariables: number = 0;
 

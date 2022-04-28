@@ -126,7 +126,7 @@ export class NCodeGenerator {
 
         switch (node.type) {
             case TokenType.binaryOp:
-                return this.processBinaryOp(node);
+                return this.processBinaryNode(node);
             case TokenType.unaryOp:
                 return this.processUnaryOp(node);
             case TokenType.pushConstant:

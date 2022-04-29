@@ -102,7 +102,7 @@ export class NLibraryCompiler {
             return primitiveType;
         }
 
-        if (classContext != null) {
+        if (classContext != null && (classContext instanceof NClass || classContext instanceof NInterface)) {
             for (let genericParameter of classContext.genericParameters) {
                 if (genericParameter.identifier == identifier) {
                     return genericParameter;
@@ -144,12 +144,12 @@ export class NLibraryCompiler {
         let classOrInterface = <NClass|NInterface>this.compileClassSignature(runtimeObject);
 
         for(const [signature, program] of Object.entries(runtimeObject.__getMethods())){
-            classOrInterface.methodInfoList.push(this.compileMethod(signature, program, classOrInterface));
+            classOrInterface.addMethod(this.compileMethod(signature, program, classOrInterface));
         }
 
         for(let attributeSignature of runtimeObject.__getAttributes()){
 
-            classOrInterface.attributeInfo.push(this.compileAttribute(attributeSignature, classOrInterface));           
+            (<NClass>classOrInterface).addAttribute(this.compileAttribute(attributeSignature, classOrInterface));           
 
         }
 
@@ -214,8 +214,6 @@ export class NLibraryCompiler {
         if(typeof functionOrNExpression == "object"){
             let nx = <NExpression>functionOrNExpression;
             method.expression = nx.e;
-            method.condition = nx.condition;
-            method.messageIfConditionNotFulfilled = nx.errormessage; 
         } else {
             let f = <()=>void> functionOrNExpression;
         }
@@ -247,7 +245,7 @@ export class NLibraryCompiler {
 
         classLike.visibility = abstractAndVisibilityModifiers.visibility;
 
-        if (this.comesToken(TokenType.lower)) {
+        if (this.comesToken(TokenType.lower) && (classLike instanceof NClass || classLike instanceof NInterface)) {
             this.nextToken();
             while (this.comesToken(TokenType.identifier)) {
                 classLike.genericParameters.push(this.compileUnboundGenericParameter(classLike));
@@ -261,10 +259,10 @@ export class NLibraryCompiler {
                 let type = this.compileTypeFirstPass(classLike);
                 if (type instanceof NClassLike) {
                     if (classLike instanceof NClass) {
-                        classLike.extends = type;
+                        classLike.extends = <NClass>type;
                     }
                     if (classLike instanceof NInterface) {
-                        classLike.extends.push(type);
+                        classLike.extends.push(<NInterface>type);
                     }
                 } else {
                     console.log("LibraryCompiler.compileSystemClass: expecting class or interface, got: " + type.identifier + ".");
@@ -277,7 +275,7 @@ export class NLibraryCompiler {
                         let type1 = this.compileTypeFirstPass(classLike);
                         if (type1 instanceof NClassLike) {
                             if (classLike instanceof NClass) {
-                                classLike.implements.push(type1);
+                                classLike.implements.push(<NInterface>type1);
                             }
                         } else {
                             console.log("LibraryCompiler.compileSystemClass: expecting interface, got: " + type1.identifier + ".");
@@ -350,7 +348,7 @@ export class NLibraryCompiler {
                 case TokenType.keywordSuper:
                     let type = this.compileTypeFirstPass(classContext);
                     if (type instanceof NClassLike) {
-                        genericParameter.super = type;
+                        genericParameter.super = <NClass>type;
                     } else {
                         console.log("LibraryCompiler.compileUnboundGenericParameter: expecting class or interface, got " + type.identifier + ".");
                     }

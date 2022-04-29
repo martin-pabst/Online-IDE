@@ -818,6 +818,9 @@ export class CodeGenerator {
 
     }
 
+    /**     
+     * @returns true if casting is possible
+     */
     ensureAutomaticCasting(typeFrom: Type, typeTo: Type, position?: TextPosition, nodeFrom?: ASTNode): boolean {
 
         if (typeFrom == null || typeTo == null) return false;

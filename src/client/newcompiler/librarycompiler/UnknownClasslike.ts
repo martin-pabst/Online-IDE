@@ -5,6 +5,8 @@ import { NType, NExpression } from "../types/NewType.js";
 
 export class NUnknownClasslike extends NClassLike {
 
+    genericParameters: NClassLike[] = [];
+
     constructor(identifier: string){
         super(identifier);
     }
@@ -25,6 +27,10 @@ export class NUnknownClasslike extends NClassLike {
         throw new Error("Method not implemented.");
     }
     public debugOutput(value: any, maxLength?: number): string {
+        throw new Error("Method not implemented.");
+    }
+
+    bindGenericParameters(mapOldToNewGenericParameters: Map<NClassLike, NClassLike>): NClassLike {
         throw new Error("Method not implemented.");
     }
 

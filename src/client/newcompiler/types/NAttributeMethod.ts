@@ -23,7 +23,6 @@ export class NMethodInfo {
 
     program?: NProgram;
 
-    messageIfConditionNotFulfilled?: string;
     expression?: string;    // e.g. "$this.charAt($1)" 
 
 
@@ -74,7 +73,11 @@ export class NMethodInfo {
         return this.parameterlist.parameters[index];
     }
 
-
+    getCopy(): NMethodInfo {
+        let cp = new NMethodInfo();
+        Object.assign(cp, this);
+        return cp;
+    }
 
 }
 
@@ -114,6 +117,12 @@ export class NVariable {
     constructor(public identifier: string, public type: NType){
 
     }
+
+    getCopy(){
+        let cp = new NVariable(this.identifier, this.type);
+        Object.assign(cp, this);
+        return cp;
+    }
 }
 
 export class NAttributeInfo {
@@ -131,15 +140,27 @@ export class NAttributeInfo {
     documentation: string;
     annotation?: string;
 
-    constructor(name: string, type: NType, isStatic: boolean, visibility: NVisibility, 
+    constructor(identifier: string, type: NType, isStatic: boolean, visibility: NVisibility, 
         isFinal: boolean, documentation?: string) {
-        this.identifier = name;
+        this.identifier = identifier;
         this.type = type;
         this.isStatic = isStatic;
         this.visibility = visibility;
         this.isFinal = isFinal;
         this.usagePositions = new Map();
         this.documentation = documentation;
+    }
+
+    getCopy(): NAttributeInfo {
+
+        let ai = new NAttributeInfo(this.identifier, this.type, this.isStatic, this.visibility, this.isFinal, this.documentation);
+        ai.index = this.index;
+        ai.isTransient = this.isTransient;
+        ai.usagePositions = this.usagePositions;
+        ai.annotation = this.annotation;
+        ai.declaration = this.declaration;
+
+        return ai;
     }
 
 }

@@ -1,6 +1,5 @@
 import { Parameterlist, Variable } from "src/client/compiler/types/Types.js";
 import { TokenType } from "../../compiler/lexer/Token.js";
-import { NUnknownClasslike } from "../librarycompiler/UnknownClasslike.js";
 import { NRuntimeObject } from "../NRuntimeObject.js";
 import { NMethodInfo, NAttributeInfo, NParameterlist, NVariable } from "./NAttributeMethod.js";
 import { NExpression, NType } from "./NewType.js";
@@ -31,53 +30,51 @@ export abstract class NClassLike extends NType {
 
     abstract bindGenericParameters(mapOldToNewGenericParameters: Map<NClassLike, NClassLike>): NClassLike;
 
-    bindGenericParametersHelper(mapOldToNewGenericParameters: Map<NClassLike, NClassLike>, classLikes: NClassLike[], newList: NClassLike[]): boolean {
+    bindGenericParametersHelper(mapOldToNewGenericParameters: Map<NClassLike, NClassLike>,
+        classLikes: NClassLike[]): NClassLike[] {
         let copyNecessary: boolean = false;
+        let newList: NClassLike[] = [];
 
-        for(let gp of classLikes){
+        for (let gp of classLikes) {
 
-            if(!(gp instanceof NUnknownClasslike)){
-                let newGP = gp.bindGenericParameters(mapOldToNewGenericParameters);
-                if(newGP != gp) copyNecessary = true;
-                newList.push(newGP);
-            } else {
-                newList.push(gp);
-            }
+            let newGP = gp.bindGenericParameters(mapOldToNewGenericParameters);
+            if (newGP != gp) copyNecessary = true;
+            newList.push(newGP);
         }
 
-        return copyNecessary;
+        return newList;
     }
 
-    propagateGenericParameterTypesToMethods(oldMethodList: NMethodInfo[], newMethodList: NMethodInfo[], typeMap: Map<NClassLike, NClassLike>){
-        for(let m of oldMethodList){
+    propagateGenericParameterTypesToMethods(oldMethodList: NMethodInfo[], newMethodList: NMethodInfo[], typeMap: Map<NClassLike, NClassLike>) {
+        for (let m of oldMethodList) {
             let newMethodNecessary: boolean = false;
             let newVariableTypes: NType[] = [];
-        
-            for(let parameter of m.parameterlist.parameters){
+
+            for (let parameter of m.parameterlist.parameters) {
                 let type = parameter.type;
-                if(!(type instanceof NClassLike)){
+                if (!(type instanceof NClassLike)) {
                     newVariableTypes.push(type);
                     continue;
                 }
                 let newType = type.bindGenericParameters(typeMap);
-                if(newType != type) newMethodNecessary = true;
+                if (newType != type) newMethodNecessary = true;
                 newVariableTypes.push(newType);
             }
 
             let newReturnType = m.returnType;
-            if(newReturnType != null && (newReturnType instanceof NClassLike)){
+            if (newReturnType != null && (newReturnType instanceof NClassLike)) {
                 newReturnType = newReturnType.bindGenericParameters(typeMap);
-                if(newReturnType != m.returnType) newMethodNecessary = true;
+                if (newReturnType != m.returnType) newMethodNecessary = true;
             }
 
-            if(newMethodNecessary){
+            if (newMethodNecessary) {
                 let newMethod = m.getCopy();
                 newMethod.returnType = newReturnType;
                 let parameterList: NVariable[] = [];
-                for(let i = 0; i < m.parameterlist.parameters.length; i++){
+                for (let i = 0; i < m.parameterlist.parameters.length; i++) {
                     let oldParameter = m.parameterlist.parameters[i];
                     let newType = newVariableTypes[i];
-                    if(oldParameter.type == newType){
+                    if (oldParameter.type == newType) {
                         parameterList.push(oldParameter);
                     } else {
                         let newVariable = oldParameter.getCopy();
@@ -93,13 +90,13 @@ export abstract class NClassLike extends NType {
         }
 
     }
-    
+
 }
 
 export class NClass extends NClassLike {
 
-    extends: NClass | NUnknownClasslike;
-    implements: (NInterface | NUnknownClasslike)[] = [];
+    extends: NClass;
+    implements: (NInterface)[] = [];
 
     genericParameters: NClassLike[] = [];
     isParameterizedTypeOf: NClass = null;
@@ -134,7 +131,33 @@ export class NClass extends NClassLike {
     }
 
     canCastTo(otherType: NType): boolean {
-        // TODO        
+        if(otherType.identifier == "String") return true;
+        if(otherType instanceof NClass){
+            // TODO: think about generics...
+            return this.isSubclassOf(otherType);
+        }
+        if(otherType instanceof NInterface){
+            return this.implementsInterface(otherType);
+        }
+        return false;
+    }
+
+    isSubclassOf(otherType: NClass): boolean {
+        let superClass = this.extends;
+        while (superClass.identifier != "Object") {
+            if (superClass == otherType) return true;
+            superClass = superClass.extends;
+        }
+        return false;
+    }
+
+    implementsInterface(ifa: NInterface): boolean {
+
+        for (let i of this.implements) {
+            if (i.extendsOrIs(ifa)) return true;
+        }
+
+        return false;
     }
 
     castTo(otherType: NType, value: any) {
@@ -161,32 +184,15 @@ export class NClass extends NClassLike {
         return "[" + this.identifier + "]";
     }
 
-    getAllMethods(): NMethodInfo[]{
+    getAllMethods(): NMethodInfo[] {
         // TODO
         return null;
     }
 
     bindGenericParameters(mapOldToNewGenericParameters: Map<NClassLike, NClassLike>): NClassLike {
-    
-        let copyClassNecessary: boolean = false;
 
-        let newGenericParameterTypes: NClassLike[] = [];
-        copyClassNecessary = copyClassNecessary || this.bindGenericParametersHelper(mapOldToNewGenericParameters, this.genericParameters, newGenericParameterTypes);
 
-        let newExtends = this.extends;
-        if(newExtends != null && (newExtends instanceof NClass)){
-            newExtends = <NClass>newExtends.bindGenericParameters(mapOldToNewGenericParameters);
-            if(newExtends != this.extends){
-                copyClassNecessary = true;
-            }
-        }
-
-        let newImplements: NInterface[] = [];
-        copyClassNecessary = copyClassNecessary || this.bindGenericParametersHelper(mapOldToNewGenericParameters, this.implements, newImplements);
-
-        if(!copyClassNecessary){
-            return this;
-        }
+        let newGenericParameterTypes = this.bindGenericParametersHelper(mapOldToNewGenericParameters, this.genericParameters);
 
         let parameterizedType = new NClass(this.identifier);
         parameterizedType.isAbstract = this.isAbstract;
@@ -197,8 +203,6 @@ export class NClass extends NClassLike {
         parameterizedType.initialAttributeValues = this.initialAttributeValues;
 
         parameterizedType.genericParameters = newGenericParameterTypes;
-        parameterizedType.extends = newExtends;
-        parameterizedType.implements = newImplements;
 
         parameterizedType.isParameterizedTypeOf = this;
         parameterizedType.genericParametersPropagated = false;
@@ -207,17 +211,17 @@ export class NClass extends NClassLike {
 
     }
 
-    propagateGenericParameterTypesToAttributesAndMethods() {
-        
+    fullyBindGenericParameters() {
+
         let typeMap: Map<NClassLike, NClassLike> = new Map();
-        for(let i = 0; i < this.genericParameters.length; i++){
+        for (let i = 0; i < this.genericParameters.length; i++) {
             typeMap.set(this.isParameterizedTypeOf.genericParameters[i], this.genericParameters[i]);
         }
 
-        for(let a of this.isParameterizedTypeOf.attributeInfoList){
-            if(a.type instanceof NClassLike){
+        for (let a of this.isParameterizedTypeOf.attributeInfoList) {
+            if (a.type instanceof NClassLike) {
                 let newType = a.type.bindGenericParameters(typeMap);
-                if(newType != a.type){
+                if (newType != a.type) {
                     let newAtt = a.getCopy();
                     newAtt.type = newType;
                     this.attributeInfoList.push(newAtt);
@@ -229,25 +233,33 @@ export class NClass extends NClassLike {
 
         this.methodInfoList = [];
         this.propagateGenericParameterTypesToMethods(this.isParameterizedTypeOf.methodInfoList, this.methodInfoList, typeMap);
+
+        let newExtends = this.extends;
+        if (newExtends != null && (newExtends instanceof NClass)) {
+            newExtends = <NClass>newExtends.bindGenericParameters(typeMap);
+        }
+
+        this.implements = <NInterface[]>this.bindGenericParametersHelper(typeMap, this.implements);
+
         this.genericParametersPropagated = true;
     }
 
 
 
 
-    toString(){
+    toString() {
         let s: string = this.identifier;
-        if(this.genericParameters.length > 0){
-            s += "<" + this.genericParameters.map((gp) => {return gp.toString()}).join(", ") + ">";
+        if (this.genericParameters.length > 0) {
+            s += "<" + this.genericParameters.map((gp) => { return gp.toString() }).join(", ") + ">";
         }
         return s;
     }
 
-    addMethod(mi: NMethodInfo){
+    addMethod(mi: NMethodInfo) {
         this.methodInfoList.push(mi);
     }
 
-    addAttribute(ai: NAttributeInfo){
+    addAttribute(ai: NAttributeInfo) {
         this.attributeInfoList.push(ai);
     }
 
@@ -256,14 +268,14 @@ export class NClass extends NClassLike {
 
 export class NInterface extends NClassLike {
 
-    extends: (NInterface|NUnknownClasslike)[];
+    extendedInterfaces: NInterface[];
 
     genericParameters: NClassLike[] = [];
     isParameterizedTypeOf: NInterface = null;
 
     methodInfoList: NMethodInfo[] = [];
     genericParametersPropagated: boolean = true;
-    
+
 
     getCastExpression(otherType: NType): NExpression {
         return { e: `thread.cast($1,"${otherType.identifier}")` }
@@ -271,6 +283,16 @@ export class NInterface extends NClassLike {
     castTo(otherType: NType, value: any) {
         return value;
     }
+
+    canCastTo(otherType: NType): boolean {
+        if(otherType.identifier == "String") return true;
+        if(otherType instanceof NInterface){
+            return this.extendsOrIs(otherType);
+        }
+        return false;
+    }
+
+
     getOperatorExpression(operator: TokenType, otherType?: NType): NExpression {
         if (operator == TokenType.plus && otherType.identifier == "String") {
             // TODO: Aufruf von toString richtig compilieren
@@ -285,42 +307,39 @@ export class NInterface extends NClassLike {
         return null;
     }
 
+    extendsOrIs(ifa: NInterface): boolean {
+        let otherInterface: NInterface = ifa;
+        if (this == ifa) return true;
+        for (let ifn of ifa.extendedInterfaces) {
+            if (this.extendsOrIs(ifn)) return true;
+        }
+        return false;
+    }
+
     public debugOutput(value: any, maxLength?: number): string {
         // Todo: Aufruf der toString-Methode
         return "[" + this.identifier + "]";
     }
 
-    getAllMethods(): NMethodInfo[]{
+    getAllMethods(): NMethodInfo[] {
         // TODO
         return null;
     }
 
-    toString(){
+    toString() {
         let s: string = this.identifier;
-        if(this.genericParameters.length > 0){
-            s += "<" + this.genericParameters.map((gp) => {return gp.toString()}).join(", ") + ">";
+        if (this.genericParameters.length > 0) {
+            s += "<" + this.genericParameters.map((gp) => { return gp.toString() }).join(", ") + ">";
         }
         return s;
     }
 
     bindGenericParameters(mapOldToNewGenericParameters: Map<NClassLike, NClassLike>): NClassLike {
-    
+
         let copyInterfaceNecessary: boolean = false;
 
-        let newGenericParameterTypes: NClassLike[] = [];
-        copyInterfaceNecessary = copyInterfaceNecessary || this.bindGenericParametersHelper(mapOldToNewGenericParameters, this.genericParameters, newGenericParameterTypes);
-
-        let newExtends: NInterface[] = [];
-        copyInterfaceNecessary = copyInterfaceNecessary || this.bindGenericParametersHelper(mapOldToNewGenericParameters, this.extends, newExtends);
-
-        if(!copyInterfaceNecessary){
-            return this;
-        }
-
         let parameterizedType = new NInterface(this.identifier);
-
-        parameterizedType.genericParameters = newGenericParameterTypes;
-        parameterizedType.extends = newExtends;
+        parameterizedType.genericParameters = this.bindGenericParametersHelper(mapOldToNewGenericParameters, this.genericParameters);
 
         parameterizedType.isParameterizedTypeOf = this;
         parameterizedType.genericParametersPropagated = false;
@@ -330,9 +349,9 @@ export class NInterface extends NClassLike {
     }
 
     propagateGenericParameterTypesToAttributesAndMethods() {
-        
+
         let typeMap: Map<NClassLike, NClassLike> = new Map();
-        for(let i = 0; i < this.genericParameters.length; i++){
+        for (let i = 0; i < this.genericParameters.length; i++) {
             typeMap.set(this.isParameterizedTypeOf.genericParameters[i], this.genericParameters[i]);
         }
 
@@ -340,9 +359,11 @@ export class NInterface extends NClassLike {
         this.propagateGenericParameterTypesToMethods(this.isParameterizedTypeOf.methodInfoList, this.methodInfoList, typeMap);
         this.genericParametersPropagated = true;
 
+        this.extendedInterfaces = <NInterface[]>this.bindGenericParametersHelper(typeMap, this.extendedInterfaces);
+
     }
 
-    addMethod(mi: NMethodInfo){
+    addMethod(mi: NMethodInfo) {
         this.methodInfoList.push(mi);
     }
 
@@ -351,38 +372,27 @@ export class NInterface extends NClassLike {
 export class NGenericParameter extends NClassLike {
 
     extends: (NClassLike | NInterface)[] = [];
-    super: NClass | NUnknownClasslike = null;
+    super: NClass = null;
 
-    constructor(identifier: string, type?: (NClassLike | NInterface), public isBound: boolean = false){
+    constructor(identifier: string, public isBound: boolean = false) {
         super(identifier);
-        if(type != null){
-            this.extends.push(type);
-        }
     }
 
     bindGenericParameters(mapOldToNewGenericParameters: Map<NClassLike, NClassLike>): NClassLike {
-    
+
         let copyNecessary: boolean = false;
 
         let newGP = <NGenericParameter>mapOldToNewGenericParameters.get(this);
-        if(newGP != null) return newGP;
-
-        let newExtends: NClassLike[] = [];
-        copyNecessary = copyNecessary || this.bindGenericParametersHelper(mapOldToNewGenericParameters, this.extends, newExtends);
-
-        let newSuper = this.super;
-        if(newSuper != null && !(newSuper instanceof NUnknownClasslike)){
-            newSuper = <NClass>newSuper.bindGenericParameters(mapOldToNewGenericParameters);
-            if(newSuper != this.super) copyNecessary = true;
-        }
-
-        if(!copyNecessary){
-            return this;
-        }
+        if (newGP != null) return newGP;
 
         let parameterizedType = new NGenericParameter(this.identifier);
+        parameterizedType.extends = this.bindGenericParametersHelper(mapOldToNewGenericParameters, this.extends);
 
-        parameterizedType.extends = newExtends;
+        let newSuper = this.super;
+        if (newSuper != null) {
+            newSuper = <NClass>newSuper.bindGenericParameters(mapOldToNewGenericParameters);
+        }
+
         parameterizedType.super = newSuper;
 
         return parameterizedType;
@@ -391,11 +401,11 @@ export class NGenericParameter extends NClassLike {
 
 
     toString(): string {
-        let s = this.identifier? this.identifier + " " : "";
-        if(this.extends.length > 0){
-            s += " extends " + this.extends.map((c)=>{c.toString()}).join(" & ") + " ";
+        let s = this.identifier ? this.identifier + " " : "";
+        if (this.extends.length > 0) {
+            s += " extends " + this.extends.map((c) => { c.toString() }).join(" & ") + " ";
         }
-        if(this.super != null){
+        if (this.super != null) {
             s += " super " + this.super.toString();
         }
         return s;
@@ -426,7 +436,7 @@ export class NGenericParameter extends NClassLike {
         return "[" + this.identifier + "]";
     }
 
-    getAllMethods(): NMethodInfo[]{
+    getAllMethods(): NMethodInfo[] {
         // TODO
         return null;
     }

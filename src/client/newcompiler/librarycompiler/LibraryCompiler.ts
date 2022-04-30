@@ -3,20 +3,125 @@ import { Token, TokenList, TokenType, TokenTypeReadable } from "src/client/compi
 import { NRuntimeObject } from "../NRuntimeObject.js";
 import { NAttributeInfo, NMethodInfo, NVariable } from "../types/NAttributeMethod.js";
 import { NClass, NClassLike, NGenericParameter, NInterface } from "../types/NClass.js";
-import {  } from "../types/NewPrimitiveType.js";
+import { } from "../types/NewPrimitiveType.js";
 import { NExpression, NType } from "../types/NewType.js";
 import { NVisibility, NVisibilityUtility } from "../types/NVisibility.js";
 import { NPrimitiveTypeManager } from "../types/PrimitiveTypeManager.js";
-import { NUnknownClasslike } from "./UnknownClasslike.js";
+
+type ClassInfo = {
+    class: NClassLike,
+    declaration: Token[],
+    runtimeObject: NRuntimeObject
+}
 
 export class NLibraryCompiler {
 
     tokenList: TokenList;
     pos: number;
+    identifierToClassInfoMap: { [identifier: string]: ClassInfo };
+    classLikes: ClassInfo[];
 
     constructor(private pt: NPrimitiveTypeManager) {
 
     }
+
+    compileAllSystemClasses(systemClasses: NRuntimeObject[]): NClassLike[] {
+
+        this.identifierToClassInfoMap = {};
+        this.classLikes = [];
+
+        // 1st pass: instantiate NClass, NInterface or NEnum for all classlikes, parse visibility modifiers,
+        // abstract and identifiers of all unbound generic parameters (without extends... super...)
+        for (let sc of systemClasses) {
+            this.compileClassSignatureFirstPass(sc);
+        }
+
+        // 2nd pass: parse extend..., super... of all unbound generic parameters, parse extends... and implements of class/interface
+        for(let ci of this.classLikes){
+            this.compileClassSignatureSecondPass(ci);
+        }
+
+        // 3rd pass: parse methods and attributes
+        for(let classInfo of this.classLikes){
+            let classOrInterface = <NClass|NInterface>classInfo.class;
+            
+            for (const [signature, program] of Object.entries(classInfo.runtimeObject.__getMethods())) {
+                classOrInterface.addMethod(this.compileMethod(signature, program, classOrInterface));
+            }
+    
+            for (let attributeSignature of classInfo.runtimeObject.__getAttributes()) {    
+                (<NClass>classOrInterface).addAttribute(this.compileAttribute(attributeSignature, classOrInterface));
+
+            }
+    
+        }
+
+        return this.classLikes.map((ci) => ci.class);
+    }
+
+    compileClassSignatureFirstPass(sc: NRuntimeObject) {
+
+        let declaration = Lexer.quicklex(sc.__getSignature());
+        this.setTokenList(declaration);
+        let abstractAndVisibilityModifiers = this.compileAbstractAndVisibilityModifiers();
+        let classInterfaceEnumKeyword = this.nextToken();
+        let identifier = <string>(this.nextToken().value);
+        let classLike: NClass | NInterface = null;
+
+        switch (classInterfaceEnumKeyword.tt) {
+            case TokenType.keywordClass:
+                classLike = new NClass(identifier);
+                break;
+            case TokenType.keywordInterface:
+                classLike = new NInterface(identifier);
+                break;
+        }
+
+        if (classLike == null) return;
+
+        classLike.visibility = abstractAndVisibilityModifiers.visibility;
+
+        let ci: ClassInfo = {
+            class: classLike,
+            declaration: declaration,
+            runtimeObject: sc
+        }
+        this.identifierToClassInfoMap[identifier] = ci;
+        this.classLikes.push(ci);
+
+        /**
+         * Generic Parameters could be recursive, so we need to instantiate empty ones. 
+         * Think of:
+         * class A<T extends B<Integer>> 
+         * class B<T extends A<Integer>>
+         */
+        let positionBeforeGenerics = this.pos;
+        
+        let bracketLevel: number = 0;
+        
+        if (this.comesToken(TokenType.lower) && (classLike instanceof NClass || classLike instanceof NInterface)) {
+            bracketLevel = 1;
+            this.nextToken();
+            while (this.comesToken(TokenType.identifier) && bracketLevel == 1 ) {
+                classLike.genericParameters.push(new NGenericParameter(<string>this.nextToken().value));
+                while(!this.isEndOfTokenlist()){
+                    let tt = this.nextToken().tt;
+                    if(tt == TokenType.lower){
+                        bracketLevel++;
+                    } else if(tt == TokenType.greater){
+                        bracketLevel--;
+                        if(bracketLevel == 0) break;
+                    } else if(tt == TokenType.comma){
+                        break;
+                    }
+                }
+            }
+        }
+
+        declaration = declaration.slice(positionBeforeGenerics);
+
+    }
+
 
     setTokenList(tokenList: TokenList) {
         this.tokenList = tokenList.filter(t => {
@@ -58,7 +163,7 @@ export class NLibraryCompiler {
                 return true;
             }
         }
-        console.log("Expected one of: " + tt.map(t => {return TokenTypeReadable[t]}).join(", ") + "; found: " + this.foundTokenAsString());
+        console.log("Expected one of: " + tt.map(t => { return TokenTypeReadable[t] }).join(", ") + "; found: " + this.foundTokenAsString());
         return false;
     }
 
@@ -110,52 +215,37 @@ export class NLibraryCompiler {
             }
         }
 
-        let type = new NUnknownClasslike(identifier);
+        let type = <NClass | NInterface>this.identifierToClassInfoMap[identifier].class;
+
+        if (type == null) {
+            console.log("Error: LibraryCompiler.compileTypeFirstPass -> type " + identifier + " not found.");
+            return this.pt.Object;
+        }
 
         if (this.comesToken(TokenType.lower, true)) {
+            let genericParameters: NClassLike[] = [];
             while (this.comesToken(TokenType.identifier)) {
 
-                type.genericParameters.push(this.compileBoundGenericParameter(classContext));
+                genericParameters.push(<NClassLike>this.compileTypeFirstPass(classContext));
 
                 this.comesToken(TokenType.comma, true);
             }
             if (!this.comesToken(TokenType.greater)) {
                 console.log("LibraryCompiler.compileTypeFirstPass -> expecting >");
             }
+
+                let mapOldToNewGenericParameters: Map<NClassLike, NClassLike> = new Map();
+                for(let i = 0; i < genericParameters.length; i++){
+                    mapOldToNewGenericParameters.set(type.genericParameters[i], genericParameters[i]);
+                }
+        
+            type = <NClass | NInterface>type.bindGenericParameters(mapOldToNewGenericParameters);
         }
 
         return type;
 
     }
 
-    compileBoundGenericParameter(classContext: NClassLike): NGenericParameter {
-        let type1 = this.compileTypeFirstPass(classContext);
-        if ((type1 instanceof NClassLike) || (type1 instanceof NInterface)) {
-            let genericParameter = new NGenericParameter("", type1, true);
-            return genericParameter;
-        } else {
-            console.log("LibraryCompiler.compileTypeFirstPass -> expecting identifier, got '" + type1.identifier + "'.");
-            return new NGenericParameter("", null, true);
-        }
-    }
-
-    compileSystemClass(runtimeObject: NRuntimeObject):NClassLike {
-
-        let classOrInterface = <NClass|NInterface>this.compileClassSignature(runtimeObject);
-
-        for(const [signature, program] of Object.entries(runtimeObject.__getMethods())){
-            classOrInterface.addMethod(this.compileMethod(signature, program, classOrInterface));
-        }
-
-        for(let attributeSignature of runtimeObject.__getAttributes()){
-
-            (<NClass>classOrInterface).addAttribute(this.compileAttribute(attributeSignature, classOrInterface));           
-
-        }
-
-        return classOrInterface;
-
-    }
 
     // TODO 24.04.2022: Static class...
     compileAttribute(attributeSignature: string, classOrInterface: NInterface | NClass): NAttributeInfo {
@@ -163,13 +253,13 @@ export class NLibraryCompiler {
         let modifiers = this.compileAbstractAndVisibilityModifiers();
         let type = this.compileTypeFirstPass(classOrInterface);
         let identifier: string = "";
-        if(!this.comesToken(TokenType.identifier)){
+        if (!this.comesToken(TokenType.identifier)) {
             console.log("LibraryCompiler.compileMethod: Identifier expected in signature '" + attributeSignature + "', found: " + this.foundTokenAsString() + ".");
         } else {
             identifier = <string>this.nextToken().value;
         }
         let attribute = new NAttributeInfo(identifier, type, modifiers.static, modifiers.visibility, modifiers.isFinal);
-        
+
         return attribute;
 
     }
@@ -179,7 +269,7 @@ export class NLibraryCompiler {
         let abstractAndVisibilityModifiers = this.compileAbstractAndVisibilityModifiers();
         let type = this.compileTypeFirstPass(classOrInterface);
         let identifier: string = "";
-        if(!this.comesToken(TokenType.identifier)){
+        if (!this.comesToken(TokenType.identifier)) {
             console.log("LibraryCompiler.compileMethod: Identifier expected in signature '" + signature + "', found: " + this.foundTokenAsString() + ".");
         } else {
             identifier = <string>this.nextToken().value;
@@ -195,11 +285,11 @@ export class NLibraryCompiler {
         this.expect(TokenType.leftBracket, true);
 
         let numberOfParameters: number = 0;
-        while(this.comesToken(TokenType.identifier)){
+        while (this.comesToken(TokenType.identifier)) {
 
             let type = this.compileTypeFirstPass(classOrInterface);
             let parameterIdentifier = "";
-            if(this.expect(TokenType.identifier)){
+            if (this.expect(TokenType.identifier)) {
                 parameterIdentifier = <string>this.nextToken().value;
             }
             let parameter = new NVariable(identifier, type);
@@ -211,44 +301,31 @@ export class NLibraryCompiler {
 
         this.expect(TokenType.rightBracket, true);
 
-        if(typeof functionOrNExpression == "object"){
+        if (typeof functionOrNExpression == "object") {
             let nx = <NExpression>functionOrNExpression;
             method.expression = nx.e;
         } else {
-            let f = <()=>void> functionOrNExpression;
+            let f = <() => void>functionOrNExpression;
         }
 
         return method;
     }
 
-    private compileClassSignature(runtimeObject: NRuntimeObject) {
-        this.setTokenList(Lexer.quicklex(runtimeObject.__getSignature()));
+    private compileClassSignatureSecondPass(classInfo: ClassInfo) {
 
-        let abstractAndVisibilityModifiers = this.compileAbstractAndVisibilityModifiers();
-
-        let tt = this.nextToken().tt;
-        let identifier: string = <string>this.nextToken().value;
-        let classLike: NClassLike;
-        switch (tt) {
-            case TokenType.keywordClass:
-                classLike = new NClass(identifier);
-                (<NClass>classLike).isAbstract = abstractAndVisibilityModifiers.abstract;
-                break;
-            case TokenType.keywordInterface:
-                classLike = new NInterface(identifier);
-                break;
-            // TODO
-            // case TokenType.keywordEnum:
-            //     classLike = new NEnum(identifier);
-            // break;           
-        }
-
-        classLike.visibility = abstractAndVisibilityModifiers.visibility;
+        this.setTokenList(classInfo.declaration);
+        let classLike = classInfo.class;
+        /**
+         * First pass parsed tokens up to generic parameter definition and instantiated empty templates for them.
+         * Now we revisit generic parameters and parse extends... and super... for them.
+         */
 
         if (this.comesToken(TokenType.lower) && (classLike instanceof NClass || classLike instanceof NInterface)) {
             this.nextToken();
+            let gpIndex: number = 0;
             while (this.comesToken(TokenType.identifier)) {
-                classLike.genericParameters.push(this.compileUnboundGenericParameter(classLike));
+                let genericParameter = <NGenericParameter>classLike.genericParameters[gpIndex];
+                this.compileUnboundGenericParameter(classLike, genericParameter);
                 this.comesToken(TokenType.comma, true);
             }
             this.comesToken(TokenType.greater, true);
@@ -262,7 +339,7 @@ export class NLibraryCompiler {
                         classLike.extends = <NClass>type;
                     }
                     if (classLike instanceof NInterface) {
-                        classLike.extends.push(<NInterface>type);
+                        classLike.extendedInterfaces.push(<NInterface>type);
                     }
                 } else {
                     console.log("LibraryCompiler.compileSystemClass: expecting class or interface, got: " + type.identifier + ".");
@@ -288,7 +365,7 @@ export class NLibraryCompiler {
         return classLike;
     }
 
-    private compileAbstractAndVisibilityModifiers():{abstract: boolean, visibility: NVisibility, static: boolean, isFinal: boolean} {
+    private compileAbstractAndVisibilityModifiers(): { abstract: boolean, visibility: NVisibility, static: boolean, isFinal: boolean } {
         let visibility: NVisibility = NVisibility.public;
         let isAbstract = false;
         let isStatic = false;
@@ -322,14 +399,13 @@ export class NLibraryCompiler {
             }
         }
 
-        return {abstract: isAbstract, visibility: visibility, static: isStatic, isFinal: isFinal}
+        return { abstract: isAbstract, visibility: visibility, static: isStatic, isFinal: isFinal }
     }
 
-    compileUnboundGenericParameter(classContext: NClassLike): NGenericParameter {
+    compileUnboundGenericParameter(classContext: NClassLike, genericParameter: NGenericParameter) {
 
         let identifier = <string>this.nextToken().value;
-
-        let genericParameter = new NGenericParameter(identifier);
+        genericParameter.identifier = identifier;
 
         while (this.comesToken([TokenType.keywordExtends, TokenType.keywordSuper], false)) {
 

@@ -1,10 +1,10 @@
 import { TokenType } from "src/client/compiler/lexer/Token.js";
 import { NRuntimeObject } from "../NRuntimeObject.js";
-import { NMethodInfo, NParameterlist, NVariable } from "./NAttributeMethod.js";
-import { NClass } from "./NClass.js";
-import { NPrimitiveType } from "./NewPrimitiveType.js";
-import { NExpression, NType } from "./NewType.js";
-import { NPrimitiveTypeManager } from "./PrimitiveTypeManager.js";
+import { NMethodInfo, NParameterlist, NVariable } from "../types/NAttributeMethod.js";
+import { NClass } from "../types/NClass.js";
+import { NPrimitiveType } from "../types/NewPrimitiveType.js";
+import { NExpression, NType } from "../types/NewType.js";
+import { NPrimitiveTypeManager } from "../types/PrimitiveTypeManager.js";
 
 type MethodShorthand = {
     id: string,
@@ -18,6 +18,8 @@ export class NStringType extends NClass {
 
     constructor(pt: NPrimitiveTypeManager){
         super("String");
+        
+        this.extends = pt.Object;
 
         let methodShorthands: MethodShorthand[] = [
             {id: "length", parameters: [], returnType: pt.int, exp: "$1.length"},
@@ -34,7 +36,7 @@ export class NStringType extends NClass {
                 return new NVariable(p.name, p.type);
             }))
 
-            this.methodInfoList.push(method);
+            this.addMethod(method);
         }
 
     }

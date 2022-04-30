@@ -30,22 +30,45 @@ class NThrowable extends NRuntimeObject {
     
 }
 
-class Exception extends ExampleArrayListClass {
+class NException extends NThrowable {
     
     __getSignature(): string {
-        return "class MyList<A extends Integer> extends ArrayList<A>";
+        return "class Exception extends Throwable";
     }
     __getMethods(): { [signature: string]: any; } {
-        return {
-            "public MyList()": this.constructor2
-        }
+        return {}
     }
     __getAttributes(): string[] {
-        return ["public int count"];
-    }
-
-    constructor2(){
-        this.__callMethod("ArrayList()", [10]);
+        return [];
     }
     
 }
+
+class NArithmeticException extends NException {
+    
+    __getSignature(): string {
+        return "class ArithmeticException extends Exception";
+    }
+    __getMethods(): { [signature: string]: any; } {
+        return {}
+    }
+    __getAttributes(): string[] {
+        return [];
+    }
+    
+}
+
+class NClassCastException extends NException {
+    
+    __getSignature(): string {
+        return "class ClassCastException extends Exception";
+    }
+    __getMethods(): { [signature: string]: any; } {
+        return {}
+    }
+    __getAttributes(): string[] {
+        return [];
+    }
+    
+}
+

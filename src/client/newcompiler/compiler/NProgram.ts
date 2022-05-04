@@ -159,7 +159,7 @@ export class NProgram {
     /**
      * If program is a javascript function:
      */
-    invoke: () => void; // with arbitrary signature...
+    invoke: any; // function with arbitrary signature...
 
     // only at compile time:
     fragments: NFragment[] = [];

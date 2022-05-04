@@ -6,7 +6,7 @@ import { NClass, NClassLike, NGenericParameter, NInterface } from "../types/NCla
 import { } from "../types/NewPrimitiveType.js";
 import { NExpression, NType } from "../types/NewType.js";
 import { NVisibility, NVisibilityUtility } from "../types/NVisibility.js";
-import { NPrimitiveTypeManager } from "../types/PrimitiveTypeManager.js";
+import { NPrimitiveTypeManager } from "../types/NPrimitiveTypeManager.js";
 
 type ClassInfo = {
     class: NClassLike,
@@ -54,6 +54,10 @@ export class NLibraryCompiler {
 
             }
     
+            if(classOrInterface instanceof NClass){
+                classOrInterface.runtimeObjectPrototype = classInfo.runtimeObject;
+                classOrInterface.setupVirtualMethodTable();
+            }
         }
 
         return this.classLikes.map((ci) => ci.class);
@@ -307,6 +311,8 @@ export class NLibraryCompiler {
         } else {
             let f = <() => void>functionOrNExpression;
         }
+
+        method.setupSignature();
 
         return method;
     }

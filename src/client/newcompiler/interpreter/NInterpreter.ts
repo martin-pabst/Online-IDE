@@ -10,7 +10,7 @@ import { WorldHelper } from "../../runtimelibrary/graphics/World.js";
 import { TimerClass } from "../../runtimelibrary/Timer.js";
 import { GamepadTool } from "../../tools/GamepadTool.js";
 import { KeyboardTool } from "../../tools/KeyboardTool.js";
-import { NPrimitiveTypeManager } from "../types/NewPrimitiveType.js";
+import { NPrimitiveTypeManager } from "../types/NPrimitiveTypeManager.js";
 import { NLoadController } from "./NLoadController.js";
 import { NThreadPool, NThreadPoolLstate } from "./NThreadPool.js";
 

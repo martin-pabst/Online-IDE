@@ -1,7 +1,7 @@
 import { NThread } from "../interpreter/NThreadPool.js";
 import { NRuntimeObject } from "../NRuntimeObject.js";
 
-class NThrowable extends NRuntimeObject {
+export class NThrowable extends NRuntimeObject {
 
     // Online-IDE will set __class and __fai
     static __class: any;    // class-Object
@@ -30,7 +30,7 @@ class NThrowable extends NRuntimeObject {
     
 }
 
-class NException extends NThrowable {
+export class NException extends NThrowable {
     
     __getSignature(): string {
         return "class Exception extends Throwable";
@@ -44,7 +44,7 @@ class NException extends NThrowable {
     
 }
 
-class NArithmeticException extends NException {
+export class NArithmeticException extends NException {
     
     __getSignature(): string {
         return "class ArithmeticException extends Exception";
@@ -58,7 +58,7 @@ class NArithmeticException extends NException {
     
 }
 
-class NClassCastException extends NException {
+export class NClassCastException extends NException {
     
     __getSignature(): string {
         return "class ClassCastException extends Exception";

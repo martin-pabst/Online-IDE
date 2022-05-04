@@ -1,6 +1,6 @@
 import { TextPosition } from "src/client/compiler/lexer/Token.js";
+import { NMethodInfo, NVariable } from "../types/NAttributeMethod.js";
 import { NClass } from "../types/NClass.js";
-import { NMethodInfo, NVariable } from "../types/NewType.js";
 
 export class NSymbolTable {
     parent: NSymbolTable; // SymbolTable of parent scope

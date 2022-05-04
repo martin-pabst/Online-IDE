@@ -1,6 +1,7 @@
 import { Parameterlist, Variable } from "src/client/compiler/types/Types.js";
 import { TokenType } from "../../compiler/lexer/Token.js";
-import { NRuntimeObject } from "../NRuntimeObject.js";
+import { NProgram } from "../compiler/NProgram.js";
+import { NRuntimeObject, NStaticClassObject } from "../NRuntimeObject.js";
 import { NMethodInfo, NAttributeInfo, NParameterlist, NVariable } from "./NAttributeMethod.js";
 import { NExpression, NType } from "./NewType.js";
 import { NVisibility } from "./NVisibility.js";
@@ -121,10 +122,19 @@ export class NClass extends NClassLike {
 
     staticMethodInfoList: NMethodInfo[] = [];
     staticAttributeInfoList: NAttributeInfo[] = [];
+    initialStaticValues: any[] = [];
 
     runtimeObjectPrototype: NRuntimeObject;              // contains all methods and reference to class object; contains NOT __a 
     runtimeObjectPrototypeIsClass: boolean = false;     // true for system classes
     initialAttributeValues: any[];                      // used only vor non-system classes
+
+    getStaticClassObject(): NStaticClassObject{
+        let sco = new NStaticClassObject(this, this.initialStaticValues);
+        for(let m of this.staticMethodInfoList){
+            sco[m.signature] = m.program;
+        }
+        return sco;
+    }
 
     getCastExpression(otherType: NType): NExpression {
         return { e: `thread.cast($1,"${otherType.identifier}")` }
@@ -256,11 +266,40 @@ export class NClass extends NClassLike {
     }
 
     addMethod(mi: NMethodInfo) {
-        this.methodInfoList.push(mi);
+        if(mi.isStatic){
+            this.staticMethodInfoList.push(mi);
+        } else {
+            this.methodInfoList.push(mi);
+        }
+    }
+
+    addJavascriptMethod(identifier: string, parameters: NVariable[], returnType: NType, isStatic: boolean, invoke: any): NMethodInfo{
+        let mi = new NMethodInfo();
+        mi.identifier = identifier;
+        mi.parameterlist = new NParameterlist(parameters);
+        mi.returnType = returnType;
+        mi.isStatic = isStatic;
+        mi.program = new NProgram(null, null, this.identifier + "." + identifier);
+        mi.program.invoke = invoke;
+        mi.setupSignature();
+        this.addMethod(mi);
+        return mi;
     }
 
     addAttribute(ai: NAttributeInfo) {
         this.attributeInfoList.push(ai);
+    }
+
+    addStaticAttribute(ai: NAttributeInfo, initialValue: any){
+        ai.isStatic = true;
+        this.staticAttributeInfoList.push(ai);
+        this.initialStaticValues.push(initialValue);
+    }
+
+    setupVirtualMethodTable() {
+        for(let m of this.methodInfoList){
+            this.runtimeObjectPrototype[m.signature] = m.program;
+        }
     }
 
 

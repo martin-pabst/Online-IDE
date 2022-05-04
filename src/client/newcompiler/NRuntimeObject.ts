@@ -40,6 +40,12 @@ export class NStaticClassObject {
     __initialValues: any[] = [];  // initial attribute values
     __class: NClass;            // reference to class
 
+    constructor(klass: NClass, initialAttributeValues: any[]){
+        this.__class = klass;
+        this.__initialValues = initialAttributeValues;
+        this.__a = initialAttributeValues.slice();
+    }
+
     /**
      * staticClassObject also contains all static methods:
      * "signature1": program1,

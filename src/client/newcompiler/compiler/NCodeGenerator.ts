@@ -5,7 +5,7 @@ import { Module, ModuleStore } from "src/client/compiler/parser/Module.js";
 import { NClass, NClassLike } from "../types/NClass.js";
 import { NPrimitiveType } from "../types/NewPrimitiveType.js";
 import { NType } from "../types/NewType.js";
-import { NPrimitiveTypeManager } from "../types/PrimitiveTypeManager.js";
+import { NPrimitiveTypeManager } from "../types/NPrimitiveTypeManager.js";
 import { CodeBuilder } from "./NCodeBuilder.js";
 import { NBlock, NFragment, NProgram } from "./NProgram.js";
 import { NSymbolTable } from "./NSymbolTable.js";

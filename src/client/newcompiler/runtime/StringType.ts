@@ -4,7 +4,7 @@ import { NMethodInfo, NParameterlist, NVariable } from "../types/NAttributeMetho
 import { NClass } from "../types/NClass.js";
 import { NPrimitiveType } from "../types/NewPrimitiveType.js";
 import { NExpression, NType } from "../types/NewType.js";
-import { NPrimitiveTypeManager } from "../types/PrimitiveTypeManager.js";
+import { NPrimitiveTypeManager } from "../types/NPrimitiveTypeManager.js";
 
 type MethodShorthand = {
     id: string,

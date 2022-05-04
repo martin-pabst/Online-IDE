@@ -28,6 +28,10 @@ export class NMethodInfo {
 
     reserveStackForLocalVariables: number = 0;
 
+    setupSignature(){
+        this.signature = this.identifier + "(" + this.parameterlist.parameters.map((p) => p.type.identifier).join(",") + (this.hasEllipsis ? "..." : "") +  ")";
+    }
+
     implements(m: NMethodInfo): boolean {
         if(this.identifier != m.identifier) return false;
         if(this.returnType == null || this.returnType.identifier == "void"){

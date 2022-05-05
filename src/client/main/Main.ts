@@ -1,7 +1,7 @@
 import { ClassData, UserData, Workspaces } from "../communication/Data.js";
 import { NetworkManager } from "../communication/NetworkManager.js";
 import { Compiler, CompilerStatus } from "../compiler/Compiler.js";
-import { booleanPrimitiveType, charPrimitiveType, doublePrimitiveType, floatPrimitiveType, intPrimitiveType, stringPrimitiveType, voidPrimitiveType, IntegerType, DoubleType, CharacterType, BooleanType, FloatType } from "../compiler/types/PrimitiveTypes.js";
+import { booleanPrimitiveType, charPrimitiveType, doublePrimitiveType, floatPrimitiveType, intPrimitiveType, stringPrimitiveType, voidPrimitiveType, IntegerType, DoubleType, CharacterType, BooleanType, FloatType, longPrimitiveType, LongType } from "../compiler/types/PrimitiveTypes.js";
 import { Debugger } from "../interpreter/Debugger.js";
 import { Interpreter, InterpreterState } from "../interpreter/Interpreter.js";
 import { Workspace } from "../workspace/Workspace.js";
@@ -286,6 +286,7 @@ export class Main implements MainBase {
     initTypes() {
         voidPrimitiveType.init();
         intPrimitiveType.init();
+        longPrimitiveType.init();
         floatPrimitiveType.init();
         doublePrimitiveType.init();
         booleanPrimitiveType.init();
@@ -293,6 +294,7 @@ export class Main implements MainBase {
         charPrimitiveType.init();
 
         IntegerType.init();
+        LongType.init();
         FloatType.init();
         DoubleType.init();
         CharacterType.init();

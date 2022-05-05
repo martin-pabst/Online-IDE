@@ -1,4 +1,4 @@
-import { booleanPrimitiveType, charPrimitiveType, doublePrimitiveType, floatPrimitiveType, intPrimitiveType, stringPrimitiveType, voidPrimitiveType } from "../compiler/types/PrimitiveTypes.js";
+import { booleanPrimitiveType, charPrimitiveType, doublePrimitiveType, floatPrimitiveType, intPrimitiveType, longPrimitiveType, stringPrimitiveType, voidPrimitiveType } from "../compiler/types/PrimitiveTypes.js";
 import { BaseModule } from "../compiler/parser/Module.js";
 import { Klass, Interface, Visibility } from "../compiler/types/Class.js";
 import { Method, Type } from "../compiler/types/Types.js";
@@ -190,6 +190,7 @@ export class ApiDoc {
     initTypes() {
         voidPrimitiveType.init();
         intPrimitiveType.init();
+        longPrimitiveType.init();
         floatPrimitiveType.init();
         doublePrimitiveType.init();
         booleanPrimitiveType.init();

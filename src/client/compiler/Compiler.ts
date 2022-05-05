@@ -8,7 +8,7 @@ import { MainBase } from "../main/MainBase.js";
 import { MainEmbedded } from "../embedded/MainEmbedded.js";
 import { Klass, Interface } from "./types/Class.js";
 import { SemicolonAngel } from "./parser/SemicolonAngel.js";
-import { NPrimitiveTypeManager } from "../newcompiler/types/NewPrimitiveType.js";
+import { NPrimitiveTypeManager } from "../newcompiler/types/NPrimitiveTypeManager.js";
 
 export enum CompilerStatus {
     compiling, error, compiledButNothingToRun, readyToRun

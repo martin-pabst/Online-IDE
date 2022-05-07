@@ -29,6 +29,8 @@ type FragmentPart = {
 export class NFragment {
     parts: FragmentPart[] = [];
 
+    static destinationCounter: number = 0;
+
     lastPartIsExpression: boolean = true;    // if this is false then last part is statement
     hasSideEffects: boolean = false;
     isAssignable: boolean = false;
@@ -50,8 +52,8 @@ export class NFragment {
         }
     }
 
-    addPart(p: string) {
-        this.parts.push({ p: p });
+    addPart(p: string, forceStepToEndAfterPart: boolean = false) {
+        this.parts.push({ p: p, forceStepToEndAfterPart: forceStepToEndAfterPart });
     }
 
     discardTopOfStack() {
@@ -84,6 +86,58 @@ export class NFragment {
 
         this.lastPartIsExpression = true;
         this.dataType = resultType;
+    }
+
+    applyTernaryOperator(secondFragment: NFragment, thirdFragment: NFragment, type: NType) {
+
+
+        if(secondFragment.parts.length == 1 && secondFragment.lastPartIsExpression && thirdFragment.parts.length == 1 && thirdFragment.lastPartIsExpression){
+            let leftExpression = this.lastPartIsExpression ? this.parts.pop().p : "s.pop()"
+            this.addPart(`(${leftExpression}) ? (${secondFragment.parts.pop()}):(${thirdFragment.parts.pop()}) `);
+            this.lastPartIsExpression = true;
+            this.dataType = type;
+            return;
+        }
+
+        let leftExpression = this.lastPartIsExpression ? this.parts.pop().p : "s.pop()"
+        this.addPart(`if(${leftExpression})`);
+        let jumpDestA = this.jumpToAndGetJumpDestination();
+        thirdFragment.ensureLastPartIsPushedToStack();
+        this.parts = this.parts.concat(thirdFragment.parts);
+
+        let jumpDestB = this.jumpToAndGetJumpDestination();
+        this.addJumpDestination(jumpDestA);
+        secondFragment.ensureLastPartIsPushedToStack();
+        this.parts = this.parts.concat(secondFragment.parts);
+        this.addJumpDestination(jumpDestB);
+        
+        this.dataType = type;
+        this.lastPartIsExpression = false;
+    }
+
+    addJumpDestination(destination?: string): string {
+        if(destination == null){
+            destination = this.getJumpDestination();
+        }
+        this.forceStepToEndAfterLastPart();
+        this.addPart(destination);
+        return destination;
+    }
+
+    forceStepToEndAfterLastPart(){
+        if(this.parts.length > 0){
+            this.parts[this.parts.length].forceStepToEndAfterPart = true;
+        }
+    }
+
+    jumpToAndGetJumpDestination():string {
+        let jumpDest = this.getJumpDestination();
+        this.addPart(`return ${jumpDest}`, true);
+        return jumpDest;
+    }
+
+    getJumpDestination(): string {
+        return `#dest_${NFragment.destinationCounter++}`;
     }
 
     ensureLastPartIsPushedToStack() {

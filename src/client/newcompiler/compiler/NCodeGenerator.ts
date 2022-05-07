@@ -361,6 +361,43 @@ export class NCodeGenerator {
         return leftFragment;
     }
 
+    processTernaryOperator(node: BinaryOpNode): NFragment {
+        let leftFragment = this.processNode(node.firstOperand, false);
+
+        if (leftFragment == null) return null;
+        if (!this.ensureAutomaticCasting(leftFragment, this.pt.boolean, node.firstOperand.position, node.firstOperand)) {
+            return null;
+        }
+
+        let colonOperand = <BinaryOpNode>node.secondOperand;
+        if (colonOperand == null) { return null; }
+
+        if (colonOperand.type != TokenType.binaryOp || colonOperand.operator != TokenType.colon) {
+            this.pushError("Auf den Fragezeichenoperator müssen - mit Doppelpunkt getrennt - zwei Alternativterme folgen.", node.position);
+        }
+
+        let secondFragment = this.processNode(colonOperand.firstOperand);
+        let thirdFragment = this.processNode(colonOperand.secondOperand);
+
+        if(secondFragment == null || thirdFragment == null) return null;
+
+        let type = secondFragment.dataType;
+        if(thirdFragment.dataType.canCastTo(type)){
+            this.ensureAutomaticCasting(thirdFragment, type, colonOperand.secondOperand.position, colonOperand.secondOperand);
+        } else if(secondFragment.dataType.canCastTo(thirdFragment.dataType)){
+            type = thirdFragment.dataType;
+            this.ensureAutomaticCasting(secondFragment, type, colonOperand.firstOperand.position, colonOperand.firstOperand);
+        } else {
+            this.pushError(`Die Datentypen der beiden Terme auf der rechten Seite des Fragezeichenoperators (${secondFragment.dataType.identifier} und ${thirdFragment.dataType.identifier} sind nicht einheitlich und können auch nicht ineinander umgewandelt werden.`, colonOperand.position);
+            return null;
+        }
+
+        leftFragment.applyTernaryOperator(secondFragment, thirdFragment, type);
+
+        return leftFragment;
+
+    }
+
 
 
     ensureAutomaticCasting(fragmentToCast: NFragment, typeTo: NType, position: TextPosition, nodeToCast: ASTNode): boolean {
@@ -380,6 +417,8 @@ export class NCodeGenerator {
 
             }
 
+            this.pushError("Erwartet wird ein Term vom Typ " + typeTo.identifier + ", gefunden wurde ein Term vom Typ " + typeFrom.identifier + ".", nodeToCast.position);
+
             return false;
         }
 
@@ -390,16 +429,17 @@ export class NCodeGenerator {
 
         if (typeFrom instanceof NClassLike && typeTo == this.pt.String) {
 
-            if(typeTo == this.pt.String){
-                fragmentToCast.addVirtualMethodCall("toString()", [], this.pt.String);    
+            if (typeTo == this.pt.String) {
+                fragmentToCast.addVirtualMethodCall("toString()", [], this.pt.String);
                 return true;
             }
 
-            if(typeTo instanceof NClassLike){
+            if (typeTo instanceof NClassLike) {
                 fragmentToCast.checkClassCasting(typeTo);
                 return true;
             }
 
+            this.pushError("Erwartet wird ein Term vom Typ " + typeTo.identifier + ", gefunden wurde ein Term vom Typ " + typeFrom.identifier + ".", nodeToCast.position);
             return false;
 
         }
@@ -410,7 +450,7 @@ export class NCodeGenerator {
             if (castExpression == null) {
                 return false;
             }
-            if(castExpression.e == null){
+            if (castExpression.e == null) {
                 return true;
             }
 
@@ -418,6 +458,8 @@ export class NCodeGenerator {
 
             return true;
         }
+
+        this.pushError("Erwartet wird ein Term vom Typ " + typeTo.identifier + ", gefunden wurde ein Term vom Typ " + typeFrom.identifier + ".", nodeToCast.position);
 
         return false;
 
@@ -430,7 +472,7 @@ export class NCodeGenerator {
         let betterOperators = ["& &", "||"];
         let opIndex = bitOperators.indexOf(node.operator);
         if (opIndex >= 0 && leftType == this.pt.boolean && rightType == this.pt.boolean) {
-            this.pushError("Die Operation " + TokenTypeReadable[node.operator] + " ist für die Operanden der Typen " + leftType.type.identifier + " und " + rightType.type.identifier + " nicht definiert. Du meintest wahrscheinlich den Operator " + booleanOperators[opIndex] + ".", node.position, "error",
+            this.pushError("Die Operation " + TokenTypeReadable[node.operator] + " ist für die Operanden der Typen " + leftType.identifier + " und " + rightType.identifier + " nicht definiert. Du meintest wahrscheinlich den Operator " + booleanOperators[opIndex] + ".", node.position, "error",
                 {
                     title: "Operator " + betterOperators[opIndex] + " verwenden statt " + TokenTypeReadable[node.operator],
                     editsProvider: (uri) => {
@@ -446,7 +488,7 @@ export class NCodeGenerator {
                     }
                 });
         } else {
-            this.pushError("Die Operation " + TokenTypeReadable[node.operator] + " ist für die Operanden der Typen " + leftType.type.identifier + " und " + rightType.type.identifier + " nicht definiert.", node.position);
+            this.pushError("Die Operation " + TokenTypeReadable[node.operator] + " ist für die Operanden der Typen " + leftType.identifier + " und " + rightType.identifier + " nicht definiert.", node.position);
         }
     }
 

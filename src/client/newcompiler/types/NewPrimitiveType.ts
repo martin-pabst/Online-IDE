@@ -315,14 +315,14 @@ export class NIntPrimitiveType extends NPrimitiveType {
 
         switch (operator) {
             case TokenType.division:
-                if (otherType.identifier == "int") {
+                if (["int", "long"].indexOf(otherType.identifier) >= 0) {
                     expression = "Math.trunc(thread.divide($1,$2))"
                 } else {
                     expression = "thread.divide($1,$2)"
                 }
                 return { e: expression };
             case TokenType.modulo:
-                if (otherType.identifier == "int") {
+                if (["int", "long"].indexOf(otherType.identifier) >= 0) {
                     expression = "Math.trunc(thread.modulo($1,$2))"
                 } else {
                     expression = "1";
@@ -337,13 +337,95 @@ export class NIntPrimitiveType extends NPrimitiveType {
 
         switch (operator) {
             case TokenType.division:
-                if (otherType.identifier == "int") {
+                if (["int", "long"].indexOf(otherType.identifier) >= 0) {
                     return Math.trunc(value1 / <number>(value2));
                 }
                 return value1 / <number>(value2);
 
             case TokenType.modulo:
-                if (otherType.identifier == "int") {
+                if (["int", "long"].indexOf(otherType.identifier) >= 0) {
+                    return Math.trunc(value1 % <number>(value2));
+                }
+                return 1;
+
+            default: return this.standardCompute(operator, otherType, value1, value2);
+        }
+
+    }
+
+}
+
+export class NLongPrimitiveType extends NPrimitiveType {
+    constructor() {
+        super("long", 0);
+        this.canCastToMap = {
+            "double": { expression: null }, "float": { expression: null },
+            "char": { expression: "String.fromCharCode($1)", castFunction: (v) => { return String.fromCharCode(v) } },
+            "String": { expression: '("" + $1)', castFunction: (v) => { return "" + v } }
+        };
+
+        this.resultTypeStringTable = {
+            [TokenType.plus]: { "long": "long", "Long": "long", "int": "long", "Integer": "long", "float": "float", "Float": "float", "double": "double", "Double": "double", "String": "String" },
+            [TokenType.minus]: { "none": "int", "long": "long", "Long": "long", "int": "long", "Integer": "long", "float": "float", "Float": "float", "double": "double", "Double": "double" },
+            [TokenType.multiplication]: { "long": "long", "Long": "long", "int": "long", "Integer": "long", "float": "float", "Float": "float", "double": "double", "Double": "double" },
+            [TokenType.modulo]: { "long": "long", "Long": "long", "int": "long", "Integer": "long" },
+            [TokenType.division]: { "long": "long", "Long": "long", "int": "long", "Integer": "long", "float": "float", "Float": "float", "double": "double", "Double": "double" },
+            [TokenType.doublePlus]: { "none": "long" },
+            [TokenType.doubleMinus]: { "none": "long" },
+            [TokenType.negation]: { "none": "long" },
+            [TokenType.tilde]: { "none": "long" },
+            [TokenType.lower]: { "long": "boolean", "Long": "boolean", "int": "boolean", "float": "boolean", "double": "boolean", "Integer": "boolean", "Float": "boolean", "Double": "boolean" },
+            [TokenType.greater]: { "long": "boolean", "Long": "boolean", "int": "boolean", "float": "boolean", "double": "boolean", "Integer": "boolean", "Float": "boolean", "Double": "boolean" },
+            [TokenType.lowerOrEqual]: { "long": "boolean", "Long": "boolean", "int": "boolean", "float": "boolean", "double": "boolean", "Integer": "boolean", "Float": "boolean", "Double": "boolean" },
+            [TokenType.greaterOrEqual]: { "long": "boolean", "Long": "boolean", "int": "boolean", "float": "boolean", "double": "boolean", "Integer": "boolean", "Float": "boolean", "Double": "boolean" },
+            [TokenType.equal]: { "long": "boolean", "Long": "boolean", "int": "boolean", "float": "boolean", "double": "boolean", "Integer": "boolean", "Float": "boolean", "Double": "boolean" },
+            [TokenType.notEqual]: { "long": "boolean", "Long": "boolean", "int": "boolean", "float": "boolean", "double": "boolean", "Integer": "boolean", "Float": "boolean", "Double": "boolean" },
+
+            // binary ops
+            [TokenType.OR]: { "long": "long", "Long": "long", "int": "long", "Integer": "long" },
+            [TokenType.XOR]: { "long": "long", "Long": "long", "int": "long", "Integer": "long" },
+            [TokenType.ampersand]: { "long": "long", "Long": "long", "int": "long", "Integer": "long" },
+            [TokenType.shiftLeft]: { "long": "long", "Long": "long", "int": "long", "Integer": "long" },
+            [TokenType.shiftRight]: { "long": "long", "Long": "long", "int": "long", "Integer": "long" },
+            [TokenType.shiftRightUnsigned]: { "long": "long", "Long": "long", "int": "long", "Integer": "long" }
+
+        }
+    }
+
+    getOperatorExpression(operator: TokenType, otherType?: NType): NExpression {
+        let expression: string;
+
+        switch (operator) {
+            case TokenType.division:
+                if (["int", "long"].indexOf(otherType.identifier) >= 0) {
+                    expression = "Math.trunc(thread.divide($1,$2))"
+                } else {
+                    expression = "thread.divide($1,$2)"
+                }
+                return { e: expression };
+            case TokenType.modulo:
+                if (["int", "long"].indexOf(otherType.identifier) >= 0) {
+                    expression = "Math.trunc(thread.modulo($1,$2))"
+                } else {
+                    expression = "1";
+                }
+                return { e: expression };
+            default:
+                return this.getStandardOperatorExpression(operator, otherType);
+        }
+    }
+
+    compute(operator: TokenType, otherType: NType, value1: any, value2?: any): any {
+
+        switch (operator) {
+            case TokenType.division:
+                if (["int", "long"].indexOf(otherType.identifier) >= 0) {
+                    return Math.trunc(value1 / <number>(value2));
+                }
+                return value1 / <number>(value2);
+
+            case TokenType.modulo:
+                if (["int", "long"].indexOf(otherType.identifier) >= 0) {
                     return Math.trunc(value1 % <number>(value2));
                 }
                 return 1;

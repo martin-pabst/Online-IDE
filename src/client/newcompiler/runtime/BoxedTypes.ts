@@ -52,6 +52,35 @@ export class NIntegerType extends NClass {
 
 }
 
+export class NLongType extends NClass {
+
+    constructor(pt: NPrimitiveTypeManager){
+        super("Long");
+        
+        this.extends = pt.Object;
+        this.unboxableAs = pt.long;
+        let that = this;
+
+        this.addAttribute(new NAttributeInfo("value", pt.long, false, NVisibility.private, false));
+        this.addStaticAttribute(new NAttributeInfo("MAX_VALUE", pt.long, true, NVisibility.public, true, "Maximaler Wert, den eine long-Variable annehmen kann"), 0x7fffffff);
+        this.addStaticAttribute(new NAttributeInfo("MIN_VALUE", pt.long, true, NVisibility.public, true, "Minimaler Wert, den eine long-Variable annehmen kann"), -0x80000000);
+
+        this.addJavascriptMethod("longValue", [], pt.long, false, (thread: any, This: any) => { return This._att[0]; })
+        this.addJavascriptMethod("valueOf", [new NVariable("i", pt.long)], this, true, 
+            (thread: any, This: any, i: number) => { 
+                let obj = Object.create(that.runtimeObjectPrototype);
+                obj.__att = [i];
+                return obj;    
+             });
+
+        //@ts-ignore
+        this.runtimeObjectPrototype = {};
+        this.runtimeObjectPrototypeIsClass = false;
+        this.setupVirtualMethodTable();
+    }
+
+}
+
 export class NFloatType extends NClass {
 
     constructor(pt: NPrimitiveTypeManager){

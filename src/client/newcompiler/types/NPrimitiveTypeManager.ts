@@ -1,6 +1,6 @@
 import { TokenType } from "src/client/compiler/lexer/Token.js";
 import { ConstantNode } from "src/client/compiler/parser/AST.js";
-import { VoidType, NullType, NIntPrimitiveType, NFloatPrimitiveType, NDoublePrimitiveType, NBooleanPrimitiveType, NCharPrimitiveType } from "./NewPrimitiveType.js";
+import { VoidType, NullType, NIntPrimitiveType, NLongPrimitiveType, NFloatPrimitiveType, NDoublePrimitiveType, NBooleanPrimitiveType, NCharPrimitiveType } from "./NewPrimitiveType.js";
 import { NType } from "./NewType.js";
 import { NObjectType } from "../runtime/NObjectType.js";
 import { NStringType } from "../runtime/StringType.js";
@@ -10,6 +10,7 @@ export class NPrimitiveTypeManager {
     void: VoidType = new VoidType();
     null: NullType = new NullType();
     int: NIntPrimitiveType = new NIntPrimitiveType();
+    long: NLongPrimitiveType = new NLongPrimitiveType();
     float: NFloatPrimitiveType = new NFloatPrimitiveType();
     double: NDoublePrimitiveType = new NDoublePrimitiveType();
     boolean: NBooleanPrimitiveType = new NBooleanPrimitiveType();
@@ -19,6 +20,7 @@ export class NPrimitiveTypeManager {
     String: NStringType = new NStringType(this);
 
     Integer: NIntegerType = new NIntegerType(this);
+    
 
     allPrimitiveTypes: NType[] = [this.void, this.null, this.int, this.float, this.double, this.boolean, this.char, 
         this.String, this.Object,

@@ -111,7 +111,7 @@ export class EmbeddedStarter {
         
         let divsWithScriptLists:[JQuery<HTMLElement>, JOScript[]][] = [];
 
-        jQuery('.java-online').each((index: number, element: HTMLElement) => {
+        jQuery('.java-online').addClass('notranslate').each((index: number, element: HTMLElement) => {
             let $div = jQuery(element);
             let scriptList: JOScript[] = [];
             

@@ -787,6 +787,15 @@ export class StringPrimitiveType extends Klass {
 
                 return (<string>(parameters[0].value)).replace(regExp, <string>(parameters[2].value));
             }, false, false, "Durchsucht den String mit dem regulären Ausdruck (regex) und ersetzt **alle** Fundstellen durch **replacement**."));
+        this.addMethod(new Method("matches", new Parameterlist([
+            { identifier: "regex", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false }
+        ]), booleanPrimitiveType,
+            (parameters) => {
+                let pattern = <string>(parameters[1].value);
+                let regExp = new RegExp(pattern, 'g');
+
+                return <string>(parameters[0].value).match(regExp) != null;
+            }, false, false, "Gibt genau dann true zurück, wenn der Wert der Zeichenkette dem regulären Ausdruck (regex) entspricht."));
         this.addMethod(new Method("replaceFirst", new Parameterlist([
             { identifier: "regex", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false },
             { identifier: "replacement", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false },
@@ -832,19 +841,19 @@ export class StringPrimitiveType extends Klass {
 
             case TokenType.lower:
                 return value.localeCompare(<string>(secondOperand.value), 'de', { caseFirst: 'upper' }) < 0;
-                // return value < (<string>(secondOperand.value));
+            // return value < (<string>(secondOperand.value));
 
             case TokenType.greater:
                 return value.localeCompare(<string>(secondOperand.value), 'de', { caseFirst: 'upper' }) > 0;
-                // return value > <string>(secondOperand.value);
+            // return value > <string>(secondOperand.value);
 
             case TokenType.lowerOrEqual:
                 return value.localeCompare(<string>(secondOperand.value), 'de', { caseFirst: 'upper' }) <= 0;
-                // return value <= <string>(secondOperand.value);
+            // return value <= <string>(secondOperand.value);
 
             case TokenType.greaterOrEqual:
                 return value.localeCompare(<string>(secondOperand.value), 'de', { caseFirst: 'upper' }) >= 0;
-                // return value >= <string>(secondOperand.value);
+            // return value >= <string>(secondOperand.value);
 
             case TokenType.equal:
                 return value == <string>(secondOperand.value);

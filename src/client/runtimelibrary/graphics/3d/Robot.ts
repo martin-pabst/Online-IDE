@@ -972,7 +972,7 @@ class Direction {
     public index: number = 2; // top
 
     turnRight() {
-        this.index = (this.index - 1) % 4;
+        this.index = (this.index - 1 + 4) % 4;
     }
 
     turnLeft() {

@@ -201,8 +201,8 @@ export class RobotCubeFactory {
     }
 
     makeClouds(container: Pixi3d.Container3D, height: number, originX: number, originZ: number) {
-        let count = 200;
-        let numberOfBatches = 10;
+        let count = 150;
+        let numberOfBatches = 20;
         let todo = count;
 
         let f = () => {
@@ -242,7 +242,7 @@ export class RobotCubeFactory {
 
             }
 
-            setTimeout(f, 100);
+            setTimeout(f, 200);
 
         }
 

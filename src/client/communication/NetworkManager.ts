@@ -1,14 +1,17 @@
 import { Main } from "../main/Main.js";
 import { ajax, PerformanceCollector } from "./AjaxHelper.js";
-import { WorkspaceData, FileData, SendUpdatesRequest, SendUpdatesResponse, CreateOrDeleteFileOrWorkspaceRequest, CRUDResponse, UpdateUserSettingsRequest, UpdateUserSettingsResponse, DuplicateWorkspaceRequest, DuplicateWorkspaceResponse, ClassData, DistributeWorkspaceRequest, DistributeWorkspaceResponse, CollectPerformanceDataRequest, SetRepositorySecretRequest, SetRepositorySecretResponse } from "./Data.js";
+import { WorkspaceData, FileData, SendUpdatesRequest, SendUpdatesResponse, CreateOrDeleteFileOrWorkspaceRequest, CRUDResponse, UpdateUserSettingsRequest, UpdateUserSettingsResponse, DuplicateWorkspaceRequest, DuplicateWorkspaceResponse, ClassData, DistributeWorkspaceRequest, DistributeWorkspaceResponse, CollectPerformanceDataRequest, SetRepositorySecretRequest, SetRepositorySecretResponse, GetDatabaseRequest, getDatabaseResponse, DatabaseData, GetTemplateRequest } from "./Data.js";
 import { Workspace } from "../workspace/Workspace.js";
 import { Module } from "../compiler/parser/Module.js";
 import { AccordionElement, AccordionPanel } from "../main/gui/Accordion.js";
 import {WorkspaceSettings } from "../communication/Data.js";
 import { response } from "express";
 import { NotifierClient } from "./NotifierClient.js";
+import { CacheManager } from "../tools/database/CacheManager.js";
 
 export class NetworkManager {
+
+    sqlIdeURL = "https://www.sql-ide.de/servlet/";
 
     timerhandle: any;
 
@@ -535,6 +538,82 @@ export class NetworkManager {
 
     }
 
+    fetchDatabase(database_id: number, token: string, code: string, callback: (database: DatabaseData, error: string) => void) {
+
+        let cacheManager: CacheManager = new CacheManager();
+
+        let request: GetDatabaseRequest = {
+            databaseId: database_id,
+            token: token,
+            code: code
+        }
+
+        ajax(this.sqlIdeURL +  "jgetDatabase", request, (response: getDatabaseResponse) => {
+            if (response.success) {
+
+                let database = response.database;
+                
+                cacheManager.fetchTemplateFromCache(database.based_on_template_id, (templateDump: Uint8Array) => {
+
+                    if (templateDump != null) {
+                        //@ts-ignore
+                        database.templateDump = pako.inflate(templateDump);
+                        callback(database, null);
+                        return;
+                    } else {
+                        if (database.based_on_template_id == null) {
+                            callback(database, null);
+                            return
+                        }
+                        this.fetchTemplate(database_id, token, code, (template) => {
+                            if (template != null) {
+                                cacheManager.saveTemplateToCache(database.based_on_template_id, template);
+                                // @ts-ignore
+                                database.templateDump = pako.inflate(template);
+                                callback(database, null);
+                                return;
+                            } else {
+                                callback(null, "Konnte das Template nicht laden.");
+                                return;
+                            }
+                        })
+                    }
+                })
+            } else {
+                callback(null, "Netzwerkfehler!");
+            }
+        });
+
+
+    }
+
+
+    fetchTemplate(database_id: number, token: string, code: string, callback: (template: Uint8Array) => void) {
+        let request: GetTemplateRequest = {
+            databaseId: database_id,
+            token: token,
+            code: code
+        }
+
+        $.ajax({
+            type: 'POST',
+            async: true,
+            data: JSON.stringify(request),
+            contentType: 'application/json',
+            url: this.sqlIdeURL + "jgetTemplate",
+            xhrFields: { responseType: 'arraybuffer' },
+            success: function (response: any) {
+                callback(new Uint8Array(response));
+            },
+            error: function (jqXHR, message) {
+                alert("Konnte das Template nicht laden.");
+                callback(null);
+            }
+        });
+
+    }
+
+   
 
 
 }

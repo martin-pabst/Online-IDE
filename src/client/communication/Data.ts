@@ -241,7 +241,7 @@ export type CRUDSchoolRequest = {
 }
 
 export type BulkCreateUsersRequest = {
-    onlyCheckUsernames: boolean, 
+    onlyCheckUsernames: boolean,
     users: UserData[],
     schule_id: number
 }
@@ -620,7 +620,7 @@ export type GetMessagesRequest = {
 }
 
 export type Message = {
-    text: string, 
+    text: string,
     type: string,
     done: boolean,
     time: number,
@@ -633,6 +633,39 @@ export type GetMessagesResponse = {
 }
 
 export type ImportSchoolsResponse = {
-    success: boolean, 
+    success: boolean,
     messageType: string
+}
+
+/**
+ * Database
+ */
+
+export type GetTemplateRequest = {
+    databaseId: number,
+    token: string,
+    code: string
+}
+
+
+export type DatabaseData = {
+    id: number,
+    name: string,
+    based_on_template_id: number,
+    templateDump: Uint8Array,
+    statements: string[],
+    description: string,
+}
+
+export type GetDatabaseRequest = {
+    databaseId: number,
+    token: string,
+    code: string
+}
+
+export type getDatabaseResponse = {
+    success: boolean,
+    database: DatabaseData,
+    version: number,
+    error: string
 }

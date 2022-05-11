@@ -44,6 +44,11 @@ export function ajax(url: string, request: any, successCallback: (response: any)
 
     errorCallback?: (message: string) => void) {
 
+        if(!url.startsWith("http")){
+            url = "servlet/" + url;
+        }
+   
+
     showNetworkBusy(true);
     let time = performance.now();
 

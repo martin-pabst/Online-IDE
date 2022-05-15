@@ -24,7 +24,7 @@ export class NullType extends Type {
         return null;
     }
     canCastTo(type: Type) {
-        return (type instanceof Klass || type instanceof Interface);
+        return (type instanceof Klass || type instanceof Interface || type instanceof ArrayType);
     }
     castTo(value: Value, type: Type) {
         return value;

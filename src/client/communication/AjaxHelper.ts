@@ -57,7 +57,7 @@ export function ajax(url: string, request: any, successCallback: (response: any)
         async: true,
         data: JSON.stringify(request),
         contentType: 'application/json',
-        url: "servlet/" + url,
+        url: url,
         success: function (response: any) {
 
             PerformanceCollector.registerPerformanceEntry(url, time);

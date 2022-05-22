@@ -1,7 +1,7 @@
-import { JMessageFromServer, JWebSocketMessageConnect, JWebSocketMessageDisconnect, JWebSocketMessageExecuteStatement, SendingStatementsMessageFromServer, WebSocketRequestConnect } from "src/client/communication/Data.js";
-import { NetworkManager } from "src/client/communication/NetworkManager.js";
-import { Interpreter } from "src/client/interpreter/Interpreter.js";
-import { ConnectionHelper } from "src/client/runtimelibrary/database/Connection.js";
+import { JMessageFromServer, JWebSocketMessageConnect, JWebSocketMessageDisconnect, JWebSocketMessageExecuteStatement, SendingStatementsMessageFromServer, WebSocketRequestConnect } from "../../communication/Data.js";
+import { NetworkManager } from "../../communication/NetworkManager.js";
+import { Interpreter } from "../../interpreter/Interpreter.js";
+import { ConnectionHelper } from "../../runtimelibrary/database/Connection.js";
 
 export class DatabaseWebSocket {
 
@@ -54,7 +54,7 @@ export class DatabaseWebSocket {
         }
     }
 
-    onMessage(event: MessageEvent<any>) {
+    onMessage(event: MessageEvent) {
         this.isOpen = true;
         if(this.callbackWhenOpen){
             this.callbackWhenOpen(null);

@@ -83,6 +83,10 @@ import { Patcher } from "./Patcher.js";
 import { KeyEvent as KeyEventClass } from "../../runtimelibrary/graphics/KeyEvent.js";
 import { Formatter } from "../../main/gui/Formatter.js";
 import { RobotClass, RobotWorldClass } from "../../runtimelibrary/graphics/3d/Robot.js";
+import { ResultSetClass } from "../../runtimelibrary/database/ResultSet.js";
+import { DatabaseStatementClass } from "../../runtimelibrary/database/DatabaseStatement.js";
+import { ConnectionClass } from "../../runtimelibrary/database/Connection.js";
+import { DatabaseManagerClass } from "../../runtimelibrary/database/DatabaseManager.js";
 
 export type ExportedWorkspace = {
     name: string;
@@ -874,6 +878,11 @@ export class BaseModule extends Module {
 
         this.typeStore.addType(new RobotWorldClass(this));
         this.typeStore.addType(new RobotClass(this));
+
+        this.typeStore.addType(new ResultSetClass(this));
+        this.typeStore.addType(new DatabaseStatementClass(this));
+        this.typeStore.addType(new ConnectionClass(this));
+        this.typeStore.addType(new DatabaseManagerClass(this));
 
     
 

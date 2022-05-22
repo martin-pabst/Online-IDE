@@ -1,4 +1,4 @@
-import { Main } from "src/client/main/Main.js";
+import { Main } from "../../main/Main.js";
 import { Module } from "../../compiler/parser/Module.js";
 import { Klass } from "../../compiler/types/Class.js";
 import { stringPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";

@@ -1,4 +1,3 @@
-import { Klass } from "../compiler/types/Class.js";
 import { NClass } from "./NClass.js";
 import { NProgram } from "./NProgram.js";
 

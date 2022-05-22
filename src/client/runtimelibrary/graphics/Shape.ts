@@ -12,7 +12,7 @@ import { Interpreter } from "../../interpreter/Interpreter.js";
 import { GroupHelper, GroupClass } from "./Group.js";
 import { CircleHelper } from "./Circle.js";
 import { TurtleHelper } from "./Turtle.js";
-import { Enum, EnumInfo } from "src/client/compiler/types/Enum.js";
+import { Enum, EnumInfo } from "../../compiler/types/Enum.js";
 import { FilledShapeDefaults } from "./FilledShapeDefaults.js";
 
 export class ShapeClass extends Klass {
@@ -41,7 +41,7 @@ export class ShapeClass extends Klass {
                     value.value = 0;
                     return;
                 }
-
+ 
                 value.value = helper.angle;
 
             }, false, Visibility.protected, true, "Richtung"));

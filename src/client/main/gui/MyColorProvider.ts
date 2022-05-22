@@ -1,4 +1,4 @@
-import { Module } from "src/client/compiler/parser/Module.js";
+import { Module } from "../../compiler/parser/Module.js";
 import { MainBase } from "../MainBase.js";
 
 export class MyColorProvider implements monaco.languages.DocumentColorProvider {

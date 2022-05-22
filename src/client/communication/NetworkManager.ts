@@ -5,13 +5,13 @@ import { Workspace } from "../workspace/Workspace.js";
 import { Module } from "../compiler/parser/Module.js";
 import { AccordionElement, AccordionPanel } from "../main/gui/Accordion.js";
 import {WorkspaceSettings } from "../communication/Data.js";
-import { response } from "express";
 import { NotifierClient } from "./NotifierClient.js";
 import { CacheManager } from "../tools/database/CacheManager.js";
 
 export class NetworkManager {
 
-    sqlIdeURL = "https://www.sql-ide.de/servlet/";
+    sqlIdeURL = "http://localhost:6500/servlet/";
+    // sqlIdeURL = "https://www.sql-ide.de/servlet/";
 
     timerhandle: any;
 
@@ -541,7 +541,7 @@ export class NetworkManager {
     fetchDatabaseAndToken(code: string, callback:(database: DatabaseData, token: string, error: string) => void){
         let request: ObtainSqlTokenRequest = {code: code};
 
-        ajax(this.sqlIdeURL +  "jGetDatabase", request, (response: ObtainSqlTokenResponse) => {
+        ajax("obtainSqlToken", request, (response: ObtainSqlTokenResponse) => {
             if (response.success) {
                 this.fetchDatabase(response.token, (database, error) => {
                     callback(database, response.token, error);

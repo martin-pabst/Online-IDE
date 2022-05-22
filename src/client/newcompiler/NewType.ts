@@ -1,5 +1,4 @@
 import { Token, TokenType } from "../compiler/lexer/Token.js";
-import { Module } from "../compiler/parser/Module.js";
 import { TextPositionWithModule, UsagePositions } from "../compiler/types/Types.js";
 import { NProgram } from "./NProgram.js";
 

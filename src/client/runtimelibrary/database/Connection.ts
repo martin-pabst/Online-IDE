@@ -1,11 +1,9 @@
-import { DatabaseData, SendingStatementsMessageFromServer } from "src/client/communication/Data.js";
-import { Main } from "src/client/main/Main.js";
-import { MainBase } from "src/client/main/MainBase.js";
-import { DatabaseTool, QueryResult } from "src/client/tools/database/DatabaseTool.js";
-import { DatabaseWebSocket } from "src/client/tools/database/DatabaseWebSocket.js";
+import { DatabaseData, SendingStatementsMessageFromServer } from "../../communication/Data.js";
+import { Main } from "../../main/Main.js";
+import { DatabaseTool, QueryResult } from "../../tools/database/DatabaseTool.js";
+import { DatabaseWebSocket } from "../../tools/database/DatabaseWebSocket.js";
 import { Module } from "../../compiler/parser/Module.js";
 import { Klass } from "../../compiler/types/Class.js";
-import { stringPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
 import { Method, Parameterlist } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 

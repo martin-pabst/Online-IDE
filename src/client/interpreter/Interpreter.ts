@@ -24,6 +24,7 @@ import { MainEmbedded } from "../embedded/MainEmbedded.js";
 import { ProcessingHelper } from "../runtimelibrary/graphics/Processing.js";
 import { GNGEreignisbehandlungHelper } from "../runtimelibrary/gng/GNGEreignisbehandlung.js";
 import { GamepadTool } from "../tools/GamepadTool.js";
+import { ConnectionHelper } from "../runtimelibrary/database/Connection.js";
 
 export enum InterpreterState {
     not_initialized, running, paused, error, done, waitingForInput, waitingForTimersToEnd
@@ -89,6 +90,7 @@ export class Interpreter {
     worldHelper: WorldHelper;
     gngEreignisbehandlungHelper: GNGEreignisbehandlungHelper;
     processingHelper: ProcessingHelper;
+    databaseConnectionHelpers: ConnectionHelper[] = [];
 
     keyboardTool: KeyboardTool;
     gamepadTool: GamepadTool;
@@ -676,6 +678,9 @@ export class Interpreter {
             this.worldHelper.cacheAsBitmap();
         }
 
+        this.databaseConnectionHelpers.forEach((ch)=> ch.close());
+        this.databaseConnectionHelpers = [];
+
         this.heap = {};
         this.programStack = [];
         this.stack = [];
@@ -1128,28 +1133,14 @@ export class Interpreter {
 
                 // node.stackframebegin = -(parameters.parameterTypes.length + 1)
                 let method1 = node.method;
-
                 let parameterBegin1 = stackTop + 1 + node.stackframeBegin;
-
                 let parameters = stack.splice(parameterBegin1);
 
-                this.timerStopped = true;
-                let oldState = this.state;
-                this.setState(InterpreterState.waitingForInput);
-                // this.main.showProgramPointerPosition(this.currentProgram.module.file, node.position);
-                this.showProgramPointerAndVariables();
+                this.pauseForInput();
 
                 let that = this;
                 this.inputManager.readInput(method1, parameters, (value: Value) => {
-                    stack.push(value);
-                    this.main.hideProgramPointerPosition();
-                    that.setState(InterpreterState.paused);
-                    if (oldState == InterpreterState.running) {
-                        that.start();
-                    } else {
-                        that.showProgramPointerAndVariables();
-                        // that.oneStep(false);
-                    }
+                    that.resumeAfterInput(value);
                 });
                 break;
 
@@ -1467,6 +1458,28 @@ export class Interpreter {
         this.currentProgramPosition++;
 
     }
+
+    oldState: InterpreterState;
+    pauseForInput(){
+        this.timerStopped = true;
+        this.oldState = this.state;
+        this.setState(InterpreterState.waitingForInput);
+        this.showProgramPointerAndVariables();
+    }
+
+    resumeAfterInput(value: Value){
+        if(value != null) this.stack.push(value);
+        this.main.hideProgramPointerPosition();
+        this.setState(InterpreterState.paused);
+        if (this.oldState == InterpreterState.running) {
+            this.start();
+        } else {
+            this.showProgramPointerAndVariables();
+        }
+
+    }
+
+
     return(node: ReturnStatement | null, stack: Value[]) {
 
         let currentCallbackAfterReturn = this.currentCallbackAfterReturn;
@@ -1847,5 +1860,10 @@ export class Interpreter {
         return object;
 
     }
+
+    registerDatabaseConnection(ch: ConnectionHelper) {
+        this.databaseConnectionHelpers.push(ch); 
+    }
+
 
 }

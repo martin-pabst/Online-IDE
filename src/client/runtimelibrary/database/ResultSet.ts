@@ -1,0 +1,132 @@
+import { QueryResult } from "src/client/tools/database/DatabaseTool.js";
+import { Module } from "../../compiler/parser/Module.js";
+import { Klass } from "../../compiler/types/Class.js";
+import { booleanPrimitiveType, charPrimitiveType, doublePrimitiveType, floatPrimitiveType, intPrimitiveType, StringPrimitiveType, stringPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
+import { Method, Parameterlist, Type } from "../../compiler/types/Types.js";
+import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
+
+export class ResultSetClass extends Klass {
+
+    constructor(module: Module) {
+        super("ResultSet", module, "Ein ResultSet-Objekt speichert das Ergebnis einer Abfrage an die Datenbank.");
+
+        let resultSetType = <Klass>module.typeStore.getType("ResultSet");
+
+        this.setBaseClass(<Klass>module.typeStore.getType("Object"));
+ 
+        this.addMethod(new Method("next", new Parameterlist([
+        ]), booleanPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let rsh: ResultsetHelper = o.intrinsicData["Helper"];
+                return rsh.next();
+
+            }, false, false, 'Führt ein SQL-Statement aus.',
+            false));
+
+        this.addMethod(new Method("wasNull", new Parameterlist([
+        ]), booleanPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let rsh: ResultsetHelper = o.intrinsicData["Helper"];
+                return rsh.wasNull;
+
+            }, false, false, 'Gibt genau dann true zurück, wenn der zuletzt gelesene Wert null war.',
+            false));
+
+        let types = [booleanPrimitiveType, intPrimitiveType, floatPrimitiveType, doublePrimitiveType, stringPrimitiveType];
+
+        for(let type of types){
+
+            let typeIdFirstUppercase = type.identifier.charAt(0).toUpperCase() + type.identifier.substring(1);
+
+            this.addMethod(new Method("get"+typeIdFirstUppercase, new Parameterlist([
+                { identifier: "columnIndex", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            ]), type,
+                (parameters) => {
+    
+                    let o: RuntimeObject = parameters[0].value;
+                    let columnIndex: number = parameters[1].value;
+
+                    let rsh: ResultsetHelper = o.intrinsicData["Helper"];
+
+                    let interpreter = module.main.getInterpreter();
+                    if(columnIndex < 1 || columnIndex > rsh.columnCount()){
+                        interpreter.throwException("Das Ergebnis hat keine Spalte " + columnIndex + ".");
+                        return;
+                    }
+
+                    if(rsh.isAfterLast()){
+                        interpreter.throwException("Der Cursor befindet sich hinter dem letzten Datensatz des ResultSet.");
+                    }
+    
+                    return rsh.getValue(type, columnIndex);
+    
+                }, false, false, 'Führt ein SQL-Statement aus.',
+                false));
+
+        }
+
+
+        
+
+    }
+
+}
+
+
+export class ResultsetHelper {
+    cursor: number = -1;
+    wasNull: boolean = false;
+
+    constructor(private result: QueryResult){
+
+    }
+
+    next(): boolean {
+        this.cursor++;
+        return this.cursor < this.result.values.length;
+    }
+
+    columnCount(): number {
+        return this.result.columns.length;
+    }
+
+    getValue(type: Type, columnIndex: number) {
+
+        let value = this.result.values[this.cursor][columnIndex - 1];
+        this.wasNull = value == null;
+
+        if(type == stringPrimitiveType){
+            return value == null ? null : "" + value;
+        }
+
+        if(type == intPrimitiveType){
+            if(value == null || !(typeof value == "number")){
+                return 0;
+            }
+            return Math.floor(value);
+        }
+
+        if(type == floatPrimitiveType || type == doublePrimitiveType){
+            if(value == null || !(typeof value == "number")){
+                return 0;
+            }
+            return value;
+        }
+
+        if(type == booleanPrimitiveType){
+            if(value == null) return false;
+            return (value + "").indexOf("1") >= 0;
+        }
+
+    }
+
+    isAfterLast(): boolean {
+        return this.cursor > this.result.values.length - 1;
+    }
+
+
+}

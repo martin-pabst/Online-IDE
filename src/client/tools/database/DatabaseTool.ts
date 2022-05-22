@@ -61,15 +61,11 @@ export class DatabaseTool {
 
     databaseStructure: DatabaseStructure;
 
-    constructor(private main: MainBase, private code: string){
-
-        // 1. Use code to retrieve db-dump, statements and initialize WebWorker
-        // 2. init database
-        // 3.     
+    constructor(private main: MainBase){
 
     }
 
-    initializeWorker(template: Uint8Array, queries: string[], callbackAfterInitializing?: (errors: string[]) => void) {
+    initializeWorker(template: Uint8Array, queries: string[], callbackAfterInitializing?: (error: string) => void) {
         
         this.main.getBottomDiv().console.writeConsoleEntry('Bitte warten, die Datenbank wird initialisiert...', null);
         
@@ -96,7 +92,7 @@ export class DatabaseTool {
         }
         let that = this;
 
-        let errors: string[] = [];
+        let error: string;
 
         this.worker.onmessage = () => {
             // console.log("Database opened (" + (performance.now() - t)/1000 + " s)");
@@ -138,13 +134,13 @@ export class DatabaseTool {
                     that.executeQuery(query, (result) => {
                         execQuery();
                     }, (error) => {
-                        errors.push("Error while setting up database: " + error + ", query: " + query);
+                        error = ("Error while setting up database: " + error + ", query: " + query);
                         console.log({"error": "Error while setting up database: " + error, "query": query});
                         console.log()
                         execQuery();
                     })
                 } else {
-                    if (callbackAfterInitializing != null) callbackAfterInitializing(errors);
+                    if (callbackAfterInitializing != null) callbackAfterInitializing(error);
                    
                 }
             }
@@ -154,7 +150,7 @@ export class DatabaseTool {
         };
 
         this.worker.onerror = (e) => {
-            errors.push("Worker error: " + e.error);
+            error = ("Worker error: " + e.error);
             console.log("Worker error: " + e.error);
         }
 
@@ -182,7 +178,22 @@ export class DatabaseTool {
 
     }
 
+    executeWriteQueries(queries: string[], successCallback: () => void, errorCallback: QueryErrorCallback){
 
+        if(queries.length == 0){
+            successCallback()
+        }
+
+        let query = queries.shift();
+
+        this.executeQuery(query, () => {
+            this.executeWriteQueries(queries, successCallback, errorCallback);
+        }, (message) => {
+            this.executeWriteQueries(queries, successCallback, (error) => {});
+            errorCallback(message); // report first error
+        });
+
+    }
 
     static getDumpType(dump: Uint8Array): DatabaseDumpType {
 

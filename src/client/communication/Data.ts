@@ -642,9 +642,7 @@ export type ImportSchoolsResponse = {
  */
 
 export type GetTemplateRequest = {
-    databaseId: number,
-    token: string,
-    code: string
+    token: string
 }
 
 
@@ -657,10 +655,18 @@ export type DatabaseData = {
     description: string,
 }
 
-export type GetDatabaseRequest = {
-    databaseId: number,
-    token: string,
+export type ObtainSqlTokenRequest = {
     code: string
+}
+
+export type ObtainSqlTokenResponse = {
+    success: boolean,
+    token: string,
+    message: string
+}
+
+export type GetDatabaseRequest = {
+    token: string
 }
 
 export type getDatabaseResponse = {
@@ -669,3 +675,74 @@ export type getDatabaseResponse = {
     version: number,
     error: string
 }
+
+/**
+ * Database WebSocket
+ */
+
+export type JAddStatementRequest = {
+    token: string,
+    version_before: number,
+    statements: string[]
+}
+
+export type JAddStatementResponse = {
+    success: boolean,
+    statements_before: string[],
+    new_version: number,
+    message: string
+}
+
+/**
+ * Messages from client to server
+ */
+export type JWebSocketMessageConnect = {
+    command: number; // == 1
+    token: string; // when "connect"
+    databaseVersion: number; // when "getStatements" or "connect"
+}
+
+export type JWebSocketMessageGetStatements = {
+    command: number;
+            // 1 == "connect", 2 == "getStatements",
+    databaseVersion: number; // when "getStatements" or "connect"
+}
+
+export type JWebSocketMessageExecuteStatement = {
+    command: number;
+           // 3 == "executeStatement"
+    version_before: number; // when "executeStatement"
+    statements: string[]; // when "executeStatement"
+}
+
+export type JWebSocketMessageDisconnect = {
+    command: number;
+           // 4 == "disconnect" 5 == "keepalive"
+}
+
+export type JWebSocketMessageKeepalive = {
+    command: number;
+           // 4 == "disconnect" 5 == "keepalive"
+}
+
+
+/**
+ * Messages from server
+ */
+export type JMessageFromServer = SendingStatementsMessageFromServer | DisconnectMessageFromServer | KeepAliveMessageFromServer;
+
+export type SendingStatementsMessageFromServer = {
+    command: number; // == 2,
+    firstNewStatementIndex: number,
+    newStatements: string[]
+}
+
+export type DisconnectMessageFromServer = {
+    command: number; // == 3
+}
+
+export type KeepAliveMessageFromServer = {
+    command: number; // == 4
+}
+
+

@@ -1,6 +1,6 @@
 import { Main } from "../main/Main.js";
 import { ajax, PerformanceCollector } from "./AjaxHelper.js";
-import { WorkspaceData, FileData, SendUpdatesRequest, SendUpdatesResponse, CreateOrDeleteFileOrWorkspaceRequest, CRUDResponse, UpdateUserSettingsRequest, UpdateUserSettingsResponse, DuplicateWorkspaceRequest, DuplicateWorkspaceResponse, ClassData, DistributeWorkspaceRequest, DistributeWorkspaceResponse, CollectPerformanceDataRequest, SetRepositorySecretRequest, SetRepositorySecretResponse, GetDatabaseRequest, getDatabaseResponse, DatabaseData, GetTemplateRequest } from "./Data.js";
+import { WorkspaceData, FileData, SendUpdatesRequest, SendUpdatesResponse, CreateOrDeleteFileOrWorkspaceRequest, CRUDResponse, UpdateUserSettingsRequest, UpdateUserSettingsResponse, DuplicateWorkspaceRequest, DuplicateWorkspaceResponse, ClassData, DistributeWorkspaceRequest, DistributeWorkspaceResponse, CollectPerformanceDataRequest, SetRepositorySecretRequest, SetRepositorySecretResponse, GetDatabaseRequest, getDatabaseResponse, DatabaseData, GetTemplateRequest, ObtainSqlTokenRequest, ObtainSqlTokenResponse, JAddStatementRequest, JAddStatementResponse } from "./Data.js";
 import { Workspace } from "../workspace/Workspace.js";
 import { Module } from "../compiler/parser/Module.js";
 import { AccordionElement, AccordionPanel } from "../main/gui/Accordion.js";
@@ -538,17 +538,29 @@ export class NetworkManager {
 
     }
 
-    fetchDatabase(database_id: number, token: string, code: string, callback: (database: DatabaseData, error: string) => void) {
+    fetchDatabaseAndToken(code: string, callback:(database: DatabaseData, token: string, error: string) => void){
+        let request: ObtainSqlTokenRequest = {code: code};
+
+        ajax(this.sqlIdeURL +  "jGetDatabase", request, (response: ObtainSqlTokenResponse) => {
+            if (response.success) {
+                this.fetchDatabase(response.token, (database, error) => {
+                    callback(database, response.token, error);
+                })                
+            } else {
+                callback(null, null, response.message);
+            }
+        })
+    }
+
+    private fetchDatabase(token: string, callback: (database: DatabaseData, error: string) => void) {
 
         let cacheManager: CacheManager = new CacheManager();
 
         let request: GetDatabaseRequest = {
-            databaseId: database_id,
-            token: token,
-            code: code
+            token: token
         }
 
-        ajax(this.sqlIdeURL +  "jgetDatabase", request, (response: getDatabaseResponse) => {
+        ajax(this.sqlIdeURL +  "jGetDatabase", request, (response: getDatabaseResponse) => {
             if (response.success) {
 
                 let database = response.database;
@@ -565,7 +577,7 @@ export class NetworkManager {
                             callback(database, null);
                             return
                         }
-                        this.fetchTemplate(database_id, token, code, (template) => {
+                        this.fetchTemplate(token, (template) => {
                             if (template != null) {
                                 cacheManager.saveTemplateToCache(database.based_on_template_id, template);
                                 // @ts-ignore
@@ -588,11 +600,9 @@ export class NetworkManager {
     }
 
 
-    fetchTemplate(database_id: number, token: string, code: string, callback: (template: Uint8Array) => void) {
+    private fetchTemplate(token: string, callback: (template: Uint8Array) => void) {
         let request: GetTemplateRequest = {
-            databaseId: database_id,
-            token: token,
-            code: code
+            token: token
         }
 
         $.ajax({
@@ -600,7 +610,7 @@ export class NetworkManager {
             async: true,
             data: JSON.stringify(request),
             contentType: 'application/json',
-            url: this.sqlIdeURL + "jgetTemplate",
+            url: this.sqlIdeURL + "jGetTemplate",
             xhrFields: { responseType: 'arraybuffer' },
             success: function (response: any) {
                 callback(new Uint8Array(response));
@@ -613,7 +623,22 @@ export class NetworkManager {
 
     }
 
-   
+    public addDatabaseStatement(token: string, version_before: number, statements: string[], 
+        callback: (statementsBefore: string[], new_version: number, message: string) => void){
+
+        let request: JAddStatementRequest = {
+            token: token,
+            version_before: version_before,
+            statements: statements
+        }
+
+        ajax(this.sqlIdeURL +  "jAddDatabaseStatement", request, (response: JAddStatementResponse) => {
+            callback(response.statements_before, response.new_version, response.message);
+        })
+
+
+    }
+    
 
 
 }

@@ -144,7 +144,7 @@ export class NetworkManager {
         }
 
         let that = this;
-        if (wdList.length > 0 || fdList.length > 0 || sendIfNothingIsDirty) {
+        if (wdList.length > 0 || fdList.length > 0 || sendIfNothingIsDirty || this.errorHappened) {
 
             if (sendBeacon) {
                 navigator.sendBeacon("sendUpdates", JSON.stringify(request));
@@ -167,9 +167,14 @@ export class NetworkManager {
                                 return;
                             }
                         // }
+                    } else {
+                        let message: string = "Fehler beim Senden der Daten: ";
+                        if(response["message"]) message += response["message"];
+                        console.log(message);
                     }
-                }, () => {
+                }, (message: string) => {
                     that.errorHappened = true;
+                    console.log("Fehler beim Ajax-call: " + message)
                 });
 
             }

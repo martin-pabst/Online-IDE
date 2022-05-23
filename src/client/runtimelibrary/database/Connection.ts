@@ -1,11 +1,11 @@
 import { DatabaseData, SendingStatementsMessageFromServer } from "../../communication/Data.js";
 import { Main } from "../../main/Main.js";
 import { DatabaseTool, QueryResult } from "../../tools/database/DatabaseTool.js";
-import { DatabaseWebSocket } from "../../tools/database/DatabaseWebSocket.js";
 import { Module } from "../../compiler/parser/Module.js";
 import { Klass } from "../../compiler/types/Class.js";
 import { Method, Parameterlist } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
+import { DatabaseLongPollingListener } from "src/client/tools/database/DatabaseLongPollingListener.js";
 
 export class ConnectionClass extends Klass {
 
@@ -39,7 +39,7 @@ export class ConnectionHelper{
     database: DatabaseTool;
     databaseData: DatabaseData;
     token: string;
-    webSocket: DatabaseWebSocket;
+    longPollingListener: DatabaseLongPollingListener;
 
     constructor(private main: Main){
 
@@ -54,14 +54,14 @@ export class ConnectionHelper{
                 this.databaseData = dbData;
                 this.database = new DatabaseTool(this.main);
                 this.database.initializeWorker(dbData.templateDump, dbData.statements, (error) => {
-                    this.webSocket = new DatabaseWebSocket(this.main.networkManager,
-                        this, this.main.interpreter, (message) => {
-                            this.onServerSentStatements(message);
-                        });
-                    this.webSocket.open((error) => {
-                        if(error != null) this.webSocket = null;
-                        callback(error);
-                    })
+                    
+                    this.longPollingListener = new DatabaseLongPollingListener(this.main.networkManager,
+                        this.token, (firstNewStatementIndex, newStatements) => {
+                            this.onServerSentStatements(firstNewStatementIndex, newStatements);
+                        })
+                    
+                    this.longPollingListener.longPoll();
+                    
                 });
             } else {
                 callback(error);
@@ -70,15 +70,15 @@ export class ConnectionHelper{
     }
 
     close(){
-        if(this.webSocket != null){
-            this.webSocket.close();
-            this.webSocket = null;
+        if(this.longPollingListener != null){
+            this.longPollingListener.close();
+            this.longPollingListener = null;
         }
     }
  
-    onServerSentStatements(message: SendingStatementsMessageFromServer){
+    onServerSentStatements(firstNewStatementIndex: number, newStatements: string[]){
 
-        this.executeStatementsFromServer(message.firstNewStatementIndex, message.newStatements);
+        this.executeStatementsFromServer(firstNewStatementIndex, newStatements);
         
     }
     
@@ -120,7 +120,7 @@ export class ConnectionHelper{
 
     executeQuery(query: string, callback: (error: string, data: QueryResult) => void){
 
-        if(this.database == null || this.webSocket == null){
+        if(this.database == null || this.longPollingListener == null){
             callback("Es besteht keine Verbindung zur Datenbank.", null);
             return;
         }

@@ -72,6 +72,8 @@ export function ajax(url: string, request: any, successCallback: (response: any)
                     // setTimeout(() => newLogin(url, request, successCallback, errorCallback), 10000);
                     // location.reload();
                 }
+                
+                console.log("Netzwerkfehler: " + error);
 
                 if (errorCallback) errorCallback(error);
             } else {

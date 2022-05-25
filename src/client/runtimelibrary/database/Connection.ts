@@ -6,6 +6,7 @@ import { Klass } from "../../compiler/types/Class.js";
 import { Method, Parameterlist } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { DatabaseLongPollingListener } from "../../tools/database/DatabaseLongPollingListener.js";
+import { voidPrimitiveType } from "src/client/compiler/types/PrimitiveTypes.js";
 
 export class ConnectionClass extends Klass {
 
@@ -27,6 +28,18 @@ export class ConnectionClass extends Klass {
                 stmt.intrinsicData["ConnectionHelper"] = ch;
  
             }, false, false, 'Erstellt ein Statement-Objekt, mit dem Statements zur Datenbank geschickt werden können.',
+            false));
+
+        this.addMethod(new Method("close", new Parameterlist([
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let ch: ConnectionHelper = o.intrinsicData["Helper"];
+
+                ch.close();
+ 
+            }, false, false, 'Schließt die Verbindung zur Datenbank.',
             false));
 
     }
@@ -74,6 +87,9 @@ export class ConnectionHelper{
             this.longPollingListener.close();
             this.longPollingListener = null;
         }
+
+        this.database = null;
+        
     }
  
     onServerSentStatements(firstNewStatementIndex: number, newStatements: string[]){
@@ -84,6 +100,10 @@ export class ConnectionHelper{
     
     executeStatementsFromServer(firstStatementIndex: number, statements: string[], 
         callback?: (error: string) => void){
+
+        // connection already closed?
+        if(this.database == null) return;
+
         let currentDBVersion = this.databaseData.statements.length;
         let delta = currentDBVersion - firstStatementIndex + 1; // these statements are already there
         if(delta >= statements.length) return;
@@ -96,6 +116,11 @@ export class ConnectionHelper{
     }
 
     executeWriteStatement(query: string, callback: (error: string) => void){
+
+        // connection already closed?
+        if(this.database == null){
+            callback("Es besteht keine Verbindung zur Datenbank.");
+        }
 
         let that = this;
         let oldStatementIndex = that.databaseData.statements.length;

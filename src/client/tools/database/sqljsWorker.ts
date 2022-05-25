@@ -1,8 +1,8 @@
-importScripts('../../lib/sql.js/sql-wasm.js', 'sqljsWorkerTools.js');
+importScripts('../../../lib/sql.js/sql-wasm.js', 'sqljsWorkerTools.js');
 
 //@ts-ignore
 var initsql = initSqlJs({
-    locateFile: name => (self.location + "").replace("js/sqljs-worker/sqljsWorker.js", "") + 'lib/sql.js/' + name
+    locateFile: name => (self.location + "").replace("js/tools/database/sqljsWorker.js", "") + 'lib/sql.js/' + name
    });
 var db;
 var SQL;

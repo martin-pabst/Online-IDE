@@ -77,7 +77,7 @@ export class DatabaseTool {
 
         // console.log("Starting worker...");
 
-        let url: string = "js/sqljs-worker/sqljsWorker.js"
+        let url: string = "js/tools/database/sqljsWorker.js"
         if(this.main.isEmbedded()){
             //@ts-ignore
             url = window.javaOnlineDir + url;
@@ -182,6 +182,7 @@ export class DatabaseTool {
 
         if(queries.length == 0){
             successCallback()
+            return;
         }
 
         let query = queries.shift();
@@ -215,5 +216,11 @@ export class DatabaseTool {
 
     }
 
+    close(){
+        if(this.worker != null){
+            this.worker.terminate();
+            this.worker = null;
+        }
+    }
 
 }

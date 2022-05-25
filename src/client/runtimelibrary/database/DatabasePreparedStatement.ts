@@ -37,7 +37,7 @@ export class DatabasePreparedStatementClass extends Klass {
                     let rsh = new ResultsetHelper(result);
                     let rs = new RuntimeObject(resultSetType);
                     rs.intrinsicData["Helper"] = rsh;
-                    interpreter.resumeAfterInput({value: rs, type: resultSetType});
+                    interpreter.resumeAfterInput({value: rs, type: resultSetType}, true);
                 })
 
             }, false, false, 'Führt ein SQL-Statement aus.',

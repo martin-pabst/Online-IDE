@@ -28,7 +28,7 @@ export class DatabaseLongPollingListener {
             contentType: 'application/json',
             url: that.networkManager.sqlIdeURL + "jRegisterLongPollingListener",
             success: function (resp: string) {
-                if (resp != null && !this.isClosed) {
+                if (resp != null && !this.isClosed && resp != "") {
                     let response: LongPollingListenerResponse = JSON.parse(resp);
                     if (response.success) {
                         that.onServerSentStatementsCallback(response.firstNewStatementIndex,

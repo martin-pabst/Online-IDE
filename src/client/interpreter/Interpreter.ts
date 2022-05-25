@@ -1467,7 +1467,8 @@ export class Interpreter {
         this.showProgramPointerAndVariables();
     }
 
-    resumeAfterInput(value: Value){
+    resumeAfterInput(value: Value, popPriorValue: boolean = false){
+        if(popPriorValue) this.stack.pop();
         if(value != null) this.stack.push(value);
         this.main.hideProgramPointerPosition();
         this.setState(InterpreterState.paused);

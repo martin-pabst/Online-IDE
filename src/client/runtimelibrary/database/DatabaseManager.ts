@@ -35,7 +35,7 @@ export class DatabaseManagerClass extends Klass {
                     if(error == null){
                         let connectionRuntimeObject = new RuntimeObject(connectionType);
                         connectionRuntimeObject.intrinsicData["Helper"] = ch;
-                        interpreter.resumeAfterInput({value: connectionRuntimeObject, type: connectionType});
+                        interpreter.resumeAfterInput({value: connectionRuntimeObject, type: connectionType}, true);
                     } else {
                         interpreter.throwException(error);
                     }

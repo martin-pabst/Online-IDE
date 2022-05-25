@@ -6,7 +6,7 @@ import { Klass } from "../../compiler/types/Class.js";
 import { Method, Parameterlist } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { DatabaseLongPollingListener } from "../../tools/database/DatabaseLongPollingListener.js";
-import { voidPrimitiveType } from "src/client/compiler/types/PrimitiveTypes.js";
+import { voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
 
 export class ConnectionClass extends Klass {
 
@@ -26,6 +26,8 @@ export class ConnectionClass extends Klass {
 
                 let stmt: RuntimeObject = new RuntimeObject(statementType);
                 stmt.intrinsicData["ConnectionHelper"] = ch;
+
+                return stmt;
  
             }, false, false, 'Erstellt ein Statement-Objekt, mit dem Statements zur Datenbank geschickt werden können.',
             false));
@@ -74,7 +76,7 @@ export class ConnectionHelper{
                         })
                     
                     this.longPollingListener.longPoll();
-                    
+                    callback(null);
                 });
             } else {
                 callback(error);
@@ -88,6 +90,7 @@ export class ConnectionHelper{
             this.longPollingListener = null;
         }
 
+        this.database.close();
         this.database = null;
         
     }
@@ -133,9 +136,12 @@ export class ConnectionHelper{
                         return;
                     }
 
-                    this.executeStatementsFromServer(oldStatementIndex + 1, statementsBefore.concat[query], (error: string) => {
+                    this.executeStatementsFromServer(oldStatementIndex + 1, statementsBefore.concat([query]), (error: string) => {
                         if(error != null) callback(error, 0);
-                        if(!retrieveLastRowId) callback(null, 0);
+                        if(!retrieveLastRowId){
+                            callback(null, 0);
+                            return;
+                        } 
                         this.executeQuery("select last_insert_rowid()", (error, data) => {
                             callback(null, data.values[0][0]);
                         })

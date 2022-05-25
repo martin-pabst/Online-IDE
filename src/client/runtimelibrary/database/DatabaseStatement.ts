@@ -1,6 +1,6 @@
 import { Module } from "../../compiler/parser/Module.js";
 import { Klass } from "../../compiler/types/Class.js";
-import { stringPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
+import { intPrimitiveType, stringPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
 import { Method, Parameterlist } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { ConnectionHelper } from "./Connection.js";
@@ -40,7 +40,31 @@ export class DatabaseStatementClass extends Klass {
                     interpreter.resumeAfterInput({value: rs, type: resultSetType});
                 })
 
-            }, false, false, 'Führt ein SQL-Statement aus.',
+            }, false, false, 'Führt ein SQL-Statement aus, das eine selct-Anweisung enthält.',
+            false));
+
+        this.addMethod(new Method("executeUpdate", new Parameterlist([
+            { identifier: "query", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+        ]), intPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let query: string = parameters[1].value;
+
+                let connectionHelper: ConnectionHelper = o.intrinsicData["ConnectionHelper"];
+
+                let interpreter = module.main.getInterpreter();
+                interpreter.pauseForInput();
+
+                connectionHelper.executeWriteStatement(query, (error) => {
+                    if(error != null){
+                        interpreter.throwException(error);
+                        return;
+                    }
+                    interpreter.resumeAfterInput({value: 0, type: intPrimitiveType});
+                })
+
+            }, false, false, 'Führt ein SQL-Statement aus, das eine datenverändernde Anweisung enthält.',
             false));
 
     }

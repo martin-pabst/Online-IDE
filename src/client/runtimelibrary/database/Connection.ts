@@ -115,11 +115,11 @@ export class ConnectionHelper{
         })
     }
 
-    executeWriteStatement(query: string, callback: (error: string) => void){
+    executeWriteStatement(query: string, callback: (error: string, lastRowId: number) => void, retrieveLastRowId: boolean = false){
 
         // connection already closed?
         if(this.database == null){
-            callback("Es besteht keine Verbindung zur Datenbank.");
+            callback("Es besteht keine Verbindung zur Datenbank.", 0);
         }
 
         let that = this;
@@ -129,16 +129,22 @@ export class ConnectionHelper{
             that.main.networkManager.addDatabaseStatement(that.token, oldStatementIndex,
                 [query], (statementsBefore, new_version, errorMessage)=>{
                     if(errorMessage != null){
-                        callback(errorMessage);
+                        callback(errorMessage, 0);
                         return;
                     }
 
-                    this.executeStatementsFromServer(oldStatementIndex + 1, statementsBefore.concat[query], callback);
+                    this.executeStatementsFromServer(oldStatementIndex + 1, statementsBefore.concat[query], (error: string) => {
+                        if(error != null) callback(error, 0);
+                        if(!retrieveLastRowId) callback(null, 0);
+                        this.executeQuery("select last_insert_rowid()", (error, data) => {
+                            callback(null, data.values[0][0]);
+                        })
+                    });
 
                 })
 
         }, (error) => {
-            callback(error);
+            callback(error, 0);
         })
 
     }

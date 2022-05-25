@@ -704,25 +704,25 @@ export type JWebSocketMessageConnect = {
 
 export type JWebSocketMessageGetStatements = {
     command: number;
-            // 1 == "connect", 2 == "getStatements",
+    // 1 == "connect", 2 == "getStatements",
     databaseVersion: number; // when "getStatements" or "connect"
 }
 
 export type JWebSocketMessageExecuteStatement = {
     command: number;
-           // 3 == "executeStatement"
+    // 3 == "executeStatement"
     version_before: number; // when "executeStatement"
     statements: string[]; // when "executeStatement"
 }
 
 export type JWebSocketMessageDisconnect = {
     command: number;
-           // 4 == "disconnect" 5 == "keepalive"
+    // 4 == "disconnect" 5 == "keepalive"
 }
 
 export type JWebSocketMessageKeepalive = {
     command: number;
-           // 4 == "disconnect" 5 == "keepalive"
+    // 4 == "disconnect" 5 == "keepalive"
 }
 
 
@@ -755,8 +755,9 @@ export type DatabaseLongPollingListenerRequest = {
 }
 
 export type LongPollingListenerResponse = {
-    success: boolean, 
+    success: boolean,
     message: string,
-    firstNewStatementIndex: number, 
-    newStatements: string[]
+    firstNewStatementIndex: number,
+    newStatements: string[],
+    rollbackToVersion: number
 }

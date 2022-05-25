@@ -16,7 +16,7 @@ export class ConnectionClass extends Klass {
         this.setBaseClass(<Klass>module.typeStore.getType("Object"));
         let preparedStatementType = <Klass>module.typeStore.getType("PreparedStatement");
         let statementType = <Klass>module.typeStore.getType("Statement");
- 
+
         this.addMethod(new Method("createStatement", new Parameterlist([
         ]), statementType,
             (parameters) => {
@@ -28,7 +28,7 @@ export class ConnectionClass extends Klass {
                 stmt.intrinsicData["ConnectionHelper"] = ch;
 
                 return stmt;
- 
+
             }, false, false, 'Erstellt ein Statement-Objekt, mit dem Statements zur Datenbank geschickt werden können.',
             false));
 
@@ -40,7 +40,7 @@ export class ConnectionClass extends Klass {
                 let ch: ConnectionHelper = o.intrinsicData["Helper"];
 
                 ch.close();
- 
+
             }, false, false, 'Schließt die Verbindung zur Datenbank.',
             false));
 
@@ -49,32 +49,32 @@ export class ConnectionClass extends Klass {
 }
 
 
-export class ConnectionHelper{
+export class ConnectionHelper {
 
     database: DatabaseTool;
     databaseData: DatabaseData;
     token: string;
     longPollingListener: DatabaseLongPollingListener;
 
-    constructor(private main: Main){
+    constructor(private main: Main) {
 
         main.getInterpreter().registerDatabaseConnection(this);
 
     }
 
-    connect(code: string, callback: (error: string) => void ) {
+    connect(code: string, callback: (error: string) => void) {
         this.main.networkManager.fetchDatabaseAndToken(code, (dbData, token, error) => {
-            if(error == null){
+            if (error == null) {
                 this.token = token;
                 this.databaseData = dbData;
                 this.database = new DatabaseTool(this.main);
                 this.database.initializeWorker(dbData.templateDump, dbData.statements, (error) => {
-                    
+
                     this.longPollingListener = new DatabaseLongPollingListener(this.main.networkManager,
-                        this.token, (firstNewStatementIndex, newStatements) => {
-                            this.onServerSentStatements(firstNewStatementIndex, newStatements);
+                        this.token, (firstNewStatementIndex, newStatements, rollbackToVersion) => {
+                            this.onServerSentStatements(firstNewStatementIndex, newStatements, rollbackToVersion);
                         })
-                    
+
                     this.longPollingListener.longPoll();
                     callback(null);
                 });
@@ -84,44 +84,54 @@ export class ConnectionHelper{
         })
     }
 
-    close(){
-        if(this.longPollingListener != null){
+    close() {
+        if (this.longPollingListener != null) {
             this.longPollingListener.close();
             this.longPollingListener = null;
         }
 
         this.database.close();
         this.database = null;
-        
-    }
- 
-    onServerSentStatements(firstNewStatementIndex: number, newStatements: string[]){
 
-        this.executeStatementsFromServer(firstNewStatementIndex, newStatements);
-        
     }
-    
-    executeStatementsFromServer(firstStatementIndex: number, statements: string[], 
-        callback?: (error: string) => void){
+
+    onServerSentStatements(firstNewStatementIndex: number, newStatements: string[], rollbackToVersion: number) {
+
+        if (rollbackToVersion != null) {
+            // Rollback
+            this.databaseData.statements.splice(rollbackToVersion);
+            this.database.initializeWorker(this.databaseData.templateDump, this.databaseData.statements);
+            return;
+        } else {
+            this.executeStatementsFromServer(firstNewStatementIndex, newStatements);
+        }
+
+
+    }
+
+    executeStatementsFromServer(firstStatementIndex: number, statements: string[],
+        callback?: (error: string) => void) {
 
         // connection already closed?
-        if(this.database == null) return;
+        if (this.database == null) return;
 
         let currentDBVersion = this.databaseData.statements.length;
         let delta = currentDBVersion - firstStatementIndex + 1; // these statements are already there
-        if(delta >= statements.length) return;
+        if (delta >= statements.length) {
+            return;
+        }
         statements = statements.slice(delta);
         this.database.executeWriteQueries(statements, () => {
-            if(callback != null) callback(null);
+            if (callback != null) callback(null);
         }, (errorMessage) => {
-            if(callback != null) callback(errorMessage);
+            if (callback != null) callback(errorMessage);
         })
     }
 
-    executeWriteStatement(query: string, callback: (error: string, lastRowId: number) => void, retrieveLastRowId: boolean = false){
+    executeWriteStatement(query: string, callback: (error: string, lastRowId: number) => void, retrieveLastRowId: boolean = false) {
 
         // connection already closed?
-        if(this.database == null){
+        if (this.database == null) {
             callback("Es besteht keine Verbindung zur Datenbank.", 0);
         }
 
@@ -130,18 +140,18 @@ export class ConnectionHelper{
         this.database.executeQuery("explain " + query, () => {
 
             that.main.networkManager.addDatabaseStatement(that.token, oldStatementIndex,
-                [query], (statementsBefore, new_version, errorMessage)=>{
-                    if(errorMessage != null){
+                [query], (statementsBefore, new_version, errorMessage) => {
+                    if (errorMessage != null) {
                         callback(errorMessage, 0);
                         return;
                     }
 
                     this.executeStatementsFromServer(oldStatementIndex + 1, statementsBefore.concat([query]), (error: string) => {
-                        if(error != null) callback(error, 0);
-                        if(!retrieveLastRowId){
+                        if (error != null) callback(error, 0);
+                        if (!retrieveLastRowId) {
                             callback(null, 0);
                             return;
-                        } 
+                        }
                         this.executeQuery("select last_insert_rowid()", (error, data) => {
                             callback(null, data.values[0][0]);
                         })
@@ -155,16 +165,16 @@ export class ConnectionHelper{
 
     }
 
-    executeQuery(query: string, callback: (error: string, data: QueryResult) => void){
+    executeQuery(query: string, callback: (error: string, data: QueryResult) => void) {
 
-        if(this.database == null || this.longPollingListener == null){
+        if (this.database == null || this.longPollingListener == null) {
             callback("Es besteht keine Verbindung zur Datenbank.", null);
             return;
         }
 
         this.database.executeQuery(query, (results: QueryResult[]) => {
             callback(null, results[0]);
-        }, (error: string) => { 
+        }, (error: string) => {
             callback(error, null);
         })
 

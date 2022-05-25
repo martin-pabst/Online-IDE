@@ -10,7 +10,7 @@ export class DatabaseLongPollingListener {
 
     constructor(private networkManager: NetworkManager,
         private token: string,
-        private onServerSentStatementsCallback: (firstNewStatementIndex: number, newStatements: string[]) => void) {
+        private onServerSentStatementsCallback: (firstNewStatementIndex: number, newStatements: string[], rollbackToVersion: number) => void) {
     }
 
     longPoll() {
@@ -32,7 +32,7 @@ export class DatabaseLongPollingListener {
                     let response: LongPollingListenerResponse = JSON.parse(resp);
                     if (response.success) {
                         that.onServerSentStatementsCallback(response.firstNewStatementIndex,
-                            response.newStatements);
+                            response.newStatements, response.rollbackToVersion);
                     }
                 }
 

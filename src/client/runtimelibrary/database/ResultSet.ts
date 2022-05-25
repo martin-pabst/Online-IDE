@@ -64,7 +64,35 @@ export class ResultSetClass extends Klass {
     
                     return rsh.getValue(type, columnIndex);
     
-                }, false, false, 'Führt ein SQL-Statement aus.',
+                }, false, false, 'Gibt den Wert der Spalte mit dem angegebenen Spaltenindex als ' + type.identifier + " zurück.",
+                false));
+
+            this.addMethod(new Method("get"+typeIdFirstUppercase, new Parameterlist([
+                { identifier: "columnLabel", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            ]), type,
+                (parameters) => {
+    
+                    let o: RuntimeObject = parameters[0].value;
+                    let columnLabel: string = parameters[1].value;
+
+                    let rsh: ResultsetHelper = o.intrinsicData["Helper"];
+
+                    let interpreter = module.main.getInterpreter();
+
+
+                    if(rsh.isAfterLast()){
+                        interpreter.throwException("Der Cursor befindet sich hinter dem letzten Datensatz des ResultSet.");
+                    }
+
+                    let columnIndex: number = rsh.getColumnIndex(columnLabel);
+                    if(columnIndex < 0){
+                        interpreter.throwException("Das Ergebnis hat keine Spalte mit dem Bezeichner " + columnLabel + ".");
+                        return;
+                    }
+    
+                    return rsh.getValue(type, columnIndex);
+    
+                }, false, false, 'Gibt den Wert der Spalte mit dem angegebenen Spaltenindex als ' + type.identifier + " zurück.",
                 false));
 
         }
@@ -84,6 +112,16 @@ export class ResultsetHelper {
     constructor(private result: QueryResult){
 
     }
+
+    getColumnIndex(columnLabel: string): number {
+        
+        columnLabel = columnLabel.toLocaleLowerCase();
+
+        let index = this.result.columns.findIndex((value, index) => {return value.toLocaleLowerCase() == columnLabel});
+        if(index < 0) return index;
+        return index + 1;
+    }
+
 
     next(): boolean {
         this.cursor++;

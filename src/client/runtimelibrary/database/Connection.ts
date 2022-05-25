@@ -5,7 +5,7 @@ import { Module } from "../../compiler/parser/Module.js";
 import { Klass } from "../../compiler/types/Class.js";
 import { Method, Parameterlist } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
-import { DatabaseLongPollingListener } from "src/client/tools/database/DatabaseLongPollingListener.js";
+import { DatabaseLongPollingListener } from "../../tools/database/DatabaseLongPollingListener.js";
 
 export class ConnectionClass extends Klass {
 

@@ -227,6 +227,9 @@ export function KreisBerührtPolygon(m: Punkt, r: number, punkte: Punkt[]) {
 
 }
 
+
+
+
 export function polygonBerührtPolygon(punkte1: Punkt[], punkte2: Punkt[]) {
 
     // Nicht-exakte Lösung: prüfe, ob eines der Vielecke einen Eckpunkt des anderen enthält.
@@ -246,6 +249,19 @@ export function polygonBerührtPolygon(punkte1: Punkt[], punkte2: Punkt[]) {
 
     return false;
 
+}
+
+export function steckenzugSchneidetStreckenzug(punkte1: Punkt[], punkte2: Punkt[]) {
+
+    for(let i = 0; i < punkte1.length - 1; i++){
+        for(let j = 0; j < punkte2.length - 1; j++){
+            if(streckeSchneidetStrecke(punkte1[i], punkte1[i+1], punkte2[j], punkte2[j+1])){
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 

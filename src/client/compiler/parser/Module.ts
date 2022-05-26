@@ -879,10 +879,10 @@ export class BaseModule extends Module {
         this.typeStore.addType(new RobotWorldClass(this));
         this.typeStore.addType(new RobotClass(this));
 
-        this.typeStore.addType(new ResultSetClass(this));
-        this.typeStore.addType(new DatabaseStatementClass(this));
-        this.typeStore.addType(new ConnectionClass(this));
-        this.typeStore.addType(new DatabaseManagerClass(this));
+        // this.typeStore.addType(new ResultSetClass(this));
+        // this.typeStore.addType(new DatabaseStatementClass(this));
+        // this.typeStore.addType(new ConnectionClass(this));
+        // this.typeStore.addType(new DatabaseManagerClass(this));
 
     
 

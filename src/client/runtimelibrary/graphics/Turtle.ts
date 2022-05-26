@@ -5,7 +5,7 @@ import { Method, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { FilledShapeHelper } from "./FilledShape.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
-import { polygonBerührtPolygon } from "../../tools/MatheTools.js";
+import { polygonBerührtPolygon, steckenzugSchneidetStreckenzug } from "../../tools/MatheTools.js";
 import { ShapeHelper } from "./Shape.js";
 
 export class TurtleClass extends Klass {
@@ -465,6 +465,7 @@ export class TurtleHelper extends FilledShapeHelper {
         if (this.initialHitPolygonDirty) {
             this.setupInitialHitPolygon();
             this.transformHitPolygon();
+            this.render();
         }
 
         let bb = this.displayObject.getBounds();
@@ -483,6 +484,10 @@ export class TurtleHelper extends FilledShapeHelper {
         // boundig boxes collide, so check further:
         if (this.hitPolygonDirty) this.transformHitPolygon();
         if (shapeHelper.hitPolygonDirty) shapeHelper.transformHitPolygon();
+
+        if(shapeHelper. hitPolygonTransformed.length == 2 && !this.isFilled){
+            return steckenzugSchneidetStreckenzug(this.hitPolygonTransformed, shapeHelper.hitPolygonTransformed);
+        }
 
         return polygonBerührtPolygon(this.hitPolygonTransformed, shapeHelper.hitPolygonTransformed);
 

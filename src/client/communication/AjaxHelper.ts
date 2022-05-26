@@ -68,7 +68,7 @@ export function ajax(url: string, request: any, successCallback: (response: any)
                 if (response.message != null) error = response.message;
                 if (response.error != null) error = response.error;
 
-                if (error == "Not logged in") {
+                if (error.indexOf("Not logged in") >= 0) {
                     // setTimeout(() => newLogin(url, request, successCallback, errorCallback), 10000);
                     // location.reload();
                 }

@@ -12,6 +12,9 @@
 
     <link rel='stylesheet' type='text/css' media='screen' href='js.webpack/javaOnline.css'>
 
+    <script src="lib/pako/pako.js"></script>
+    <script src="lib/zip.js/zip.min.js"></script>
+
     <script src="lib/p5.js/p5.js"></script>
     <script src="lib/jquery/jquery-3.3.1.js"></script>
     <script src="lib/monaco-editor/dev/vs/loader.js"></script>
@@ -174,6 +177,7 @@
                                 <div class="jo_tabheading" data-target="jo_pcodeTab">PCode</div>
                                 <div class="jo_tabheading jo_homeworkTabheading" data-target="jo_homeworkTab">Hausaufgaben</div>
                                 <div class="jo_tabheading-right jo_noHeading">
+                                    <img class="jo_db-busy" title="Warten auf Datenbank..." src="/htdocs/assets/projectexplorer/svg-loaders/grid.svg">
                                     <img class="jo_network-busy" src="assets/projectexplorer/compile.gif">
                                     <div class="img_clear-dark jo_button jo_active jo_console-clear" alt=""
                                         style="display: none; margin-right: 8px;" title="Console leeren"></div>

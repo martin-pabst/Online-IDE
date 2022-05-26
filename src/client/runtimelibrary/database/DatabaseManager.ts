@@ -31,12 +31,15 @@ export class DatabaseManagerClass extends Klass {
 
                 let ch: ConnectionHelper = new ConnectionHelper(<Main>module.main);
                 interpreter.pauseForInput();
+                module.main.getBottomDiv().showHideDbBusyIcon(true);
                 ch.connect(code, (error: string) => {
+                    module.main.getBottomDiv().showHideDbBusyIcon(false);
                     if(error == null){
                         let connectionRuntimeObject = new RuntimeObject(connectionType);
                         connectionRuntimeObject.intrinsicData["Helper"] = ch;
                         interpreter.resumeAfterInput({value: connectionRuntimeObject, type: connectionType}, true);
                     } else {
+                        interpreter.resumeAfterInput(null);
                         interpreter.throwException(error);
                     }
                 })

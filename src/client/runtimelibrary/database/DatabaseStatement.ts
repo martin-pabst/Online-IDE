@@ -29,7 +29,10 @@ export class DatabaseStatementClass extends Klass {
                 let interpreter = module.main.getInterpreter();
                 interpreter.pauseForInput();
 
+                module.main.getBottomDiv().showHideDbBusyIcon(true);
+
                 connectionHelper.executeQuery(query, (error, result) => {
+                module.main.getBottomDiv().showHideDbBusyIcon(false);
                     if(error != null){
                         interpreter.throwException(error);
                         return;
@@ -55,8 +58,10 @@ export class DatabaseStatementClass extends Klass {
 
                 let interpreter = module.main.getInterpreter();
                 interpreter.pauseForInput();
+                module.main.getBottomDiv().showHideDbBusyIcon(true);
 
                 connectionHelper.executeWriteStatement(query, (error) => {
+                    module.main.getBottomDiv().showHideDbBusyIcon(false);
                     if(error != null){
                         interpreter.throwException(error);
                         return;

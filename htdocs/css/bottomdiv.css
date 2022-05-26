@@ -234,6 +234,11 @@
     margin-right: 8px;
 }
 
+.jo_db-busy {
+    display: none;
+    margin-right: 8px;
+}
+
 .jo_console-error {
     color: var(--console-error);
 }

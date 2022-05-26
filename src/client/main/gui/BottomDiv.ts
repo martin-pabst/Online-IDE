@@ -80,5 +80,9 @@ export class BottomDiv {
 
     }
 
+    showHideDbBusyIcon(visible: boolean){
+        let displayValue: string = visible ? "block" : "none";
+        jQuery(".jo_db-busy").css("display", displayValue);
+    }
 
 }

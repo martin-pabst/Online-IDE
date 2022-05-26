@@ -554,6 +554,8 @@ export class NetworkManager {
             } else {
                 callback(null, null, response.message);
             }
+        }, (errormessage) => {
+            callback(null, null, errormessage);
         })
     }
 

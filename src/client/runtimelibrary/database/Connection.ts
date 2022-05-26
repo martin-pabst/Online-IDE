@@ -90,8 +90,10 @@ export class ConnectionHelper {
             this.longPollingListener = null;
         }
 
-        this.database.close();
-        this.database = null;
+        if(this.database != null){
+            this.database.close();
+            this.database = null;
+        }
 
     }
 

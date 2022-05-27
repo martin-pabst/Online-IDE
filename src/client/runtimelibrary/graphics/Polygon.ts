@@ -9,6 +9,7 @@ import { Interpreter } from "../../interpreter/Interpreter.js";
 import { ShapeHelper } from "./Shape.js";
 import { convexhull } from "../../tools/ConvexHull.js";
 import { GroupHelper } from "./Group.js";
+import { polygonEnthältPunkt, streckenzugEnthältPunkt } from "../..//tools/MatheTools.js";
 
 export class PolygonClass extends Klass {
 
@@ -402,5 +403,21 @@ export class PolygonHelper extends FilledShapeHelper {
         this.hitPolygonDirty = true;
         this.render();
     }
+
+    containsPoint(x: number, y: number) {
+
+        if (!this.displayObject.getBounds().contains(x, y)) return false;
+
+        if (this.hitPolygonInitial == null) return true;
+
+        if (this.hitPolygonDirty) this.transformHitPolygon();
+
+        if(this.closeAndFill){
+            return polygonEnthältPunkt(this.hitPolygonTransformed, { x: x, y: y });
+        } else {
+            return streckenzugEnthältPunkt(this.hitPolygonTransformed, { x: x, y: y });
+        }
+    }
+
 
 }

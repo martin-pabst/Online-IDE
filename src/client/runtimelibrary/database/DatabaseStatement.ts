@@ -27,9 +27,16 @@ export class DatabaseStatementClass extends Klass {
                 let connectionHelper: ConnectionHelper = o.intrinsicData["ConnectionHelper"];
 
                 let interpreter = module.main.getInterpreter();
-                interpreter.pauseForInput();
+                query = query.trim();
+                if(!query.toLocaleLowerCase().startsWith("select")){
+                    interpreter.throwException("Mit der Methode executeQuery können nur select-Anweisungen ausgeführt werden. Benutze für datenverändernde Anweisungen die Methode executeUpdate.");                    
+                    return null;
+                }
 
+                interpreter.pauseForInput();
+                
                 module.main.getBottomDiv().showHideDbBusyIcon(true);
+
 
                 connectionHelper.executeQuery(query, (error, result) => {
                 module.main.getBottomDiv().showHideDbBusyIcon(false);
@@ -57,6 +64,13 @@ export class DatabaseStatementClass extends Klass {
                 let connectionHelper: ConnectionHelper = o.intrinsicData["ConnectionHelper"];
 
                 let interpreter = module.main.getInterpreter();
+
+                query = query.trim();
+                if(query.toLocaleLowerCase().startsWith("select")){
+                    interpreter.throwException("Mit der Methode executeUpdate können nur datenverändernde Anweisungen ausgeführt werden. Benutze für select-Anweisungen die Methode executeQuery.");                    
+                    return;
+                }
+
                 interpreter.pauseForInput();
                 module.main.getBottomDiv().showHideDbBusyIcon(true);
 

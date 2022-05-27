@@ -6,7 +6,8 @@ import { Klass } from "../../compiler/types/Class.js";
 import { Method, Parameterlist } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { DatabaseLongPollingListener } from "../../tools/database/DatabaseLongPollingListener.js";
-import { voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
+import { stringPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
+import { PreparedStatementHelper } from "./DatabasePreparedStatement.js";
 
 export class ConnectionClass extends Klass {
 
@@ -30,6 +31,24 @@ export class ConnectionClass extends Klass {
                 return stmt;
 
             }, false, false, 'Erstellt ein Statement-Objekt, mit dem Statements zur Datenbank geschickt werden können.',
+            false));
+
+        this.addMethod(new Method("prepareStatement", new Parameterlist([
+            { identifier: "query", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+        ]), statementType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let query: string = parameters[1].value;
+
+                let ch: ConnectionHelper = o.intrinsicData["Helper"];
+
+                let stmt: RuntimeObject = new RuntimeObject(preparedStatementType);
+                stmt.intrinsicData["Helper"] = new PreparedStatementHelper(ch, query);
+
+                return stmt;
+
+            }, false, false, 'Erstellt ein PreparedStatement-Objekt, mit dem Anweisungen zur Datenbank geschickt werden können.',
             false));
 
         this.addMethod(new Method("close", new Parameterlist([

@@ -190,7 +190,7 @@ export class DatabaseTool {
         this.executeQuery(query, () => {
             this.executeWriteQueries(queries, successCallback, errorCallback);
         }, (message) => {
-            this.executeWriteQueries(queries, successCallback, (error) => {});
+            this.executeWriteQueries(queries, () => {}, (error) => {});
             errorCallback(message); // report first error
         });
 

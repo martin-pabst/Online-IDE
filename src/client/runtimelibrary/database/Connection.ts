@@ -82,19 +82,20 @@ export class ConnectionHelper {
     }
 
     connect(code: string, callback: (error: string) => void) {
+        let that = this;
         this.main.networkManager.fetchDatabaseAndToken(code, (dbData, token, error) => {
             if (error == null) {
-                this.token = token;
-                this.databaseData = dbData;
-                this.database = new DatabaseTool(this.main);
-                this.database.initializeWorker(dbData.templateDump, dbData.statements, (error) => {
+                that.token = token;
+                that.databaseData = dbData;
+                that.database = new DatabaseTool(that.main);
+                that.database.initializeWorker(dbData.templateDump, dbData.statements, (error) => {
 
-                    this.longPollingListener = new DatabaseLongPollingListener(this.main.networkManager,
-                        this.token, (firstNewStatementIndex, newStatements, rollbackToVersion) => {
-                            this.onServerSentStatements(firstNewStatementIndex, newStatements, rollbackToVersion);
+                    that.longPollingListener = new DatabaseLongPollingListener(that.main.networkManager,
+                        that.token, (firstNewStatementIndex, newStatements, rollbackToVersion) => {
+                            that.onServerSentStatements(firstNewStatementIndex, newStatements, rollbackToVersion);
                         })
 
-                    this.longPollingListener.longPoll();
+                    that.longPollingListener.longPoll();
                     callback(null);
                 });
             } else {
@@ -116,7 +117,13 @@ export class ConnectionHelper {
 
     }
 
+    skipNextServerSentStatement: boolean = false;
     onServerSentStatements(firstNewStatementIndex: number, newStatements: string[], rollbackToVersion: number) {
+
+        if(this.skipNextServerSentStatement){
+            this.skipNextServerSentStatement = false;
+            return;
+        }
 
         if (rollbackToVersion != null) {
             // Rollback
@@ -134,14 +141,20 @@ export class ConnectionHelper {
         callback?: (error: string) => void) {
 
         // connection already closed?
-        if (this.database == null) return;
+        if (this.database == null) {
+            if(callback) callback("Keine Datenbankverbindung.");
+            return;
+        }
 
         let currentDBVersion = this.databaseData.statements.length;
         let delta = currentDBVersion - firstStatementIndex + 1; // these statements are already there
         if (delta >= statements.length) {
+            if(callback) callback(null);
             return;
         }
         statements = statements.slice(delta);
+        this.databaseData.statements = this.databaseData.statements.concat(statements);
+
         this.database.executeWriteQueries(statements, () => {
             if (callback != null) callback(null);
         }, (errorMessage) => {
@@ -160,6 +173,7 @@ export class ConnectionHelper {
         let oldStatementIndex = that.databaseData.statements.length;
         this.database.executeQuery("explain " + query, () => {
 
+            that.skipNextServerSentStatement = true;
             that.main.networkManager.addDatabaseStatement(that.token, oldStatementIndex,
                 [query], (statementsBefore, new_version, errorMessage) => {
                     if (errorMessage != null) {
@@ -167,15 +181,25 @@ export class ConnectionHelper {
                         return;
                     }
 
-                    this.executeStatementsFromServer(oldStatementIndex + 1, statementsBefore.concat([query]), (error: string) => {
-                        if (error != null) callback(error, 0);
-                        if (!retrieveLastRowId) {
-                            callback(null, 0);
-                            return;
-                        }
-                        this.executeQuery("select last_insert_rowid()", (error, data) => {
-                            callback(null, data.values[0][0]);
+                    that.executeStatementsFromServer(oldStatementIndex + 1, statementsBefore, (error: string) => {
+
+                        that.database.executeWriteQueries([query], () => {
+                            that.databaseData.statements.push(query);
+                            if (!retrieveLastRowId) {
+                                callback(null, 0);
+                                return;
+                            }
+                            that.executeQuery("select last_insert_rowid()", (error, data) => {
+                                callback(null, data.values[0][0]);
+                            })
+                        }, (errorMessage) => {
+                            that.databaseData.statements.push(query);
+                            if (callback != null) callback(errorMessage, 0);
+                            // try rollback so that server doesn't store this statement
+                            that.main.networkManager.rollbackDatabaseStatement(that.token, that.databaseData.statements.length, () => {})
                         })
+                
+
                     });
 
                 })

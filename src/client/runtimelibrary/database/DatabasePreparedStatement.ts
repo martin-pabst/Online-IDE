@@ -88,11 +88,12 @@ export class DatabasePreparedStatementClass extends Klass {
                     interpreter.throwException(error);
                     return null;
                 }
-
+                
                 psh.connectionHelper.executeWriteStatement(psh.getQueryWithParameterValuesFilledIn(), (error) => {
                     module.main.getBottomDiv().showHideDbBusyIcon(false);
                     if (error != null) {
                         module.main.getInterpreter().resumeAfterInput(null);
+                        interpreter.resumeAfterInput(null);
                         interpreter.throwException(error);
                         return;
                     }

@@ -693,6 +693,16 @@ export type JAddStatementResponse = {
     message: string
 }
 
+export type JRollbackStatementRequest = {
+    token: string,
+    current_version: number
+}
+
+export type JRollbackStatementResponse = {
+    success: boolean,
+    message: string
+}
+
 /**
  * Messages from client to server
  */

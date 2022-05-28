@@ -1,6 +1,6 @@
 import { Main } from "../main/Main.js";
 import { ajax, PerformanceCollector } from "./AjaxHelper.js";
-import { WorkspaceData, FileData, SendUpdatesRequest, SendUpdatesResponse, CreateOrDeleteFileOrWorkspaceRequest, CRUDResponse, UpdateUserSettingsRequest, UpdateUserSettingsResponse, DuplicateWorkspaceRequest, DuplicateWorkspaceResponse, ClassData, DistributeWorkspaceRequest, DistributeWorkspaceResponse, CollectPerformanceDataRequest, SetRepositorySecretRequest, SetRepositorySecretResponse, GetDatabaseRequest, getDatabaseResponse, DatabaseData, GetTemplateRequest, ObtainSqlTokenRequest, ObtainSqlTokenResponse, JAddStatementRequest, JAddStatementResponse } from "./Data.js";
+import { WorkspaceData, FileData, SendUpdatesRequest, SendUpdatesResponse, CreateOrDeleteFileOrWorkspaceRequest, CRUDResponse, UpdateUserSettingsRequest, UpdateUserSettingsResponse, DuplicateWorkspaceRequest, DuplicateWorkspaceResponse, ClassData, DistributeWorkspaceRequest, DistributeWorkspaceResponse, CollectPerformanceDataRequest, SetRepositorySecretRequest, SetRepositorySecretResponse, GetDatabaseRequest, getDatabaseResponse, DatabaseData, GetTemplateRequest, ObtainSqlTokenRequest, ObtainSqlTokenResponse, JAddStatementRequest, JAddStatementResponse, JRollbackStatementRequest, JRollbackStatementResponse } from "./Data.js";
 import { Workspace } from "../workspace/Workspace.js";
 import { Module } from "../compiler/parser/Module.js";
 import { AccordionElement, AccordionPanel } from "../main/gui/Accordion.js";
@@ -641,6 +641,21 @@ export class NetworkManager {
 
         ajax(this.sqlIdeURL +  "jAddDatabaseStatement", request, (response: JAddStatementResponse) => {
             callback(response.statements_before, response.new_version, response.message);
+        })
+
+
+    }
+    
+    public rollbackDatabaseStatement(token: string, current_version: number, 
+        callback: (message: string) => void){
+
+        let request: JRollbackStatementRequest = {
+            token: token,
+            current_version: current_version
+        }
+
+        ajax(this.sqlIdeURL +  "jRollbackDatabaseStatement", request, (response: JRollbackStatementResponse) => {
+            callback(response.message);
         })
 
 

@@ -35,7 +35,7 @@ export class ConnectionClass extends Klass {
 
         this.addMethod(new Method("prepareStatement", new Parameterlist([
             { identifier: "query", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
-        ]), statementType,
+        ]), preparedStatementType,
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;

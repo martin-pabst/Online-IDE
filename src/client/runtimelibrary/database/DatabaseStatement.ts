@@ -29,6 +29,7 @@ export class DatabaseStatementClass extends Klass {
                 let interpreter = module.main.getInterpreter();
                 query = query.trim();
                 if(!query.toLocaleLowerCase().startsWith("select")){
+                    module.main.getInterpreter().resumeAfterInput(null);
                     interpreter.throwException("Mit der Methode executeQuery können nur select-Anweisungen ausgeführt werden. Benutze für datenverändernde Anweisungen die Methode executeUpdate.");                    
                     return null;
                 }
@@ -41,6 +42,7 @@ export class DatabaseStatementClass extends Klass {
                 connectionHelper.executeQuery(query, (error, result) => {
                 module.main.getBottomDiv().showHideDbBusyIcon(false);
                     if(error != null){
+                        module.main.getInterpreter().resumeAfterInput(null);
                         interpreter.throwException(error);
                         return;
                     }
@@ -67,6 +69,7 @@ export class DatabaseStatementClass extends Klass {
 
                 query = query.trim();
                 if(query.toLocaleLowerCase().startsWith("select")){
+                    module.main.getInterpreter().resumeAfterInput(null);
                     interpreter.throwException("Mit der Methode executeUpdate können nur datenverändernde Anweisungen ausgeführt werden. Benutze für select-Anweisungen die Methode executeQuery.");                    
                     return;
                 }
@@ -77,6 +80,7 @@ export class DatabaseStatementClass extends Klass {
                 connectionHelper.executeWriteStatement(query, (error) => {
                     module.main.getBottomDiv().showHideDbBusyIcon(false);
                     if(error != null){
+                        module.main.getInterpreter().resumeAfterInput(null);
                         interpreter.throwException(error);
                         return;
                     }

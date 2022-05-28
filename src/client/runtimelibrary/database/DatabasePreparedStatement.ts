@@ -28,6 +28,7 @@ export class DatabasePreparedStatementClass extends Klass {
 
                 let interpreter = module.main.getInterpreter();
                 if (!psh.query.toLocaleLowerCase().startsWith("select")) {
+                    module.main.getInterpreter().resumeAfterInput(null);
                     interpreter.throwException("Mit der Methode executeQuery können nur select-Anweisungen ausgeführt werden. Benutze für datenverändernde Anweisungen die Methode executeUpdate.");
                     return null;
                 }
@@ -47,6 +48,7 @@ export class DatabasePreparedStatementClass extends Klass {
                 psh.connectionHelper.executeQuery(psh.getQueryWithParameterValuesFilledIn(), (error, result) => {
                     module.main.getBottomDiv().showHideDbBusyIcon(false);
                     if (error != null) {
+                        module.main.getInterpreter().resumeAfterInput(null);
                         interpreter.throwException(error);
                         return;
                     }
@@ -60,18 +62,18 @@ export class DatabasePreparedStatementClass extends Klass {
             false));
 
         this.addMethod(new Method("executeUpdate", new Parameterlist([
-            { identifier: "query", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), intPrimitiveType,
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
-                let query: string = parameters[1].value;
 
                 let psh: PreparedStatementHelper = o.intrinsicData["Helper"];
 
                 let interpreter = module.main.getInterpreter();
-                if (!psh.query.toLocaleLowerCase().startsWith("select")) {
-                    interpreter.throwException("Mit der Methode executeQuery können nur select-Anweisungen ausgeführt werden. Benutze für datenverändernde Anweisungen die Methode executeUpdate.");
+                if (psh.query.toLocaleLowerCase().startsWith("select")) {
+                    module.main.getInterpreter().resumeAfterInput(null);
+                    interpreter.throwException("Mit der Methode execute können nur datenverändernde Anweisungen ausgeführt werden." + 
+                    "Benutze für select-Anweisungen die Methode executeQuery.");
                     return null;
                 }
 
@@ -82,6 +84,7 @@ export class DatabasePreparedStatementClass extends Klass {
                 let error = psh.checkQuery();
 
                 if (error != null) {
+                    interpreter.resumeAfterInput(null);
                     interpreter.throwException(error);
                     return null;
                 }
@@ -89,6 +92,7 @@ export class DatabasePreparedStatementClass extends Klass {
                 psh.connectionHelper.executeWriteStatement(psh.getQueryWithParameterValuesFilledIn(), (error) => {
                     module.main.getBottomDiv().showHideDbBusyIcon(false);
                     if (error != null) {
+                        module.main.getInterpreter().resumeAfterInput(null);
                         interpreter.throwException(error);
                         return;
                     }
@@ -107,7 +111,7 @@ export class DatabasePreparedStatementClass extends Klass {
 
             this.addMethod(new Method("set"+typeIdFirstUppercase, new Parameterlist([
                 { identifier: "parameterIndex", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-                { identifier: "value", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+                { identifier: "value", type: type, declaration: null, usagePositions: null, isFinal: true }
             ]), voidPrimitiveType,
                 (parameters) => {
 
@@ -118,6 +122,7 @@ export class DatabasePreparedStatementClass extends Klass {
 
                     let error = psh.setValue(value, index);
                     if (error != null) {
+                        module.main.getInterpreter().resumeAfterInput(null);
                         module.main.getInterpreter().throwException(error);
                     }
 
@@ -134,10 +139,11 @@ export class PreparedStatementHelper {
 
     parameterValues: string[];
     parameterPositions: number[];
+    query: string;
 
-    constructor(public connectionHelper: ConnectionHelper, public query: string) {
-        query = query.trim();
-        this.prepareStatement(query);
+    constructor(public connectionHelper: ConnectionHelper, query: string) {
+        this.query = query.trim();
+        this.prepareStatement(this.query);
     }
 
     prepareStatement(sql: string) {
@@ -147,7 +153,7 @@ export class PreparedStatementHelper {
 
         for (let i = 0; i < sql.length; i++) {
 
-            let c = sql.charAt[i];
+            let c = sql.charAt(i);
             switch (c) {
                 case "'": insideQuotation = !insideQuotation;
                     break;
@@ -172,13 +178,15 @@ export class PreparedStatementHelper {
             return "Es gibt nur die Parameterpositionen 1 bis " + this.parameterPositions.length + " in der SQL-Anweisung, keine Position " + position + ".";
         }
 
+        if(value == null){
+            this.parameterValues[position - 1] = "null";
+        } else
         if (typeof value == "string") {
             value = value.replace(/'/g, "''");
-            this.parameterValues[position - 1] = value;
-            return;
+            this.parameterValues[position - 1] = "'" + value + "'";
+        } else {
+            this.parameterValues[position - 1] = "" + value;
         }
-
-        this.parameterValues[position - 1] = "" + value;
         return;
     }
 

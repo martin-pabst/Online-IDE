@@ -87,6 +87,7 @@ import { ResultSetClass } from "../../runtimelibrary/database/ResultSet.js";
 import { DatabaseStatementClass } from "../../runtimelibrary/database/DatabaseStatement.js";
 import { ConnectionClass } from "../../runtimelibrary/database/Connection.js";
 import { DatabaseManagerClass } from "../../runtimelibrary/database/DatabaseManager.js";
+import { DatabasePreparedStatementClass } from "../../runtimelibrary/database/DatabasePreparedStatement.js";
 
 export type ExportedWorkspace = {
     name: string;
@@ -881,6 +882,7 @@ export class BaseModule extends Module {
 
         this.typeStore.addType(new ResultSetClass(this));
         this.typeStore.addType(new DatabaseStatementClass(this));
+        this.typeStore.addType(new DatabasePreparedStatementClass(this));
         this.typeStore.addType(new ConnectionClass(this));
         this.typeStore.addType(new DatabaseManagerClass(this));
 

@@ -1462,6 +1462,7 @@ export class Interpreter {
     oldState: InterpreterState;
     pauseForInput(){
         this.timerStopped = true;
+        this.additionalStepFinishedFlag = true;
         this.oldState = this.state;
         this.setState(InterpreterState.waitingForInput);
         this.showProgramPointerAndVariables();

@@ -5,7 +5,7 @@ import { Method, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { FilledShapeHelper } from "./FilledShape.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
-import { polygonBerührtPolygon, steckenzugSchneidetStreckenzug } from "../../tools/MatheTools.js";
+import { polygonBerührtPolygon, polygonEnthältPunkt, steckenzugSchneidetStreckenzug, streckenzugEnthältPunkt } from "../../tools/MatheTools.js";
 import { ShapeHelper } from "./Shape.js";
 
 export class TurtleClass extends Klass {
@@ -559,6 +559,26 @@ export class TurtleHelper extends FilledShapeHelper {
         return shape.containsPoint(x, y);
     }
 
+    containsPoint(x: number, y: number) {
+
+        if (this.initialHitPolygonDirty) {
+            this.setupInitialHitPolygon();
+            this.transformHitPolygon();
+            this.render();
+        }
+
+        if (!this.displayObject.getBounds().contains(x, y)) return false;
+
+        if (this.hitPolygonInitial == null) return true;
+
+        if (this.hitPolygonDirty) this.transformHitPolygon();
+
+        if(this.isFilled){
+            return polygonEnthältPunkt(this.hitPolygonTransformed, { x: x, y: y });
+        } else {
+            return streckenzugEnthältPunkt(this.hitPolygonTransformed, { x: x, y: y });
+        }
+    }
 
 
 }

@@ -10,8 +10,8 @@ import { CacheManager } from "../tools/database/CacheManager.js";
 
 export class NetworkManager {
 
-    sqlIdeURL = "http://localhost:6500/servlet/";
-    // sqlIdeURL = "https://www.sql-ide.de/servlet/";
+    // sqlIdeURL = "http://localhost:6500/servlet/";
+    sqlIdeURL = "https://www.sql-ide.de/servlet/";
 
     timerhandle: any;
 

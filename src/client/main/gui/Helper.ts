@@ -7,7 +7,7 @@ export class Helper {
 
     public static openHelper(text: string, targetElement: JQuery<HTMLElement>, direction: HelperDirection) {
 
-        let $helper = jQuery('.jo_arrow_box');
+        let $helper = jQuery('.jo_arrow_box'); 
         $helper.removeClass(['jo_arrow_box_left', 'jo_arrow_box_right', 'jo_arrow_box_top', 'jo_arrow_box_bottom']);
 
         $helper.addClass('jo_arrow_box_' + direction);

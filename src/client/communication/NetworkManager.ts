@@ -641,7 +641,7 @@ export class NetworkManager {
 
         ajax(this.sqlIdeURL +  "jAddDatabaseStatement", request, (response: JAddStatementResponse) => {
             callback(response.statements_before, response.new_version, response.message);
-        })
+        }, (message) => {callback([], 0, message)})
 
 
     }

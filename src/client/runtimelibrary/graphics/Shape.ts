@@ -41,7 +41,7 @@ export class ShapeClass extends Klass {
                     value.value = 0;
                     return;
                 }
- 
+
                 value.value = helper.angle;
 
             }, false, Visibility.protected, true, "Richtung"));
@@ -802,12 +802,21 @@ export abstract class ShapeHelper extends ActorHelper {
     bringToFront() {
         let container: PIXI.Container = <PIXI.Container>this.displayObject.parent;
         let highestIndex = container.children.length - 1;
-        container.setChildIndex(this.displayObject, highestIndex);
+
+        if (this.belongsToGroup != null) {
+            this.belongsToGroup.setChildIndex(this, highestIndex);
+        } else {
+            container.setChildIndex(this.displayObject, highestIndex);
+        }
     }
 
     sendToBack() {
-        let container: PIXI.Container = <PIXI.Container>this.displayObject.parent;
-        container.setChildIndex(this.displayObject, 0);
+        if (this.belongsToGroup != null) {
+            this.belongsToGroup.setChildIndex(this, 0);
+        } else {
+            let container: PIXI.Container = <PIXI.Container>this.displayObject.parent;
+            container.setChildIndex(this.displayObject, 0);
+        }
     }
 
     addToDefaultGroupAndSetDefaultVisibility() {

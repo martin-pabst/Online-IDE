@@ -304,6 +304,15 @@ export class GroupHelper extends ShapeHelper {
 
     }
 
+    setChildIndex(sh: ShapeHelper, index: number) {
+        let container: PIXI.Container = <PIXI.Container>this.displayObject;
+        container.setChildIndex(sh.displayObject, index);
+
+        let oldIndex = this.shapes.indexOf(sh.runtimeObject);
+        this.shapes.splice(oldIndex, 1);
+        this.shapes.splice(index, 0, sh.runtimeObject);
+}
+
 
     cacheAsBitmap(doCache: boolean) {
         let container = <PIXI.Container>this.displayObject;
@@ -451,7 +460,7 @@ export class GroupHelper extends ShapeHelper {
 
         let transform = new PIXI.Matrix().copyFrom(shapeHelper.displayObject.transform.worldTransform);
 
-        (<PIXI.Container>this.displayObject).removeChildAt(index);
+        (<PIXI.Container>this.displayObject).removeChild(shapeHelper.displayObject);
 
         let inverseStageTransform = new PIXI.Matrix().copyFrom(this.worldHelper.stage.localTransform);
         inverseStageTransform.invert();

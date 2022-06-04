@@ -892,6 +892,8 @@ export class StaticClass extends Type {
         let attributes = this.getAttributes(Visibility.private);
         let object = this.classObject;
 
+        if(attributes == null) return "{}";
+
         for (let i = 0; i < attributes.length; i++) {
 
             let attribute = attributes[i];

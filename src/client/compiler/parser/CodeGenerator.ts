@@ -702,7 +702,7 @@ export class CodeGenerator {
         if (attribute == null) return;
 
         // assumption: attribute != null
-        if (attribute.identifier == null || attribute.initialization == null) return;
+        if (attribute.identifier == null || attribute.initialization == null || attribute.resolvedType == null) return;
 
         if (attribute.isStatic) {
             this.pushStatements({

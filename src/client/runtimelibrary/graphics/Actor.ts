@@ -10,7 +10,7 @@ export class Actor extends Klass {
 
     constructor(module: Module) {
 
-        super("Actor", module, "Abstrakte Klasse mit überschreibbaren Methoden act (zur Implementierung eines Timers) und onKeyTyped, onKeyUp usw. zur entgegennahme von Tastaturereignissen");
+        super("Actor", module, "Abstrakte Klasse mit überschreibbaren Methoden act (zur Implementierung eines Timers) und onKeyTyped, onKeyUp usw. zur Entgegennahme von Tastaturereignissen");
 
         this.setBaseClass(<Klass>module.typeStore.getType("Object"));
         this.isAbstract = true;

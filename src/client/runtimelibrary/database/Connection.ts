@@ -218,7 +218,7 @@ export class ConnectionHelper {
         }
 
         this.database.executeQuery(query, (results: QueryResult[]) => {
-            callback(null, results[0]);
+            callback(null,results.length == 0 ? {columns: [], values: []} : results[0]);
         }, (error: string) => {
             callback(error, null);
         })

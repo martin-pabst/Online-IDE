@@ -125,6 +125,7 @@ export class ResultsetHelper {
 
     next(): boolean {
         this.cursor++;
+        if(this.result == null) return false;
         return this.cursor < this.result.values.length;
     }
 

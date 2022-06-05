@@ -27,9 +27,9 @@ export class KeyboardTool {
         element.on("keydown", (e) => {
             let key = e.key;
             if(key == null) return true;
-            if(e.shiftKey) key = "shift+" + key;
-            if(e.ctrlKey) key = "ctrl" + key;
-            if(e.altKey) key = "alt" + key;
+            // if(e.shiftKey) key = "shift+" + key;
+            // if(e.ctrlKey) key = "ctrl+" + key;
+            // if(e.altKey) key = "alt+" + key;
             that.pressedKeys[key.toLowerCase()] = true;
 
             for(let kpc of that.keyDownCallbacks){
@@ -50,9 +50,9 @@ export class KeyboardTool {
             if(key == null) return true;
             if(typeof key == "undefined") return;
 
-            if(e.shiftKey) key = "shift+" + key;
-            if(e.ctrlKey) key = "ctrl" + key;
-            if(e.altKey) key = "alt" + key;
+            // if(e.shiftKey) key = "shift+" + key;
+            // if(e.ctrlKey) key = "ctrl+" + key;
+            // if(e.altKey) key = "alt+" + key;
             that.pressedKeys[key.toLowerCase()] = false;
 
             for(let kpc of that.keyUpCallbacks){

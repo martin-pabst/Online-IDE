@@ -1,7 +1,7 @@
 import { Klass, Visibility } from "../../compiler/types/Class.js";
 import { Module } from "../../compiler/parser/Module.js";
 import { Method, Parameterlist, Attribute, Value, Type } from "../../compiler/types/Types.js";
-import { intPrimitiveType, doublePrimitiveType, voidPrimitiveType, booleanPrimitiveType, DoublePrimitiveType, stringPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
+import { intPrimitiveType, doublePrimitiveType, voidPrimitiveType, booleanPrimitiveType, DoublePrimitiveType, stringPrimitiveType, nullType } from "../../compiler/types/PrimitiveTypes.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { ArrayType } from "../../compiler/types/Array.js";
 import { ActorHelper } from "./Actor.js";
@@ -683,7 +683,6 @@ export class ShapeClass extends Klass {
 
             }, false, false, "Gibt ein Array zurück, das die vier Eckpunkte des Hit-Polygons in Form von Vector2-Ortsvektoren enthält. Bei den Klassen Rectangle, Triangle und Polygon sind dies die Eckpunkte.", false));
 
-
     }
 
 }
@@ -1249,6 +1248,10 @@ export abstract class ShapeHelper extends ActorHelper {
                 list.splice(index, 1);
             }
         }
+    }
+
+    getParentGroup(): RuntimeObject {
+        return this.belongsToGroup?.runtimeObject || null
     }
 
 

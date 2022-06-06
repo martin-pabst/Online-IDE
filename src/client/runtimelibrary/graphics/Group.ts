@@ -287,7 +287,19 @@ export class GroupClass extends Klass {
 
             }, false, false, 'Zeichnet alle Objekte dieser Group in ein Bild und verwendet fortan nur noch dieses Bild, ohne die Kindelemente der Group erneut zu zeichnen. Mit dieser Methode können komplexe Bilder (z.B. ein Sternenhimmel) aufgebaut und dann statisch gemacht werden. Nach dem Aufbau brauchen sie daher kaum mehr Rechenzeit.', false));
 
-
+            (<Klass>shapeType).addMethod(new Method("getParentGroup", new Parameterlist([
+            ]), this,
+                (parameters) => {
+    
+                    let o: RuntimeObject = parameters[0].value;
+                    let sh: ShapeHelper = o.intrinsicData["Actor"];
+    
+                    if (sh.testdestroyed("getParentGroup")) return;
+    
+                    return sh.getParentGroup();
+    
+                }, false, false, 'Gibt die Group zurück, in der sich das Grafikobjekt befindet, bzw. null, falls es in keiner Group ist.', false));
+    
     }
 
 }

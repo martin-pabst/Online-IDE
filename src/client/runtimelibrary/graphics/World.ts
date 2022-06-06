@@ -254,6 +254,19 @@ export class WorldClass extends Klass {
 
             }, false, false, 'Legt eine Gruppe fest, zu der ab jetzt alle neuen Objekte automatisch hinzugefügt werden. Falls null angegeben wird, werden neue Objekte zu keiner Gruppe automatisch hinzugefügt.', false));
 
+
+        this.addMethod(new Method("getDefaultGroup", new Parameterlist([
+        ]), groupType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let wh: WorldHelper = o.intrinsicData["World"];
+
+                return wh.getDefaultGroup();
+
+            }, false, false, 'Gibt die Gruppe zurück, zu der aktuell alle neuen Objekte automatisch hinzugefügt werden. Falls gerade keine defaultGroup festgelegt ist, wird null zurückgegeben.', false));
+
+
         this.addMethod(new Method("addMouseListener", new Parameterlist([
             { identifier: "listener", type: mouseListenerType, declaration: null, usagePositions: null, isFinal: true },
         ]), voidPrimitiveType,
@@ -1123,6 +1136,10 @@ export class WorldHelper {
             invoke([]);
         }
 
+    }
+
+    getDefaultGroup(): RuntimeObject {
+        return this.defaultGroup?.runtimeObject;
     }
 
 }

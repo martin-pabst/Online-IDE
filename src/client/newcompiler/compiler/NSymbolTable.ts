@@ -33,6 +33,39 @@ export class NSymbolTable {
         }
     }
 
+    getImitation(): NSymbolTable {
+        let imitation = new NSymbolTable(null, { line: 1, column: 1, length: 0 }, { line: 1, column: 10000, length: 0 });
+
+        imitation.beginsNewStackframe = true;
+        let st: NSymbolTable = this;
+
+        let maxStackPos = -1;
+
+        while (st != null) {
+            if (st.classContext != null) {
+                imitation.classContext = st.classContext;
+            }
+
+            st.variableMap.forEach((variable, identifier) => {
+
+                if (imitation.variableMap.get(identifier) == null) {
+                    imitation.variableMap.set(identifier, variable);
+                }
+
+                if (variable.stackPos > maxStackPos) {
+                    maxStackPos = variable.stackPos;
+                }
+
+            });
+
+            st = st.parent;
+
+        }
+
+        imitation.stackframeSize = maxStackPos + 1;
+
+        return imitation;
+    }
 
     
 }

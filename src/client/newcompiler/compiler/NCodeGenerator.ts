@@ -2,6 +2,7 @@ import { Error, ErrorLevel, QuickFix } from "src/client/compiler/lexer/Lexer.js"
 import { TextPosition, TokenType, TokenTypeReadable } from "src/client/compiler/lexer/Token.js";
 import { ASTNode, BinaryOpNode, ConstantNode, TermNode, UnaryOpNode } from "src/client/compiler/parser/AST.js";
 import { Module, ModuleStore } from "src/client/compiler/parser/Module.js";
+import { Heap } from "src/client/compiler/types/Types.js";
 import { NClass, NClassLike } from "../types/NClass.js";
 import { NPrimitiveType } from "../types/NewPrimitiveType.js";
 import { NType } from "../types/NewType.js";
@@ -11,6 +12,7 @@ import { NBlock, NFragment, NProgram } from "./NProgram.js";
 import { NSymbolTable } from "./NSymbolTable.js";
 
 export class NCodeGenerator {
+    
 
     moduleStore: ModuleStore;
     module: Module;
@@ -58,6 +60,12 @@ export class NCodeGenerator {
 
 
     }
+
+    startAdhocCompilation(module: Module, moduleStore: ModuleStore, symbolTable: NSymbolTable, heap: Heap):Error[] {
+        // TODO
+        return [];
+    }
+
 
     generateMain(isAdhocCompilation: boolean = false) {
 

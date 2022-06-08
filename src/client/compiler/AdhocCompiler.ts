@@ -1,20 +1,18 @@
-import { Error, Lexer } from "./lexer/Lexer.js";
-import { CodeGenerator } from "./parser/CodeGenerator.js";
-import { File, Module, ModuleStore } from "./parser/Module.js";
-import { Parser } from "./parser/Parser.js";
-import { TypeResolver, getArrayType } from "./parser/TypeResolver.js";
-import { SymbolTable } from "./parser/SymbolTable.js";
-import { Program } from "./parser/Program.js";
-import { Workspace } from "../workspace/Workspace.js";
-import { Heap } from "./types/Types.js";
-import { Main } from "../main/Main.js";
-import { TokenType } from "./lexer/Token.js";
 import { MainBase } from "../main/MainBase.js";
+import { NCodeGenerator } from "../newcompiler/compiler/NCodeGenerator.js";
+import { NProgram } from "../newcompiler/compiler/NProgram.js";
+import { NSymbolTable } from "../newcompiler/compiler/NSymbolTable.js";
+import { Error, Lexer } from "./lexer/Lexer.js";
+import { TokenType } from "./lexer/Token.js";
+import { Module, ModuleStore } from "./parser/Module.js";
+import { Parser } from "./parser/Parser.js";
+import { getArrayType } from "./parser/TypeResolver.js";
+import { Heap } from "./types/Types.js";
 
 export type Compilation = {
     errors: Error[],
-    program: Program,
-    symbolTable: SymbolTable
+    program: NProgram,
+    symbolTable: NSymbolTable
 }
 
 export class AdhocCompiler {
@@ -23,17 +21,17 @@ export class AdhocCompiler {
     lexer: Lexer;
     module: Module;
     parser: Parser;
-    codeGenerator: CodeGenerator;
+    codeGenerator: NCodeGenerator;
 
     constructor(private main: MainBase) {
         this.moduleStore = new ModuleStore(this.main, true);
         this.lexer = new Lexer();
         this.parser = new Parser(true);
-        this.codeGenerator = new CodeGenerator();
+        this.codeGenerator = new NCodeGenerator(main.getPrimitiveTypes());
         this.module = new Module(null, main);
     }
 
-    compile(code: string, moduleStore: ModuleStore, heap: Heap, symbolTable?: SymbolTable): Compilation {
+    compile(code: string, moduleStore: ModuleStore, heap: Heap, symbolTable?: NSymbolTable): Compilation {
 
         let t0 = performance.now();
 
@@ -41,7 +39,7 @@ export class AdhocCompiler {
 
         this.module.clear();
         if (symbolTable == null) {
-            symbolTable = new SymbolTable(null, { column: 1, line: 1, length: 0 }, { column: 1, line: 100, length: 0 });
+            symbolTable = new NSymbolTable(null, { column: 1, line: 1, length: 0 }, { column: 1, line: 100, length: 0 });
             symbolTable.beginsNewStackframe = true;
         } else {
             symbolTable = symbolTable.getImitation();
@@ -60,41 +58,21 @@ export class AdhocCompiler {
 
         // 3rd pass: resolve types and populate typeStores
 
-        for (let typenode of this.module.typeNodes) {
-            if (typenode.resolvedType == null) {
-                let resolvedTypeAndModule = moduleStore.getType(typenode.identifier);
-                if (resolvedTypeAndModule == null) {
-                    errors.push({
-                        text: "Der Datentyp " + typenode.identifier + " ist nicht bekannt.",
-                        position: typenode.position,
-                        level: "error"
-                    })
-                } else {
-                    typenode.resolvedType = getArrayType(resolvedTypeAndModule.type, typenode.arrayDimension);
-                }
-            }
-        }
+        // TODO!
 
         // 4th pass: code generation
 
         // let codeGeneratorErrors = this.codeGenerator
         //     .startAdhocCompilation(this.module, this.moduleStore, symbolTable, heap);
         let codeGeneratorErrors = this.codeGenerator
-            .startAdhocCompilation(this.module, moduleStore, symbolTable, heap);
+           .startAdhocCompilation(this.module, moduleStore, symbolTable, heap);
         errors = errors.concat(codeGeneratorErrors);
-
 
 
         if (errors.length == 0) {
 
-            let statements = this.module.mainProgram.statements;
-            for (let statement of statements) {
-                statement.stepFinished = false;
-            }
-
-            if (statements.length > 0 && statements[statements.length - 1].type == TokenType.programEnd) {
-                statements.splice(statements.length - 1, 1);
-            }
+            // TODO!
+           
 
         }
 

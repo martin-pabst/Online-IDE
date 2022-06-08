@@ -19,7 +19,6 @@ type TypeParameterInfo = {
     index: number
 };
 
-// TODO: find cyclic references in extends ...
 export class TypeResolver {
 
     static WATCHDOG: number = 5;

@@ -22,7 +22,6 @@ export class DatabasePreparedStatementClass extends Klass {
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
-                let query: string = parameters[1].value;
 
                 let psh: PreparedStatementHelper = o.intrinsicData["Helper"];
 

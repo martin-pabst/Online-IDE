@@ -19,7 +19,7 @@ export class GNGKreisClass extends Klass {
             value.value = Math.round(sh.r * sh.displayObject.scale.x); 
         }, false, Visibility.protected, false, "Radius des Kreises"));
 
-        this.setupAttributeIndicesRecursive();
+        this.setupAttributeIndicesRecursive();  
 
         this.addMethod(new Method("Kreis", new Parameterlist([]), null,
             (parameters) => {

@@ -255,7 +255,7 @@ export class GNGTurtleClass extends Klass {
             }, false, false, "Gibt y-Position der Turtle zurück.", false));
 
         this.addMethod(new Method("SichtbarkeitSetzen", new Parameterlist([
-            { identifier: "sichtbarkeit", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "sichtbarkeit", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), null,
             (parameters) => {
 

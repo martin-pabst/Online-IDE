@@ -139,7 +139,7 @@ export class GNGBaseFigurClass extends Klass {
             }, false, false, "Setzt den Drehwinkel der Figur. Der Winkel wird in Grad angegebenen, positive Werte bedeuten eine Drehung gegen den Uhrzeigersinn.", false));
 
         this.addMethod(new Method("SichtbarkeitSetzen", new Parameterlist([
-            { identifier: "sichtbarkeit", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "sichtbarkeit", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), null,
             (parameters) => {
 

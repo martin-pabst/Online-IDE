@@ -3,12 +3,6 @@ import { NRuntimeObject } from "../NRuntimeObject.js";
 
 export class NThrowable extends NRuntimeObject {
 
-    // Online-IDE will set __class and __fai
-    static __class: any;    // class-Object
-    static __fai: number;   // first attribute index
-
-    listIntern: any[];                      // not visible from java
-
     __getSignature(): string {
         return "class Throwable";
     }
@@ -16,11 +10,11 @@ export class NThrowable extends NRuntimeObject {
         return {
 
             "public Throwable(String message)": (thread: NThread, message: string) => {
-                this.__a[NThrowable.__fai + 0] = message;
+                this.__a[this.__fai + 0] = message;
                 return this;
             },
             "public getMessage()": (thread: NThread) => {
-                return this.__a[NThrowable.__fai + 0]    
+                return this.__a[this.__fai + 0]    
             }
         }
     }

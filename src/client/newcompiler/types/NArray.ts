@@ -4,9 +4,7 @@ import { NExpression, NType } from "./NewType.js";
 export class NArray extends NType {
 
     elementType: NType;
-    dimensions: number;
-
-
+    dimension: number;
 
     getCastExpression(otherType: NType): NExpression {
         throw new Error("Method not implemented.");

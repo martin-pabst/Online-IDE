@@ -280,7 +280,7 @@ export class NClass extends NClassLike {
         mi.returnType = returnType;
         mi.isStatic = isStatic;
         mi.program = new NProgram(null, null, this.identifier + "." + identifier);
-        mi.program.invoke = invoke;
+        mi.invoke = invoke;
         mi.setupSignature();
         this.addMethod(mi);
         return mi;
@@ -300,6 +300,7 @@ export class NClass extends NClassLike {
         for(let m of this.methodInfoList){
             this.runtimeObjectPrototype[m.signature] = m.program;
         }
+        this.runtimeObjectPrototype.__class = this;
     }
 
 

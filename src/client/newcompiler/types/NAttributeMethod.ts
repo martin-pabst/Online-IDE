@@ -22,6 +22,7 @@ export class NMethodInfo {
     annotation?: string;
 
     program?: NProgram;
+    invoke?: any; // (thread: NThread, param1, ..., paramN) => ReturnType
 
     expression?: string;    // e.g. "$this.charAt($1)" 
 

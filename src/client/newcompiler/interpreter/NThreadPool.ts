@@ -2,6 +2,7 @@ import { ModuleStore, Module } from "src/client/compiler/parser/Module.js";
 import { TextPositionWithModule } from "src/client/compiler/types/Types.js";
 import { NProgram, NStep } from "../compiler/NProgram.js";
 import { NRuntimeObject, NStaticClassObject } from "../NRuntimeObject.js";
+import { NMethodInfo } from "../types/NAttributeMethod.js";
 import { NClass } from "../types/NClass.js";
 import { NInterpreter } from "./NInterpreter.js";
 
@@ -94,9 +95,9 @@ export class NThread {
                 // because callMethod or returnFromMethod may have been called since from within 
                 // step.run
             }
-        } catch(exception){
+        } catch (exception) {
             let exceptionObject: NRuntimeObject;
-            if(exception["javaClass"] != null){
+            if (exception["javaClass"] != null) {
                 exceptionObject = this.threadPool.getExceptionObject(exception.javaClass, exception.message);
             } else {
                 exceptionObject = this.threadPool.getExceptionObject("RuntimeException", exception + "");
@@ -107,7 +108,7 @@ export class NThread {
         return this.state;
     }
 
-    
+
 
     isSingleStepCompleted() {
         return this.programStack.length < this.stepEndsWhenProgramstackLengthLowerOrEqual ||
@@ -143,7 +144,7 @@ export class NThread {
 
 
     throwException(exception: NRuntimeObject) {
-        let exceptionClass: NClass = exception.__getClass();
+        let exceptionClass: NClass = exception.__class;
         let className = exceptionClass.identifier;
         let classNames = exceptionClass.allExtendedImplementedTypes;
 
@@ -205,9 +206,13 @@ export class NThread {
             this.stack.pop();
         }
 
-        if (returnValue != null) this.stack.push(returnValue);
+        let callback = this.programStack.pop().callbackAfterFinished;
+        if (callback != null) {
+            callback(returnValue);
+        } else {
+            if (returnValue != null) this.stack.push(returnValue);
+        }
 
-        this.programStack.pop();
         if (this.programStack.length > 0) {
             this.currentProgramState = this.programStack[this.programStack.length - 1];
             if (this.threadPool.executeMode == NExecuteMode.singleSteps && this.currentProgramState.currentStepList == this.currentProgramState.program.stepsMultiple) {
@@ -251,6 +256,26 @@ export class NThread {
         this.currentProgramState = state;
     }
 
+    callJsMethod(parameterCount: number, invoke: any, callbackAfterFinished?: (value: any) => void) {
+        let params: any[] = Array(parameterCount + 1);      // + 1 because of thread
+        for (let i = 1; i <= parameterCount + 1; i++) {
+            params[parameterCount - i] = this.stack.pop();
+        }
+
+        // Alternative: splice
+        // let params = this.stack.splice(this.stack.length - (parameterCount + 1));
+
+        let returnValue = invoke.call(this.stack.pop(), params);
+
+        if (callbackAfterFinished != null) {
+            callbackAfterFinished(returnValue);
+        } else {
+            if (typeof returnValue != "undefined") {
+                this.stack.push(returnValue);
+            }
+        }
+    }
+
     /**
      * Preconditions: 
      * a) this is on the stack
@@ -260,24 +285,24 @@ export class NThread {
      */
     callVirtualMethod(parameterCount: number, signature: string, callbackAfterFinished?: (value: any) => void) {
         let runtimeObject = this.stack[this.stack.length - 2 - parameterCount]; // 2 because of [this, thread, parameter 1, ..., parameter n]
-        let method = runtimeObject[signature];
-        if (method.invoke != null) {
-            this.callCompiledMethod(method, (returnValue) => {
-                if (callbackAfterFinished != null) {
-                    callbackAfterFinished(returnValue);
-                } else {
-                    if (typeof returnValue != "undefined") {
-                        this.stack.push(returnValue);
-                    }
-                }
-            });
+        let method: NMethodInfo = runtimeObject[signature];
+        if (method.invoke == null) {
+            this.callCompiledMethod(method.program, callbackAfterFinished);
         } else {
-            let params: any[] = Array(parameterCount + 1);      // + 1 because of thread
-            for (let i = 1; i <= parameterCount + 1; i++) {
-                params[parameterCount - i] = this.stack.pop();
-            }
+            this.callJsMethod(parameterCount, method.invoke, callbackAfterFinished);
+        }
+    }
 
-            let returnValue = method.invoke.call(this.stack.pop(), params);
+    callVirtualMethodFromJs(runtimeObject: any, signature: string, parameters: any[], callbackAfterFinished?: (value: any) => void) {
+        // let runtimeObject = this.stack[this.stack.length - 2 - parameterCount]; // 2 because of [this, thread, parameter 1, ..., parameter n]
+        let method: NMethodInfo = runtimeObject[signature];
+        if (method.invoke == null) {
+            this.stack.push(runtimeObject, this, ...parameters);
+            this.callCompiledMethod(method.program, callbackAfterFinished);
+        } else {
+            parameters.unshift(this);
+
+            let returnValue = method.invoke.call(runtimeObject, parameters);
 
             if (callbackAfterFinished != null) {
                 callbackAfterFinished(returnValue);
@@ -288,6 +313,8 @@ export class NThread {
             }
         }
     }
+
+
 
     callStaticMethod(classIdentifier: string, methodSignature: string) {
 
@@ -311,9 +338,9 @@ export class NThread {
 
     cast(object: NRuntimeObject, klassOrInterface: string): NRuntimeObject {
         //@ts-ignore
-        if(object != null && (<NClass>object.__class).allExtendedImplementedTypes.indexOf(klassOrInterface) < 0){
+        if (object != null && (<NClass>object.__class).allExtendedImplementedTypes.indexOf(klassOrInterface) < 0) {
             //@ts-ignore
-            throw { class: "ClassCastException", message: "Die Klasse " + object.__class.identifier + " " + " kann nicht nach " + klassOrInterface + " gecastet werden."}
+            throw { class: "ClassCastException", message: "Die Klasse " + object.__class.identifier + " " + " kann nicht nach " + klassOrInterface + " gecastet werden." }
         }
         return object;
     }
@@ -520,12 +547,12 @@ export class NThreadPool {
 
         let exceptionStaticClass = this.staticClassObjects[javaClass];
         let klass = exceptionStaticClass.__class;
-        let exception:NRuntimeObject = this.makeObject(klass);
+        let exception: NRuntimeObject = this.makeObject(klass);
         exception.__a.push(message);
         return exception;
     }
 
-    makeObject(klass: NClass): NRuntimeObject{
+    makeObject(klass: NClass): NRuntimeObject {
         let obj = Object.create(klass.runtimeObjectPrototype);
         obj.__a = [];
         return obj;

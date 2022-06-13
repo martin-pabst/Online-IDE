@@ -87,7 +87,7 @@ export class NFloatType extends NClass {
         super("Float");
         
         this.extends = pt.Object;
-        this.unboxableAs = pt.int;
+        this.unboxableAs = pt.float;
         let that = this;
 
         this.addAttribute(new NAttributeInfo("value", pt.float, false, NVisibility.private, false));
@@ -95,6 +95,86 @@ export class NFloatType extends NClass {
         this.addJavascriptMethod("floatValue", [], pt.int, false, (thread: any, This: any) => { return This._att[0]; })
         this.addJavascriptMethod("valueOf", [new NVariable("f", pt.float)], this, true, 
             (thread: any, This: any, i: number) => { 
+                let obj = Object.create(that.runtimeObjectPrototype);
+                obj.__att = [i];
+                return obj;    
+             });
+
+        //@ts-ignore
+        this.runtimeObjectPrototype = {};
+        this.runtimeObjectPrototypeIsClass = false;
+        this.setupVirtualMethodTable();
+    }
+
+}
+
+export class NDoubleType extends NClass {
+
+    constructor(pt: NPrimitiveTypeManager){
+        super("Double");
+        
+        this.extends = pt.Object;
+        this.unboxableAs = pt.double;
+        let that = this;
+
+        this.addAttribute(new NAttributeInfo("value", pt.double, false, NVisibility.private, false));
+
+        this.addJavascriptMethod("doubleValue", [], pt.double, false, (thread: any, This: any) => { return This._att[0]; })
+        this.addJavascriptMethod("valueOf", [new NVariable("d", pt.double)], this, true, 
+            (thread: any, This: any, i: number) => { 
+                let obj = Object.create(that.runtimeObjectPrototype);
+                obj.__att = [i];
+                return obj;    
+             });
+
+        //@ts-ignore
+        this.runtimeObjectPrototype = {};
+        this.runtimeObjectPrototypeIsClass = false;
+        this.setupVirtualMethodTable();
+    }
+}
+
+export class NBooleanType extends NClass {
+
+    constructor(pt: NPrimitiveTypeManager){
+        super("Boolean");
+        
+        this.extends = pt.Object;
+        this.unboxableAs = pt.boolean;
+        let that = this;
+
+        this.addAttribute(new NAttributeInfo("value", pt.boolean, false, NVisibility.private, false));
+
+        this.addJavascriptMethod("booleanValue", [], pt.boolean, false, (thread: any, This: any) => { return This._att[0]; })
+        this.addJavascriptMethod("valueOf", [new NVariable("b", pt.boolean)], this, true, 
+            (thread: any, This: any, i: boolean) => { 
+                let obj = Object.create(that.runtimeObjectPrototype);
+                obj.__att = [i];
+                return obj;    
+             });
+
+        //@ts-ignore
+        this.runtimeObjectPrototype = {};
+        this.runtimeObjectPrototypeIsClass = false;
+        this.setupVirtualMethodTable();
+    }
+
+}
+
+export class NCharacterType extends NClass {
+
+    constructor(pt: NPrimitiveTypeManager){
+        super("Boolean");
+        
+        this.extends = pt.Object;
+        this.unboxableAs = pt.char;
+        let that = this;
+
+        this.addAttribute(new NAttributeInfo("value", pt.char, false, NVisibility.private, false));
+
+        this.addJavascriptMethod("charValue", [], pt.char, false, (thread: any, This: any) => { return This._att[0]; })
+        this.addJavascriptMethod("valueOf", [new NVariable("c", pt.char)], this, true, 
+            (thread: any, This: any, i: string) => { 
                 let obj = Object.create(that.runtimeObjectPrototype);
                 obj.__att = [i];
                 return obj;    

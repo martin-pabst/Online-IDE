@@ -4,7 +4,7 @@ import { VoidType, NullType, NIntPrimitiveType, NLongPrimitiveType, NFloatPrimit
 import { NType } from "./NewType.js";
 import { NObjectType } from "../runtime/NObjectType.js";
 import { NStringType } from "../runtime/StringType.js";
-import { NIntegerType } from "../runtime/BoxedTypes.js";
+import { NBooleanType, NCharacterType, NDoubleType, NFloatType, NIntegerType, NLongType } from "../runtime/BoxedTypes.js";
 
 export class NPrimitiveTypeManager {
     void: VoidType = new VoidType();
@@ -19,12 +19,17 @@ export class NPrimitiveTypeManager {
     Object: NObjectType = new NObjectType(this);
     String: NStringType = new NStringType(this);
 
+    // Boxed types
     Integer: NIntegerType = new NIntegerType(this);
-    
+    Long: NLongType = new NLongType(this);
+    Float: NFloatType = new NFloatType(this);
+    Double: NDoubleType = new NDoubleType(this);
+    Boolean: NBooleanType = new NBooleanType(this);
+    Character: NCharacterType = new NCharacterType(this);
 
     allPrimitiveTypes: NType[] = [this.void, this.null, this.int, this.float, this.double, this.boolean, this.char, 
         this.String, this.Object,
-        this.Integer];
+        this.Integer, this.Long, this.Float, this.Double, this.Boolean, this.Character];
 
     stringEscapeCharacters: {[char: string]: string} = {
         "\n" : "\\n",

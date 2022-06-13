@@ -31,7 +31,7 @@ export class NFragment {
 
     static destinationCounter: number = 0;
 
-    lastPartIsExpression: boolean = true;    // if this is false then last part is statement
+    lastPartIsJSExpression: boolean = true;    // if this is false then last part pushed value on stack
     hasSideEffects: boolean = false;
     isAssignable: boolean = false;
 
@@ -44,11 +44,11 @@ export class NFragment {
     applyUnaryOperator(operator: TokenType) {
         let operatorString = TokenTypeReadable[operator];
 
-        if (this.lastPartIsExpression) {
+        if (this.lastPartIsJSExpression) {
             this.parts[this.parts.length - 1].p = operatorString + this.parts[this.parts.length - 1].p;
         } else {
             this.addPart(`${operatorString}s.pop()`);
-            this.lastPartIsExpression = true;
+            this.lastPartIsJSExpression = true;
         }
     }
 
@@ -57,23 +57,23 @@ export class NFragment {
     }
 
     discardTopOfStack() {
-        if (this.parts.length > 0 && !this.lastPartIsExpression) {
+        if (this.parts.length > 0 && !this.lastPartIsJSExpression) {
             let lastpart = this.parts[this.parts.length - 1].p;
             if (lastpart.startsWith("s.push(") && lastpart.endsWith(");")) {
                 this.parts[this.parts.length - 1].p = lastpart.substring(7, lastpart.length - 2);
-                this.lastPartIsExpression = true;
+                this.lastPartIsJSExpression = true;
                 return;
             }
         } else {
             this.addPart("pop()");
-            this.lastPartIsExpression = true;
+            this.lastPartIsJSExpression = true;
         }
     }
 
     applyBinaryOperator(rightFragment: NFragment, operator: TokenType, resultType: NType) {
 
-        let leftExpression = this.lastPartIsExpression ? this.parts.pop().p : "s.pop()"
-        let rightExpression = rightFragment.lastPartIsExpression ? rightFragment.parts.pop().p : "s.pop()"
+        let leftExpression = this.lastPartIsJSExpression ? this.parts.pop().p : "s.pop()"
+        let rightExpression = rightFragment.lastPartIsJSExpression ? rightFragment.parts.pop().p : "s.pop()"
 
 
         this.parts = rightFragment.parts.concat(this.parts);
@@ -84,22 +84,22 @@ export class NFragment {
             this.addPart(leftExpression + " " + TokenTypeReadable[operator] + " " + rightExpression);
         }
 
-        this.lastPartIsExpression = true;
+        this.lastPartIsJSExpression = true;
         this.dataType = resultType;
     }
 
     applyTernaryOperator(secondFragment: NFragment, thirdFragment: NFragment, type: NType) {
 
 
-        if(secondFragment.parts.length == 1 && secondFragment.lastPartIsExpression && thirdFragment.parts.length == 1 && thirdFragment.lastPartIsExpression){
-            let leftExpression = this.lastPartIsExpression ? this.parts.pop().p : "s.pop()"
+        if(secondFragment.parts.length == 1 && secondFragment.lastPartIsJSExpression && thirdFragment.parts.length == 1 && thirdFragment.lastPartIsJSExpression){
+            let leftExpression = this.lastPartIsJSExpression ? this.parts.pop().p : "s.pop()"
             this.addPart(`(${leftExpression}) ? (${secondFragment.parts.pop()}):(${thirdFragment.parts.pop()}) `);
-            this.lastPartIsExpression = true;
+            this.lastPartIsJSExpression = true;
             this.dataType = type;
             return;
         }
 
-        let leftExpression = this.lastPartIsExpression ? this.parts.pop().p : "s.pop()"
+        let leftExpression = this.lastPartIsJSExpression ? this.parts.pop().p : "s.pop()"
         this.addPart(`if(${leftExpression})`);
         let jumpDestA = this.jumpToAndGetJumpDestination();
         thirdFragment.ensureLastPartIsPushedToStack();
@@ -112,7 +112,7 @@ export class NFragment {
         this.addJumpDestination(jumpDestB);
         
         this.dataType = type;
-        this.lastPartIsExpression = false;
+        this.lastPartIsJSExpression = false;
     }
 
     addJumpDestination(destination?: string): string {
@@ -141,7 +141,7 @@ export class NFragment {
     }
 
     ensureLastPartIsPushedToStack() {
-        if (this.lastPartIsExpression) {
+        if (this.lastPartIsJSExpression) {
             this.addPart(`s.push(${this.parts.pop()})`);
         }
     }
@@ -162,12 +162,12 @@ export class NFragment {
         this.addPart(`thread.callVirtualMethod(${parameterValues.length},${signature});`)
 
         this.dataType = returnType;
-        this.lastPartIsExpression = false;
+        this.lastPartIsJSExpression = false;
 
     }
 
     checkClassCasting(typeTo: NClassLike) {
-        if(this.lastPartIsExpression){
+        if(this.lastPartIsJSExpression){
             this.parts[this.parts.length - 1].p = `thread.cast(${this.parts[this.parts.length - 1].p},${typeTo.identifier})`;
         } else {
             this.addPart(`thread.cast(s[s.length - 1],${typeTo.identifier})`);
@@ -176,11 +176,11 @@ export class NFragment {
     }
 
     applyCastExpression(expression: string, typeTo: NType) {
-        if(this.lastPartIsExpression){
+        if(this.lastPartIsJSExpression){
             this.parts[this.parts.length - 1].p = expression.replace("$1", this.parts[this.parts.length - 1].p);
         } else {
             this.addPart(expression.replace("$1", "s.pop()"));
-            this.lastPartIsExpression = true;
+            this.lastPartIsJSExpression = true;
         }
         this.dataType = typeTo;
     }
@@ -209,11 +209,6 @@ export class NProgram {
     stepsSingle: NStep[] = [];
     stepsMultiple: NStep[] = [];
     helper: NHelper[] = [];                  // (function or Program or class)[]
-
-    /**
-     * If program is a javascript function:
-     */
-    invoke: any; // function with arbitrary signature...
 
     // only at compile time:
     fragments: NFragment[] = [];

@@ -115,7 +115,7 @@ export class NCodeGenerator {
             // If last Statement has value which is not used further then pop this value from stack.
             // e.g. statement 12 + 17 -7;
             // Parser issues a warning in this case, see Parser.checkIfStatementHasNoEffekt
-            if (!nextFragment.lastPartIsExpression) {
+            if (!nextFragment.lastPartIsJSExpression) {
 
                 nextFragment.discardTopOfStack();
 

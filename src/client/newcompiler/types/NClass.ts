@@ -3,6 +3,7 @@ import { TokenType } from "../../compiler/lexer/Token.js";
 import { NProgram } from "../compiler/NProgram.js";
 import { NRuntimeObject, NStaticClassObject } from "../NRuntimeObject.js";
 import { NMethodInfo, NAttributeInfo, NParameterlist, NVariable } from "./NAttributeMethod.js";
+import { NPrimitiveType } from "./NewPrimitiveType.js";
 import { NExpression, NType } from "./NewType.js";
 import { NVisibility } from "./NVisibility.js";
 
@@ -29,7 +30,7 @@ export abstract class NClassLike extends NType {
         return otherType == this;
     }
 
-    abstract bindGenericParameters(mapOldToNewGenericParameters: Map<NClassLike, NClassLike>): NClassLike;
+    abstract buildShallowGenericCopy(mapOldToNewGenericParameters: Map<NClassLike, NClassLike>): NClassLike;
 
     bindGenericParametersHelper(mapOldToNewGenericParameters: Map<NClassLike, NClassLike>,
         classLikes: NClassLike[]): NClassLike[] {
@@ -38,7 +39,7 @@ export abstract class NClassLike extends NType {
 
         for (let gp of classLikes) {
 
-            let newGP = gp.bindGenericParameters(mapOldToNewGenericParameters);
+            let newGP = gp.buildShallowGenericCopy(mapOldToNewGenericParameters);
             if (newGP != gp) copyNecessary = true;
             newList.push(newGP);
         }
@@ -57,14 +58,14 @@ export abstract class NClassLike extends NType {
                     newVariableTypes.push(type);
                     continue;
                 }
-                let newType = type.bindGenericParameters(typeMap);
+                let newType = type.buildShallowGenericCopy(typeMap);
                 if (newType != type) newMethodNecessary = true;
                 newVariableTypes.push(newType);
             }
 
             let newReturnType = m.returnType;
             if (newReturnType != null && (newReturnType instanceof NClassLike)) {
-                newReturnType = newReturnType.bindGenericParameters(typeMap);
+                newReturnType = newReturnType.buildShallowGenericCopy(typeMap);
                 if (newReturnType != m.returnType) newMethodNecessary = true;
             }
 
@@ -104,7 +105,7 @@ export class NClass extends NClassLike {
 
     /**
      * If you bind a generic class like e.g. ArrayList<Integer>
-     * then a new NClass-object will be instantiated which a shallow copy of ArrayList class object. It
+     * then a new NClass-object will be instantiated which is a shallow copy of ArrayList class object. It
      * has a reference to it in field isParameterizedTypeOf and new values in fields
      * genericParameters, extends and implements. 
      * 
@@ -116,6 +117,7 @@ export class NClass extends NClassLike {
      */
     private methodInfoList: NMethodInfo[] = [];
     private attributeInfoList: NAttributeInfo[] = [];
+
     genericParametersPropagated: boolean = true;
 
     isAbstract: boolean = false;
@@ -126,7 +128,8 @@ export class NClass extends NClassLike {
 
     runtimeObjectPrototype: NRuntimeObject;              // contains all methods and reference to class object; contains NOT __a 
     runtimeObjectPrototypeIsClass: boolean = false;     // true for system classes
-    initialAttributeValues: any[];                      // used only vor non-system classes
+    initialAttributeValues: any[];                      // used only for non-system classes
+    firstAttributeIndex: number = null;                 // attributes prior to this index belong to base class
 
     getStaticClassObject(): NStaticClassObject{
         let sco = new NStaticClassObject(this, this.initialStaticValues);
@@ -199,7 +202,13 @@ export class NClass extends NClassLike {
         return null;
     }
 
-    bindGenericParameters(mapOldToNewGenericParameters: Map<NClassLike, NClassLike>): NClassLike {
+    /**
+     * If NLibraryCompiler or NTypeResolver encounters a generic variant of a class then it only instantiates a shallow copy of it 
+     * (that is: without attributes and methods).
+     * Only if subsequently the CodeGenerator encounters a method invocation or a attribute access for this type then it calls bindGenericParametersDeep
+     * which then sets up attributeInfoList and methodInfoList for the generic type.
+     */
+     buildShallowGenericCopy(mapOldToNewGenericParameters: Map<NClassLike, NClassLike>): NClassLike {
 
 
         let newGenericParameterTypes = this.bindGenericParametersHelper(mapOldToNewGenericParameters, this.genericParameters);
@@ -221,7 +230,12 @@ export class NClass extends NClassLike {
 
     }
 
-    fullyBindGenericParameters() {
+    /**
+     * If NTypeResolver encounters a generic variant of a class then it only instantiates a shallow copy of it without attributes and methods.
+     * Only if subsequently the CodeGenerator encounters a method invocation or a attribute access for this type then it calls bindGenericParametersDeep
+     * which then sets up attributeInfoList and methodInfoList for the generic type.
+     */
+    bindGenericParametersDeep() {
 
         let typeMap: Map<NClassLike, NClassLike> = new Map();
         for (let i = 0; i < this.genericParameters.length; i++) {
@@ -230,7 +244,7 @@ export class NClass extends NClassLike {
 
         for (let a of this.isParameterizedTypeOf.attributeInfoList) {
             if (a.type instanceof NClassLike) {
-                let newType = a.type.bindGenericParameters(typeMap);
+                let newType = a.type.buildShallowGenericCopy(typeMap);
                 if (newType != a.type) {
                     let newAtt = a.getCopy();
                     newAtt.type = newType;
@@ -246,7 +260,7 @@ export class NClass extends NClassLike {
 
         let newExtends = this.extends;
         if (newExtends != null && (newExtends instanceof NClass)) {
-            newExtends = <NClass>newExtends.bindGenericParameters(typeMap);
+            newExtends = <NClass>newExtends.buildShallowGenericCopy(typeMap);
         }
 
         this.implements = <NInterface[]>this.bindGenericParametersHelper(typeMap, this.implements);
@@ -296,13 +310,51 @@ export class NClass extends NClassLike {
         this.initialStaticValues.push(initialValue);
     }
 
-    setupVirtualMethodTable() {
+    setupRuntimeObjectPrototype() {
         for(let m of this.methodInfoList){
             this.runtimeObjectPrototype[m.signature] = m.program;
         }
         this.runtimeObjectPrototype.__class = this;
     }
 
+    computeFirstAttributeIndexAndInitialAttributeValues(){
+        this.firstAttributeIndex = 0;
+        this.initialAttributeValues = [];
+        if(this.extends != null){
+            if(this.extends.firstAttributeIndex == null) this.extends.computeFirstAttributeIndexAndInitialAttributeValues();
+            this.firstAttributeIndex = this.extends.firstAttributeIndex + this.extends.attributeInfoList.length;
+            this.initialAttributeValues = this.extends.initialAttributeValues.slice();
+        }
+        for(let ai of this.attributeInfoList){
+            if(ai.type.isPrimitive()){
+                this.initialAttributeValues.push((<NPrimitiveType>ai.type).initialValue);
+            } else {
+                this.initialAttributeValues.push(null);
+            }
+        }
+    }
+
+    /**
+     * Call this for each class BEFORE resolving generic types
+     * but after setting up method signatures
+     */
+    markVirtualMethodsInBaseClasses(){
+        let baseClass: NClass = this.extends;
+        while(baseClass != null){
+            for(let mi of this.methodInfoList){
+                for(let baseMi of baseClass.methodInfoList){
+                    if(baseMi.signature == mi.signature){
+                        baseMi.isVirtual = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    clearVirtualMethodFlags(){
+        this.methodInfoList.forEach(mi => mi.isVirtual = false);
+    }
 
 }
 
@@ -374,7 +426,7 @@ export class NInterface extends NClassLike {
         return s;
     }
 
-    bindGenericParameters(mapOldToNewGenericParameters: Map<NClassLike, NClassLike>): NClassLike {
+    buildShallowGenericCopy(mapOldToNewGenericParameters: Map<NClassLike, NClassLike>): NClassLike {
 
         let copyInterfaceNecessary: boolean = false;
 
@@ -418,7 +470,7 @@ export class NGenericParameter extends NClassLike {
         super(identifier);
     }
 
-    bindGenericParameters(mapOldToNewGenericParameters: Map<NClassLike, NClassLike>): NClassLike {
+    buildShallowGenericCopy(mapOldToNewGenericParameters: Map<NClassLike, NClassLike>): NClassLike {
 
         let copyNecessary: boolean = false;
 
@@ -430,7 +482,7 @@ export class NGenericParameter extends NClassLike {
 
         let newSuper = this.super;
         if (newSuper != null) {
-            newSuper = <NClass>newSuper.bindGenericParameters(mapOldToNewGenericParameters);
+            newSuper = <NClass>newSuper.buildShallowGenericCopy(mapOldToNewGenericParameters);
         }
 
         parameterizedType.super = newSuper;

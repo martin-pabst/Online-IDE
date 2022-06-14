@@ -1,10 +1,10 @@
-import { NLibraryCompiler } from "../librarycompiler/LibraryCompiler.js";
+import { NLibraryCompiler } from "../librarycompiler/NLibraryCompiler.js";
 import { NRuntimeObject } from "../NRuntimeObject.js";
 import { NType } from "../types/NewType.js";
 import { NPrimitiveTypeManager } from "../types/NPrimitiveTypeManager.js";
 import { NArithmeticException, NClassCastException, NException, NThrowable } from "./NExceptions.js";
 
-export class NStandardLibrary {
+export class NLibrary {
 
     types: NType[];
 
@@ -15,6 +15,7 @@ export class NStandardLibrary {
 
     getUncompiledTypes():NRuntimeObject[] {
         return [
+            // Exceptions
             new NThrowable(), new NException(), new NArithmeticException(), new NClassCastException()
         ]
     }

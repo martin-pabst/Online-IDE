@@ -24,7 +24,7 @@ export class NObjectType extends NClass {
             method.parameterlist = new NParameterlist([]);
 
             this.addMethod(method);
-            this.setupVirtualMethodTable();
+            this.setupRuntimeObjectPrototype();
         }
 
 

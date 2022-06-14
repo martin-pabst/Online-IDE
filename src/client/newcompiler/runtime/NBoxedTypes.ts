@@ -47,7 +47,7 @@ export class NIntegerType extends NClass {
         //@ts-ignore
         this.runtimeObjectPrototype = {};
         this.runtimeObjectPrototypeIsClass = false;
-        this.setupVirtualMethodTable();
+        this.setupRuntimeObjectPrototype();
     }
 
 }
@@ -76,7 +76,7 @@ export class NLongType extends NClass {
         //@ts-ignore
         this.runtimeObjectPrototype = {};
         this.runtimeObjectPrototypeIsClass = false;
-        this.setupVirtualMethodTable();
+        this.setupRuntimeObjectPrototype();
     }
 
 }
@@ -103,7 +103,7 @@ export class NFloatType extends NClass {
         //@ts-ignore
         this.runtimeObjectPrototype = {};
         this.runtimeObjectPrototypeIsClass = false;
-        this.setupVirtualMethodTable();
+        this.setupRuntimeObjectPrototype();
     }
 
 }
@@ -130,7 +130,7 @@ export class NDoubleType extends NClass {
         //@ts-ignore
         this.runtimeObjectPrototype = {};
         this.runtimeObjectPrototypeIsClass = false;
-        this.setupVirtualMethodTable();
+        this.setupRuntimeObjectPrototype();
     }
 }
 
@@ -156,7 +156,7 @@ export class NBooleanType extends NClass {
         //@ts-ignore
         this.runtimeObjectPrototype = {};
         this.runtimeObjectPrototypeIsClass = false;
-        this.setupVirtualMethodTable();
+        this.setupRuntimeObjectPrototype();
     }
 
 }
@@ -183,7 +183,7 @@ export class NCharacterType extends NClass {
         //@ts-ignore
         this.runtimeObjectPrototype = {};
         this.runtimeObjectPrototypeIsClass = false;
-        this.setupVirtualMethodTable();
+        this.setupRuntimeObjectPrototype();
     }
 
 }

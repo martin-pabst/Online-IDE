@@ -77,5 +77,15 @@ export class NTypeResolver {
         this.typeToModuleMap.set(type, module);
     }
 
+    typeNodeToSignature(typeNode: TypeNode):string {
+
+        let s = typeNode.identifier;
+        if(typeNode.genericParameterTypes.length > 0){
+            s += "<" + typeNode.genericParameterTypes.map(this.typeNodeToSignature).join(",") + ">";
+        }
+        s += "[]".repeat(typeNode.arrayDimension);
+        return s;
+    }
+
 
 }

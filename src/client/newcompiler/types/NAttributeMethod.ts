@@ -78,10 +78,12 @@ export class NMethodInfo {
         return this.parameterlist.parameters[index];
     }
 
-    getCopy(): NMethodInfo {
-        let cp = new NMethodInfo();
-        Object.assign(cp, this);
-        return cp;
+    /**
+     * 
+     * @returns new Object with this as prototype
+     */
+    getPrototypedCopy(): NMethodInfo {
+        return Object.create(this);
     }
 
 }
@@ -123,10 +125,12 @@ export class NVariable {
 
     }
 
-    getCopy(){
-        let cp = new NVariable(this.identifier, this.type);
-        Object.assign(cp, this);
-        return cp;
+    /**
+     * 
+     * @returns new object with this as prototype
+     */
+    getPrototypedCopy(){
+        return Object.create(this);
     }
 }
 

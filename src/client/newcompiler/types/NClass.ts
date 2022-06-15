@@ -32,26 +32,25 @@ export abstract class NClassLike extends NType {
 
     abstract buildShallowGenericCopy(mapOldToNewGenericParameters: Map<NClassLike, NClassLike>): NClassLike;
 
-    bindGenericParametersHelper(mapOldToNewGenericParameters: Map<NClassLike, NClassLike>,
-        classLikes: NClassLike[]): NClassLike[] {
-        let copyNecessary: boolean = false;
+    bindGenericParametersHelper(mapGenericParametersToActualParamters: Map<NClassLike, NClassLike>, genericParameters: NClassLike[]): NClassLike[] {
         let newList: NClassLike[] = [];
-
-        for (let gp of classLikes) {
-
-            let newGP = gp.buildShallowGenericCopy(mapOldToNewGenericParameters);
-            if (newGP != gp) copyNecessary = true;
+        let copyNecessary: boolean = false;
+    
+        for (let gp of genericParameters) {
+            let newGP = gp.buildShallowGenericCopy(mapGenericParametersToActualParamters);
             newList.push(newGP);
+            if(newGP != gp) copyNecessary = true;
         }
 
-        return newList;
+        return copyNecessary ? newList : genericParameters;
     }
 
-    propagateGenericParameterTypesToMethods(oldMethodList: NMethodInfo[], newMethodList: NMethodInfo[], typeMap: Map<NClassLike, NClassLike>) {
+    propagateGenericParameterTypesToMethods(oldMethodList: NMethodInfo[], typeMap: Map<NClassLike, NClassLike>): NMethodInfo[] {
+        let newMethodList: NMethodInfo[] = [];
         for (let m of oldMethodList) {
             let newMethodNecessary: boolean = false;
-            let newVariableTypes: NType[] = [];
 
+            let newVariableTypes: NType[] = [];
             for (let parameter of m.parameterlist.parameters) {
                 let type = parameter.type;
                 if (!(type instanceof NClassLike)) {
@@ -69,8 +68,12 @@ export abstract class NClassLike extends NType {
                 if (newReturnType != m.returnType) newMethodNecessary = true;
             }
 
+            /**
+             * We need a prototyped copy of the old method as method.program is set later on 
+             * only for the original NMethodInfo-object
+             */
             if (newMethodNecessary) {
-                let newMethod = m.getCopy();
+                let newMethod = m.getPrototypedCopy();
                 newMethod.returnType = newReturnType;
                 let parameterList: NVariable[] = [];
                 for (let i = 0; i < m.parameterlist.parameters.length; i++) {
@@ -79,7 +82,8 @@ export abstract class NClassLike extends NType {
                     if (oldParameter.type == newType) {
                         parameterList.push(oldParameter);
                     } else {
-                        let newVariable = oldParameter.getCopy();
+                        // we make a prototyped copy of the old variable as this saves memory and time
+                        let newVariable = oldParameter.getPrototypedCopy();
                         newVariable.type = newType;
                         parameterList.push(newVariable);
                     }
@@ -90,6 +94,8 @@ export abstract class NClassLike extends NType {
             }
 
         }
+        
+        return newMethodList;
 
     }
 
@@ -109,16 +115,14 @@ export class NClass extends NClassLike {
      * has a reference to it in field isParameterizedTypeOf and new values in fields
      * genericParameters, extends and implements. 
      * 
-     * BUT: methodInfoList and attributeInfoList will at first be set to null because
-     *      of recursive Polymorphism.
+     * BUT: methodInfoList and attributeInfoList of new NClass-object point to methodInfoList and attributeInfoList 
+     * of old NClass-object because of recursive Polymorphism.
      * 
      * Call propagateGenericParameterTypes() to populate methodInfoList and attributeInfoList.
      * 
      */
     private methodInfoList: NMethodInfo[] = [];
     private attributeInfoList: NAttributeInfo[] = [];
-
-    genericParametersPropagated: boolean = true;
 
     isAbstract: boolean = false;
 
@@ -210,11 +214,14 @@ export class NClass extends NClassLike {
      */
      buildShallowGenericCopy(mapOldToNewGenericParameters: Map<NClassLike, NClassLike>): NClassLike {
 
+        if(this.genericParameters.length == 0) return this;
 
         let newGenericParameterTypes = this.bindGenericParametersHelper(mapOldToNewGenericParameters, this.genericParameters);
+        if(newGenericParameterTypes == this.genericParameters) return this;
 
         let parameterizedType = new NClass(this.identifier);
         parameterizedType.isAbstract = this.isAbstract;
+
         parameterizedType.staticMethodInfoList = this.staticMethodInfoList;
         parameterizedType.staticAttributeInfoList = this.staticAttributeInfoList;
         parameterizedType.runtimeObjectPrototype = this.runtimeObjectPrototype;
@@ -224,7 +231,6 @@ export class NClass extends NClassLike {
         parameterizedType.genericParameters = newGenericParameterTypes;
 
         parameterizedType.isParameterizedTypeOf = this;
-        parameterizedType.genericParametersPropagated = false;
 
         return parameterizedType;
 
@@ -265,7 +271,6 @@ export class NClass extends NClassLike {
 
         this.implements = <NInterface[]>this.bindGenericParametersHelper(typeMap, this.implements);
 
-        this.genericParametersPropagated = true;
     }
 
 
@@ -428,7 +433,7 @@ export class NInterface extends NClassLike {
 
     buildShallowGenericCopy(mapOldToNewGenericParameters: Map<NClassLike, NClassLike>): NClassLike {
 
-        let copyInterfaceNecessary: boolean = false;
+        if(this.genericParameters.length == 0) return this;
 
         let parameterizedType = new NInterface(this.identifier);
         parameterizedType.genericParameters = this.bindGenericParametersHelper(mapOldToNewGenericParameters, this.genericParameters);
@@ -472,22 +477,21 @@ export class NGenericParameter extends NClassLike {
 
     buildShallowGenericCopy(mapOldToNewGenericParameters: Map<NClassLike, NClassLike>): NClassLike {
 
-        let copyNecessary: boolean = false;
-
         let newGP = <NGenericParameter>mapOldToNewGenericParameters.get(this);
         if (newGP != null) return newGP;
 
-        let parameterizedType = new NGenericParameter(this.identifier);
-        parameterizedType.extends = this.bindGenericParametersHelper(mapOldToNewGenericParameters, this.extends);
+        // ?!?
+        // let parameterizedType = new NGenericParameter(this.identifier);
+        // parameterizedType.extends = this.bindGenericParametersHelper(mapOldToNewGenericParameters, this.extends);
 
-        let newSuper = this.super;
-        if (newSuper != null) {
-            newSuper = <NClass>newSuper.buildShallowGenericCopy(mapOldToNewGenericParameters);
-        }
+        // let newSuper = this.super;
+        // if (newSuper != null) {
+        //     newSuper = <NClass>newSuper.buildShallowGenericCopy(mapOldToNewGenericParameters);
+        // }
 
-        parameterizedType.super = newSuper;
+        // parameterizedType.super = newSuper;
 
-        return parameterizedType;
+        // return parameterizedType;
 
     }
 

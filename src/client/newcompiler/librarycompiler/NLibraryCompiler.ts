@@ -37,24 +37,24 @@ export class NLibraryCompiler {
         }
 
         // 2nd pass: parse extend..., super... of all unbound generic parameters, parse extends... and implements of class/interface
-        for(let ci of this.classLikes){
+        for (let ci of this.classLikes) {
             this.compileClassSignatureSecondPass(ci);
         }
 
         // 3rd pass: parse methods and attributes
-        for(let classInfo of this.classLikes){
-            let classOrInterface = <NClass|NInterface>classInfo.class;
-            
+        for (let classInfo of this.classLikes) {
+            let classOrInterface = <NClass | NInterface>classInfo.class;
+
             for (const [signature, program] of Object.entries(classInfo.runtimeObject.__getMethods())) {
                 classOrInterface.addMethod(this.compileMethod(signature, program, classOrInterface));
             }
-    
-            for (let attributeSignature of classInfo.runtimeObject.__getAttributes()) {    
+
+            for (let attributeSignature of classInfo.runtimeObject.__getAttributes()) {
                 (<NClass>classOrInterface).addAttribute(this.compileAttribute(attributeSignature, classOrInterface));
 
             }
-    
-            if(classOrInterface instanceof NClass){
+
+            if (classOrInterface instanceof NClass) {
                 classOrInterface.runtimeObjectPrototype = classInfo.runtimeObject;
                 classOrInterface.setupRuntimeObjectPrototype();
                 classOrInterface.computeFirstAttributeIndexAndInitialAttributeValues();
@@ -101,22 +101,22 @@ export class NLibraryCompiler {
          * class B<T extends A<Integer>>
          */
         let positionBeforeGenerics = this.pos;
-        
+
         let bracketLevel: number = 0;
-        
+
         if (this.comesToken(TokenType.lower) && (classLike instanceof NClass || classLike instanceof NInterface)) {
             bracketLevel = 1;
             this.nextToken();
-            while (this.comesToken(TokenType.identifier) && bracketLevel == 1 ) {
+            while (this.comesToken(TokenType.identifier) && bracketLevel == 1) {
                 classLike.genericParameters.push(new NGenericParameter(<string>this.nextToken().value));
-                while(!this.isEndOfTokenlist()){
+                while (!this.isEndOfTokenlist()) {
                     let tt = this.nextToken().tt;
-                    if(tt == TokenType.lower){
+                    if (tt == TokenType.lower) {
                         bracketLevel++;
-                    } else if(tt == TokenType.greater){
+                    } else if (tt == TokenType.greater) {
                         bracketLevel--;
-                        if(bracketLevel == 0) break;
-                    } else if(tt == TokenType.comma){
+                        if (bracketLevel == 0) break;
+                    } else if (tt == TokenType.comma) {
                         break;
                     }
                 }
@@ -190,7 +190,8 @@ export class NLibraryCompiler {
 
 
     /**
-     * e.g. void, int, ArrayList<HashMap<Integer, String>>, ArrayList<N> (in contect class MyTest<N>)
+     * Fetch next token and interpret it as type.
+     * e.g. void, int, ArrayList<HashMap<Integer, String>>, ArrayList<N> (in context class MyTest<N>)
      */
     compileTypeFirstPass(classContext: NClassLike): NType {
 
@@ -206,12 +207,16 @@ export class NLibraryCompiler {
             return this.pt.void;
         }
 
+        // fetch token:
         let identifier = <string>firstToken.value;
+
+        // is token a primitive type?
         let primitiveType = this.pt.getTypeFromIdentifier(identifier);
         if (primitiveType != null) {
             return primitiveType;
         }
 
+        // is token a generic parameter (e.g. N in context of class Test<N>{...})?
         if (classContext != null && (classContext instanceof NClass || classContext instanceof NInterface)) {
             for (let genericParameter of classContext.genericParameters) {
                 if (genericParameter.identifier == identifier) {
@@ -220,6 +225,7 @@ export class NLibraryCompiler {
             }
         }
 
+        // is token a class or interface?
         let type = <NClass | NInterface>this.identifierToClassInfoMap[identifier].class;
 
         if (type == null) {
@@ -227,11 +233,13 @@ export class NLibraryCompiler {
             return this.pt.Object;
         }
 
+        //is class/interface type followed by generic parameter values?
+        //e.g. ArrayList<Integer>
         if (this.comesToken(TokenType.lower, true)) {
-            let genericParameters: NClassLike[] = [];
+            let genericParameterValues: NClassLike[] = [];
             while (this.comesToken(TokenType.identifier)) {
 
-                genericParameters.push(<NClassLike>this.compileTypeFirstPass(classContext));
+                genericParameterValues.push(<NClassLike>this.compileTypeFirstPass(classContext));
 
                 this.comesToken(TokenType.comma, true);
             }
@@ -239,11 +247,12 @@ export class NLibraryCompiler {
                 console.log("LibraryCompiler.compileTypeFirstPass -> expecting >");
             }
 
-                let mapOldToNewGenericParameters: Map<NClassLike, NClassLike> = new Map();
-                for(let i = 0; i < genericParameters.length; i++){
-                    mapOldToNewGenericParameters.set(type.genericParameters[i], genericParameters[i]);
-                }
-        
+            let mapOldToNewGenericParameters: Map<NClassLike, NClassLike> = new Map();
+            for (let i = 0; i < genericParameterValues.length; i++) {
+                mapOldToNewGenericParameters.set(type.genericParameters[i], genericParameterValues[i]);
+            }
+
+            // bind found generic parameter values to class/interface
             type = <NClass | NInterface>type.buildShallowGenericCopy(mapOldToNewGenericParameters);
         }
 

@@ -80,6 +80,21 @@ export class ArrayListClass extends Klass {
 
             }, false, false, "Fügt der Liste ein Element hinzu. Gibt genau dann true zurück, wenn sich der Zustand der Liste dadurch geändert hat."));
 
+        this.addMethod(new Method("set", new Parameterlist([
+            { identifier: "index", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "element", type: typeA, declaration: null, usagePositions: null, isFinal: true }
+        ]), typeA,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let index: number = parameters[1].value;
+                let element: Value = parameters[2];
+                let ah: ListHelper = o.intrinsicData["ListHelper"];
+
+                return ah.set(index, element);
+
+            }, false, false, "Ersetzt das Element an Position index der Liste durch das übergebene Element; gibt das vorherige Element zurück."));
+
         this.addMethod(new Method("add", new Parameterlist([
             { identifier: "index", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "element", type: typeA, declaration: null, usagePositions: null, isFinal: true }
@@ -103,7 +118,7 @@ export class ArrayListClass extends Klass {
                 let o: RuntimeObject = parameters[0].value;
                 let index: number = parameters[1].value;
                 let ah: ListHelper = o.intrinsicData["ListHelper"];
-                
+
                 return ah.get(index)?.value;
 
             }, false, false, "Gibt das i-te Element der Liste zurück."));
@@ -238,7 +253,7 @@ export class ListHelper {
 
     allElementsPrimitive(): boolean {
         for (let v of this.valueArray) {
-            if (!(v.type instanceof PrimitiveType || ["String", "_Double", "Integer", "Boolean" ,"Character"].indexOf(v.type.identifier) >= 0)) {
+            if (!(v.type instanceof PrimitiveType || ["String", "_Double", "Integer", "Boolean", "Character"].indexOf(v.type.identifier) >= 0)) {
                 return false;
                 break;
             }
@@ -372,38 +387,38 @@ export class ListHelper {
         }
 
         let method: Method = new Method("toString", new Parameterlist([]), stringPrimitiveType, program, false, false);
-        this.interpreter.runTimer(method, [], () => {}, true);
+        this.interpreter.runTimer(method, [], () => { }, true);
 
         return "";
     }
 
     addAll(object: RuntimeObject): boolean {
 
-        if(object.intrinsicData["ListHelper"] instanceof ListHelper){
+        if (object.intrinsicData["ListHelper"] instanceof ListHelper) {
             let ah: ListHelper = object.intrinsicData["ListHelper"];
             if (ah != null) {
-                this.valueArray = this.valueArray.concat(ah.valueArray.map(v => {return {type: v.type, value: v.value}}));
+                this.valueArray = this.valueArray.concat(ah.valueArray.map(v => { return { type: v.type, value: v.value } }));
                 this.objectArray = this.objectArray.concat(ah.objectArray);
             }
             return true;
         }
 
         let getIteratorMethod = object.class.getMethod("iterator", new Parameterlist([]));
-        if(getIteratorMethod == null){
+        if (getIteratorMethod == null) {
             this.interpreter.throwException("Der an die Methode addAll übergebene Paramter besitzt keine Methode iterator().");
             return false;
         }
 
-        if(getIteratorMethod.invoke){
+        if (getIteratorMethod.invoke) {
 
-            let iterator: RuntimeObject = getIteratorMethod.invoke([{value: object, type: object.class}]);
+            let iterator: RuntimeObject = getIteratorMethod.invoke([{ value: object, type: object.class }]);
             let nextMethod = iterator.class.getMethod("next", new Parameterlist([]));
             let hasNextMethod = iterator.class.getMethod("hasNext", new Parameterlist([]));
             let type = nextMethod.returnType;
 
-            let iteratorAsValue: Value = {value: iterator, type: iterator.class};
+            let iteratorAsValue: Value = { value: iterator, type: iterator.class };
 
-            while(hasNextMethod.invoke([iteratorAsValue])){
+            while (hasNextMethod.invoke([iteratorAsValue])) {
                 let obj: any = nextMethod.invoke([iteratorAsValue]);
                 this.objectArray.push(obj);
                 this.valueArray.push({
@@ -414,24 +429,24 @@ export class ListHelper {
 
             return;
         } else {
-            let iteratorWithError = this.execute(getIteratorMethod, [{value: object, type: object.class}]);            
-            if(iteratorWithError.error != null){this.interpreter.throwException("Fehler beim holen des Iterators."); return false;}
+            let iteratorWithError = this.execute(getIteratorMethod, [{ value: object, type: object.class }]);
+            if (iteratorWithError.error != null) { this.interpreter.throwException("Fehler beim holen des Iterators."); return false; }
             let iterator = iteratorWithError.value.value;
 
             let nextMethod = iterator.class.getMethod("next", new Parameterlist([]));
             let hasNextMethod = iterator.class.getMethod("hasNext", new Parameterlist([]));
             let type = nextMethod.returnType;
-            let iteratorAsValue: Value = {value: iterator, type: iterator.class};
+            let iteratorAsValue: Value = { value: iterator, type: iterator.class };
 
-            while(true){
+            while (true) {
                 let hasNext = this.execute(hasNextMethod, [iteratorAsValue]);
-                if(hasNext.error != null){this.interpreter.throwException("Fehler beim Ausführen der hasNext-Methode"); return false;}
-                if(hasNext.value.value != true) break;
+                if (hasNext.error != null) { this.interpreter.throwException("Fehler beim Ausführen der hasNext-Methode"); return false; }
+                if (hasNext.value.value != true) break;
                 let objWithError = this.execute(nextMethod, [iteratorAsValue]);
-                if(objWithError.error != null){this.interpreter.throwException("Fehler beim Ausführen der next-Methode"); return false;}
+                if (objWithError.error != null) { this.interpreter.throwException("Fehler beim Ausführen der next-Methode"); return false; }
                 let obj = objWithError.value.value;
                 this.objectArray.push(obj);
-                this.valueArray.push({value: obj, type: type});
+                this.valueArray.push({ value: obj, type: type });
             }
 
             return true;
@@ -440,9 +455,9 @@ export class ListHelper {
 
     }
 
-    execute(method: Method, parameters: Value[]): {error: string, value: Value} {
-        if(method.invoke){
-            return {value: {value: method.invoke([]), type: method.returnType}, error: null};
+    execute(method: Method, parameters: Value[]): { error: string, value: Value } {
+        if (method.invoke) {
+            return { value: { value: method.invoke([]), type: method.returnType }, error: null };
         } else {
             return this.interpreter.executeImmediatelyInNewStackframe(method.program, parameters);
         }
@@ -470,16 +485,28 @@ export class ListHelper {
     }
 
     add(r: Value, index?): boolean {
-        if(index == null){
-            this.valueArray.push({type: r.type, value: r.value});
+        if (index == null) {
+            this.valueArray.push({ type: r.type, value: r.value });
             this.objectArray.push(r.value);
         } else {
-            if(index <= this.objectArray.length && index >= 0){
-                this.valueArray.splice(index, 0, {type: r.type, value: r.value});
+            if (index <= this.objectArray.length && index >= 0) {
+                this.valueArray.splice(index, 0, { type: r.type, value: r.value });
                 this.objectArray.splice(index, 0, r.value);
             } else {
                 this.interpreter.throwException("Der ArrayList-Index ist außerhalb des Intervalls von 0 bis " + (this.valueArray.length - 1) + ". ")
             }
+        }
+        return true;
+    }
+
+    set(index: number, r: Value): boolean {
+        if (index < this.objectArray.length && index >= 0) {
+            let oldValue = this.objectArray[index];
+            this.valueArray[index] = { type: r.type, value: r.value };
+            this.objectArray[index] = r.value;
+            return oldValue;
+        } else {
+            this.interpreter.throwException("Der ArrayList-Index ist außerhalb des Intervalls von 0 bis " + (this.valueArray.length - 1) + ". ")
         }
         return true;
     }
@@ -546,8 +573,8 @@ export class ListHelper {
             return this.objectArray[0];
         }
     }
-    
-    removeLast_or_error(){
+
+    removeLast_or_error() {
         if (this.objectArray.length == 0) {
             return null;
         } else {
@@ -557,18 +584,18 @@ export class ListHelper {
     };
 
     addLast(object: Value) {
-        this.valueArray.push({type: object.type, value: object.value});
+        this.valueArray.push({ type: object.type, value: object.value });
         this.objectArray.push(object.value);
         return true;
     }
     addFirst(object: Value): any {
-        this.valueArray.splice(0, 0, {type: object.type, value: object.value});
+        this.valueArray.splice(0, 0, { type: object.type, value: object.value });
         this.objectArray.splice(0, 0, object.value);
         return true;
     }
     removeFirstOccurrence(object: Value): boolean {
         let index = this.objectArray.indexOf(object.value);
-        if(index >= 0){
+        if (index >= 0) {
             this.valueArray.splice(index, 1);
             this.objectArray.splice(index, 1);
             return true;
@@ -594,7 +621,7 @@ export class ListHelper {
     }
 
     removeFirst_or_error(): any {
-        if(this.objectArray.length == 0){
+        if (this.objectArray.length == 0) {
             this.interpreter.throwException("Der ArrayList-Index ist außerhalb des Intervalls von 0 bis " + (this.valueArray.length - 1) + ". ")
         } else {
             let object = this.objectArray[0];

@@ -1,4 +1,3 @@
-import { Parameterlist, Variable } from "src/client/compiler/types/Types.js";
 import { TokenType } from "../../compiler/lexer/Token.js";
 import { NProgram } from "../compiler/NProgram.js";
 import { NRuntimeObject, NStaticClassObject } from "../NRuntimeObject.js";
@@ -18,9 +17,22 @@ export abstract class NClassLike extends NType {
      * generic information. 
      * E.g. for ArrayList this would be: ["Object", "AbstractCollection", "AbstractList", "Serializable", "Cloneable", "Iterable", "List"]
      */
-    allExtendedImplementedTypes: string[] = [];
+    allExtendedImplementedTypes:Object = {};
 
-    abstract getAllMethods(): NMethodInfo[];
+    /**
+     * Cache all types which contain a non-resolved generic parameter
+     */
+    typeCache: Map<string, NClassLike> = new Map();
+    signature: string;
+
+    getSignature(){
+        if(this.signature == null) this.signature = this.getSignatureIntern();
+        return this.signature;
+    }
+
+    abstract getSignatureIntern(): string;
+
+    abstract containsUnresolvedGenericParameters():boolean;
 
     compute(operator: TokenType, otherType: NType, value1: any, value2?: any) {
         return "null" + value2;
@@ -32,6 +44,16 @@ export abstract class NClassLike extends NType {
 
     abstract buildShallowGenericCopy(mapOldToNewGenericParameters: Map<NClassLike, NClassLike>): NClassLike;
 
+    extendsOtherClasslike(classlike: NClassLike): boolean{
+        if(classlike instanceof NGenericParameter){
+            for(let ext of classlike.extends){
+                if(!this.extendsOtherClasslike(ext)) return false;
+            }
+        } else {
+            return this.allExtendedImplementedTypes[classlike.identifier] != null;
+        }
+    }
+    
     bindGenericParametersHelper(mapGenericParametersToActualParamters: Map<NClassLike, NClassLike>, genericParameters: NClassLike[]): NClassLike[] {
         let newList: NClassLike[] = [];
         let copyNecessary: boolean = false;
@@ -102,13 +124,13 @@ export abstract class NClassLike extends NType {
 }
 
 export class NClass extends NClassLike {
-
+    
     extends: NClass;
     implements: (NInterface)[] = [];
-
+    
     genericParameters: NClassLike[] = [];
     isParameterizedTypeOf: NClass = null;
-
+    
     /**
      * If you bind a generic class like e.g. ArrayList<Integer>
      * then a new NClass-object will be instantiated which is a shallow copy of ArrayList class object. It
@@ -130,10 +152,38 @@ export class NClass extends NClassLike {
     staticAttributeInfoList: NAttributeInfo[] = [];
     initialStaticValues: any[] = [];
 
-    runtimeObjectPrototype: NRuntimeObject;              // contains all methods and reference to class object; contains NOT __a 
+    //@ts-ignore
+    runtimeObjectPrototype: NRuntimeObject = {};              // contains all methods and reference to class object; contains NOT __a 
     runtimeObjectPrototypeIsClass: boolean = false;     // true for system classes
     initialAttributeValues: any[];                      // used only for non-system classes
     firstAttributeIndex: number = null;                 // attributes prior to this index belong to base class
+
+
+    setupAllExtendedImplementedList(visited: string[]):string {
+        if(this.isParameterizedTypeOf != null) return;
+        if(this.allExtendedImplementedTypes[this.identifier]) return;
+
+        if(visited.find((s) => s == this.identifier) != null){
+            return "Fehler: Mehrere Klassen sind mittels 'extens' zyklisch miteinander verkettet: " + visited.join("->");
+        }
+        
+        this.allExtendedImplementedTypes[this.identifier] = true;
+        this.implements.forEach((intf) => this.allExtendedImplementedTypes[intf.identifier] = true);
+
+        if(this.extends != null){
+            visited.push(this.identifier);
+            let error = this.extends.setupAllExtendedImplementedList(visited);    
+            Object.assign(this.allExtendedImplementedTypes, this.extends.allExtendedImplementedTypes);
+            return error;
+        }
+
+        return null;
+    }
+
+    addGenericParameter(gp: NGenericParameter){
+        this.genericParameters.push(gp);
+        this.typeCache.set(gp.identifier, gp);
+    }
 
     getStaticClassObject(): NStaticClassObject{
         let sco = new NStaticClassObject(this, this.initialStaticValues);
@@ -141,6 +191,22 @@ export class NClass extends NClassLike {
             sco[m.signature] = m.program;
         }
         return sco;
+    }
+
+    containsUnresolvedGenericParameters(): boolean {
+        if(this.genericParameters.length == 0) return false;
+        for(let gp of this.genericParameters){
+            if(gp.containsUnresolvedGenericParameters()) return true;
+        }
+        return false;
+    }
+
+    getSignatureIntern(): string {
+        let s: string = "class " + this.identifier;
+        if(this.genericParameters.length > 0){
+            s += "<" + this.genericParameters.map((gp) => gp.getSignature()).join(", ") + ">"
+        }
+        return s;
     }
 
     getCastExpression(otherType: NType): NExpression {
@@ -201,10 +267,6 @@ export class NClass extends NClassLike {
         return "[" + this.identifier + "]";
     }
 
-    getAllMethods(): NMethodInfo[] {
-        // TODO
-        return null;
-    }
 
     /**
      * If NLibraryCompiler or NTypeResolver encounters a generic variant of a class then it only instantiates a shallow copy of it 
@@ -227,10 +289,12 @@ export class NClass extends NClassLike {
         parameterizedType.runtimeObjectPrototype = this.runtimeObjectPrototype;
         parameterizedType.runtimeObjectPrototypeIsClass = this.runtimeObjectPrototypeIsClass;
         parameterizedType.initialAttributeValues = this.initialAttributeValues;
+        parameterizedType.allExtendedImplementedTypes = this.allExtendedImplementedTypes;
 
         parameterizedType.genericParameters = newGenericParameterTypes;
 
         parameterizedType.isParameterizedTypeOf = this;
+        parameterizedType.usagePositions = this.usagePositions;
 
         return parameterizedType;
 
@@ -261,8 +325,7 @@ export class NClass extends NClassLike {
             this.attributeInfoList.push(a);
         }
 
-        this.methodInfoList = [];
-        this.propagateGenericParameterTypesToMethods(this.isParameterizedTypeOf.methodInfoList, this.methodInfoList, typeMap);
+        this.methodInfoList = this.propagateGenericParameterTypesToMethods(this.isParameterizedTypeOf.methodInfoList, typeMap);
 
         let newExtends = this.extends;
         if (newExtends != null && (newExtends instanceof NClass)) {
@@ -361,18 +424,62 @@ export class NClass extends NClassLike {
         this.methodInfoList.forEach(mi => mi.isVirtual = false);
     }
 
+    
+
 }
 
 export class NInterface extends NClassLike {
 
-    extendedInterfaces: NInterface[];
+    extendedInterfaces: NInterface[] = [];
 
     genericParameters: NClassLike[] = [];
     isParameterizedTypeOf: NInterface = null;
 
     methodInfoList: NMethodInfo[] = [];
-    genericParametersPropagated: boolean = true;
 
+
+    setupAllExtendedImplementedList(visited: string[]):string {
+        if(this.isParameterizedTypeOf != null) return;
+
+        if(this.allExtendedImplementedTypes[this.identifier]) return; // nothing to do
+        
+        if(visited.find((s) => s == this.identifier) != null){
+            return "Fehler: Mehrere Interfaces sind mittels 'extens' zyklisch miteinander verkettet: " + visited.join("->");
+        }
+
+        this.allExtendedImplementedTypes[this.identifier] = true;
+
+        visited.push(this.identifier);
+
+        for(let otherIntf of this.extendedInterfaces){
+            let error = otherIntf.setupAllExtendedImplementedList(visited.slice());
+            Object.assign(this.allExtendedImplementedTypes, otherIntf.allExtendedImplementedTypes);
+            if(error != null) return error;            
+        }
+
+        return null;
+    }
+
+    addGenericParameter(gp: NGenericParameter){
+        this.genericParameters.push(gp);
+        this.typeCache.set(gp.identifier, gp);
+    }
+
+    containsUnresolvedGenericParameters(): boolean {
+        if(this.genericParameters.length == 0) return false;
+        for(let gp of this.genericParameters){
+            if(gp.containsUnresolvedGenericParameters()) return true;
+        }
+        return false;
+    }
+
+    getSignatureIntern(): string {
+        let s: string = "class " + this.identifier;
+        if(this.genericParameters.length > 0){
+            s += "<" + this.genericParameters.map((gp) => gp.getSignature()).join(", ") + ">"
+        }
+        return s;
+    }
 
     getCastExpression(otherType: NType): NExpression {
         return { e: `thread.cast($1,"${otherType.identifier}")` }
@@ -418,11 +525,6 @@ export class NInterface extends NClassLike {
         return "[" + this.identifier + "]";
     }
 
-    getAllMethods(): NMethodInfo[] {
-        // TODO
-        return null;
-    }
-
     toString() {
         let s: string = this.identifier;
         if (this.genericParameters.length > 0) {
@@ -436,10 +538,11 @@ export class NInterface extends NClassLike {
         if(this.genericParameters.length == 0) return this;
 
         let parameterizedType = new NInterface(this.identifier);
+        parameterizedType.usagePositions = this.usagePositions;
         parameterizedType.genericParameters = this.bindGenericParametersHelper(mapOldToNewGenericParameters, this.genericParameters);
+        parameterizedType.allExtendedImplementedTypes = this.allExtendedImplementedTypes;
 
         parameterizedType.isParameterizedTypeOf = this;
-        parameterizedType.genericParametersPropagated = false;
 
         return parameterizedType;
 
@@ -452,9 +555,7 @@ export class NInterface extends NClassLike {
             typeMap.set(this.isParameterizedTypeOf.genericParameters[i], this.genericParameters[i]);
         }
 
-        this.methodInfoList = [];
-        this.propagateGenericParameterTypesToMethods(this.isParameterizedTypeOf.methodInfoList, this.methodInfoList, typeMap);
-        this.genericParametersPropagated = true;
+        this.methodInfoList = this.propagateGenericParameterTypesToMethods(this.isParameterizedTypeOf.methodInfoList, typeMap);
 
         this.extendedInterfaces = <NInterface[]>this.bindGenericParametersHelper(typeMap, this.extendedInterfaces);
 
@@ -468,11 +569,19 @@ export class NInterface extends NClassLike {
 
 export class NGenericParameter extends NClassLike {
 
-    extends: (NClassLike | NInterface)[] = [];
+    extends: NClassLike[] = [];
     super: NClass = null;
 
     constructor(identifier: string, public isBound: boolean = false) {
         super(identifier);
+    }
+
+    containsUnresolvedGenericParameters(): boolean {
+        return true;
+    }
+
+    getSignatureIntern(): string {
+        return this.identifier;
     }
 
     buildShallowGenericCopy(mapOldToNewGenericParameters: Map<NClassLike, NClassLike>): NClassLike {
@@ -532,10 +641,6 @@ export class NGenericParameter extends NClassLike {
         return "[" + this.identifier + "]";
     }
 
-    getAllMethods(): NMethodInfo[] {
-        // TODO
-        return null;
-    }
 
 }
 

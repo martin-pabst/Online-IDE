@@ -305,8 +305,14 @@ export class Parser {
             let oldPos = this.pos;
 
             if (this.comesToken(Parser.BeforeClassDefinitionTokens)) {
+                let typeNodesIndex = this.typeNodes.length;
                 let cd = this.parseClassDefinition();
-                if (cd != null) classDefinitions = classDefinitions.concat(cd);
+                if (cd != null) {
+                    classDefinitions = classDefinitions.concat(cd);
+                    for(let i = typeNodesIndex; i < this.typeNodes.length; i++){
+                        this.typeNodes[i].classContext = <any>cd;
+                    }
+                } 
             } else {
                 let st = this.parseStatement();
 

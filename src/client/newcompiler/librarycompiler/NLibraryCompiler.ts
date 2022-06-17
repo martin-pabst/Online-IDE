@@ -7,6 +7,9 @@ import { } from "../types/NewPrimitiveType.js";
 import { NExpression, NType } from "../types/NewType.js";
 import { NVisibility, NVisibilityUtility } from "../types/NVisibility.js";
 import { NPrimitiveTypeManager } from "../types/NPrimitiveTypeManager.js";
+import { NLibrary } from "../runtime/NStandardLibrary.js";
+import { NArrayType } from "../types/NArray.js";
+import { NEnum } from "../types/NEnum.js";
 
 type NClassInfo = {
     class: NClassLike,
@@ -18,14 +21,24 @@ export class NLibraryCompiler {
 
     tokenList: TokenList;
     pos: number;
+
     identifierToClassInfoMap: { [identifier: string]: NClassInfo };
     classLikes: NClassInfo[];
+
+    /**
+     * Cache all types without non-resolved generic parameters
+     */
+    globalTypeCache: Map<string, NClassLike>;
 
     constructor(private pt: NPrimitiveTypeManager) {
 
     }
 
-    compileAllSystemClasses(systemClasses: NRuntimeObject[]): NClassLike[] {
+    compile(library: NLibrary) {
+
+        let systemClasses = library.getUncompiledTypes();
+        this.globalTypeCache = new Map();
+        library.typeCache = this.globalTypeCache;
 
         this.identifierToClassInfoMap = {};
         this.classLikes = [];
@@ -43,14 +56,14 @@ export class NLibraryCompiler {
 
         // 3rd pass: parse methods and attributes
         for (let classInfo of this.classLikes) {
-            let classOrInterface = <NClass | NInterface>classInfo.class;
+            let classOrInterface = <NClass | NInterface | NEnum>classInfo.class;
 
             for (const [signature, program] of Object.entries(classInfo.runtimeObject.__getMethods())) {
                 classOrInterface.addMethod(this.compileMethod(signature, program, classOrInterface));
             }
 
             for (let attributeSignature of classInfo.runtimeObject.__getAttributes()) {
-                (<NClass>classOrInterface).addAttribute(this.compileAttribute(attributeSignature, classOrInterface));
+                (<NClass|NEnum>classOrInterface).addAttribute(this.compileAttribute(attributeSignature, classOrInterface));
 
             }
 
@@ -61,7 +74,8 @@ export class NLibraryCompiler {
             }
         }
 
-        return this.classLikes.map((ci) => ci.class);
+        library.types = this.classLikes.map((ci) => ci.class);
+
     }
 
     compileClassSignatureFirstPass(sc: NRuntimeObject) {
@@ -71,7 +85,7 @@ export class NLibraryCompiler {
         let abstractAndVisibilityModifiers = this.compileAbstractAndVisibilityModifiers();
         let classInterfaceEnumKeyword = this.nextToken();
         let identifier = <string>(this.nextToken().value);
-        let classLike: NClass | NInterface = null;
+        let classLike: NClass | NInterface | NEnum = null;
 
         switch (classInterfaceEnumKeyword.tt) {
             case TokenType.keywordClass:
@@ -79,6 +93,9 @@ export class NLibraryCompiler {
                 break;
             case TokenType.keywordInterface:
                 classLike = new NInterface(identifier);
+                break;
+            case TokenType.keywordEnum:
+                classLike = new NEnum(identifier);
                 break;
         }
 
@@ -99,6 +116,9 @@ export class NLibraryCompiler {
          * Think of:
          * class A<T extends B<Integer>> 
          * class B<T extends A<Integer>>
+         * 
+         * In case of class A<S extends ArrayList<T>, T> we create "empty" generic parameters 
+         * for S and T. We read "extends ArrayList<T> later in second pass."
          */
         let positionBeforeGenerics = this.pos;
 
@@ -108,7 +128,7 @@ export class NLibraryCompiler {
             bracketLevel = 1;
             this.nextToken();
             while (this.comesToken(TokenType.identifier) && bracketLevel == 1) {
-                classLike.genericParameters.push(new NGenericParameter(<string>this.nextToken().value));
+                classLike.addGenericParameter(new NGenericParameter(<string>this.nextToken().value));
                 while (!this.isEndOfTokenlist()) {
                     let tt = this.nextToken().tt;
                     if (tt == TokenType.lower) {
@@ -126,6 +146,61 @@ export class NLibraryCompiler {
         declaration = declaration.slice(positionBeforeGenerics);
 
     }
+
+    private compileClassSignatureSecondPass(classInfo: NClassInfo) {
+
+        this.setTokenList(classInfo.declaration);
+        let classLike = classInfo.class;
+        /**
+         * First pass parsed tokens up to generic parameter definition and instantiated empty templates for them.
+         * Now we revisit generic parameters and parse extends... and super... for them.
+         */
+
+        if (this.comesToken(TokenType.lower) && (classLike instanceof NClass || classLike instanceof NInterface)) {
+            this.nextToken();
+            let gpIndex: number = 0;
+            while (this.comesToken(TokenType.identifier)) {
+                let genericParameter = <NGenericParameter>classLike.genericParameters[gpIndex];
+                this.compileUnboundGenericParameter(classLike, genericParameter);
+                this.comesToken(TokenType.comma, true);
+            }
+            this.comesToken(TokenType.greater, true);
+        }
+
+        while (this.comesToken([TokenType.keywordExtends, TokenType.keywordImplements])) {
+            if (this.nextToken().tt == TokenType.keywordExtends) {
+                let type = this.compileClasslikeTypeFirstPass(classLike);
+                if (type instanceof NClassLike) {
+                    if (classLike instanceof NClass) {
+                        classLike.extends = <NClass>type;
+                    }
+                    if (classLike instanceof NInterface) {
+                        classLike.extendedInterfaces.push(<NInterface>type);
+                    }
+                } else {
+                    console.log("LibraryCompiler.compileSystemClass: expecting class or interface, got: " + type.identifier + ".");
+                }
+            } else {
+                if (classLike instanceof NInterface) {
+                    console.log("LibraryCompiler.compileSystemClass: use keyword 'extends' to extend interface, not 'implements'.");
+                } else {
+                    while (this.comesToken(TokenType.identifier)) {
+                        let type1 = this.compileClasslikeTypeFirstPass(classLike);
+                        if (type1 instanceof NClassLike) {
+                            if (classLike instanceof NClass || classLike instanceof NEnum) {
+                                classLike.implements.push(<NInterface>type1);
+                            }
+                        } else {
+                            console.log("LibraryCompiler.compileSystemClass: expecting interface, got: " + type1.identifier + ".");
+                        }
+                        this.comesToken(TokenType.comma, true);
+                    }
+                }
+            }
+        }
+        return classLike;
+    }
+
 
 
     setTokenList(tokenList: TokenList) {
@@ -188,12 +263,19 @@ export class NLibraryCompiler {
         return "end of signature";
     }
 
+    compileTypeFirstPass(classContext: NClassLike): NType {
+        let type = this.compileClasslikeTypeFirstPass(classContext);
+        let dimension = 0;
+        while(this.comesToken(TokenType.leftRightSquareBracket, true)) dimension ++;    
+        if(dimension > 0) type = new NArrayType(type, dimension);
+        return type;
+    }
 
     /**
      * Fetch next token and interpret it as type.
      * e.g. void, int, ArrayList<HashMap<Integer, String>>, ArrayList<N> (in context class MyTest<N>)
      */
-    compileTypeFirstPass(classContext: NClassLike): NType {
+    compileClasslikeTypeFirstPass(classContext: NClassLike): NType {
 
         if (this.isEndOfTokenlist()) {
             console.log("Warning: LibraryCompiler.compileTypeFirstPass -> tokenlength == 0; returning void...");
@@ -226,7 +308,7 @@ export class NLibraryCompiler {
         }
 
         // is token a class or interface?
-        let type = <NClass | NInterface>this.identifierToClassInfoMap[identifier].class;
+        let type = <NClass | NInterface | NEnum>this.identifierToClassInfoMap[identifier].class;
 
         if (type == null) {
             console.log("Error: LibraryCompiler.compileTypeFirstPass -> type " + identifier + " not found.");
@@ -235,11 +317,11 @@ export class NLibraryCompiler {
 
         //is class/interface type followed by generic parameter values?
         //e.g. ArrayList<Integer>
-        if (this.comesToken(TokenType.lower, true)) {
+        if (this.comesToken(TokenType.lower, true) && !(type instanceof NEnum)) {
             let genericParameterValues: NClassLike[] = [];
             while (this.comesToken(TokenType.identifier)) {
 
-                genericParameterValues.push(<NClassLike>this.compileTypeFirstPass(classContext));
+                genericParameterValues.push(<NClassLike>this.compileClasslikeTypeFirstPass(classContext));
 
                 this.comesToken(TokenType.comma, true);
             }
@@ -247,13 +329,34 @@ export class NLibraryCompiler {
                 console.log("LibraryCompiler.compileTypeFirstPass -> expecting >");
             }
 
-            let mapOldToNewGenericParameters: Map<NClassLike, NClassLike> = new Map();
-            for (let i = 0; i < genericParameterValues.length; i++) {
-                mapOldToNewGenericParameters.set(type.genericParameters[i], genericParameterValues[i]);
+            let signature = identifier + "<" + genericParameterValues.map((gpv) => gpv.getSignature()).join(", ") + ">";
+
+            /**
+             * can we find type in cache?
+             */
+            let type1:NClassLike = null;
+            if((type1 = this.globalTypeCache.get(signature)) != null){
+                type = <any>type1;
+            } else if(classContext != null && (type1 = classContext.typeCache.get(signature)) != null){
+                type = <any>type1;
+            } else {
+
+                // type not found in cache => build it!
+                let mapOldToNewGenericParameters: Map<NClassLike, NClassLike> = new Map();
+                for (let i = 0; i < genericParameterValues.length; i++) {
+                    mapOldToNewGenericParameters.set(type.genericParameters[i], genericParameterValues[i]);
+                }
+    
+                // bind found generic parameter values to class/interface
+                type = <NClass | NInterface | NEnum>type.buildShallowGenericCopy(mapOldToNewGenericParameters);
+                
+                if(type.containsUnresolvedGenericParameters() && classContext != null){
+                    classContext.typeCache.set(signature, type);
+                } else {
+                    this.globalTypeCache.set(signature, type);
+                }
             }
 
-            // bind found generic parameter values to class/interface
-            type = <NClass | NInterface>type.buildShallowGenericCopy(mapOldToNewGenericParameters);
         }
 
         return type;
@@ -262,7 +365,7 @@ export class NLibraryCompiler {
 
 
     // TODO 24.04.2022: Static class...
-    compileAttribute(attributeSignature: string, classOrInterface: NInterface | NClass): NAttributeInfo {
+    compileAttribute(attributeSignature: string, classOrInterface: NInterface | NClass | NEnum): NAttributeInfo {
         this.setTokenList(Lexer.quicklex(attributeSignature));
         let modifiers = this.compileAbstractAndVisibilityModifiers();
         let type = this.compileTypeFirstPass(classOrInterface);
@@ -278,7 +381,7 @@ export class NLibraryCompiler {
 
     }
 
-    compileMethod(signature: string, functionOrNExpression: any, classOrInterface: NInterface | NClass): NMethodInfo {
+    compileMethod(signature: string, functionOrNExpression: any, classOrInterface: NInterface | NClass | NEnum): NMethodInfo {
         this.setTokenList(Lexer.quicklex(signature));
         let abstractAndVisibilityModifiers = this.compileAbstractAndVisibilityModifiers();
         let type = this.compileTypeFirstPass(classOrInterface);
@@ -325,60 +428,6 @@ export class NLibraryCompiler {
         method.setupSignature();
 
         return method;
-    }
-
-    private compileClassSignatureSecondPass(classInfo: NClassInfo) {
-
-        this.setTokenList(classInfo.declaration);
-        let classLike = classInfo.class;
-        /**
-         * First pass parsed tokens up to generic parameter definition and instantiated empty templates for them.
-         * Now we revisit generic parameters and parse extends... and super... for them.
-         */
-
-        if (this.comesToken(TokenType.lower) && (classLike instanceof NClass || classLike instanceof NInterface)) {
-            this.nextToken();
-            let gpIndex: number = 0;
-            while (this.comesToken(TokenType.identifier)) {
-                let genericParameter = <NGenericParameter>classLike.genericParameters[gpIndex];
-                this.compileUnboundGenericParameter(classLike, genericParameter);
-                this.comesToken(TokenType.comma, true);
-            }
-            this.comesToken(TokenType.greater, true);
-        }
-
-        while (this.comesToken([TokenType.keywordExtends, TokenType.keywordImplements])) {
-            if (this.nextToken().tt == TokenType.keywordExtends) {
-                let type = this.compileTypeFirstPass(classLike);
-                if (type instanceof NClassLike) {
-                    if (classLike instanceof NClass) {
-                        classLike.extends = <NClass>type;
-                    }
-                    if (classLike instanceof NInterface) {
-                        classLike.extendedInterfaces.push(<NInterface>type);
-                    }
-                } else {
-                    console.log("LibraryCompiler.compileSystemClass: expecting class or interface, got: " + type.identifier + ".");
-                }
-            } else {
-                if (classLike instanceof NInterface) {
-                    console.log("LibraryCompiler.compileSystemClass: use keyword 'extends' to extend interface, not 'implements'.");
-                } else {
-                    while (this.comesToken(TokenType.identifier)) {
-                        let type1 = this.compileTypeFirstPass(classLike);
-                        if (type1 instanceof NClassLike) {
-                            if (classLike instanceof NClass) {
-                                classLike.implements.push(<NInterface>type1);
-                            }
-                        } else {
-                            console.log("LibraryCompiler.compileSystemClass: expecting interface, got: " + type1.identifier + ".");
-                        }
-                        this.comesToken(TokenType.comma, true);
-                    }
-                }
-            }
-        }
-        return classLike;
     }
 
     private compileAbstractAndVisibilityModifiers(): { abstract: boolean, visibility: NVisibility, static: boolean, isFinal: boolean } {
@@ -428,7 +477,7 @@ export class NLibraryCompiler {
             switch (this.nextToken().tt) {
                 case TokenType.keywordExtends:
                     while (this.comesToken(TokenType.identifier)) {
-                        let type = this.compileTypeFirstPass(classContext);
+                        let type = this.compileClasslikeTypeFirstPass(classContext);
                         if (type instanceof NClassLike) {
                             genericParameter.extends.push(type);
                         } else {
@@ -438,7 +487,7 @@ export class NLibraryCompiler {
                     }
                     break;
                 case TokenType.keywordSuper:
-                    let type = this.compileTypeFirstPass(classContext);
+                    let type = this.compileClasslikeTypeFirstPass(classContext);
                     if (type instanceof NClassLike) {
                         genericParameter.super = <NClass>type;
                     } else {

@@ -1,10 +1,12 @@
 import { TokenType } from "src/client/compiler/lexer/Token.js";
 import { NExpression, NType } from "./NewType.js";
 
-export class NArray extends NType {
+export class NArrayType extends NType {
 
-    elementType: NType;
-    dimension: number;
+
+    constructor(public elementType: NType, public dimension: number){
+        super(elementType.identifier + "[]".repeat(dimension));
+    }
 
     getCastExpression(otherType: NType): NExpression {
         throw new Error("Method not implemented.");

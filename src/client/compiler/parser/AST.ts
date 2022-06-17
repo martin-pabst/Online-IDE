@@ -2,6 +2,11 @@ import { TokenType, TextPosition, Token } from "../lexer/Token.js";
 import { Method, Type, Parameterlist, Attribute, Variable } from "../types/Types.js";
 import { Visibility, Klass, Interface } from "../types/Class.js";
 import { Enum } from "../types/Enum.js";
+import { NClass, NInterface } from "../../newcompiler/types/NClass.js";
+import { NEnum } from "../../newcompiler/types/NEnum.js";
+import { NAttributeInfo, NMethodInfo } from "../../newcompiler/types/NAttributeMethod.js";
+import { NVisibility } from "../../newcompiler/types/NVisibility.js";
+import { NType } from "src/client/newcompiler/types/NewType.js";
 
 
 export type ASTNode = 
@@ -161,7 +166,7 @@ export type InterfaceDeclarationNode = {
 
     typeParameters: TypeParameterNode[],
 
-    resolvedType?: Interface,
+    resolvedType?: NInterface,
     commentBefore?: Token
 
 }
@@ -182,7 +187,7 @@ export type ClassDeclarationNode = {
     scopeFrom: TextPosition,
     scopeTo: TextPosition,
 
-    visibility: Visibility,
+    visibility: NVisibility,
     identifier: string,
     isAbstract: boolean,
     extends: TypeNode,
@@ -194,7 +199,7 @@ export type ClassDeclarationNode = {
 
     typeParameters: TypeParameterNode[],
 
-    resolvedType?: Klass,
+    resolvedType?: NClass,
     commentBefore?: Token
 
 }
@@ -216,7 +221,7 @@ export type EnumValueNode = {
     scopeFrom: TextPosition,
     scopeTo: TextPosition,
 
-    visibility: Visibility,
+    visibility: NVisibility,
     identifier: string,
 
     attributes: AttributeDeclarationNode[],
@@ -224,7 +229,7 @@ export type EnumValueNode = {
 
     values: EnumValueNode[],
 
-    resolvedType?: Enum,
+    resolvedType?: NEnum,
     commentBefore: Token
 
 }
@@ -244,11 +249,11 @@ export type MethodDeclarationNode = {
 
     isStatic: boolean,
     isAbstract: boolean,
-    visibility: Visibility,
+    visibility: NVisibility,
     isConstructor: boolean,
     isTransient: boolean,
 
-    resolvedType?: Method,
+    resolvedType?: NMethodInfo,
     annotation?: string,
     commentBefore: Token
 }
@@ -262,11 +267,11 @@ export type AttributeDeclarationNode = {
     initialization: TermNode,
     isStatic: boolean,
     isFinal: boolean,
-    visibility: Visibility,
+    visibility: NVisibility,
     isTransient: boolean,
     commentBefore: Token,
 
-    resolvedType?: Attribute
+    resolvedType?: NAttributeInfo
     annotation?: string
 }
 
@@ -389,8 +394,9 @@ export type TypeNode = {
     genericParameterTypes?: TypeNode[], // null if not present
     genericParameterTypesResolved?: boolean, // undefined == false
 
+    classContext?: ClassDeclarationNode | InterfaceDeclarationNode | EnumDeclarationNode;
 
-    resolvedType?: Type
+    resolvedType?: NType
 }
 
 export type LocalVariableDeclarationNode = {

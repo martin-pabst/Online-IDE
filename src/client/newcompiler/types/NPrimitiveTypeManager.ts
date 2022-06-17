@@ -54,7 +54,14 @@ export class NPrimitiveTypeManager {
         "double" : this.double,
         "String" : this.String,
         "char": this.char,
-        "boolean": this.boolean
+        "boolean": this.boolean,
+        "Object": this.Object,
+        "Integer": this.Integer,
+        "Double": this.Double,
+        "Float": this.Float,
+        "Long": this.Long,
+        "Character": this.Character,
+        "Boolean": this.Boolean
     }
 
     getConstantTypeFromTokenType(tt: TokenType){

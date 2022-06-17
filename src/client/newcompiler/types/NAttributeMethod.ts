@@ -88,7 +88,7 @@ export class NMethodInfo {
 
 }
 
-export class NParameterlist {
+export class  NParameterlist {
     id: string;
 
     parameters: NVariable[];

@@ -3,7 +3,10 @@ import { ModuleStore } from "src/client/compiler/parser/Module.js";
 import { Parser } from "src/client/compiler/parser/Parser.js";
 import { MainEmbedded } from "src/client/embedded/MainEmbedded.js";
 import { MainBase } from "src/client/main/MainBase.js";
+import { NLibrary } from "../runtime/NStandardLibrary.js";
+import { NPrimitiveTypeManager } from "../types/NPrimitiveTypeManager.js";
 import { NCodeGenerator } from "./NCodeGenerator.js";
+import { NTypeResolver } from "./NTypeResolver.js";
 
 export enum NCompilerStatus {
     compiling, error, compiledButNothingToRun, readyToRun
@@ -14,6 +17,8 @@ export class NCompiler {
     compilerStatus: NCompilerStatus = NCompilerStatus.compiledButNothingToRun;
 
     atLeastOneModuleIsStartable: boolean;
+
+    libraries: NLibrary[] = [];
 
     constructor(private main: MainBase) {
     }
@@ -57,6 +62,10 @@ export class NCompiler {
 
         // 3rd pass: resolve types and populate typeStores; checks intermodular dependencies
 
+        let typeResolver = new NTypeResolver(this.libraries, moduleStore.getModules(false), 
+        this.main.getPrimitiveTypes());
+        typeResolver.start();
+
         // let typeResolver: TypeResolver = new TypeResolver(this.main);
 
         // Klass.count = 0;
@@ -66,7 +75,7 @@ export class NCompiler {
 
         // 4th pass: code generation
 
-        let codeGenerator = new NCodeGenerator(this.main.getPrimitiveTypes());
+        let codeGenerator = new NCodeGenerator(this.main.getPrimitiveTypes(), typeResolver);
 
         for (let m of moduleStore.getModules(false)) {
             codeGenerator.start(m, moduleStore);

@@ -188,6 +188,11 @@ export class NFragment {
 
 }
 
+export type Breakpoint = {
+    line: number,
+    column: number,
+    step: NStep,
+}
 
 export class NStep {
     // compiled function returns new programposition

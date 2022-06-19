@@ -26,10 +26,12 @@ export class NTypeResolver {
     typeNodeToModuleMap: Map<TypeNode, Module> = new Map();
 
     constructor(public libraries: NLibrary[], public modules: Module[], public pt: NPrimitiveTypeManager){
+    }
+     start(){
         
-        pt.allPrimitiveTypes.forEach(type => this.addTypeToGlobalCache(type, null));
+        this.pt.allPrimitiveTypes.forEach(type => this.addTypeToGlobalCache(type, null));
 
-        libraries.forEach(lib => {
+        this.libraries.forEach(lib => {
             lib.typeCache.forEach((value, key) => {
                 this.globalTypeCache.set(key, value);
                 if(value instanceof NClass) value.clearVirtualMethodFlags();
@@ -37,7 +39,7 @@ export class NTypeResolver {
             });
         });
 
-        modules.forEach(m => m.typeNodes.forEach(tn => this.typeNodeToModuleMap.set(tn, m)));
+        this.modules.forEach(m => m.typeNodes.forEach(tn => this.typeNodeToModuleMap.set(tn, m)));
 
         /**
          * TODO: find modules that are untouched and reuse their types from prior compilation

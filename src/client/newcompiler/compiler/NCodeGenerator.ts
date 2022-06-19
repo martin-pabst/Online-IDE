@@ -10,6 +10,7 @@ import { NPrimitiveTypeManager } from "../types/NPrimitiveTypeManager.js";
 import { CodeBuilder } from "./NCodeBuilder.js";
 import { NBlock, NFragment, NProgram } from "./NProgram.js";
 import { NSymbolTable } from "./NSymbolTable.js";
+import { NTypeResolver } from "./NTypeResolver.js";
 
 export class NCodeGenerator {
     
@@ -32,8 +33,8 @@ export class NCodeGenerator {
     TokenType.multiplicationAssignment, TokenType.divisionAssignment, TokenType.ANDAssigment, TokenType.ORAssigment,
     TokenType.XORAssigment, TokenType.shiftLeftAssigment, TokenType.shiftRightAssigment, TokenType.shiftRightUnsignedAssigment];
 
-    constructor(private pt: NPrimitiveTypeManager) {
-
+    constructor(private pt: NPrimitiveTypeManager, private typeResolver: NTypeResolver) {
+        
     }
 
     start(module: Module, moduleStore: ModuleStore) {

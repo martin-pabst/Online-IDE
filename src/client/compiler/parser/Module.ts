@@ -53,8 +53,6 @@ import { Interface, Klass, Visibility } from "../types/Class.js";
 import { booleanPrimitiveType, BooleanType, CharacterType, charPrimitiveType, doublePrimitiveType, DoubleType, floatPrimitiveType, FloatType, IntegerType, intPrimitiveType, objectType, stringPrimitiveType, voidPrimitiveType, varType, longPrimitiveType, LongType } from "../types/PrimitiveTypes.js";
 import { Attribute, Method, PrimitiveType, Type, Variable } from "../types/Types.js";
 import { ASTNode, MethodDeclarationNode, TypeNode } from "./AST.js";
-import { Breakpoint, Program, Statement } from "./Program.js";
-import { SymbolTable } from "./SymbolTable.js";
 import { MapClass } from "../../runtimelibrary/collections/Map.js";
 import { HashMapClass } from "../../runtimelibrary/collections/HashMap.js";
 import { TriangleClass } from "../../runtimelibrary/graphics/Triangle.js";
@@ -79,13 +77,14 @@ import { GNGEreignisbehandlung } from "../../runtimelibrary/gng/GNGEreignisbehan
 import { GNGFigurClass } from "../../runtimelibrary/gng/GNGFigur.js";
 import { RandomClass } from "../../runtimelibrary/Random.js";
 import { DirectionClass } from "../../runtimelibrary/graphics/Direction.js";
-import { Patcher } from "./Patcher.js";
 import { KeyEvent as KeyEventClass } from "../../runtimelibrary/graphics/KeyEvent.js";
 import { Formatter } from "../../main/gui/Formatter.js";
 import { RobotClass, RobotWorldClass } from "../../runtimelibrary/graphics/3d/Robot.js";
 import { NSymbolTable } from "src/client/newcompiler/compiler/NSymbolTable.js";
 import { NProgram } from "src/client/newcompiler/compiler/NProgram.js";
 import { NStaticClassObject } from "src/client/newcompiler/NRuntimeObject.js";
+import { NType } from "src/client/newcompiler/types/NewType.js";
+import { NAttributeInfo, NMethodInfo, NVariable } from "src/client/newcompiler/types/NAttributeMethod.js";
 
 export type ExportedWorkspace = {
     name: string;
@@ -124,7 +123,7 @@ export type File = {
 
 export type IdentifierPosition = {
     position: TextPosition,
-    element: Type | Method | Attribute | Variable;
+    element: NType | NMethodInfo | NAttributeInfo | NVariable;
 }
 
 export type MethodCallPosition = {
@@ -517,7 +516,7 @@ export class Module {
         }
     }
 
-    findSymbolTableAtPosition(line: number, column: number) {
+    findSymbolTableAtPosition(line: number, column: number):NSymbolTable {
         if (this.mainSymbolTable == null) {
             return null;
         }
@@ -556,7 +555,7 @@ export class Module {
     }
 
 
-    addIdentifierPosition(position: TextPosition, element: Type | Method | Attribute | Variable) {
+    addIdentifierPosition(position: TextPosition, element: NType | NMethodInfo | NAttributeInfo | NVariable) {
         let positionList: IdentifierPosition[] = this.identifierPositions[position.line];
         if (positionList == null) {
             positionList = [];

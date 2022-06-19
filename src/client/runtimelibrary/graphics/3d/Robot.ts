@@ -10,6 +10,8 @@ import { FilledShapeDefaults } from "../FilledShapeDefaults.js";
 import { ShapeHelper } from "../Shape.js";
 import { Boxes3d } from "./Boxes3d.js";
 import { RobotBrick, RobotCubeFactory, RobotMarker } from "./RobotCubeFactory.js";
+import { NInterpreter } from "src/client/newcompiler/interpreter/NInterpreter.js";
+import { InterpreterHelperIdentifiers } from "../InterpreterHelperIdentifiers.js";
 
 export class RobotClass extends Klass {
 
@@ -642,7 +644,7 @@ export class RobotWorldHelper {
 
     robots: RobotHelper[] = [];
 
-    constructor(public interpreter: Interpreter, public runtimeObject: RuntimeObject,
+    constructor(public interpreter: NInterpreter, public runtimeObject: RuntimeObject,
         public worldX: number, public worldY: number, initialeWelt: string) {
 
         this.fetchWorld(interpreter);
@@ -697,13 +699,12 @@ export class RobotWorldHelper {
         }
     }
 
-    fetchWorld(interpreter: Interpreter) {
-        let worldHelper = interpreter.worldHelper;
+    fetchWorld(interpreter: NInterpreter) {
+        let worldHelper = interpreter.getHelper<WorldHelper>(InterpreterHelperIdentifiers.world);
         if (worldHelper == null) {
             let w: RuntimeObject = new RuntimeObject(<Klass>interpreter.moduleStore.getType("World").type);
             worldHelper = new WorldHelper(800, 600, interpreter.moduleStore.getModule("Base Module"), w);
             w.intrinsicData["World"] = worldHelper;
-            interpreter.worldHelper = worldHelper;
         }
         this.worldHelper = worldHelper;
     }
@@ -1001,7 +1002,7 @@ export class RobotHelper {
 
     direction: Direction = new Direction();
 
-    constructor(private interpreter: Interpreter, private runtimeObject: RuntimeObject,
+    constructor(private interpreter: NInterpreter, private runtimeObject: RuntimeObject,
         startX: number, startY: number,
         worldX: number, worldY: number,
         initialeWelt: string = null
@@ -1017,8 +1018,8 @@ export class RobotHelper {
 
     }
 
-    fetchRobotWorld(interpreter: Interpreter, worldX: number, worldY: number, initialeWelt: string) {
-        let worldHelper = interpreter.worldHelper;
+    fetchRobotWorld(interpreter: NInterpreter, worldX: number, worldY: number, initialeWelt: string) {
+        let worldHelper = interpreter.getHelper<WorldHelper>(InterpreterHelperIdentifiers.world);
         this.robotWorldHelper = worldHelper?.robotWorldHelper;
 
         if (this.robotWorldHelper == null) {

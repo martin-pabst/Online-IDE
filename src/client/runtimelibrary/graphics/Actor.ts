@@ -5,6 +5,8 @@ import { voidPrimitiveType, stringPrimitiveType, booleanPrimitiveType, doublePri
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { WorldHelper, WorldClass } from "./World.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
+import { InterpreterHelperIdentifiers } from "./InterpreterHelperIdentifiers.js";
+import { NInterpreter } from "src/client/newcompiler/interpreter/NInterpreter.js";
 
 export class Actor extends Klass {
 
@@ -156,7 +158,7 @@ export class Actor extends Klass {
                 let sh: ActorHelper = o.intrinsicData["Actor"];
 
                 let interpreter = module.main.getInterpreter();
-                let worldHelper = interpreter.worldHelper;
+                let worldHelper = interpreter.getHelper<WorldHelper>(InterpreterHelperIdentifiers.world);
                 if (worldHelper == null) {
                     let w: RuntimeObject = new RuntimeObject(<Klass>interpreter.moduleStore.getType("World").type);
                     worldHelper = new WorldHelper(800, 600, interpreter.moduleStore.getModule("Base Module"), w);
@@ -254,8 +256,8 @@ export class ActorHelper {
 
     timerPaused: boolean = false;
 
-    constructor(interpreter: Interpreter, public runtimeObject: RuntimeObject) {
-        let worldHelper = interpreter.worldHelper;
+    constructor(interpreter: NInterpreter, public runtimeObject: RuntimeObject) {
+        let worldHelper = interpreter.getHelper<WorldHelper>(InterpreterHelperIdentifiers.world);
         if (worldHelper == null) {
             let w: RuntimeObject = new RuntimeObject(<Klass>interpreter.moduleStore.getType("World").type);
             worldHelper = new WorldHelper(800, 600, interpreter.moduleStore.getModule("Base Module"), w);

@@ -1,3 +1,4 @@
+import { EventManager } from "src/client/tools/EventManager.js";
 import { Module, ModuleStore } from "../../compiler/parser/Module.js";
 import { TextPositionWithModule } from "../../compiler/types/Types.js";
 import { InputManager } from "../../interpreter/InputManager.js";
@@ -38,11 +39,6 @@ export class NInterpreter {
 
     eventManager: EventManager<NInterpreterEvents> = new EventManager();
     private helperRegistry: Map<string, Object> = new Map();
-
-    worldHelper: WorldHelper;
-    gngEreignisbehandlungHelper: GNGHelper;
-    processingHelper: ProcessingHelper;
-
 
     actions: string[] = ["start", "pause", "stop", "stepOver",
         "stepInto", "stepOut", "restart"];
@@ -88,6 +84,10 @@ export class NInterpreter {
 
     registerHelper(identifier: string, helper: Object){
         this.helperRegistry.set(identifier, helper);
+    }
+
+    unRegisterHelper(identifier: string){
+        this.helperRegistry.delete(identifier);
     }
 
     initTimer() {
@@ -149,15 +149,11 @@ export class NInterpreter {
 
         this.eventManager.fireEvent("stop");
 
-        if (this.worldHelper != null) {
-            this.worldHelper.spriteAnimations = [];
-        }
-        this.gngEreignisbehandlungHelper?.detachEvents();
-        this.gngEreignisbehandlungHelper = null;
-
-        if (this.worldHelper != null) {
-            this.worldHelper.cacheAsBitmap();
-        }
+        // Beware: originally this was after this.getTimerClass().stopTimer();
+        // if Bitmap caching doesn't work, we need two events...
+        // if (this.worldHelper != null) {
+        //     this.worldHelper.cacheAsBitmap();
+        // }
 
 
         setTimeout(() => {

@@ -18,7 +18,8 @@ import { EmbeddedIndexedDB } from "./EmbeddedIndexedDB.js";
 import { SemicolonAngel } from "../compiler/parser/SemicolonAngel.js";
 import { TextPositionWithModule } from "../compiler/types/Types.js";
 import { HitPolygonStore } from "../runtimelibrary/graphics/PolygonStore.js";
-import { NPrimitiveTypeManager } from "../newcompiler/types/NewPrimitiveType.js";
+import { NPrimitiveTypeManager } from "../newcompiler/types/NPrimitiveTypeManager.js";
+import { NInterpreter } from "../newcompiler/interpreter/NInterpreter.js";
 
 type JavaOnlineConfig = {
     withFileList?: boolean,
@@ -45,7 +46,7 @@ export class MainEmbedded implements MainBase {
     getCompiler(): Compiler {
         return this.compiler;
     }
-    getInterpreter(): Interpreter {
+    getInterpreter(): NInterpreter {
         return this.interpreter;
     }
     getCurrentWorkspace(): Workspace {

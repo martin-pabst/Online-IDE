@@ -1,18 +1,22 @@
+import { NInterpreter } from "src/client/newcompiler/interpreter/NInterpreter.js";
 import { Module } from "../../compiler/parser/Module.js";
 import { Klass } from "../../compiler/types/Class.js";
 import { doublePrimitiveType, intPrimitiveType, stringPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
 import { Method, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { Interpreter, InterpreterState } from "../../interpreter/Interpreter.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
+import { GNGEreignisbehandlungHelper } from "../gng/GNGEreignisbehandlung.js";
 import { ActorHelper } from "./Actor.js";
 import { ColorHelper } from "./ColorHelper.js";
 import { FilledShapeDefaults } from "./FilledShapeDefaults.js";
 import { GroupClass, GroupHelper } from "./Group.js";
+import { InterpreterHelperIdentifiers } from "./InterpreterHelperIdentifiers.js";
 import { MouseListenerInterface } from "./MouseListener.js";
 import { ShapeClass, ShapeHelper } from "./Shape.js";
 import { SpriteHelper } from "./Sprite.js";
 
 export class WorldClass extends Klass {
+
 
     constructor(public module: Module) {
 
@@ -422,7 +426,7 @@ export class WorldHelper {
     mouseListenerShapes: MouseListenerShapeData[] = [];
     mouseListeners: MouseListenerData[] = [];
 
-    interpreter: Interpreter;
+    interpreter: NInterpreter;
     actorsFinished: boolean = true;
     summedDelta: number = 0;
 
@@ -481,15 +485,20 @@ export class WorldHelper {
 
         this.interpreter = this.module?.main?.getInterpreter();
 
-        if (this.interpreter.processingHelper != null) {
+        if (this.interpreter.getHelper(InterpreterHelperIdentifiers.processing) != null) {
             this.interpreter.throwException("Die herkömmliche Grafikausgabe kann nicht zusammen mit Processing genutzt werden.");
         }
 
-        if (this.interpreter.worldHelper != null) {
+        if (this.interpreter.getHelper(InterpreterHelperIdentifiers.world) != null) {
             this.interpreter.throwException("Es darf nur ein World-Objekt instanziert werden.");
         }
 
-        this.interpreter.worldHelper = this;
+        this.interpreter.registerHelper(InterpreterHelperIdentifiers.world, this);
+
+        this.interpreter.eventManager.registerHandler("stop", () => {
+            this.spriteAnimations = [];
+            this.cacheAsBitmap();
+        }, this, InterpreterHelperIdentifiers.world);
 
         let $graphicsDiv = this.module.main.getInterpreter().printManager.getGraphicsDiv();
         this.$coordinateDiv = this.module.main.getRightDiv().$rightDiv.find(".jo_coordinates");
@@ -615,7 +624,7 @@ export class WorldHelper {
                 }
 
                 if (listenerType == "mousedown") {
-                    let gngEreignisbehandlung = this.interpreter.gngEreignisbehandlungHelper;
+                    let gngEreignisbehandlung = this.interpreter.getHelper<GNGEreignisbehandlungHelper>(InterpreterHelperIdentifiers.gng);
                     if (gngEreignisbehandlung != null) {
                         gngEreignisbehandlung.handleMouseClickedEvent(x, y);
                     }
@@ -925,7 +934,7 @@ export class WorldHelper {
         this.$containerOuter.remove();
         this.module.main.getInterpreter().printManager.getGraphicsDiv().hide();
         this.interpreter.timerExtern = false;
-        this.interpreter.worldHelper = null;
+        this.interpreter.unRegisterHelper(InterpreterHelperIdentifiers.world);
         this.$coordinateDiv.hide();
 
         FilledShapeDefaults.initDefaultValues();

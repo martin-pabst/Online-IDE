@@ -1,3 +1,4 @@
+import { NInterpreter } from "src/client/newcompiler/interpreter/NInterpreter.js";
 import { TokenType } from "../../compiler/lexer/Token.js";
 import { Module } from "../../compiler/parser/Module.js";
 import { Klass, Visibility } from "../../compiler/types/Class.js";
@@ -5,6 +6,7 @@ import { charPrimitiveType, floatPrimitiveType, intPrimitiveType, stringPrimitiv
 import { Method, Parameterlist, Type, Value, Variable, Attribute } from "../../compiler/types/Types.js";
 import { Interpreter, InterpreterState } from "../../interpreter/Interpreter.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
+import { InterpreterHelperIdentifiers } from "./InterpreterHelperIdentifiers.js";
 
 // import * as p5 from "p5";
 type p5 = any;
@@ -699,13 +701,13 @@ export class ProcessingClass extends Klass {
         let interpreter = this.module?.main?.getInterpreter();
 
 
-        if (interpreter.processingHelper != null) {
+        if (interpreter.getHelper(InterpreterHelperIdentifiers.processing) != null) {
 
             interpreter.throwException("Es kann nur ein einziges Processing-Applet instanziert werden.");
             return;
         }
 
-        if (interpreter.worldHelper != null) {
+        if (interpreter.getHelper(InterpreterHelperIdentifiers.world) != null) {
 
             interpreter.throwException("Processing kann nicht gleichzeitig mit der herkömmlichen Grafikausgabe genutzt werden.");
             return;
@@ -738,9 +740,9 @@ export class ProcessingHelper {
     onSizeChanged: () => void;
 
 
-    constructor(private module: Module, private interpreter: Interpreter, public runtimeObject: RuntimeObject) {
+    constructor(private module: Module, private interpreter: NInterpreter, public runtimeObject: RuntimeObject) {
 
-        this.interpreter.processingHelper = this;
+        this.interpreter.registerHelper(InterpreterHelperIdentifiers.processing, this);
 
         this.$containerOuter = jQuery('<div></div>');
         let $graphicsDiv = this.module.main.getInterpreter().printManager.getGraphicsDiv();
@@ -950,7 +952,7 @@ export class ProcessingHelper {
         this.$containerOuter.remove();
         this.module.main.getInterpreter().printManager.getGraphicsDiv().hide();
         this.interpreter.timerExtern = false;
-        this.interpreter.processingHelper = null;
+        this.interpreter.unRegisterHelper(InterpreterHelperIdentifiers.processing);
     }
 
 }

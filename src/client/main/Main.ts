@@ -32,7 +32,8 @@ import { WindowStateManager } from "./gui/WindowStateManager.js";
 import { TextPositionWithModule } from "../compiler/types/Types.js";
 import { checkIfMousePresent } from "../tools/HtmlTools.js";
 import { InconsistencyFixer } from "../workspace/InconsistencyFixer.js";
-import { NPrimitiveTypeManager } from "../newcompiler/types/NewPrimitiveType.js";
+import { NPrimitiveTypeManager } from "../newcompiler/types/NPrimitiveTypeManager.js";
+import { NInterpreter } from "../newcompiler/interpreter/NInterpreter.js";
 
 export class Main implements MainBase {
 
@@ -42,7 +43,7 @@ export class Main implements MainBase {
 
     isEmbedded(): boolean { return false; }
 
-    getInterpreter(): Interpreter {
+    getInterpreter(): NInterpreter {
         return this.interpreter;
     }
     getCurrentWorkspace(): Workspace {

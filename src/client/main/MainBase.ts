@@ -11,7 +11,8 @@ import { ErrorManager } from "./gui/ErrorManager.js";
 import { SemicolonAngel } from "../compiler/parser/SemicolonAngel.js";
 import { TextPositionWithModule } from "../compiler/types/Types.js";
 import {GamepadTool} from "../tools/GamepadTool.js";
-import { NPrimitiveTypeManager } from "../newcompiler/types/NewPrimitiveType.js";
+import { NInterpreter } from "../newcompiler/interpreter/NInterpreter.js";
+import { NPrimitiveTypeManager } from "../newcompiler/types/NPrimitiveTypeManager.js";
 
 export interface MainBase {
     printProgram();
@@ -23,7 +24,7 @@ export interface MainBase {
     getCurrentlyEditedModule(): import("../compiler/parser/Module").Module;
     drawClassDiagrams(onlyUpdateIdentifiers: boolean);
     getMonacoEditor(): monaco.editor.IStandaloneCodeEditor;
-    getInterpreter(): Interpreter;
+    getInterpreter(): NInterpreter;
     getCurrentWorkspace(): Workspace;
     getDebugger(): Debugger;
     getRightDiv(): RightDiv;

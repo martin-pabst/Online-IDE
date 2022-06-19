@@ -3,6 +3,7 @@ import { Klass } from "../../compiler/types/Class.js";
 import { charPrimitiveType, intPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
 import { Method, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
+import { InterpreterHelperIdentifiers } from "../graphics/InterpreterHelperIdentifiers.js";
 
 
 export type GNGAktionsempfaengerType = "ausführen" | "taste" | "sondertaste" | "geklickt";
@@ -96,12 +97,18 @@ export class GNGEreignisbehandlung extends Klass {
 
     static getHelper(module: Module):GNGEreignisbehandlungHelper{
         let interpreter = module.main.getInterpreter();
-        if (interpreter.gngEreignisbehandlungHelper == null) {
-            interpreter.gngEreignisbehandlungHelper = new GNGEreignisbehandlungHelper(module);
-            interpreter.gngEreignisbehandlungHelper.bindEvents();
+        let helper = interpreter.getHelper<GNGEreignisbehandlungHelper>(InterpreterHelperIdentifiers.gng)
+        if (helper == null) {
+            helper = new GNGEreignisbehandlungHelper(module);
+            interpreter.registerHelper(InterpreterHelperIdentifiers.gng, helper);
+            interpreter.eventManager.registerHandler("stop", () => {
+                helper.detachEvents(); 
+                interpreter.unRegisterHelper(InterpreterHelperIdentifiers.gng);
+            }, helper, InterpreterHelperIdentifiers.gng);
+            helper.bindEvents();
         }
 
-        return interpreter.gngEreignisbehandlungHelper;
+        return helper;
 
     }
 

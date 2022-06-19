@@ -4,7 +4,7 @@ import { InputManager } from "../../interpreter/InputManager.js";
 import { PrintManager } from "../../main/gui/PrintManager.js";
 import { ProgramControlButtons } from "../../main/gui/ProgramControlButtons.js";
 import { MainBase } from "../../main/MainBase.js";
-import { GNGEreignisbehandlungHelper } from "../../runtimelibrary/gng/GNGEreignisbehandlung.js";
+import { GNGEreignisbehandlungHelper as GNGHelper } from "../../runtimelibrary/gng/GNGEreignisbehandlung.js";
 import { ProcessingHelper } from "../../runtimelibrary/graphics/Processing.js";
 import { WorldHelper } from "../../runtimelibrary/graphics/World.js";
 import { TimerClass } from "../../runtimelibrary/Timer.js";
@@ -14,6 +14,8 @@ import { NPrimitiveTypeManager } from "../types/NPrimitiveTypeManager.js";
 import { NLoadController } from "./NLoadController.js";
 import { NThreadPool, NThreadPoolLstate } from "./NThreadPool.js";
 
+
+type NInterpreterEvents = "stop" | "done" | "resetRuntime";
 
 export class NInterpreter {
 
@@ -34,8 +36,11 @@ export class NInterpreter {
     keyboardTool: KeyboardTool;
     gamepadTool: GamepadTool;
 
+    eventManager: EventManager<NInterpreterEvents> = new EventManager();
+    private helperRegistry: Map<string, Object> = new Map();
+
     worldHelper: WorldHelper;
-    gngEreignisbehandlungHelper: GNGEreignisbehandlungHelper;
+    gngEreignisbehandlungHelper: GNGHelper;
     processingHelper: ProcessingHelper;
 
 
@@ -75,6 +80,14 @@ export class NInterpreter {
         this.threadPool = new NThreadPool(this);
         this.loadController = new NLoadController(this.threadPool, this);
         this.initTimer();
+    }
+
+    getHelper<HelperType>(identifier: string):HelperType {
+        return <HelperType>this.helperRegistry.get(identifier);
+    }
+
+    registerHelper(identifier: string, helper: Object){
+        this.helperRegistry.set(identifier, helper);
     }
 
     initTimer() {
@@ -132,13 +145,16 @@ export class NInterpreter {
         this.threadPool.setState(NThreadPoolLstate.done);
         this.threadPool.unmarkStep();
 
+        this.getTimerClass().stopTimer();
+
+        this.eventManager.fireEvent("stop");
+
         if (this.worldHelper != null) {
             this.worldHelper.spriteAnimations = [];
         }
         this.gngEreignisbehandlungHelper?.detachEvents();
         this.gngEreignisbehandlungHelper = null;
 
-        this.getTimerClass().stopTimer();
         if (this.worldHelper != null) {
             this.worldHelper.cacheAsBitmap();
         }
@@ -256,6 +272,7 @@ export class NInterpreter {
         let buttonStopActive = this.buttonActiveMatrix['stop'][state];
 
         if (state == NThreadPoolLstate.done) {
+            this.eventManager.fireEvent("done");
             if (this.worldHelper != null) {
                 this.worldHelper.clearActorLists();
             }
@@ -321,6 +338,8 @@ export class NInterpreter {
 
     resetRuntime() {
         this.printManager.clear();
+        this.eventManager.fireEvent("resetRuntime");
+
         this.worldHelper?.destroyWorld();
         this.processingHelper?.destroyWorld();
         this.gngEreignisbehandlungHelper?.detachEvents();

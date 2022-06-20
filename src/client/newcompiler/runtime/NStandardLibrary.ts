@@ -1,7 +1,7 @@
 import { NLibraryCompiler } from "../librarycompiler/NLibraryCompiler.js";
 import { NRuntimeObject } from "../NRuntimeObject.js";
 import { NClassLike } from "../types/NClass.js";
-import { NType } from "../types/NewType.js";
+import { NType } from "../types/NType.js";
 import { NPrimitiveTypeManager } from "../types/NPrimitiveTypeManager.js";
 import { NArithmeticException, NClassCastException, NException, NThrowable } from "./NExceptions.js";
 

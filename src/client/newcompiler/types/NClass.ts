@@ -2,8 +2,8 @@ import { TokenType } from "../../compiler/lexer/Token.js";
 import { NProgram } from "../compiler/NProgram.js";
 import { NRuntimeObject, NStaticClassObject } from "../NRuntimeObject.js";
 import { NMethodInfo, NAttributeInfo, NParameterlist, NVariable } from "./NAttributeMethod.js";
-import { NPrimitiveType } from "./NewPrimitiveType.js";
-import { NExpression, NType } from "./NewType.js";
+import { NPrimitiveType } from "./NPrimitiveType.js";
+import { NExpression, NType } from "./NType.js";
 import { NVisibility } from "./NVisibility.js";
 
 

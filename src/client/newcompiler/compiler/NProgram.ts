@@ -2,7 +2,7 @@ import { TextPosition, TokenType, TokenTypeReadable } from "../../compiler/lexer
 import { Module } from "../../compiler/parser/Module.js"
 import { NThread } from "../interpreter/NThreadPool.js";
 import { NClassLike } from "../types/NClass.js";
-import { NType } from "../types/NewType.js";
+import { NType } from "../types/NType.js";
 import { NSymbolTable } from "./NSymbolTable.js";
 
 

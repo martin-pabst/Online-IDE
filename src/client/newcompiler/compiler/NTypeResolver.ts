@@ -7,8 +7,8 @@ import { NArrayType } from "../types/NArray.js";
 import { NAttributeInfo, NMethodInfo, NParameterlist, NVariable } from "../types/NAttributeMethod.js";
 import { NClass, NClassLike, NGenericParameter, NInterface } from "../types/NClass.js";
 import { NEnum } from "../types/NEnum.js";
-import { NPrimitiveType } from "../types/NewPrimitiveType.js";
-import { NType } from "../types/NewType.js";
+import { NPrimitiveType } from "../types/NPrimitiveType.js";
+import { NType } from "../types/NType.js";
 import { NPrimitiveTypeManager } from "../types/NPrimitiveTypeManager.js";
 
 /**

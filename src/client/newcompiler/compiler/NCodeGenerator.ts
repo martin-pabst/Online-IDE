@@ -4,8 +4,8 @@ import { ASTNode, BinaryOpNode, ConstantNode, TermNode, UnaryOpNode } from "src/
 import { Module, ModuleStore } from "src/client/compiler/parser/Module.js";
 import { Heap } from "src/client/compiler/types/Types.js";
 import { NClass, NClassLike } from "../types/NClass.js";
-import { NPrimitiveType } from "../types/NewPrimitiveType.js";
-import { NType } from "../types/NewType.js";
+import { NPrimitiveType } from "../types/NPrimitiveType.js";
+import { NType } from "../types/NType.js";
 import { NPrimitiveTypeManager } from "../types/NPrimitiveTypeManager.js";
 import { CodeBuilder } from "./NCodeBuilder.js";
 import { NBlock, NFragment, NProgram } from "./NProgram.js";

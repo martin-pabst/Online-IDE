@@ -83,7 +83,7 @@ import { RobotClass, RobotWorldClass } from "../../runtimelibrary/graphics/3d/Ro
 import { NSymbolTable } from "src/client/newcompiler/compiler/NSymbolTable.js";
 import { NProgram } from "src/client/newcompiler/compiler/NProgram.js";
 import { NStaticClassObject } from "src/client/newcompiler/NRuntimeObject.js";
-import { NType } from "src/client/newcompiler/types/NewType.js";
+import { NType } from "src/client/newcompiler/types/NType.js";
 import { NAttributeInfo, NMethodInfo, NVariable } from "src/client/newcompiler/types/NAttributeMethod.js";
 
 export type ExportedWorkspace = {

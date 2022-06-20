@@ -1,7 +1,7 @@
 import { TokenType } from "src/client/compiler/lexer/Token.js";
 import { NAttributeInfo, NMethodInfo } from "./NAttributeMethod.js";
 import { NClassLike, NInterface } from "./NClass.js";
-import { NType, NExpression } from "./NewType.js";
+import { NType, NExpression } from "./NType.js";
 
 export class NEnum extends NClassLike {
 

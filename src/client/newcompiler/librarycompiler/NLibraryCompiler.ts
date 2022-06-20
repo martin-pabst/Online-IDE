@@ -3,8 +3,8 @@ import { Token, TokenList, TokenType, TokenTypeReadable } from "src/client/compi
 import { NRuntimeObject } from "../NRuntimeObject.js";
 import { NAttributeInfo, NMethodInfo, NVariable } from "../types/NAttributeMethod.js";
 import { NClass, NClassLike, NGenericParameter, NInterface } from "../types/NClass.js";
-import { } from "../types/NewPrimitiveType.js";
-import { NExpression, NType } from "../types/NewType.js";
+import { } from "../types/NPrimitiveType.js";
+import { NExpression, NType } from "../types/NType.js";
 import { NVisibility, NVisibilityUtility } from "../types/NVisibility.js";
 import { NPrimitiveTypeManager } from "../types/NPrimitiveTypeManager.js";
 import { NLibrary } from "../runtime/NStandardLibrary.js";

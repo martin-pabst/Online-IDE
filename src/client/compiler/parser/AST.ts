@@ -6,7 +6,7 @@ import { NClass, NInterface } from "../../newcompiler/types/NClass.js";
 import { NEnum } from "../../newcompiler/types/NEnum.js";
 import { NAttributeInfo, NMethodInfo } from "../../newcompiler/types/NAttributeMethod.js";
 import { NVisibility } from "../../newcompiler/types/NVisibility.js";
-import { NType } from "src/client/newcompiler/types/NewType.js";
+import { NType } from "src/client/newcompiler/types/NType.js";
 
 
 export type ASTNode = 

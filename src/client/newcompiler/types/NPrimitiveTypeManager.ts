@@ -1,7 +1,7 @@
 import { TokenType } from "src/client/compiler/lexer/Token.js";
 import { ConstantNode } from "src/client/compiler/parser/AST.js";
-import { VoidType, NullType, NIntPrimitiveType, NLongPrimitiveType, NFloatPrimitiveType, NDoublePrimitiveType, NBooleanPrimitiveType, NCharPrimitiveType } from "./NewPrimitiveType.js";
-import { NType } from "./NewType.js";
+import { VoidType, NullType, NIntPrimitiveType, NLongPrimitiveType, NFloatPrimitiveType, NDoublePrimitiveType, NBooleanPrimitiveType, NCharPrimitiveType } from "./NPrimitiveType.js";
+import { NType } from "./NType.js";
 import { NObjectType } from "../runtime/NObjectType.js";
 import { NStringType } from "../runtime/NStringType.js";
 import { NBooleanType, NCharacterType, NDoubleType, NFloatType, NIntegerType, NLongType } from "../runtime/NBoxedTypes.js";

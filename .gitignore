@@ -2,6 +2,7 @@
 /htdocs/js
 /htdocs/sql
 # /htdocs/js.webpack
+
 /*.7z
 /*.zip
 /material
@@ -16,3 +17,4 @@
 /htdocs/js.webpack/javaOnline.js
 /htdocs/js.webpack/javaOnline.js.map
 .DS_Store
+/~*

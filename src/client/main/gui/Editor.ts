@@ -133,7 +133,8 @@ export class Editor implements monaco.languages.RenameProvider {
             automaticLayout: true,
             scrollBeyondLastLine: false,
             occurrencesHighlight: false,
-            autoIndent: "full",
+            autoIndent: "advanced",
+            // renderWhitespace: "boundary",
             dragAndDrop: true,
             formatOnType: true,
             formatOnPaste: true,
@@ -151,7 +152,9 @@ export class Editor implements monaco.languages.RenameProvider {
             // },
 
             mouseWheelZoom: this.isEmbedded,
-
+            tabSize: 3,
+            insertSpaces: true,
+            detectIndentation: false,
             minimap: {
                 enabled: this.showMinimap
             },

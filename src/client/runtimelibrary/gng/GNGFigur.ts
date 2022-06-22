@@ -175,7 +175,7 @@ export class GNGFigurClass extends Klass {
                 center.x = 100;
                 center.y = 200;
 
-            }, false, false, "Verschiebt die Figur an die Position (100, 200) ohne eine neue Linie zu zeichnen.", false));
+            }, false, false, "Verschiebt die Figur an die Position (100, 200).", false));
 
         this.addMethod(new Method("WinkelSetzen", new Parameterlist([
             { identifier: "winkel", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -191,7 +191,7 @@ export class GNGFigurClass extends Klass {
                 sh.rotate(winkel - sh.angle);
                 sh.displayObject.updateTransform();
 
-            }, false, false, "Setzt den Blickwinkel der Figur. 0° => nach rechts (initial), 90°: => nach oben, usw..", false));
+            }, false, false, "Dreht die Figur so, dass der Blickwinkel der Figur in die angegebene Richtung zeigt. 0° => nach rechts (initial), 90°: => nach oben, usw..", false));
 
         this.addMethod(new Method("WinkelGeben", new Parameterlist([
         ]), intPrimitiveType,
@@ -206,7 +206,7 @@ export class GNGFigurClass extends Klass {
                 if(sh.angle >= 360) sh.angle -= 360*Math.floor(sh.angle/360);
                 return Math.round(sh.angle);
 
-            }, false, false, "Gibt den Blickwinkel der Turtle zurück.", false));
+            }, false, false, "Gibt den Blickwinkel der Figur zurück.", false));
 
         this.addMethod(new Method("XPositionGeben", new Parameterlist([
         ]), intPrimitiveType,
@@ -220,7 +220,7 @@ export class GNGFigurClass extends Klass {
                 let center: GNGPoint = o.intrinsicData["Center"];
                 return center.x;
 
-            }, false, false, "Gibt x-Position der Turtle zurück.", false));
+            }, false, false, "Gibt x-Position der Figur zurück.", false));
 
         this.addMethod(new Method("YPositionGeben", new Parameterlist([
         ]), intPrimitiveType,
@@ -234,7 +234,7 @@ export class GNGFigurClass extends Klass {
                 let center: GNGPoint = o.intrinsicData["Center"];
                 return center.y;
 
-            }, false, false, "Gibt y-Position der Turtle zurück.", false));
+            }, false, false, "Gibt y-Position der Figur zurück.", false));
 
         this.addMethod(new Method("SichtbarkeitSetzen", new Parameterlist([
             { identifier: "sichtbarkeit", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -453,7 +453,7 @@ export class GNGFigurClass extends Klass {
                 triangle.setBorderWidth(2);
                 sh.add(rto);
 
-            }, false, false, 'Erzeugt ein neues, dreieckiges Element einer eigenen Darstellung der Figur.', false));
+            }, false, false, 'Erzeugt ein neues, dreieckiges Element und fügt es der Figur hinzu.', false));
 
         this.addMethod(new Method("FigurteilFestlegenRechteck", new Parameterlist([
             { identifier: "x", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },

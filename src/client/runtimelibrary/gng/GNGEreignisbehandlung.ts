@@ -111,12 +111,16 @@ export class GNGEreignisbehandlung extends Klass {
 export class GNGEreignisbehandlungHelper {
 
     aktionsempfaengerTypes: string[] = ["ausführen", "taste", "sondertaste", "geklickt"];
-    methodSignatureList: string[] = ["TaktImpulsAusführen()", "AktionAusführen()", "MausGeklickt(int, int, int)", "TasteGedrückt(char)", "SonderTasteGedrückt(int)"];
+    methodSignatureList: string[] = ["TaktImpulsAusführen()", "Ausführen()", "AktionAusführen()", "MausGeklickt(int, int, int)", "Taste(char)", "TasteGedrückt(char)", 
+    "Sondertaste(int)", "SonderTasteGedrückt(int)"];
     methodToAktionsempfaengerTypeMap: { [signature: string]: string } = {
         "TaktImpulsAusführen()": "ausführen",
+        "Ausführen()": "ausführen",
         "AktionAusführen()": "ausführen",
         "MausGeklickt(int, int, int)": "geklickt",
+        "Taste(char)": "taste",
         "TasteGedrückt(char)": "taste",
+        "SonderTaste(int)": "sondertaste",
         "SonderTasteGedrückt(int)": "sondertaste"
     };
 

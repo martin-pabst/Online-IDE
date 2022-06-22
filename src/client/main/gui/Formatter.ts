@@ -192,7 +192,7 @@ export class Formatter implements monaco.languages.DocumentFormattingEditProvide
                     if (i > 1) {
                         let lastToken1 = tokenlist[i - 1];
                         let lastToken2 = tokenlist[i - 2];
-                        if (lastToken1.tt == TokenType.space && [TokenType.newline, TokenType.keywordFor].indexOf(lastToken2.tt) < 0 && !this.isBinaryOperator(lastToken2.tt)) {
+                        if (lastToken1.tt == TokenType.space && [TokenType.newline, TokenType.keywordFor, TokenType.keywordWhile].indexOf(lastToken2.tt) < 0 && !this.isBinaryOperator(lastToken2.tt)) {
                             if (lastToken1.position.length == 1) {
                                 this.deleteSpaces(edits, lastToken1.position.line, lastToken1.position.column, 1);
                             }

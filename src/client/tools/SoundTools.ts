@@ -93,31 +93,76 @@ export class SoundTools {
 
     static soundMap: Map<string, SoundType> = new Map();
 
+    static getVolume: () => number = () => {return -1};
+
     private static isInitialized: boolean = false;
 
-    public static init(){
+    public static init() {
         let praefix: string = "";
         //@ts-ignore
-        if(window.javaOnlineDir != null){
+        if (window.javaOnlineDir != null) {
             //@ts-ignore
             praefix = window.javaOnlineDir;
         }
-        if(!SoundTools.isInitialized){
+        if (!SoundTools.isInitialized) {
             SoundTools.isInitialized = true;
-            for(let sound of SoundTools.sounds){
+            for (let sound of SoundTools.sounds) {
                 //@ts-ignore
-                sound.player = new Howl({src: [praefix + sound.url], preload: true})
+                sound.player = new Howl({ src: [praefix + sound.url], preload: true })
                 SoundTools.soundMap.set(sound.name, sound);
             }
         }
 
     }
 
-    public static play(name: string){
+    public static play(name: string) {
         let st: SoundType = SoundTools.soundMap.get(name);
-        if(st != null){
+        if (st != null) {
             st.player.play();
         }
     }
 
+    static volumeDetectionRunning: boolean = false;
+    public static startDetectingVolume() {
+        if(SoundTools.volumeDetectionRunning) return;
+        SoundTools.volumeDetectionRunning = true;
+        console.log("starting...");
+        //@ts-ignore
+        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+        //@ts-ignore
+        if (navigator.getUserMedia) {
+            //@ts-ignore
+            navigator.getUserMedia({
+                audio: true
+            },
+                function (stream) {
+                    let audioContext = new AudioContext();
+                    let analyser = audioContext.createAnalyser();
+                    let microphone = audioContext.createMediaStreamSource(stream);
+
+                    analyser.smoothingTimeConstant = 0.8;
+                    analyser.fftSize = 1024;
+
+                    microphone.connect(analyser);
+
+                    SoundTools.getVolume = () => {
+                        if(!SoundTools.volumeDetectionRunning) return 0;
+                        var times = new Float32Array(analyser.frequencyBinCount);
+                        analyser.getFloatTimeDomainData(times);
+                        let volume = 0;
+                        for (let i = 0; i < times.length; i++) {
+                            volume += Math.abs(times[i]);
+                        }
+                        volume = volume / times.length;
+                        return volume;
+                    };
+                },
+                function (err) {
+                    console.log("The following error occured: " + err.name)
+                });
+        } else {
+            console.log("getUserMedia not supported");
+        }
+    }
 }
+

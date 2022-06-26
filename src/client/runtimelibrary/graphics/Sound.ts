@@ -1,6 +1,6 @@
 import { Type, Method, Parameterlist, Value, Attribute } from "../../compiler/types/Types.js";
 import { Klass, Visibility } from "../../compiler/types/Class.js";
-import { stringPrimitiveType, doublePrimitiveType, floatPrimitiveType, intPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
+import { stringPrimitiveType, doublePrimitiveType, floatPrimitiveType, intPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
 import { Module } from "../../compiler/parser/Module.js";
 import { PrintManager } from "../../main/gui/PrintManager.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
@@ -29,6 +29,14 @@ export class SoundKlass extends Klass {
             SoundTools.play(sound);
         }    
         , false, true, "Spielt einen Sound ab. Die Möglichen Sounds sind als statische Variablen der Klasse Sound hinterlegt. Tippe als Parameter also Sound gefolgt von einem Punkt ein, um eine Auswahl zu sehen!"));
+
+        this.addMethod(new Method("getVolume", new Parameterlist([
+        ]), doublePrimitiveType,
+        (parameters) => {
+            if(!SoundTools.volumeDetectionRunning) SoundTools.startDetectingVolume();
+            return SoundTools.getVolume();
+        }    
+        , false, true, "Gibt die aktuelle Mikrofonlautstärke zurück. Beim ersten Aufruf muss der Benutzer dem Browser die Erlaubnis zur Benutzung des Mikrofons geben. Solange dies noch nicht erfolgt ist, gibt die Funktion den Wert -1 zurück."));
 
 
     }

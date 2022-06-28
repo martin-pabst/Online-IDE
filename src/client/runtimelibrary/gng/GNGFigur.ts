@@ -261,7 +261,7 @@ export class GNGFigurClass extends Klass {
 
                 sh.destroy();
 
-            }, false, false, "Schaltet die Sichtbarkeit der Figur ein oder aus.", false));
+            }, false, false, "Entfernt die Figur aus dem Zeichenfenster", false));
 
         this.addMethod(new Method("GanzNachVornBringen", new Parameterlist([
         ]), null,

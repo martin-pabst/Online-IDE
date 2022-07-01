@@ -622,9 +622,7 @@ export class Klass extends Type {
 
     public canCastTo(type: Type): boolean {
 
-        if (type == stringPrimitiveType) {
-            return true;
-        }
+        // casting something to a String by calling toString() is neither possible in Java nor makes sense in my opinion
 
         if (type instanceof Klass) {
             let baseClass: Klass = this;

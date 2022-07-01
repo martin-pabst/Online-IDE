@@ -1,16 +1,15 @@
 import { Error, QuickFix, ErrorLevel } from "../lexer/Lexer.js";
 import { TextPosition, TokenType, TokenTypeReadable } from "../lexer/Token.js";
 import { ArrayType } from "../types/Array.js";
-import { Klass, Interface, StaticClass, Visibility, getVisibilityUpTo } from "../types/Class.js";
+import { Klass, Interface, StaticClass, Visibility, getVisibilityUpTo, UnboxableKlass } from "../types/Class.js";
 import { booleanPrimitiveType, charPrimitiveType, floatPrimitiveType, intPrimitiveType, stringPrimitiveType, objectType, nullType, voidPrimitiveType, varType, doublePrimitiveType } from "../types/PrimitiveTypes.js";
 import { Attribute, Type, Variable, Value, PrimitiveType, UsagePositions, Method, Heap, getTypeIdentifier, Parameterlist } from "../types/Types.js";
 import { ASTNode, AttributeDeclarationNode, BinaryOpNode, ClassDeclarationNode, ConstantNode, DoWhileNode, ForNode, IdentifierNode, IfNode, IncrementDecrementNode, MethodcallNode, MethodDeclarationNode, NewObjectNode, ReturnNode, SelectArrayElementNode, SelectArributeNode, SuperconstructorCallNode, SuperNode, ThisNode, UnaryOpNode, WhileNode, LocalVariableDeclarationNode, ArrayInitializationNode, NewArrayNode, PrintNode, CastManuallyNode, EnumDeclarationNode, TermNode, SwitchNode, ScopeNode, ParameterNode, ForNodeOverCollecion, ConstructorCallNode } from "./AST.js";
 import { LabelManager } from "./LabelManager.js";
-import { Module, ModuleStore, MethodCallPosition } from "./Module.js";
-import { AssignmentStatement, InitStackframeStatement, JumpAlwaysStatement, Program, Statement, BeginArrayStatement, NewObjectStatement, JumpOnSwitchStatement, Breakpoint, ExtendedForLoopCheckCounterAndGetElement } from "./Program.js";
+import { Module, ModuleStore } from "./Module.js";
+import { AssignmentStatement, InitStackframeStatement, JumpAlwaysStatement, Program, Statement, BeginArrayStatement, NewObjectStatement, JumpOnSwitchStatement, ExtendedForLoopCheckCounterAndGetElement } from "./Program.js";
 import { SymbolTable } from "./SymbolTable.js";
 import { Enum, EnumInfo } from "../types/Enum.js";
-import { InputClass } from "../../runtimelibrary/Input.js";
 
 type StackType = {
     type: Type,
@@ -860,37 +859,63 @@ export class CodeGenerator {
             if (!castInfo.automatic) {
                 return false;
             }
-            if (castInfo.needsStatement) {
-                this.pushStatements({
-                    type: TokenType.castValue,
-                    newType: typeTo,
-                    position: position
-                });
-            }
+            this.pushStatements({
+                type: TokenType.castValue,
+                newType: typeTo,
+                position: position
+            });
         }
 
         return true;
 
     }
 
-    getToStringStatement(type: Klass, position: TextPosition): Statement {
-        let toStringMethod = type.getMethodBySignature("toString()");
-        if (toStringMethod != null && toStringMethod.getReturnType() == stringPrimitiveType) {
+    ensureAutomaticToString(typeFrom: Type, codepos: number = undefined, textposition?: TextPosition): boolean {
+        if (typeFrom == stringPrimitiveType) return true;
+        if (typeFrom == voidPrimitiveType) return false;
+        let automaticToString: Method;
+        
+        if (typeFrom instanceof PrimitiveType) {
+            automaticToString = new Method("toString", new Parameterlist([]), stringPrimitiveType, (parameters: Value[]) => {
+                let value = parameters[0];
+                return ((<PrimitiveType>value.type).valueToString(value));
+            }, false, true);
 
-            return {
+        }
+        if ((typeFrom instanceof Klass) || (typeFrom == nullType)) {
+
+            let toStringMethod: Method;
+            if (typeFrom == nullType) {
+                toStringMethod = objectType.getMethodBySignature("toString()");
+            }
+            else {
+                toStringMethod = (<Klass>typeFrom).getMethodBySignature("toString()");
+            }
+            if (toStringMethod != null && toStringMethod.getReturnType() == stringPrimitiveType) {
+                automaticToString = new Method(toStringMethod.identifier, toStringMethod.parameterlist, stringPrimitiveType, (parameters: Value[]) => {
+                    let value = parameters[0].value;
+                    if (value == null) return "null";
+                    return toStringMethod.invoke(parameters);
+                }, toStringMethod.isAbstract, true, toStringMethod.documentation, toStringMethod.isConstructor);
+
+            }
+
+        }
+        if (automaticToString != undefined) {
+            this.insertOrPushStatements({
                 type: TokenType.callMethod,
-                position: position,
-                method: toStringMethod,
+                position: textposition,
+                method: automaticToString,
                 isSuperCall: false,
                 stackframeBegin: -1,
                 stepFinished: false
-            };
-
-
-        } else {
-            return null;
+            }, codepos);
+            return true;
         }
+        return false;
+
     }
+
 
     checkIfAssignmentInstedOfEqual(nodeFrom: ASTNode, conditionType?: Type) {
         if (nodeFrom == null) return;
@@ -1032,6 +1057,11 @@ export class CodeGenerator {
 
             this.lastStatement = statement;
         }
+    }
+
+    insertOrPushStatements(statements: Statement | Statement[], pos?: number) {
+        if (pos == null && pos == undefined) this.pushStatements(statements);
+        else this.insertStatements(pos, statements);
     }
 
     removeLastStatement() {
@@ -1375,7 +1405,7 @@ export class CodeGenerator {
             let type = this.processNode(node.text);
 
             if (type != null) {
-                if (!this.ensureAutomaticCasting(type.type, stringPrimitiveType)) {
+                if (!this.ensureAutomaticToString(type.type)) {
                     this.pushError("Die Methoden print und println erwarten einen Parameter vom Typ String. Gefunden wurde ein Wert vom Typ " + type.type?.identifier + ".", node.position);
                 }
             }
@@ -3158,6 +3188,8 @@ export class CodeGenerator {
 
         if (leftType == null || leftType.type == null || rightType == null || rightType.type == null) return null;
 
+        let convertedLeftType = leftType.type;
+
         if (isAssignment) {
             if (!this.ensureAutomaticCasting(rightType.type, leftType.type, node.position, node.firstOperand)) {
                 this.pushError("Der Wert vom Datentyp " + rightType.type.identifier + " auf der rechten Seite kann der Variablen auf der linken Seite (Datentyp " + leftType.type.identifier + ") nicht zugewiesen werden.", node.position);
@@ -3196,6 +3228,20 @@ export class CodeGenerator {
             let unboxableLeft = leftType.type["unboxableAs"];
             let unboxableRight = rightType.type["unboxableAs"];
 
+
+            if (resultType == null && node.operator == TokenType.plus) {
+                if (rightType.type == stringPrimitiveType) {
+                    if (this.ensureAutomaticToString(leftType.type, programPosAfterLeftOpoerand, node.firstOperand.position)) {
+                        resultType = stringPrimitiveType;
+                        convertedLeftType = stringPrimitiveType;
+                    }
+                } else if (leftType.type == stringPrimitiveType) {
+                    if (this.ensureAutomaticToString(rightType.type, undefined, node.firstOperand.position)) {
+                        resultType = stringPrimitiveType;
+                    }
+                }
+            }
+
             if (resultType == null && (unboxableLeft != null || unboxableRight != null)) {
                 let leftTypes: Type[] = unboxableLeft == null ? [leftType.type] : unboxableLeft;
                 let rightTypes: Type[] = unboxableRight == null ? [rightType.type] : unboxableRight;
@@ -3206,22 +3252,11 @@ export class CodeGenerator {
                         if (resultType != null) {
                             leftType.type = lt;
                             rightType.type = rt;
+                            convertedLeftType = lt;
                             break;
                         }
                     }
                     if (resultType != null) break;
-                }
-            }
-
-            // Situation Object + String: insert toString()-Method
-            if (resultType == null && node.operator == TokenType.plus) {
-                if (leftType.type instanceof Klass && rightType.type == stringPrimitiveType) {
-                    this.insertStatements(programPosAfterLeftOpoerand, this.getToStringStatement(leftType.type, node.firstOperand.position));
-                    resultType = stringPrimitiveType;
-                    leftType.type = stringPrimitiveType;
-                } else if (rightType.type instanceof Klass && leftType.type == stringPrimitiveType) {
-                    this.pushStatements(this.getToStringStatement(rightType.type, node.firstOperand.position));
-                    resultType = stringPrimitiveType;
                 }
             }
 
@@ -3262,7 +3297,7 @@ export class CodeGenerator {
 
             this.pushStatements({
                 type: TokenType.binaryOp,
-                leftType: leftType.type,
+                leftType: convertedLeftType,
                 operator: node.operator,
                 position: node.position
             });

@@ -1,4 +1,4 @@
-import { TextPosition, TokenType } from "../compiler/lexer/Token.js";
+import { TextPosition, TokenType, TokenTypeReadable } from "../compiler/lexer/Token.js";
 import { Module, ModuleStore } from "../compiler/parser/Module.js";
 import { Program, Statement, ReturnStatement } from "../compiler/parser/Program.js";
 import { ArrayType } from "../compiler/types/Array.js";
@@ -1364,7 +1364,10 @@ export class Interpreter {
                 let text = null;
                 let color = null;
                 if (node.withColor) color = <string | number>stack.pop().value;
-                if (!node.empty) text = <string>stack.pop().value;
+                if (!node.empty) {
+                    text = <string>stack.pop().value;
+                    if (text == null) text = "null";
+                }
                 if (node.type == TokenType.println) {
                     this.printManager.println(text, color);
                 } else {

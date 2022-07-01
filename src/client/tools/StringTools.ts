@@ -63,3 +63,11 @@ export function formatAsJavadocComment(s: string, indent: number|string = ""): s
   s = indentString + "/**" + s.replace(/\n/g, "\n" + indentString + " * ") + "\n" + indentString + " */";
   return s;
 }
+
+export function nullToString(s: string) {
+  return s == null ? "null" : s;
+}
+
+export function floatToString(val: number){
+  return val + (Number.isInteger(val)? ".0": "");
+}

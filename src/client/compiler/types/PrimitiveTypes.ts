@@ -1,4 +1,4 @@
-import { TokenType } from "../lexer/Token.js";
+import { TokenType, TokenTypeReadable } from "../lexer/Token.js";
 import { ArrayType } from "./Array.js";
 import { Interface, Klass, setBooleanPrimitiveTypeCopy } from "./Class.js";
 import { ObjectClass } from "./ObjectClass.js";
@@ -9,6 +9,7 @@ import { FloatClass } from "./boxedTypes/FloatClass.js";
 import { CharacterClass } from "./boxedTypes/CharacterClass.js";
 import { BooleanClass } from "./boxedTypes/BooleanClass.js";
 import { DoubleClass } from "./boxedTypes/DoubleClass.js";
+import { floatToString, nullToString } from "../../tools/StringTools.js";
 
 export class NullType extends Type {
 
@@ -107,7 +108,6 @@ export class IntPrimitiveType extends PrimitiveType {
         this.canCastToMap = {
             "float": { automatic: true, needsStatement: false },
             "double": { automatic: true, needsStatement: false },
-            "String": { automatic: true, needsStatement: true },
             "char": { automatic: true, needsStatement: true },
             "int": { automatic: true, needsStatement: false },
             "long": { automatic: true, needsStatement: false },
@@ -129,14 +129,6 @@ export class IntPrimitiveType extends PrimitiveType {
                 value: value.value
             };
         }
-
-        if (type == stringPrimitiveType) {
-            return {
-                type: type,
-                value: "" + <number>value.value
-            }
-        }
-
         if (type == charPrimitiveType) {
             return {
                 type: type,
@@ -279,7 +271,6 @@ export class LongPrimitiveType extends IntPrimitiveType {
         this.canCastToMap = {
             "float": { automatic: true, needsStatement: false },
             "double": { automatic: true, needsStatement: false },
-            "String": { automatic: true, needsStatement: true },
             "char": { automatic: true, needsStatement: true },
             "int": { automatic: false, needsStatement: false },
             "long": { automatic: true, needsStatement: false },
@@ -328,9 +319,8 @@ export class FloatPrimitiveType extends PrimitiveType {
             "int": { automatic: false, needsStatement: true },
             "double": { automatic: true, needsStatement: false },
             "float": { automatic: true, needsStatement: false },
-            "String": { automatic: true, needsStatement: true },
-            "Float": { automatic: true, needsStatement: false },
-            "Double": { automatic: true, needsStatement: false },
+            "Float": { automatic: true, needsStatement: true },
+            "Double": { automatic: true, needsStatement: true },
         }
 
     }
@@ -340,13 +330,6 @@ export class FloatPrimitiveType extends PrimitiveType {
     }
 
     public castTo(value: Value, type: Type): Value {
-
-        if (type == stringPrimitiveType) {
-            return {
-                type: type,
-                value: "" + <number>value.value
-            }
-        }
 
         if (type == intPrimitiveType) {
             return {
@@ -362,6 +345,8 @@ export class FloatPrimitiveType extends PrimitiveType {
             }
         }
 
+    public valueToString(value: Value): string {
+        return floatToString(value.value);
     }
 
 
@@ -457,9 +442,8 @@ export class DoublePrimitiveType extends PrimitiveType {
             "int": { automatic: false, needsStatement: true },
             "float": { automatic: true, needsStatement: false },
             "double": { automatic: true, needsStatement: false },
-            "String": { automatic: true, needsStatement: true },
-            "Float": { automatic: true, needsStatement: false },
-            "Double": { automatic: true, needsStatement: false },
+            "Float": { automatic: true, needsStatement: true },
+            "Double": { automatic: true, needsStatement: true },
         }
 
 
@@ -470,13 +454,6 @@ export class DoublePrimitiveType extends PrimitiveType {
     }
 
     public castTo(value: Value, type: Type): Value {
-
-        if (type == stringPrimitiveType) {
-            return {
-                type: type,
-                value: "" + <number>value.value
-            }
-        }
 
         if (type == intPrimitiveType) {
             return {
@@ -492,7 +469,10 @@ export class DoublePrimitiveType extends PrimitiveType {
             }
         }
 
+    public valueToString(value: Value): string {
+        return floatToString(value.value);
     }
+
 
 
     public compute(operation: TokenType, firstOperand: Value, secondOperand?: Value): any {
@@ -576,7 +556,6 @@ export class BooleanPrimitiveType extends PrimitiveType {
         };
 
         this.canCastToMap = {
-            "String": { automatic: true, needsStatement: true },
             "boolean": { automatic: true, needsStatement: false },
             "Boolean": { automatic: true, needsStatement: false },
         }
@@ -590,12 +569,6 @@ export class BooleanPrimitiveType extends PrimitiveType {
 
     public castTo(value: Value, type: Type): Value {
 
-        if (type == stringPrimitiveType) {
-            return {
-                type: type,
-                value: "" + <number>value.value
-            }
-        }
 
     }
 
@@ -868,6 +841,8 @@ export class StringPrimitiveType extends Klass {
 
 
     }
+
+    public allowsNull(): boolean { return true; }
 
     public debugOutput(value: Value): string {
         return '"' + <string>value.value + '"';

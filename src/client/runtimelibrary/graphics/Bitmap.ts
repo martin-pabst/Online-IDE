@@ -135,6 +135,42 @@ export class BitmapClass extends Klass {
 
             }, false, false, 'Setzt die Farbe des Pixels bei (x, y). Die Farbe ist entweder eine vordefinierte Farbe (Color.black, Color.red, ...) oder eine css-Farbe der Art "#ffa7b3" (ohne alpha), "#ffa7b380" (mit alpha), "rgb(172, 22, 18)" oder "rgba(123, 22,18, 0.3)". 0.0 <= alpha <= 1.0.', false));
 
+        this.addMethod(new Method("setColor", new Parameterlist([
+            { identifier: "x", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "y", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "color", type: colorType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let x: number = parameters[1].value;
+                let y: number = parameters[2].value;
+                let color: string = parameters[3].value;
+                let sh: BitmapHelperNew = o.intrinsicData["Actor"];
+
+                sh.setzeFarbe(x, y, color);
+
+            }, false, false, 'Setzt die Farbe des Pixels bei (x, y). Die Farbe ist entweder eine vordefinierte Farbe (Color.black, Color.red, ...) oder eine css-Farbe der Art "#ffa7b3" (ohne alpha), "#ffa7b380" (mit alpha), "rgb(172, 22, 18)" oder "rgba(123, 22,18, 0.3)"', false));
+
+        this.addMethod(new Method("setColor", new Parameterlist([
+            { identifier: "x", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "y", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "color", type: colorType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "alpha", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let x: number = parameters[1].value;
+                let y: number = parameters[2].value;
+                let color: string = parameters[3].value;
+                let alpha: number = parameters[4].value;
+                let sh: BitmapHelperNew = o.intrinsicData["Actor"];
+
+                sh.setzeFarbe(x, y, color, alpha);
+
+            }, false, false, 'Setzt die Farbe des Pixels bei (x, y). Die Farbe ist entweder eine vordefinierte Farbe (Color.black, Color.red, ...) oder eine css-Farbe der Art "#ffa7b3" (ohne alpha), "#ffa7b380" (mit alpha), "rgb(172, 22, 18)" oder "rgba(123, 22,18, 0.3)". 0.0 <= alpha <= 1.0.', false));
+
         this.addMethod(new Method("isColor", new Parameterlist([
             { identifier: "x", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -169,6 +205,23 @@ export class BitmapClass extends Klass {
 
             }, false, false, 'Gibt genau dann true zurück, wenn das Pixel bei (x, y) die angegebene Farbe besitzt. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau und 0.0 <= alpha <= 1.0', false));
 
+        this.addMethod(new Method("isColor", new Parameterlist([
+            { identifier: "x", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "y", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "color", type: colorType, declaration: null, usagePositions: null, isFinal: true }
+        ]), booleanPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let x: number = parameters[1].value;
+                let y: number = parameters[2].value;
+                let color: RuntimeObject = parameters[3].value;
+                let sh: BitmapHelperNew = o.intrinsicData["Actor"];
+
+                return sh.istFarbe(x, y, color);
+
+            }, false, false, 'Gibt genau dann true zurück, wenn das Pixel bei (x, y) die angegebene Farbe besitzt. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau und 0.0 <= alpha <= 1.0', false));
+
 
         this.addMethod(new Method("fillAll", new Parameterlist([
             { identifier: "color", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -184,6 +237,22 @@ export class BitmapClass extends Klass {
                 sh.fillAll(color, alpha);
 
             }, false, false, 'Füllt die ganze Bitmap mit einer Farbe. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau und 0.0 <= alpha <= 1.0', false));
+
+        this.addMethod(new Method("fillAll", new Parameterlist([
+            { identifier: "color", type: colorType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "alpha", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let color: RuntimeObject = parameters[1].value;
+                let alpha: number = parameters[2].value;
+                let sh: BitmapHelperNew = o.intrinsicData["Actor"];
+
+                sh.fillAll(color, alpha);
+
+            }, false, false, 'Füllt die ganze Bitmap mit einer Farbe. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau und 0.0 <= alpha <= 1.0', false));
+
 
         this.addMethod(new Method("fillAll", new Parameterlist([
             { identifier: "colorAsRGBAString", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -261,8 +330,8 @@ export class BitmapHelperNew extends ShapeHelper {
 
         let uInt32 = new Uint32Array([0x11223344]);
         let uInt8 = new Uint8Array(uInt32.buffer);
-     
-        if(uInt8[0] === 0x44) {
+
+        if (uInt8[0] === 0x44) {
             this.isBigEndian = false;
         } else if (uInt8[0] === 0x11) {
             this.isBigEndian = true;
@@ -281,7 +350,7 @@ export class BitmapHelperNew extends ShapeHelper {
 
         let sprite = <PIXI.Sprite>this.displayObject;
 
-        sprite.localTransform.scale(width/anzahlX, height/anzahlY);
+        sprite.localTransform.scale(width / anzahlX, height / anzahlY);
         sprite.localTransform.translate(left, top);
         //@ts-ignore
         sprite.transform.onChange();
@@ -301,22 +370,22 @@ export class BitmapHelperNew extends ShapeHelper {
 
     protected initGraphics(bitmapToCopy?: BitmapHelperNew, clone: boolean = false) {
 
-        if(bitmapToCopy == null){
+        if (bitmapToCopy == null) {
             this.data = new Uint32Array(this.anzahlX * this.anzahlY);
         } else {
-            if(clone){
+            if (clone) {
                 this.data = bitmapToCopy.data;
             } else {
                 this.data = new Uint32Array(bitmapToCopy.data);
             }
         }
-        
+
         let u8Array = new Uint8Array(this.data.buffer);
 
-        if(!clone){
-            let bufferResource = new PIXI.BufferResource(u8Array, {width: this.anzahlX, height: this.anzahlY});
+        if (!clone) {
+            let bufferResource = new PIXI.BufferResource(u8Array, { width: this.anzahlX, height: this.anzahlY });
             let bt = new PIXI.BaseTexture(bufferResource, {
-                scaleMode: PIXI.SCALE_MODES.NEAREST 
+                scaleMode: PIXI.SCALE_MODES.NEAREST
             });
             this.texture = new PIXI.Texture(bt);
         } else {
@@ -327,7 +396,7 @@ export class BitmapHelperNew extends ShapeHelper {
         this.worldHelper.stage.addChild(this.displayObject);
     }
 
-    uploadData(){
+    uploadData() {
         this.texture.baseTexture.update();
     }
 
@@ -358,11 +427,15 @@ export class BitmapHelperNew extends ShapeHelper {
     }
 
 
-    public istFarbe(x: number, y: number, color: string | number, alpha?: number) {
+    public istFarbe(x: number, y: number, color: string | number | RuntimeObject, alpha?: number) {
 
         let i = (x + y * (this.anzahlX));
 
         let c: number;
+
+        if (color instanceof RuntimeObject) {
+            color = (<ColorClassIntrinsicData>(color.intrinsicData)).hex;
+        }
 
         if (typeof color == "string") {
             let ch = ColorHelper.parseColorToOpenGL(color);
@@ -378,14 +451,18 @@ export class BitmapHelperNew extends ShapeHelper {
         let blue = (c1 & 0xff0000) >> 16;
 
 
-        return c == red*0x10000 + green * 0x100 + blue;
+        return c == red * 0x10000 + green * 0x100 + blue;
 
     }
 
-    public setzeFarbe(x: number, y: number, color: string | number, alpha?: number) {
+    public setzeFarbe(x: number, y: number, color: string | number | RuntimeObject, alpha?: number) {
 
         let i = (x + y * (this.anzahlX));
         let c: number;
+
+        if (color instanceof RuntimeObject) {
+            color = (<ColorClassIntrinsicData>(color.intrinsicData)).hex;
+        }
 
         if (typeof color == "string") {
             let ch = ColorHelper.parseColorToOpenGL(color);
@@ -397,12 +474,16 @@ export class BitmapHelperNew extends ShapeHelper {
         }
 
         this.data[i] = Math.round(alpha * 255) * 0x1000000 + ((c & 0xff) << 16) + (c & 0xff00) + ((c & 0xff0000) >> 16);
-        
+
         this.uploadData();
     }
 
-    public fillAll(color: string | number, alpha?: number) {
+    public fillAll(color: string | number | RuntimeObject, alpha?: number) {
         let c: number;
+
+        if (color instanceof RuntimeObject) {
+            color = (<ColorClassIntrinsicData>(color.intrinsicData)).hex;
+        }
 
         if (typeof color == "string") {
             let ch = ColorHelper.parseColorToOpenGL(color);
@@ -414,12 +495,12 @@ export class BitmapHelperNew extends ShapeHelper {
 
         this.data.fill(Math.round(alpha * 255) * 0x1000000 + ((c & 0xff) << 16) + (c & 0xff00) + ((c & 0xff0000) >> 16));
         // this.data.fill(0xffff0000);
-        
+
         this.uploadData();
     }
-    
+
     public setzeFarbeRGBA(x: number, y: number, r: number, g: number, b: number, alpha: number) {
-        let c = alpha * 0xff000000 + b*0x10000 + g * 0x100 + r;
+        let c = alpha * 0xff000000 + b * 0x10000 + g * 0x100 + r;
         let i = (x + y * (this.anzahlX));
         this.data[i] = c;
         this.uploadData();

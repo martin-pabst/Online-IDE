@@ -1,3 +1,5 @@
+import { RuntimeObject } from "src/client/interpreter/RuntimeObject.js";
+import { ColorClassIntrinsicData } from "./Color.js";
 import { ColorHelper } from "./ColorHelper.js";
 
 export class FilledShapeDefaults {
@@ -10,10 +12,10 @@ export class FilledShapeDefaults {
 
     static defaultVisibility: boolean = true;
 
-    static initDefaultValues(){
+    static initDefaultValues() {
         FilledShapeDefaults.defaultFillColor = 0x8080ff;
         FilledShapeDefaults.defaultFillAlpha = 1.0;
-    
+
         FilledShapeDefaults.defaultBorderColor = null;
         FilledShapeDefaults.defaultBorderAlpha = 1.0;
         FilledShapeDefaults.defaultBorderWidth = 10;
@@ -25,9 +27,13 @@ export class FilledShapeDefaults {
         FilledShapeDefaults.defaultVisibility = visibility;
     }
 
-    static setDefaultBorder(width: number, color: string | number, alpha?: number) {
+    static setDefaultBorder(width: number, color: string | number | RuntimeObject, alpha?: number) {
 
         FilledShapeDefaults.defaultBorderWidth = width;
+
+        if (color instanceof RuntimeObject) {
+            color = (<ColorClassIntrinsicData>(color.intrinsicData)).hex;
+        }
 
         if (typeof color == "string") {
             let c = ColorHelper.parseColorToOpenGL(color);
@@ -40,7 +46,11 @@ export class FilledShapeDefaults {
 
     }
 
-    static setDefaultFillColor(color: string | number, alpha?: number) {
+    static setDefaultFillColor(color: string | number | RuntimeObject, alpha?: number) {
+
+        if (color instanceof RuntimeObject) {
+            color = (<ColorClassIntrinsicData>(color.intrinsicData)).hex;
+        }
 
         if (typeof color == "string") {
             let c = ColorHelper.parseColorToOpenGL(color);

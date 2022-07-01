@@ -817,40 +817,37 @@ export class CodeGenerator {
 
     }
 
-    ensureAutomaticCasting(typeFrom: Type, typeTo: Type, position?: TextPosition, nodeFrom?: ASTNode): boolean {
+    ensureAutomaticCasting(typeFrom: Type, typeTo: Type, position?: TextPosition, nodeFrom?: ASTNode, nullTypeForbidden: boolean = false): boolean {
 
         if (typeFrom == null || typeTo == null) return false;
 
-        if (typeFrom.equals(typeTo)) {
-            return true;
-        }
+        if (!(typeFrom == nullType && nullTypeForbidden)) {
 
-        if (!typeFrom.canCastTo(typeTo)) {
-
-            if (typeTo == booleanPrimitiveType && nodeFrom != null) {
-
-                this.checkIfAssignmentInstedOfEqual(nodeFrom);
-
-            }
-
-
-            return false;
-        }
-
-        if (typeFrom["unboxableAs"] != null && typeFrom["unboxableAs"].indexOf(typeTo) >= 0) {
-            return true;
-        }
-
-        if (typeFrom instanceof Klass && typeTo == stringPrimitiveType) {
-
-            let toStringStatement = this.getToStringStatement(typeFrom, position);
-
-            if (toStringStatement != null) {
-                this.pushStatements(toStringStatement);
+            if (typeFrom.equals(typeTo)) {
                 return true;
             }
 
-            return false;
+            if (!typeFrom.canCastTo(typeTo)) {
+
+                if (typeTo == booleanPrimitiveType && nodeFrom != null) {
+
+                    this.checkIfAssignmentInstedOfEqual(nodeFrom);
+
+                }
+
+
+                return false;
+            }
+
+            if (typeFrom["unboxableAs"] != null && typeFrom["unboxableAs"].indexOf(typeTo) >= 0) {
+                this.pushStatements({
+                    type: TokenType.castValue,
+                    position: position,
+                    newType: typeTo
+                });
+                return true;
+            }
+
         }
 
 
@@ -1327,44 +1324,22 @@ export class CodeGenerator {
 
             if (typeFrom.canCastTo(typeTo)) {
 
-                if (typeFrom instanceof PrimitiveType && typeTo instanceof PrimitiveType) {
-                    let castInfo = typeFrom.getCastInformation(typeTo);
-                    if (castInfo.needsStatement) {
-                        this.pushStatements({
-                            type: TokenType.castValue,
-                            position: node.position,
-                            newType: typeTo
-                        });
-                    }
-                } else if (typeFrom instanceof Klass && typeTo == stringPrimitiveType) {
-                    let toStringMethod = typeFrom.getMethodBySignature("toString()");
-                    if (toStringMethod != null && toStringMethod.getReturnType() == stringPrimitiveType) {
-
-                        this.pushStatements({
-                            type: TokenType.callMethod,
-                            position: node.position,
-                            method: toStringMethod,
-                            isSuperCall: false,
-                            stackframeBegin: -1,
-                            stepFinished: false
-                        });
-
-                    } else {
-                        this.pushError("Der Datentyp " + typeFrom.identifier + " kann (zumindest durch casting) nicht in den Datentyp " + typeTo.identifier + " umgewandelt werden.", node.position);
-                        this.pushStatements({
-                            type: TokenType.castValue,
-                            position: node.position,
-                            newType: typeTo
-                        });
-                    }
-
-                }
+                this.pushCastToStatement(typeFrom, typeTo, node);
 
                 return {
                     isAssignable: typeFrom1.isAssignable,
                     type: typeTo
                 };
 
+            }
+
+            if (typeFrom instanceof UnboxableKlass) {
+                for (let unboxableAs of typeFrom.unboxableAs) {
+                    if (unboxableAs.canCastTo(typeTo)) {
+                        this.pushCastToStatement(typeFrom, unboxableAs, node);
+                        this.pushCastToStatement(unboxableAs, typeTo, node);
+                    }
+                }
             }
 
             if ((typeFrom instanceof Klass || typeFrom instanceof Interface) && (typeTo instanceof Klass || typeTo instanceof Interface))
@@ -1391,6 +1366,17 @@ export class CodeGenerator {
             }
 
         }
+
+    }
+
+    pushCastToStatement(typeFrom: Type, typeTo: Type, node: CastManuallyNode) {
+        let needsStatement: boolean = typeFrom != typeTo;
+
+        if (needsStatement) this.pushStatements({
+            type: TokenType.castValue,
+            position: node.position,
+            newType: typeTo
+        });
 
     }
 
@@ -1791,7 +1777,7 @@ export class CodeGenerator {
 
         }
 
-        if(switchStatement.defaultDestination == null){
+        if (switchStatement.defaultDestination == null) {
             withReturnStatement = false;
         }
 
@@ -1918,7 +1904,7 @@ export class CodeGenerator {
                 kind = "userDefinedIterable";
             }
             let iterableInterface = collectionType.getImplementedInterface("Iterable");
-            if(collectionType.typeVariables.length == 0){
+            if (collectionType.typeVariables.length == 0) {
                 collectionElementType = objectType;
             } else {
                 collectionElementType = collectionType.typeVariables[0].type;
@@ -2140,11 +2126,11 @@ export class CodeGenerator {
         this.openBreakScope();
         this.openContinueScope();
 
-        let pc = this.currentProgram.statements.length;        
+        let pc = this.currentProgram.statements.length;
         let statements = this.generateStatements(node.statements);
         let withReturnStatement = statements.withReturnStatement;
 
-        if(this.currentProgram.statements.length == pc){
+        if (this.currentProgram.statements.length == pc) {
             this.insertNoOp(node.scopeTo, false);
         }
 
@@ -2161,7 +2147,7 @@ export class CodeGenerator {
 
     }
 
-    insertNoOp(position: TextPosition, stepFinished: boolean){
+    insertNoOp(position: TextPosition, stepFinished: boolean) {
         this.pushStatements({
             type: TokenType.noOp,
             position: position,
@@ -2180,11 +2166,11 @@ export class CodeGenerator {
         this.openBreakScope();
         this.openContinueScope();
 
-        let pc = this.currentProgram.statements.length;        
+        let pc = this.currentProgram.statements.length;
         let statements = this.generateStatements(node.statements);
         let withReturnStatement = statements.withReturnStatement;
 
-        if(this.currentProgram.statements.length == pc){
+        if (this.currentProgram.statements.length == pc) {
             this.insertNoOp(node.scopeTo, false);
         }
 
@@ -3073,43 +3059,43 @@ export class CodeGenerator {
             }
         }
 
-        let isSystemMethod: boolean = false;        
+        let isSystemMethod: boolean = false;
         if (method.isStatic && objectNode.type != null &&
-            (objectNode.type instanceof StaticClass)){
-                let classIdentifier = objectNode.type.Klass.identifier;
+            (objectNode.type instanceof StaticClass)) {
+            let classIdentifier = objectNode.type.Klass.identifier;
 
-                switch (classIdentifier) {
-                    case "Input":
-                        this.pushStatements({
-                            type: TokenType.callInputMethod,
-                            method: method,
+            switch (classIdentifier) {
+                case "Input":
+                    this.pushStatements({
+                        type: TokenType.callInputMethod,
+                        method: method,
+                        position: node.position,
+                        stepFinished: true,
+                        stackframeBegin: -(parameterTypes.length + 1 + stackframeDelta) // this-object followed by parameters
+                    });
+                    isSystemMethod = true;
+                    break;
+                case "SystemTools":
+                case "Robot":
+                    if (["pause", "warten"].indexOf(method.identifier) >= 0) {
+                        this.pushStatements([{
+                            type: TokenType.setPauseDuration,
                             position: node.position,
-                            stepFinished: true,
-                            stackframeBegin: -(parameterTypes.length + 1 + stackframeDelta) // this-object followed by parameters
-                        });
-                        isSystemMethod = true;
-                        break;
-                    case "SystemTools":
-                    case "Robot":
-                        if(["pause", "warten"].indexOf(method.identifier) >= 0){
-                            this.pushStatements([{
-                                type: TokenType.setPauseDuration,
-                                position: node.position,
-                                stepFinished: true
-                            },{
-                                type: TokenType.pause,
-                                position: node.position,
-                                stepFinished: true
-                            }
-                        ]);
-                            isSystemMethod = true;    
+                            stepFinished: true
+                        }, {
+                            type: TokenType.pause,
+                            position: node.position,
+                            stepFinished: true
                         }
-                        break;
-                }
-
+                        ]);
+                        isSystemMethod = true;
+                    }
+                    break;
             }
 
-            if(!isSystemMethod) {
+        }
+
+        if (!isSystemMethod) {
             this.pushStatements({
                 type: TokenType.callMethod,
                 method: method,
@@ -3191,7 +3177,7 @@ export class CodeGenerator {
         let convertedLeftType = leftType.type;
 
         if (isAssignment) {
-            if (!this.ensureAutomaticCasting(rightType.type, leftType.type, node.position, node.firstOperand)) {
+            if (!this.ensureAutomaticCasting(rightType.type, leftType.type, node.position, node.firstOperand, true)) {
                 this.pushError("Der Wert vom Datentyp " + rightType.type.identifier + " auf der rechten Seite kann der Variablen auf der linken Seite (Datentyp " + leftType.type.identifier + ") nicht zugewiesen werden.", node.position);
                 return leftType;
             }
@@ -3250,8 +3236,16 @@ export class CodeGenerator {
                     for (let rt of rightTypes) {
                         resultType = lt.getResultType(node.operator, rt);
                         if (resultType != null) {
-                            leftType.type = lt;
-                            rightType.type = rt;
+                            this.insertStatements(programPosAfterLeftOpoerand, {
+                                type: TokenType.castValue,
+                                position: node.firstOperand.position,
+                                newType: lt
+                            });
+                            this.pushStatements({
+                                type: TokenType.castValue,
+                                position: node.secondOperand.position,
+                                newType: rt
+                            });
                             convertedLeftType = lt;
                             break;
                         }
@@ -3318,7 +3312,7 @@ export class CodeGenerator {
 
         if (leftType == null) return;
 
-        if (this.ensureAutomaticCasting(leftType.type, booleanPrimitiveType, null, node.firstOperand)) {
+        if (this.ensureAutomaticCasting(leftType.type, booleanPrimitiveType, null, node.firstOperand, true)) {
 
             let secondOperand = node.secondOperand;
             if (secondOperand != null) {

@@ -19,9 +19,12 @@ export class NullType extends Type {
     }
 
     getResultType(operation: TokenType, secondOperandType: Type) {
-        return null;
+        if (operation == TokenType.equal || operation == TokenType.notEqual) return secondOperandType.getResultType(operation,this);
     }
     compute(operation: TokenType, firstOperand: Value, secondOperand: Value) {
+        if (operation == TokenType.equal || operation == TokenType.notEqual) {
+            return (firstOperand.value == secondOperand.value) == (operation == TokenType.equal);
+        }
         return null;
     }
     canCastTo(type: Type) {

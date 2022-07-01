@@ -1,4 +1,4 @@
-import { RuntimeObject } from "src/client/interpreter/RuntimeObject.js";
+import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { ColorClassIntrinsicData } from "./Color.js";
 import { ColorHelper } from "./ColorHelper.js";
 

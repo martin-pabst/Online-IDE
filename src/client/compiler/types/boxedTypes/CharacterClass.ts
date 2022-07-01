@@ -1,12 +1,10 @@
 import { RuntimeObject } from "../../../interpreter/RuntimeObject.js";
-import { Klass } from "../Class.js";
+import { Klass, UnboxableKlass } from "../Class.js";
 import { booleanPrimitiveType, charPrimitiveType, intPrimitiveType, stringPrimitiveType } from "../PrimitiveTypes.js";
 import { Method, Parameterlist, Type, Value } from "../Types.js";
 
 
-export class CharacterClass extends Klass {
-
-    unboxableAs = [];
+export class CharacterClass extends UnboxableKlass {
 
     constructor(baseClass: Klass) {
         super("Character", null, "Wrapper-Klasse, um char-Werte in Collections verenden zu können.");
@@ -152,6 +150,5 @@ export class CharacterClass extends Klass {
     public debugOutput(value: Value): string {
         return "" + <number>value.value;
     }
-
 
 }

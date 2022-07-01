@@ -1,12 +1,11 @@
-import { Klass, Visibility } from "../Class.js";
+import { Klass, UnboxableKlass, Visibility } from "../Class.js";
 import { Method, Parameterlist, Attribute, Value, Type, PrimitiveType } from "../Types.js";
 import { intPrimitiveType, stringPrimitiveType, doublePrimitiveType, floatPrimitiveType, booleanPrimitiveType } from "../PrimitiveTypes.js";
 import { RuntimeObject } from "../../../interpreter/RuntimeObject.js";
+import { floatToString } from "../../../tools/StringTools.js";
 
 
-export class FloatClass extends Klass {
-
-    unboxableAs = [];
+export class FloatClass extends UnboxableKlass {
 
     constructor(baseClass: Klass) {
         super("Float", null, "Wrapper-Klasse, um float-Werte in Collections verenden zu können.");
@@ -87,7 +86,7 @@ export class FloatClass extends Klass {
         this.addMethod(new Method("toString", new Parameterlist([
         ]), stringPrimitiveType,
             (parameters) => {
-                return "" + parameters[0].value;
+                return floatToString(parameters[0].value);
             }, false, false, "Gibt den Wert des Objekts als String-Wert zurück."));
 
         this.addMethod(new Method("hashCode", new Parameterlist([

@@ -106,7 +106,7 @@ export class DoubleClass extends UnboxableKlass {
             { identifier: "f", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), stringPrimitiveType,
             (parameters) => {
-                return "" + parameters[1].value;
+                return floatToString(parameters[1].value);
             }, false, true, "Gibt die übergebene Zahl als String-Wert zurück."));
 
         this.addMethod(new Method("valueOf", new Parameterlist([

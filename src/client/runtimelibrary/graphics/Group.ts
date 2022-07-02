@@ -371,12 +371,7 @@ export class GroupHelper extends ShapeHelper {
             let roCopy: RuntimeObject = shapeHelper.getCopy(<Klass>ro.class)
             let shapeHelperCopy: ShapeHelper = roCopy.intrinsicData["Actor"];
 
-            groupHelperCopy.shapes.push(roCopy);
-
-            shapeHelperCopy.belongsToGroup = groupHelperCopy;
-
-            (<PIXI.Container>groupHelperCopy.displayObject).addChild(shapeHelperCopy.displayObject);
-
+            groupHelperCopy.add(roCopy);
         }
 
         groupHelperCopy.copyFrom(this);
@@ -462,7 +457,6 @@ export class GroupHelper extends ShapeHelper {
         let index = this.shapes.indexOf(shape);
         if (index >= 0) {
             this.shapes.splice(index, 1);
-
             this.deregister(shape, index);
         }
     }

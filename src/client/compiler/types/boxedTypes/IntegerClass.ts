@@ -1,6 +1,6 @@
 import { Klass, UnboxableKlass, Visibility } from "../Class.js";
 import { Method, Parameterlist, Attribute, Value, Type, PrimitiveType } from "../Types.js";
-import { intPrimitiveType, stringPrimitiveType, doublePrimitiveType, floatPrimitiveType, booleanPrimitiveType } from "../PrimitiveTypes.js";
+import { intPrimitiveType, stringPrimitiveType, doublePrimitiveType, floatPrimitiveType, booleanPrimitiveType, longPrimitiveType } from "../PrimitiveTypes.js";
 import { RuntimeObject } from "../../../interpreter/RuntimeObject.js";
 
 
@@ -21,7 +21,7 @@ export class IntegerClass extends UnboxableKlass {
 
     init() {
 
-        this.unboxableAs = [intPrimitiveType, floatPrimitiveType, doublePrimitiveType];
+        this.unboxableAs = [intPrimitiveType, floatPrimitiveType, doublePrimitiveType, longPrimitiveType];
 
         this.addMethod(new Method("Integer", new Parameterlist([
             { identifier: "int-wert", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }

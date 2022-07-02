@@ -686,9 +686,7 @@ export class StringPrimitiveType extends Klass {
     init() {
         this.operationTable = {
             [TokenType.plus]: {
-                "String": stringPrimitiveType //, "int": stringPrimitiveType,
-                // "float": stringPrimitiveType, "double": stringPrimitiveType,
-                // "boolean": stringPrimitiveType, "char": stringPrimitiveType
+                "String": stringPrimitiveType
             },
             [TokenType.equal]: { "String": booleanPrimitiveType, "null": booleanPrimitiveType },
             [TokenType.notEqual]: { "String": booleanPrimitiveType, "null": booleanPrimitiveType },
@@ -805,12 +803,8 @@ export class StringPrimitiveType extends Klass {
 
         switch (operation) {
             case TokenType.plus:
-                if (secondOperand.type == stringPrimitiveType || secondOperand.type == charPrimitiveType) {
+                if (secondOperand.type == stringPrimitiveType) {
                     return nullToString(value) + <string>(secondOperand.value); // because null + null = 0 in javascript
-                } else if (secondOperand.type == booleanPrimitiveType) {
-                    return nullToString(value) + <boolean>(secondOperand.value);
-                } else {
-                    return nullToString(value) + <number>(secondOperand.value);
                 }
 
             case TokenType.lower:

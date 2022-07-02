@@ -817,53 +817,37 @@ export class CodeGenerator {
 
     }
 
-    ensureAutomaticCasting(typeFrom: Type, typeTo: Type, position?: TextPosition, nodeFrom?: ASTNode, nullTypeForbidden: boolean = false): boolean {
+    ensureAutomaticCasting(typeFrom: Type, typeTo: Type, position?: TextPosition, nodeFrom?: ASTNode): boolean {
 
         if (typeFrom == null || typeTo == null) return false;
 
-        if (!(typeFrom == nullType && nullTypeForbidden)) {
-
-            if (typeFrom.equals(typeTo)) {
-                return true;
-            }
-
-            if (!typeFrom.canCastTo(typeTo)) {
-
-                if (typeTo == booleanPrimitiveType && nodeFrom != null) {
-
-                    this.checkIfAssignmentInstedOfEqual(nodeFrom);
-
-                }
-
-
-                return false;
-            }
-
-            if (typeFrom["unboxableAs"] != null && typeFrom["unboxableAs"].indexOf(typeTo) >= 0) {
-                this.pushStatements({
-                    type: TokenType.castValue,
-                    position: position,
-                    newType: typeTo
-                });
-                return true;
-            }
-
+        if (typeFrom.equals(typeTo)) {
+            return true;
         }
 
-
-        if (typeFrom instanceof PrimitiveType && (typeTo instanceof PrimitiveType || typeTo == stringPrimitiveType)) {
-            let castInfo = typeFrom.getCastInformation(typeTo);
-            if (!castInfo.automatic) {
-                return false;
+        if (typeFrom.canCastTo(typeTo)) {
+            if (typeFrom instanceof PrimitiveType && (typeTo instanceof PrimitiveType || typeTo == stringPrimitiveType)) {
+                let castInfo = typeFrom.getCastInformation(typeTo);
+                if (!castInfo.automatic) {
+                    return false;
+                }
             }
             this.pushStatements({
                 type: TokenType.castValue,
-                newType: typeTo,
-                position: position
+                position: position,
+                newType: typeTo
             });
+            return true;
         }
 
-        return true;
+        else {
+            if (!typeFrom.canCastTo(typeTo)) {
+                if (typeTo == booleanPrimitiveType && nodeFrom != null) {
+                    this.checkIfAssignmentInstedOfEqual(nodeFrom);
+                }
+            }
+            return false;
+        }
 
     }
 
@@ -871,7 +855,7 @@ export class CodeGenerator {
         if (typeFrom == stringPrimitiveType) return true;
         if (typeFrom == voidPrimitiveType) return false;
         let automaticToString: Method;
-        
+
         if (typeFrom instanceof PrimitiveType) {
             automaticToString = new Method("toString", new Parameterlist([]), stringPrimitiveType, (parameters: Value[]) => {
                 let value = parameters[0];
@@ -1331,15 +1315,6 @@ export class CodeGenerator {
                     type: typeTo
                 };
 
-            }
-
-            if (typeFrom instanceof UnboxableKlass) {
-                for (let unboxableAs of typeFrom.unboxableAs) {
-                    if (unboxableAs.canCastTo(typeTo)) {
-                        this.pushCastToStatement(typeFrom, unboxableAs, node);
-                        this.pushCastToStatement(unboxableAs, typeTo, node);
-                    }
-                }
             }
 
             if ((typeFrom instanceof Klass || typeFrom instanceof Interface) && (typeTo instanceof Klass || typeTo instanceof Interface))
@@ -3177,7 +3152,7 @@ export class CodeGenerator {
         let convertedLeftType = leftType.type;
 
         if (isAssignment) {
-            if (!this.ensureAutomaticCasting(rightType.type, leftType.type, node.position, node.firstOperand, true)) {
+            if (!this.ensureAutomaticCasting(rightType.type, leftType.type, node.position, node.firstOperand)) {
                 this.pushError("Der Wert vom Datentyp " + rightType.type.identifier + " auf der rechten Seite kann der Variablen auf der linken Seite (Datentyp " + leftType.type.identifier + ") nicht zugewiesen werden.", node.position);
                 return leftType;
             }
@@ -3312,7 +3287,7 @@ export class CodeGenerator {
 
         if (leftType == null) return;
 
-        if (this.ensureAutomaticCasting(leftType.type, booleanPrimitiveType, null, node.firstOperand, true)) {
+        if (this.ensureAutomaticCasting(leftType.type, booleanPrimitiveType, null, node.firstOperand)) {
 
             let secondOperand = node.secondOperand;
             if (secondOperand != null) {

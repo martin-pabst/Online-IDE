@@ -22,10 +22,6 @@ export class FloatClass extends UnboxableKlass {
 
     }
 
-    canCastTo(type: Type): boolean {
-        return this.unboxableAs.indexOf(type) >= 0 || super.canCastTo(type);
-    }
-
     init() {
 
         this.unboxableAs = [floatPrimitiveType, doublePrimitiveType];

@@ -1493,9 +1493,9 @@ export class UnboxableKlass extends Klass {
     public unboxableAs: Type[] = [];
 
     public castTo(value: Value, type: Type): Value {
-        if (! (type instanceof PrimitiveType)) return null;
+        if (!(type instanceof PrimitiveType)) return null;
         if (this.unboxableAs.includes(type)) {
-            if (value.value == null && ! type.allowsNull()) throw Error("null kann nicht in einen primitiven " + type.identifier + " umgewandelt werden.");
+            if (value.value == null && !type.allowsNull()) throw Error("null kann nicht in einen primitiven " + type.identifier + " umgewandelt werden.");
             else return {
                 value: value.value,
                 type: type
@@ -1503,4 +1503,9 @@ export class UnboxableKlass extends Klass {
         }
         return null;
     }
+
+    canCastTo(type: Type): boolean {
+        return this.unboxableAs.indexOf(type) >= 0 || super.canCastTo(type);
+    }
+
 }

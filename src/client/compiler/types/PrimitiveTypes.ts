@@ -118,6 +118,7 @@ export class IntPrimitiveType extends PrimitiveType {
             "int": { automatic: true, needsStatement: false },
             "long": { automatic: true, needsStatement: false },
             "Integer": { automatic: true, needsStatement: true },
+            "Long": { automatic: true, needsStatement: true },
         }
 
 

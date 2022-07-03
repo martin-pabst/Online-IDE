@@ -22,7 +22,18 @@ export class ResultSetClass extends Klass {
                 let rsh: ResultsetHelper = o.intrinsicData["Helper"];
                 return rsh.next();
 
-            }, false, false, 'Führt ein SQL-Statement aus.',
+            }, false, false, 'Bewegt den "Cursor" zum nächsten Datensatz und gibt genau dann true zurück, wenn noch ein Datensatz da ist.',
+            false));
+
+        this.addMethod(new Method("size", new Parameterlist([
+        ]), intPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let rsh: ResultsetHelper = o.intrinsicData["Helper"];
+                return rsh.size();
+
+            }, false, false, 'Gibt die Anzahl der Zeilen der Ergebnistabelle zurück.',
             false));
 
         this.addMethod(new Method("wasNull", new Parameterlist([
@@ -127,6 +138,10 @@ export class ResultsetHelper {
         this.cursor++;
         if(this.result == null) return false;
         return this.cursor < this.result.values.length;
+    }
+
+    size(): number {
+        return this.result.values.length;
     }
 
     columnCount(): number {

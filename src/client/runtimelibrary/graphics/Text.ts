@@ -243,6 +243,8 @@ export class TextHelper extends FilledShapeHelper {
                 case "center": g.anchor.x = 0.5; break;
                 case "right": g.anchor.x = 1.0; break;
             }
+            //@ts-ignore
+            this.textStyle.align = this.alignment;
             g.style = this.textStyle;
         }
 

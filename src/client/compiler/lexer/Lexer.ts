@@ -914,7 +914,7 @@ export class Lexer {
         }
 
         if (this.currentChar == 'd' || this.currentChar == 'f') {
-            tt == TokenType.floatingPointConstant;
+            tt = TokenType.floatingPointConstant;
             this.next();
             if (radix != 10) {
                 this.pushError("Eine float/double-Konstante darf nicht mit 0, 0b oder 0x beginnen.", this.pos - posStart, "error", this.line, this.column - (this.pos - posStart));

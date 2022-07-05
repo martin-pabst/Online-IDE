@@ -10,8 +10,6 @@ import { Punkt, polygonEnthältPunkt, polygonBerührtPolygon, polygonBerührtPol
 import { ColorHelper } from "./ColorHelper.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { GroupHelper, GroupClass } from "./Group.js";
-import { CircleHelper } from "./Circle.js";
-import { TurtleHelper } from "./Turtle.js";
 import { Enum, EnumInfo } from "../../compiler/types/Enum.js";
 import { FilledShapeDefaults } from "./FilledShapeDefaults.js";
 
@@ -325,6 +323,41 @@ export class ShapeClass extends Klass {
                 return sh.collidesWithAnyShape();
 
             }, false, false, "Gibt genau dann true zurück, wenn das Grafikobjekt mit irgendeinem anderen Grafikobjekt kollidiert.", false));
+
+        this.addMethod(new Method("collidesWithFillColor", new Parameterlist([
+            { identifier: "color", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), booleanPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let color: number = parameters[1].value;
+
+                let sh: ShapeHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("collidesWithFillColor")) return;
+
+                return sh.collidesWithAnyShape(color);
+
+            }, false, false, "Gibt genau dann true zurück, wenn das Grafikobjekt mit einem anderen Grafikobjekt der angegebenen Füllfarbe kollidiert.", false));
+
+        this.addMethod(new Method("collidesWithFillColor", new Parameterlist([
+            { identifier: "color", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), booleanPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let color: string = parameters[1].value;
+
+                let sh: ShapeHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("collidesWithFillColor")) return;
+
+                let c = ColorHelper.parseColorToOpenGL(color);
+
+
+                return sh.collidesWithAnyShape(c.color);
+
+            }, false, false, "Gibt genau dann true zurück, wenn das Grafikobjekt mit einem anderen Grafikobjekt der angegebenen Füllfarbe kollidiert.", false));
 
         this.addMethod(new Method("moveBackFrom", new Parameterlist([
             { identifier: "otherShape", type: this, declaration: null, usagePositions: null, isFinal: true },
@@ -849,12 +882,18 @@ export abstract class ShapeHelper extends ActorHelper {
         this.displayObject.visible = visible;
     }
 
-    collidesWithAnyShape(): boolean {
+    collidesWithAnyShape(color?: number): boolean {
         this.displayObject.updateTransform();
         if (this.hitPolygonDirty) this.transformHitPolygon();
 
         for (let shapeHelper of this.worldHelper.shapes) {
             if (this == shapeHelper) continue;
+
+            if (shapeHelper["fillColor"] && color != null) {
+                if (shapeHelper["fillColor"] != color) {
+                    continue;
+                }
+            }
 
             if (shapeHelper["shapes"] || shapeHelper["turtle"]) {
                 if (shapeHelper.collidesWith(this)) {

@@ -302,14 +302,14 @@
 .Bird_1{
    width: 15px;
    height: 10px;
-   background-position: -2738px -945px;
+   background-position: -2738px -1323px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Bird_2{
    width: 15px;
    height: 10px;
-   background-position: -2738px -957px;
+   background-position: -2738px -1651px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -386,35 +386,35 @@
 .Space_Shooter_1_5{
    width: 20px;
    height: 7px;
-   background-position: -2738px -936px;
+   background-position: -2738px -739px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_1_6{
    width: 18px;
    height: 18px;
-   background-position: -2738px -651px;
+   background-position: -2738px -1283px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_1_7{
    width: 18px;
    height: 18px;
-   background-position: -2738px -671px;
+   background-position: -2738px -1303px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_1_8{
    width: 18px;
    height: 18px;
-   background-position: -2738px -691px;
+   background-position: -2738px -1337px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_1_9{
    width: 18px;
    height: 18px;
-   background-position: -2738px -711px;
+   background-position: -2738px -1357px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -547,28 +547,28 @@
 .Space_Shooter_2_4{
    width: 40px;
    height: 38px;
-   background-position: -2595px -792px;
+   background-position: -2353px -1386px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_2_5{
    width: 40px;
    height: 30px;
-   background-position: -2319px -1386px;
+   background-position: -2487px -1386px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_2_6{
    width: 42px;
    height: 32px;
-   background-position: -2275px -1386px;
+   background-position: -2443px -1386px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_2_7{
    width: 46px;
    height: 33px;
-   background-position: -2227px -1386px;
+   background-position: -2395px -1386px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -582,7 +582,7 @@
 .Space_Shooter_2_9{
    width: 8px;
    height: 29px;
-   background-position: -2738px -865px;
+   background-position: -2738px -1569px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -617,14 +617,14 @@
 .Space_Shooter_2_14{
    width: 13px;
    height: 18px;
-   background-position: -2738px -896px;
+   background-position: -2738px -1600px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Space_Shooter_2_15{
    width: 8px;
    height: 29px;
-   background-position: -2748px -865px;
+   background-position: -2748px -1569px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -659,7 +659,7 @@
 .Space_Shooter_2_20{
    width: 13px;
    height: 18px;
-   background-position: -2738px -916px;
+   background-position: -2738px -1631px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -1051,28 +1051,28 @@
 .Breakin_2{
    width: 16px;
    height: 16px;
-   background-position: -2738px -731px;
+   background-position: -2738px -1435px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Breakin_3{
    width: 16px;
    height: 16px;
-   background-position: -2738px -749px;
+   background-position: -2738px -1453px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Breakin_4{
    width: 48px;
    height: 24px;
-   background-position: -2361px -1386px;
+   background-position: -2529px -1386px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Breakin_5{
    width: 48px;
    height: 24px;
-   background-position: -2411px -1386px;
+   background-position: -2579px -1386px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -1121,14 +1121,14 @@
 .Breakin_12{
    width: 8px;
    height: 8px;
-   background-position: -2753px -896px;
+   background-position: -2738px -837px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Breakin_13{
    width: 8px;
    height: 8px;
-   background-position: -2753px -906px;
+   background-position: -2748px -837px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -5209,14 +5209,14 @@
 .robot_2{
    width: 16px;
    height: 16px;
-   background-position: -2738px -767px;
+   background-position: -2738px -1471px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .robot_3{
    width: 16px;
    height: 16px;
-   background-position: -2738px -785px;
+   background-position: -2738px -1489px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -5251,21 +5251,21 @@
 .robot_8{
    width: 16px;
    height: 16px;
-   background-position: -2738px -803px;
+   background-position: -2738px -1507px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .robot_9{
    width: 16px;
    height: 16px;
-   background-position: -2738px -821px;
+   background-position: -2738px -1533px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .robot_10{
    width: 16px;
    height: 16px;
-   background-position: -2738px -847px;
+   background-position: -2738px -1551px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
@@ -5273,6 +5273,321 @@
    width: 257px;
    height: 40px;
    background-position: -1452px -996px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_0{
+   width: 40px;
+   height: 40px;
+   background-position: -2595px -792px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_1{
+   width: 40px;
+   height: 40px;
+   background-position: -2227px -1386px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_2{
+   width: 40px;
+   height: 40px;
+   background-position: -2269px -1386px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_3{
+   width: 20px;
+   height: 20px;
+   background-position: -2738px -651px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_4{
+   width: 20px;
+   height: 20px;
+   background-position: -2738px -673px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_5{
+   width: 20px;
+   height: 20px;
+   background-position: -2738px -695px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_6{
+   width: 40px;
+   height: 40px;
+   background-position: -2311px -1386px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_7{
+   width: 20px;
+   height: 20px;
+   background-position: -2738px -717px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_8{
+   width: 20px;
+   height: 20px;
+   background-position: -2738px -749px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_9{
+   width: 20px;
+   height: 20px;
+   background-position: -2738px -771px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_10{
+   width: 15px;
+   height: 20px;
+   background-position: -2738px -1377px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_11{
+   width: 40px;
+   height: 20px;
+   background-position: -2052px -1435px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_12{
+   width: 10px;
+   height: 15px;
+   background-position: -2738px -1663px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_13{
+   width: 10px;
+   height: 15px;
+   background-position: -2750px -1663px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_14{
+   width: 10px;
+   height: 15px;
+   background-position: -2738px -1680px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_15{
+   width: 10px;
+   height: 15px;
+   background-position: -2750px -1680px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_16{
+   width: 10px;
+   height: 15px;
+   background-position: -2738px -1697px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_17{
+   width: 10px;
+   height: 15px;
+   background-position: -2750px -1697px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_18{
+   width: 10px;
+   height: 15px;
+   background-position: -2738px -1729px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_19{
+   width: 10px;
+   height: 15px;
+   background-position: -2750px -1729px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_20{
+   width: 10px;
+   height: 15px;
+   background-position: -2738px -1746px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_21{
+   width: 20px;
+   height: 20px;
+   background-position: -2738px -793px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_22{
+   width: 20px;
+   height: 20px;
+   background-position: -2738px -815px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_23{
+   width: 20px;
+   height: 20px;
+   background-position: -2738px -847px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_24{
+   width: 20px;
+   height: 20px;
+   background-position: -2738px -869px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_25{
+   width: 20px;
+   height: 20px;
+   background-position: -2738px -891px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_26{
+   width: 20px;
+   height: 20px;
+   background-position: -2738px -913px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_27{
+   width: 20px;
+   height: 20px;
+   background-position: -2738px -945px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_28{
+   width: 20px;
+   height: 20px;
+   background-position: -2738px -967px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_29{
+   width: 20px;
+   height: 20px;
+   background-position: -2738px -989px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_30{
+   width: 20px;
+   height: 20px;
+   background-position: -2738px -1011px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_31{
+   width: 20px;
+   height: 20px;
+   background-position: -2738px -1043px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_32{
+   width: 20px;
+   height: 20px;
+   background-position: -2738px -1065px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_33{
+   width: 20px;
+   height: 20px;
+   background-position: -2738px -1087px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_34{
+   width: 20px;
+   height: 20px;
+   background-position: -2738px -1109px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_35{
+   width: 20px;
+   height: 20px;
+   background-position: -2738px -1141px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_36{
+   width: 20px;
+   height: 20px;
+   background-position: -2738px -1163px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_37{
+   width: 20px;
+   height: 20px;
+   background-position: -2738px -1185px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_38{
+   width: 20px;
+   height: 20px;
+   background-position: -2738px -1207px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_39{
+   width: 20px;
+   height: 20px;
+   background-position: -2738px -1239px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_40{
+   width: 20px;
+   height: 20px;
+   background-position: -2738px -1261px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_41{
+   width: 20px;
+   height: 15px;
+   background-position: -2738px -1399px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_42{
+   width: 5px;
+   height: 20px;
+   background-position: -2757px -295px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_43{
+   width: 20px;
+   height: 15px;
+   background-position: -2738px -1416px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.pixelmon_44{
+   width: 5px;
+   height: 20px;
+   background-position: -2757px -317px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 

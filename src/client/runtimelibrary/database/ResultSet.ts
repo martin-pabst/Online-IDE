@@ -4,6 +4,7 @@ import { Klass } from "../../compiler/types/Class.js";
 import { booleanPrimitiveType, charPrimitiveType, doublePrimitiveType, floatPrimitiveType, intPrimitiveType, StringPrimitiveType, stringPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
 import { Method, Parameterlist, Type } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
+import { Interpreter } from "src/client/interpreter/Interpreter.js";
 
 export class ResultSetClass extends Klass {
 
@@ -73,7 +74,7 @@ export class ResultSetClass extends Klass {
                         interpreter.throwException("Der Cursor befindet sich hinter dem letzten Datensatz des ResultSet.");
                     }
     
-                    return rsh.getValue(type, columnIndex);
+                    return rsh.getValue(type, columnIndex, module.main.getInterpreter());
     
                 }, false, false, 'Gibt den Wert der Spalte mit dem angegebenen Spaltenindex als ' + type.identifier + " zurück.",
                 false));
@@ -101,7 +102,7 @@ export class ResultSetClass extends Klass {
                         return;
                     }
     
-                    return rsh.getValue(type, columnIndex);
+                    return rsh.getValue(type, columnIndex, module.main.getInterpreter());
     
                 }, false, false, 'Gibt den Wert der Spalte mit dem angegebenen Spaltenindex als ' + type.identifier + " zurück.",
                 false));
@@ -148,7 +149,12 @@ export class ResultsetHelper {
         return this.result.columns.length;
     }
 
-    getValue(type: Type, columnIndex: number) {
+    getValue(type: Type, columnIndex: number, interpreter: Interpreter) {
+
+        if(this.cursor >= this.result.values.length){
+            interpreter.throwException("Es wurde versucht, auf den " + (this.cursor + 1) + ". Datensatz zuzugreifen, das ResultSet hat aber nur " + this.result.values.length + " Datensätze.");
+            return null;
+        }
 
         let value = this.result.values[this.cursor][columnIndex - 1];
         this.wasNull = value == null;

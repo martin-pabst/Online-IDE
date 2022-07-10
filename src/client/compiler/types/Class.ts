@@ -897,7 +897,7 @@ export class StaticClass extends Type {
         for (let i = 0; i < attributes.length; i++) {
 
             let attribute = attributes[i];
-            s += attribute.identifier + ": " + object == null ? '---' : attribute.type?.debugOutput(object.getValue(attribute.index), maxLength / 2);
+            s += attribute.identifier + ": " + object == null ? '---' : attribute.type?.debugOutput(object?.getValue(attribute.index), maxLength / 2);
             if (i < attributes.length - 1) {
                 s += ", ";
             }

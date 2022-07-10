@@ -151,10 +151,14 @@ export class ResultsetHelper {
 
     getValue(type: Type, columnIndex: number, interpreter: Interpreter) {
 
+        if(this.cursor < 0) this.cursor = 0;
+
         if(this.cursor >= this.result.values.length){
             interpreter.throwException("Es wurde versucht, auf den " + (this.cursor + 1) + ". Datensatz zuzugreifen, das ResultSet hat aber nur " + this.result.values.length + " Datensätze.");
             return null;
         }
+
+        console.log({values: this.result.values, cursor: this.cursor, columnIndex: columnIndex});
 
         let value = this.result.values[this.cursor][columnIndex - 1];
         this.wasNull = value == null;

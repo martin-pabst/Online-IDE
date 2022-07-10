@@ -310,7 +310,6 @@ export class ProjectExplorer {
                         that.fileListPanel.clear();
                         that.fileListPanel.setCaption('Bitte Workspace selektieren');
                         this.$synchronizeAction.hide();
-                        that.fileListPanel.enableNewButton(false);
                         successfulNetworkCommunicationCallback();
                     } else {
                         alert('Der Server ist nicht erreichbar!');

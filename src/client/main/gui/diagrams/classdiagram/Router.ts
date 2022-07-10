@@ -361,7 +361,9 @@ class Router {
         for (let a of this.arrows) {
 
             if (a == newArrow) return;
-            let joinArrow: boolean = a.arrowType == newArrow.arrowType && a.destinationIdentifier == newArrow.destinationIdentifier;
+            let joinArrow: boolean = 
+               a.arrowType == newArrow.arrowType && a.destinationIdentifier == newArrow.destinationIdentifier
+               && this.routingInput.rectangles.length > 10;
 
             if(a.points == null) return;
             

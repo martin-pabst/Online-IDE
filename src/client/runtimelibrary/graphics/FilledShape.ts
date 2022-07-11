@@ -87,21 +87,6 @@ export class FilledShapeClass extends Klass {
 
             }, false, false, 'Setzt die Durchsichtigkeit von Füllung und Rand. 0.0 bedeutet vollkommen durchsichtig, 1.0 bedeutet vollkommen undurchsichtig."', false));
 
-        this.addMethod(new Method("setFillColor", new Parameterlist([
-            { identifier: "color", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
-        ]), voidPrimitiveType,
-            (parameters) => {
-
-                let o: RuntimeObject = parameters[0].value;
-                let color: number = parameters[1].value;
-                let sh: FilledShapeHelper = o.intrinsicData["Actor"];
-
-                if (sh.testdestroyed("setFillColor")) return;
-
-                sh.setFillColor(color);
-
-            }, false, false, 'Setzt die Füllfarbe. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau', false));
-
         this.addMethod(new Method("setDefaultBorder", new Parameterlist([
             { identifier: "width", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "color", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
@@ -130,6 +115,36 @@ export class FilledShapeClass extends Klass {
 
             }, false, true, 'Setzt Default-Eigenschaften des Randes. Sie werden nachfolgend immer dann verwendet, wenn ein neues grafisches Objekt erstellt wird. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau und 0.0 <= alpha <= 1.0', false));
 
+        this.addMethod(new Method("setDefaultBorder", new Parameterlist([
+            { identifier: "width", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "color", type: colorType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "alpha", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let width: number = parameters[1].value;
+                let color: RuntimeObject = parameters[2].value;
+                let alpha: number = parameters[3].value;
+
+                FilledShapeDefaults.setDefaultBorder(width, color, alpha);
+
+            }, false, true, 'Setzt Default-Eigenschaften des Randes. Sie werden nachfolgend immer dann verwendet, wenn ein neues grafisches Objekt erstellt wird. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau und 0.0 <= alpha <= 1.0', false));
+
+
+        this.addMethod(new Method("setDefaultBorder", new Parameterlist([
+            { identifier: "width", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "color", type: colorType, declaration: null, usagePositions: null, isFinal: true }
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let width: number = parameters[1].value;
+                let color: RuntimeObject = parameters[2].value;
+                let alpha: number = parameters[3].value;
+
+                FilledShapeDefaults.setDefaultBorder(width, color);
+
+            }, false, true, 'Setzt Default-Eigenschaften des Randes. Sie werden nachfolgend immer dann verwendet, wenn ein neues grafisches Objekt erstellt wird. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau und 0.0 <= alpha <= 1.0', false));
+
         this.addMethod(new Method("setDefaultFillColor", new Parameterlist([
             { identifier: "color", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "alpha", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -153,6 +168,46 @@ export class FilledShapeClass extends Klass {
                 FilledShapeDefaults.setDefaultFillColor(color);
 
             }, false, true, 'Setzt die Default-Füllfarbe. Sie wird nachfolgend immer dann verwendet, wenn ein neues grafisches Objekt erstellt wird. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau und 0.0 <= alpha <= 1.0', false));
+
+        this.addMethod(new Method("setDefaultFillColor", new Parameterlist([
+            { identifier: "color", type: colorType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "alpha", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let color: RuntimeObject = parameters[1].value;
+                let alpha: number = parameters[2].value;
+
+                FilledShapeDefaults.setDefaultFillColor(color, alpha);
+
+            }, false, true, 'Setzt die Default-Füllfarbe. Sie wird nachfolgend immer dann verwendet, wenn ein neues grafisches Objekt erstellt wird. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau und 0.0 <= alpha <= 1.0', false));
+
+        this.addMethod(new Method("setDefaultFillColor", new Parameterlist([
+            { identifier: "color", type: colorType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let color: RuntimeObject = parameters[1].value;
+
+                FilledShapeDefaults.setDefaultFillColor(color);
+
+            }, false, true, 'Setzt die Default-Füllfarbe. Sie wird nachfolgend immer dann verwendet, wenn ein neues grafisches Objekt erstellt wird. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau und 0.0 <= alpha <= 1.0', false));
+
+        this.addMethod(new Method("setFillColor", new Parameterlist([
+            { identifier: "color", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let color: number = parameters[1].value;
+                let sh: FilledShapeHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("setFillColor")) return;
+
+                sh.setFillColor(color);
+
+            }, false, false, 'Setzt die Füllfarbe. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau', false));
+
 
         this.addMethod(new Method("setFillColor", new Parameterlist([
             { identifier: "color", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -202,6 +257,39 @@ export class FilledShapeClass extends Klass {
                 sh.setFillColor(color, alpha);
 
             }, false, false, 'Setzt die Füllfarbe. Die Farbe ist entweder eine vordefinierte Farbe (Color.black, Color.red, ...) oder eine css-Farbe der Art "#ffa7b3" oder "rgb(172, 22, 18)" und 0.0 <= alpha <= 1.0"', false));
+
+        this.addMethod(new Method("setFillColor", new Parameterlist([
+            { identifier: "color", type: colorType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let color: RuntimeObject = parameters[1].value;
+                let sh: FilledShapeHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("setFillColor")) return;
+
+                sh.setFillColor(color);
+
+            }, false, false, 'Setzt die Füllfarbe. Die Farbe ist entweder eine vordefinierte Farbe (Color.black, Color.red, ...) oder eine css-Farbe der Art "#ffa7b3" (ohne alpha), "#ffa7b380" (mit alpha), "rgb(172, 22, 18)" oder "rgba(123, 22,18, 0.3)"', false));
+
+        this.addMethod(new Method("setFillColor", new Parameterlist([
+            { identifier: "color", type: colorType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "alpha", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let color: RuntimeObject = parameters[1].value;
+                let alpha: number = parameters[2].value;
+                let sh: FilledShapeHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("setFillColor")) return;
+
+                sh.setFillColor(color, alpha);
+
+            }, false, false, 'Setzt die Füllfarbe. Die Farbe ist entweder eine vordefinierte Farbe (Color.black, Color.red, ...) oder eine css-Farbe der Art "#ffa7b3" oder "rgb(172, 22, 18)" und 0.0 <= alpha <= 1.0"', false));
+
 
         this.addMethod(new Method("setBorderColor", new Parameterlist([
             { identifier: "color", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
@@ -266,6 +354,39 @@ export class FilledShapeClass extends Klass {
                 sh.setBorderColor(color);
 
             }, false, false, 'Setzt die Randfarbe. Die Farbe ist entweder eine vordefinierte Farbe (Color.black, Color.red, ...) oder eine css-Farbe der Art "#ffa7b3" (ohne alpha), "#ffa7b380" (mit alpha), "rgb(172, 22, 18)" oder "rgba(123, 22,18, 0.3)"', false));
+
+        this.addMethod(new Method("setBorderColor", new Parameterlist([
+            { identifier: "color", type: colorType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "alpha", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let color: RuntimeObject = parameters[1].value;
+                let alpha: number = parameters[2].value;
+                let sh: FilledShapeHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("setBorderColor")) return;
+
+                sh.setBorderColor(color, alpha);
+
+            }, false, false, 'Setzt die Randfarbe. Die Farbe ist entweder eine vordefinierte Farbe (Color.black, Color.red, ...) oder eine css-Farbe der Art "#ffa7b3" oder "rgb(172, 22, 18)" und 0.0 <= alpha <= 1.0"', false));
+
+        this.addMethod(new Method("setBorderColor", new Parameterlist([
+            { identifier: "color", type: colorType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let color: RuntimeObject = parameters[1].value;
+                let sh: FilledShapeHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("setBorderColor")) return;
+
+                sh.setBorderColor(color);
+
+            }, false, false, 'Setzt die Randfarbe. Die Farbe ist entweder eine vordefinierte Farbe (Color.black, Color.red, ...) oder eine css-Farbe der Art "#ffa7b3" (ohne alpha), "#ffa7b380" (mit alpha), "rgb(172, 22, 18)" oder "rgba(123, 22,18, 0.3)"', false));
+
 
         this.addMethod(new Method("setBorderWidth", new Parameterlist([
             { identifier: "widthInPixel", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -337,7 +458,11 @@ export abstract class FilledShapeHelper extends ShapeHelper {
         this.render();
     }
 
-    setBorderColor(color: string | number, alpha?: number) {
+    setBorderColor(color: string | number | RuntimeObject, alpha?: number) {
+
+        if (color instanceof RuntimeObject) {
+            color = (<ColorClassIntrinsicData>(color.intrinsicData)).hex;
+        }
 
         if (typeof color == "string") {
             let c = ColorHelper.parseColorToOpenGL(color);
@@ -352,7 +477,11 @@ export abstract class FilledShapeHelper extends ShapeHelper {
 
     }
 
-    setFillColor(color: string | number, alpha?: number) {
+    setFillColor(color: string | number | RuntimeObject, alpha?: number) {
+
+        if (color instanceof RuntimeObject) {
+            color = (<ColorClassIntrinsicData>(color.intrinsicData)).hex;
+        }
 
         if (typeof color == "string") {
             let c = ColorHelper.parseColorToOpenGL(color);

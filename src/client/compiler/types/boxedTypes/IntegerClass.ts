@@ -1,12 +1,10 @@
-import { Klass, Visibility } from "../Class.js";
+import { Klass, UnboxableKlass, Visibility } from "../Class.js";
 import { Method, Parameterlist, Attribute, Value, Type, PrimitiveType } from "../Types.js";
-import { intPrimitiveType, stringPrimitiveType, doublePrimitiveType, floatPrimitiveType, booleanPrimitiveType } from "../PrimitiveTypes.js";
+import { intPrimitiveType, stringPrimitiveType, doublePrimitiveType, floatPrimitiveType, booleanPrimitiveType, longPrimitiveType } from "../PrimitiveTypes.js";
 import { RuntimeObject } from "../../../interpreter/RuntimeObject.js";
 
 
-export class IntegerClass extends Klass {
-
-    unboxableAs = [];
+export class IntegerClass extends UnboxableKlass {
 
     constructor(baseClass: Klass) {
         super("Integer", null, "Wrapper-Klasse, um int-Werte in Collections verenden zu können.");
@@ -21,13 +19,9 @@ export class IntegerClass extends Klass {
 
     }
 
-    canCastTo(type: Type): boolean{
-        return this.unboxableAs.indexOf(type) >= 0 || super.canCastTo(type);
-    }
-
     init() {
 
-        this.unboxableAs = [intPrimitiveType, floatPrimitiveType, doublePrimitiveType];
+        this.unboxableAs = [intPrimitiveType, floatPrimitiveType, doublePrimitiveType, longPrimitiveType];
 
         this.addMethod(new Method("Integer", new Parameterlist([
             { identifier: "int-wert", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }

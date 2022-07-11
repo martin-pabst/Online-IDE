@@ -12,6 +12,7 @@ import { Interpreter } from "../../interpreter/Interpreter.js";
 import { GroupHelper, GroupClass } from "./Group.js";
 import { Enum, EnumInfo } from "../../compiler/types/Enum.js";
 import { FilledShapeDefaults } from "./FilledShapeDefaults.js";
+import { ColorClassIntrinsicData } from "./Color.js";
 
 export class ShapeClass extends Klass {
 
@@ -26,6 +27,7 @@ export class ShapeClass extends Klass {
         let shapeType = module.typeStore.getType("Shape");
         let directionType = <Enum>(<any>module.typeStore.getType("Direction"));
         let shapeArrayType = new ArrayType(shapeType);
+        let colorType: Klass = <Klass>this.module.typeStore.getType("Color");
 
         let vector2Class = <Klass>module.typeStore.getType("Vector2");
 
@@ -583,6 +585,22 @@ export class ShapeClass extends Klass {
 
             }, false, false, 'Überzieht das Grafikobjekt mit einer halbdurchsichtigen Farbschicht. Die Farbe wird als int-Wert angegeben, praktischerweise hexadezimal, also z.B. tint(0x303030).', false));
 
+        this.addMethod(new Method("tint", new Parameterlist([
+            { identifier: "color", type: colorType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let color: RuntimeObject = parameters[1].value;
+                let sh: ShapeHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("tint")) return;
+
+                sh.tint(color);
+
+            }, false, false, 'Überzieht das Grafikobjekt mit einer halbdurchsichtigen Farbschicht. Die Farbe wird als int-Wert angegeben, praktischerweise hexadezimal, also z.B. tint(0x303030).', false));
+
+
         this.addMethod(new Method("startTrackingEveryMouseMovement", new Parameterlist([
         ]), voidPrimitiveType,
             (parameters) => {
@@ -862,8 +880,11 @@ export abstract class ShapeHelper extends ActorHelper {
         }
     }
 
-    tint(color: string | number) {
+    tint(color: string | number | RuntimeObject) {
         let c: number;
+        if (color instanceof RuntimeObject) {
+            color = (<ColorClassIntrinsicData>(color.intrinsicData)).hex;
+        }
         if (typeof color == 'string') {
             c = ColorHelper.parseColorToOpenGL(color).color;
         } else {

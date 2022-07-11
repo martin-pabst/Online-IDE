@@ -1,4 +1,4 @@
-import { TokenType } from "../lexer/Token.js";
+import { TokenType, TokenTypeReadable } from "../lexer/Token.js";
 import { ArrayType } from "./Array.js";
 import { Interface, Klass, setBooleanPrimitiveTypeCopy } from "./Class.js";
 import { ObjectClass } from "./ObjectClass.js";
@@ -9,6 +9,7 @@ import { FloatClass } from "./boxedTypes/FloatClass.js";
 import { CharacterClass } from "./boxedTypes/CharacterClass.js";
 import { BooleanClass } from "./boxedTypes/BooleanClass.js";
 import { DoubleClass } from "./boxedTypes/DoubleClass.js";
+import { floatToString, nullToString } from "../../tools/StringTools.js";
 
 export class NullType extends Type {
 
@@ -18,16 +19,22 @@ export class NullType extends Type {
     }
 
     getResultType(operation: TokenType, secondOperandType: Type) {
-        return null;
+        if (operation == TokenType.equal || operation == TokenType.notEqual) return secondOperandType.getResultType(operation,this);
     }
     compute(operation: TokenType, firstOperand: Value, secondOperand: Value) {
+        if (operation == TokenType.equal || operation == TokenType.notEqual) {
+            return (firstOperand.value == secondOperand.value) == (operation == TokenType.equal);
+        }
         return null;
     }
     canCastTo(type: Type) {
         return (type instanceof Klass || type instanceof Interface || type instanceof ArrayType);
     }
     castTo(value: Value, type: Type) {
-        return value;
+        return {
+            value: value.value,
+            type: type
+        };
     }
     equals(type: Type) {
         return (type instanceof Klass || type instanceof Interface);
@@ -76,7 +83,7 @@ export class IntPrimitiveType extends PrimitiveType {
         this.description = "ganze Zahl"
 
         this.operationTable = {
-            [TokenType.plus]: { "long": longPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType, "String": stringPrimitiveType },
+            [TokenType.plus]: { "long": longPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
             [TokenType.minus]: { "none": intPrimitiveType, "long": longPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
             [TokenType.multiplication]: { "long": longPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
             [TokenType.modulo]: { "long": longPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType },
@@ -107,11 +114,11 @@ export class IntPrimitiveType extends PrimitiveType {
         this.canCastToMap = {
             "float": { automatic: true, needsStatement: false },
             "double": { automatic: true, needsStatement: false },
-            "String": { automatic: true, needsStatement: true },
             "char": { automatic: true, needsStatement: true },
             "int": { automatic: true, needsStatement: false },
             "long": { automatic: true, needsStatement: false },
-            "Integer": { automatic: true, needsStatement: false },
+            "Integer": { automatic: true, needsStatement: true },
+            "Long": { automatic: true, needsStatement: true },
         }
 
 
@@ -122,20 +129,6 @@ export class IntPrimitiveType extends PrimitiveType {
     }
 
     public castTo(value: Value, type: Type): Value {
-
-        if (type == floatPrimitiveType || type == doublePrimitiveType) {
-            return {
-                type: type,
-                value: value.value
-            };
-        }
-
-        if (type == stringPrimitiveType) {
-            return {
-                type: type,
-                value: "" + <number>value.value
-            }
-        }
 
         if (type == charPrimitiveType) {
             return {
@@ -248,7 +241,7 @@ export class LongPrimitiveType extends IntPrimitiveType {
         this.description = "ganze Zahl"
 
         this.operationTable = {
-            [TokenType.plus]: { "long": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType, "String": stringPrimitiveType },
+            [TokenType.plus]: { "long": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
             [TokenType.minus]: { "none": intPrimitiveType, "long": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
             [TokenType.multiplication]: { "long": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
             [TokenType.modulo]: { "long": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType },
@@ -279,7 +272,6 @@ export class LongPrimitiveType extends IntPrimitiveType {
         this.canCastToMap = {
             "float": { automatic: true, needsStatement: false },
             "double": { automatic: true, needsStatement: false },
-            "String": { automatic: true, needsStatement: true },
             "char": { automatic: true, needsStatement: true },
             "int": { automatic: false, needsStatement: false },
             "long": { automatic: true, needsStatement: false },
@@ -307,7 +299,7 @@ export class FloatPrimitiveType extends PrimitiveType {
         this.description = "Fließkommazahl mit einfacher Genauigkeit"
 
         this.operationTable = {
-            [TokenType.plus]: { "Integer": floatPrimitiveType, "int": floatPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType, "String": stringPrimitiveType },
+            [TokenType.plus]: { "Integer": floatPrimitiveType, "int": floatPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
             [TokenType.minus]: { "none": floatPrimitiveType, "Integer": floatPrimitiveType, "int": floatPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
             [TokenType.multiplication]: { "Integer": floatPrimitiveType, "int": floatPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
             [TokenType.division]: { "Integer": floatPrimitiveType, "int": floatPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
@@ -328,9 +320,8 @@ export class FloatPrimitiveType extends PrimitiveType {
             "int": { automatic: false, needsStatement: true },
             "double": { automatic: true, needsStatement: false },
             "float": { automatic: true, needsStatement: false },
-            "String": { automatic: true, needsStatement: true },
-            "Float": { automatic: true, needsStatement: false },
-            "Double": { automatic: true, needsStatement: false },
+            "Float": { automatic: true, needsStatement: true },
+            "Double": { automatic: true, needsStatement: true },
         }
 
     }
@@ -341,13 +332,6 @@ export class FloatPrimitiveType extends PrimitiveType {
 
     public castTo(value: Value, type: Type): Value {
 
-        if (type == stringPrimitiveType) {
-            return {
-                type: type,
-                value: "" + <number>value.value
-            }
-        }
-
         if (type == intPrimitiveType) {
             return {
                 type: type,
@@ -355,13 +339,17 @@ export class FloatPrimitiveType extends PrimitiveType {
             }
         }
 
-        if (type == doublePrimitiveType) {
-            return {
-                type: type,
-                value: value.value
-            }
-        }
+        // if (type == doublePrimitiveType || type == DoubleType || type == FloatType) {
+        //     return {
+        //         type: type,
+        //         value: value.value
+        //     }
+        // }
 
+    }
+
+    public valueToString(value: Value): string {
+        return floatToString(value.value);
     }
 
 
@@ -437,7 +425,7 @@ export class DoublePrimitiveType extends PrimitiveType {
         this.description = "Fließkommazahl mit doppelter Genauigkeit"
 
         this.operationTable = {
-            [TokenType.plus]: { "int": doublePrimitiveType, "Integer": doublePrimitiveType, "float": doublePrimitiveType, "Float": doublePrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType, "String": stringPrimitiveType },
+            [TokenType.plus]: { "int": doublePrimitiveType, "Integer": doublePrimitiveType, "float": doublePrimitiveType, "Float": doublePrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
             [TokenType.minus]: { "none": doublePrimitiveType, "int": doublePrimitiveType, "Integer": doublePrimitiveType, "float": doublePrimitiveType, "Float": doublePrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
             [TokenType.multiplication]: { "int": doublePrimitiveType, "Integer": doublePrimitiveType, "float": doublePrimitiveType, "Float": doublePrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
             [TokenType.division]: { "int": doublePrimitiveType, "Integer": doublePrimitiveType, "float": doublePrimitiveType, "Float": doublePrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
@@ -457,9 +445,8 @@ export class DoublePrimitiveType extends PrimitiveType {
             "int": { automatic: false, needsStatement: true },
             "float": { automatic: true, needsStatement: false },
             "double": { automatic: true, needsStatement: false },
-            "String": { automatic: true, needsStatement: true },
-            "Float": { automatic: true, needsStatement: false },
-            "Double": { automatic: true, needsStatement: false },
+            "Float": { automatic: true, needsStatement: true },
+            "Double": { automatic: true, needsStatement: true },
         }
 
 
@@ -471,13 +458,6 @@ export class DoublePrimitiveType extends PrimitiveType {
 
     public castTo(value: Value, type: Type): Value {
 
-        if (type == stringPrimitiveType) {
-            return {
-                type: type,
-                value: "" + <number>value.value
-            }
-        }
-
         if (type == intPrimitiveType) {
             return {
                 type: type,
@@ -485,14 +465,12 @@ export class DoublePrimitiveType extends PrimitiveType {
             }
         }
 
-        if (type == floatPrimitiveType) {
-            return {
-                type: type,
-                value: value.value
-            }
-        }
-
     }
+
+    public valueToString(value: Value): string {
+        return floatToString(value.value);
+    }
+
 
 
     public compute(operation: TokenType, firstOperand: Value, secondOperand?: Value): any {
@@ -567,7 +545,7 @@ export class BooleanPrimitiveType extends PrimitiveType {
         this.description = "boolescher Wert (true oder false)"
 
         this.operationTable = {
-            [TokenType.plus]: { "String": stringPrimitiveType },
+            [TokenType.plus]: {},
             [TokenType.and]: { "boolean": booleanPrimitiveType },
             [TokenType.or]: { "boolean": booleanPrimitiveType },
             [TokenType.not]: { "none": booleanPrimitiveType },
@@ -576,9 +554,8 @@ export class BooleanPrimitiveType extends PrimitiveType {
         };
 
         this.canCastToMap = {
-            "String": { automatic: true, needsStatement: true },
             "boolean": { automatic: true, needsStatement: false },
-            "Boolean": { automatic: true, needsStatement: false },
+            "Boolean": { automatic: true, needsStatement: true },
         }
 
 
@@ -590,12 +567,7 @@ export class BooleanPrimitiveType extends PrimitiveType {
 
     public castTo(value: Value, type: Type): Value {
 
-        if (type == stringPrimitiveType) {
-            return {
-                type: type,
-                value: "" + <number>value.value
-            }
-        }
+        return undefined;
 
     }
 
@@ -606,7 +578,7 @@ export class BooleanPrimitiveType extends PrimitiveType {
 
         switch (operation) {
             case TokenType.plus:
-                return value + <string>(secondOperand.value);
+                return value + nullToString(<string>(secondOperand.value));
 
             case TokenType.equal:
                 return value == <boolean>(secondOperand.value);
@@ -715,9 +687,7 @@ export class StringPrimitiveType extends Klass {
     init() {
         this.operationTable = {
             [TokenType.plus]: {
-                "String": stringPrimitiveType, "int": stringPrimitiveType,
-                "float": stringPrimitiveType, "double": doublePrimitiveType,
-                "boolean": stringPrimitiveType, "char": stringPrimitiveType
+                "String": stringPrimitiveType
             },
             [TokenType.equal]: { "String": booleanPrimitiveType, "null": booleanPrimitiveType },
             [TokenType.notEqual]: { "String": booleanPrimitiveType, "null": booleanPrimitiveType },
@@ -829,14 +799,13 @@ export class StringPrimitiveType extends Klass {
 
         let value = <string>(firstOperand.value);
 
+        let err: Error = checkNotNull(operation, this, firstOperand, secondOperand, [TokenType.plus, TokenType.keywordInstanceof])
+        if (err != null) return err;
+
         switch (operation) {
             case TokenType.plus:
-                if (secondOperand.type == stringPrimitiveType || secondOperand.type == charPrimitiveType) {
-                    return value + <string>(secondOperand.value);
-                } else if (secondOperand.type == booleanPrimitiveType) {
-                    return value + <boolean>(secondOperand.value);
-                } else {
-                    return value + <number>(secondOperand.value);
+                if (secondOperand.type == stringPrimitiveType) {
+                    return nullToString(value) + <string>(secondOperand.value); // because null + null = 0 in javascript
                 }
 
             case TokenType.lower:
@@ -868,6 +837,8 @@ export class StringPrimitiveType extends Klass {
 
 
     }
+
+    public allowsNull(): boolean { return true; }
 
     public debugOutput(value: Value): string {
         return '"' + <string>value.value + '"';
@@ -902,9 +873,9 @@ export class CharPrimitiveType extends PrimitiveType {
             "int": { automatic: true, needsStatement: true },
             "float": { automatic: true, needsStatement: true },
             "double": { automatic: true, needsStatement: true },
-            "String": { automatic: true, needsStatement: false },
+            "String": { automatic: true, needsStatement: true },
             "char": { automatic: true, needsStatement: false },
-            "Character": { automatic: true, needsStatement: false },
+            "Character": { automatic: true, needsStatement: true },
         }
 
     }
@@ -915,9 +886,15 @@ export class CharPrimitiveType extends PrimitiveType {
 
     public castTo(value: Value, type: Type): Value {
 
-        if (type == stringPrimitiveType) {
-            return value;
-        }
+        // let unboxed = this.unboxFrom(value, type);
+        // if (unboxed != null) return unboxed;
+
+        // if (type == stringPrimitiveType || type == CharacterType) {
+        //     return {
+        //         type: type,
+        //         value: value
+        //     }
+        // }
 
         if (type == intPrimitiveType || type == floatPrimitiveType || type == doublePrimitiveType) {
             return {
@@ -994,4 +971,20 @@ export var TokenTypeToDataTypeMap: { [tt: number]: Type } = {
     [TokenType.stringConstant]: stringPrimitiveType,
     [TokenType.charConstant]: charPrimitiveType,
     [TokenType.keywordNull]: nullType
+}
+
+
+function checkNotNull(operation: TokenType, type: Type, firstOperand: Value, secondOperand?: Value, nullAllowedFor: TokenType[] = []): Error {
+    if ((firstOperand.value == null || secondOperand.value == null) && !nullAllowedFor.concat([TokenType.equal, TokenType.notEqual]).includes(operation)) {
+        let typeAndNull: (v: Value) => string = (v: Value) => v.value == null ? "(" + type.identifier + ")" + " null" : type.identifier;
+        return new OperandIsNull("Unerlaubte Rechnung mit null: " + typeAndNull(firstOperand) + " " + TokenTypeReadable[operation] + " " + typeAndNull(secondOperand));
+    }
+    return null;
+}
+
+export class OperandIsNull extends Error {
+    constructor(message?: string) {
+        super(message);
+        this.name = "OperandIsNullError";
+    }
 }

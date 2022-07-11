@@ -1,12 +1,10 @@
-import { Klass, Visibility } from "../Class.js";
+import { Klass, UnboxableKlass, Visibility } from "../Class.js";
 import { Method, Parameterlist, Attribute, Value, Type, PrimitiveType } from "../Types.js";
 import { longPrimitiveType, stringPrimitiveType, doublePrimitiveType, floatPrimitiveType, intPrimitiveType, booleanPrimitiveType } from "../PrimitiveTypes.js";
 import { RuntimeObject } from "../../../interpreter/RuntimeObject.js";
 
 
-export class LongClass extends Klass {
-
-    unboxableAs = [];
+export class LongClass extends UnboxableKlass {
 
     constructor(baseClass: Klass) {
         super("Long", null, "Wrapper-Klasse, um int-Werte in Collections verenden zu können.");
@@ -19,10 +17,6 @@ export class LongClass extends Klass {
 
         this.staticClass.classObject = new RuntimeObject(this.staticClass);
 
-    }
-
-    canCastTo(type: Type): boolean{
-        return this.unboxableAs.indexOf(type) >= 0 || super.canCastTo(type);
     }
 
     init() {

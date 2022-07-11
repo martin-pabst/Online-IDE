@@ -1,4 +1,4 @@
-import { TextPosition, TokenType } from "../compiler/lexer/Token.js";
+import { TextPosition, TokenType, TokenTypeReadable } from "../compiler/lexer/Token.js";
 import { Module, ModuleStore } from "../compiler/parser/Module.js";
 import { Program, Statement, ReturnStatement } from "../compiler/parser/Program.js";
 import { ArrayType } from "../compiler/types/Array.js";
@@ -678,7 +678,7 @@ export class Interpreter {
             this.worldHelper.cacheAsBitmap();
         }
 
-        this.databaseConnectionHelpers.forEach((ch)=> ch.close());
+        this.databaseConnectionHelpers.forEach((ch) => ch.close());
         this.databaseConnectionHelpers = [];
 
         this.heap = {};
@@ -833,7 +833,17 @@ export class Interpreter {
             case TokenType.castValue:
                 let relPos = node.stackPosRelative == null ? 0 : node.stackPosRelative;
                 value = stack[stackTop + relPos];
-                stack[stackTop + relPos] = value.type.castTo(value, node.newType);
+                try {
+                    let casted = value.type.castTo(value, node.newType);
+                    if (casted == undefined) casted = {
+                        value: value.value,
+                        type: node.newType
+                    }
+                    stack[stackTop + relPos] = casted;
+                } catch (err) {
+                    if (err.message) return err.message;
+                    else return "Bei dem Casten von " + value.type.identifier + " zu " + node.newType.identifier + " trat ein Fehler auf: " + err.name + ".";
+                }
                 break;
             case TokenType.checkCast:
                 value = stack[stackTop];
@@ -952,6 +962,13 @@ export class Interpreter {
                 let secondOperand = stack.pop();
                 let resultValue =
                     node.leftType.compute(node.operator, stack[stackTop - 1], secondOperand);
+                if (resultValue instanceof Error) {
+                    if (resultValue.message) return resultValue.message;
+                    else "Bei der Berechnung von " + stack[stackTop - 1].type.identifier + " " +
+                        TokenTypeReadable[node.operator] + " " + secondOperand.type.identifier +
+                        " trat ein Fehler (" + resultValue.name + ") auf."
+
+                }
                 let resultType = node.leftType.getResultType(node.operator, secondOperand.type);
                 stack[stackTop - 1] = {
                     type: resultType,
@@ -1364,7 +1381,10 @@ export class Interpreter {
                 let text = null;
                 let color = null;
                 if (node.withColor) color = <string | number>stack.pop().value;
-                if (!node.empty) text = <string>stack.pop().value;
+                if (!node.empty) {
+                    text = <string>stack.pop().value;
+                    if (text == null) text = "null";
+                }
                 if (node.type == TokenType.println) {
                     this.printManager.println(text, color);
                 } else {
@@ -1460,7 +1480,7 @@ export class Interpreter {
     }
 
     oldState: InterpreterState;
-    pauseForInput(){
+    pauseForInput() {
         this.timerStopped = true;
         this.additionalStepFinishedFlag = true;
         this.oldState = this.state;
@@ -1468,9 +1488,9 @@ export class Interpreter {
         this.showProgramPointerAndVariables();
     }
 
-    resumeAfterInput(value: Value, popPriorValue: boolean = false){
-        if(popPriorValue) this.stack.pop();
-        if(value != null) this.stack.push(value);
+    resumeAfterInput(value: Value, popPriorValue: boolean = false) {
+        if (popPriorValue) this.stack.pop();
+        if (value != null) this.stack.push(value);
         this.main.hideProgramPointerPosition();
         this.setState(InterpreterState.paused);
         if (this.oldState == InterpreterState.running) {
@@ -1864,7 +1884,7 @@ export class Interpreter {
     }
 
     registerDatabaseConnection(ch: ConnectionHelper) {
-        this.databaseConnectionHelpers.push(ch); 
+        this.databaseConnectionHelpers.push(ch);
     }
 
 

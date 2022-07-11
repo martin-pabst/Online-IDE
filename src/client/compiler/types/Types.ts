@@ -3,7 +3,7 @@ import { TextPosition, TokenType } from "../lexer/Token.js";
 import { Module } from "../parser/Module.js";
 import { Program } from "../parser/Program.js";
 import { ArrayType } from "./Array.js";
-import { Visibility, TypeVariable } from "./Class.js";
+import { Visibility } from "./Class.js";
 
 export type UsagePositions = Map<Module, TextPosition[]>;
 
@@ -89,6 +89,12 @@ export abstract class PrimitiveType extends Type {
 
     public getCastInformation(type: Type): CastInformation {
         return this.canCastToMap[type.identifier];
+    }
+
+    public allowsNull(): boolean { return false; }
+
+    public valueToString(value: Value): string {
+        return  "" + value.value;
     }
 
 }

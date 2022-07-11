@@ -5,6 +5,7 @@ import { Method, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { Interpreter, InterpreterState } from "../../interpreter/Interpreter.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { ActorHelper } from "./Actor.js";
+import { ColorClassIntrinsicData } from "./Color.js";
 import { ColorHelper } from "./ColorHelper.js";
 import { FilledShapeDefaults } from "./FilledShapeDefaults.js";
 import { GroupClass, GroupHelper } from "./Group.js";
@@ -23,6 +24,7 @@ export class WorldClass extends Klass {
         let groupType = <GroupClass>module.typeStore.getType("Group");
         let shapeType = <ShapeClass>module.typeStore.getType("Shape");
         let mouseListenerType = <MouseListenerInterface>module.typeStore.getType("MouseListener");
+        let colorType: Klass = <Klass>this.module.typeStore.getType("Color");
 
         // this.addAttribute(new Attribute("PI", doublePrimitiveType, (object) => { return Math.PI }, true, Visibility.public, true, "Die Kreiszahl Pi (3.1415...)"));
 
@@ -75,6 +77,20 @@ export class WorldClass extends Klass {
                 wh.setBackgroundColor(color);
 
             }, false, false, 'Setzt die Hintergrundfarbe. Die Farbe ist entweder eine vordefinierte Farbe ("schwarz", "rot", ...) oder eine css-Farbe der Art "#ffa7b3" (ohne alpha), "#ffa7b380" (mit alpha), "rgb(172, 22, 18)" oder "rgba(123, 22,18, 0.3)"', false));
+
+        this.addMethod(new Method("setBackgroundColor", new Parameterlist([
+            { identifier: "color", type: colorType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let color: RuntimeObject = parameters[1].value;
+                let wh: WorldHelper = o.intrinsicData["World"];
+
+                wh.setBackgroundColor(color);
+
+            }, false, false, 'Setzt die Hintergrundfarbe. Die Farbe ist entweder eine vordefinierte Farbe ("schwarz", "rot", ...) oder eine css-Farbe der Art "#ffa7b3" (ohne alpha), "#ffa7b380" (mit alpha), "rgb(172, 22, 18)" oder "rgba(123, 22,18, 0.3)"', false));
+
 
         this.addMethod(new Method("move", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -797,7 +813,11 @@ export class WorldHelper {
 
     }
 
-    setBackgroundColor(color: string | number) {
+    setBackgroundColor(color: string | number | RuntimeObject) {
+
+        if (color instanceof RuntimeObject) {
+            color = (<ColorClassIntrinsicData>(color.intrinsicData)).hex;
+        }
 
         if (typeof color == "string") {
             let c = ColorHelper.parseColorToOpenGL(color);

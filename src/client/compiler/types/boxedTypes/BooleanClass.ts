@@ -1,12 +1,10 @@
 import { RuntimeObject } from "../../../interpreter/RuntimeObject.js";
-import { Klass, Visibility } from "../Class.js";
+import { Klass, UnboxableKlass, Visibility } from "../Class.js";
 import { booleanPrimitiveType, charPrimitiveType, intPrimitiveType, stringPrimitiveType } from "../PrimitiveTypes.js";
 import { Method, Parameterlist, Type, Value, Attribute } from "../Types.js";
 
 
-export class BooleanClass extends Klass {
-
-    unboxableAs = [];
+export class BooleanClass extends UnboxableKlass {
 
     constructor(baseClass: Klass) {
         super("Boolean", null, "Wrapper-Klasse, um boolean-Werte in Collections verenden zu können.");
@@ -18,10 +16,6 @@ export class BooleanClass extends Klass {
 
         this.staticClass.classObject = new RuntimeObject(this.staticClass);
 
-    }
-
-    canCastTo(type: Type): boolean {
-        return this.unboxableAs.indexOf(type) >= 0 || super.canCastTo(type);
     }
 
     init() {

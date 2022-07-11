@@ -622,9 +622,7 @@ export class Klass extends Type {
 
     public canCastTo(type: Type): boolean {
 
-        if (type == stringPrimitiveType) {
-            return true;
-        }
+        // casting something to a String by calling toString() is neither possible in Java nor makes sense in my opinion
 
         if (type instanceof Klass) {
             let baseClass: Klass = this;
@@ -892,7 +890,7 @@ export class StaticClass extends Type {
         let attributes = this.getAttributes(Visibility.private);
         let object = this.classObject;
 
-        if(attributes == null) return "{}";
+        if (attributes == null) return "{}";
 
         for (let i = 0; i < attributes.length; i++) {
 
@@ -915,13 +913,13 @@ export class StaticClass extends Type {
         let itemList: monaco.languages.CompletionItem[] = [];
 
         for (let attribute of this.getAttributes(visibilityUpTo)) {
-            
+
             itemList.push({
                 label: attribute.identifier,
                 //@ts-ignore
-                detail: attribute.color? attribute.color : undefined,
+                detail: attribute.color ? attribute.color : undefined,
                 //@ts-ignore
-                kind: attribute.color? monaco.languages.CompletionItemKind.Color : monaco.languages.CompletionItemKind.Field,
+                kind: attribute.color ? monaco.languages.CompletionItemKind.Color : monaco.languages.CompletionItemKind.Field,
                 insertText: attribute.identifier,
                 range: rangeToReplace,
                 documentation: attribute.documentation == null ? undefined : {
@@ -1382,7 +1380,7 @@ function findSuitableMethods(methodList: Method[], identifier: string, parameter
                          * Bei f.berührt(r) gibt es eine Variante mit Parametertyp String (schlecht!) und
                          * eine mit Parametertyp Object. Letztere soll genommen werden, also:
                          */
-                        if(mParameterType == stringPrimitiveType) howManyCastings += 0.5;
+                        if (mParameterType == stringPrimitiveType) howManyCastings += 0.5;
                         continue;
                     }
 
@@ -1409,13 +1407,13 @@ function findSuitableMethods(methodList: Method[], identifier: string, parameter
 
                         if (givenType.canCastTo(mParameterTypeEllispsis)) {
                             howManyCastings++;
-                        /**
-                         * Rechteck r; 
-                         * GNGFigur f;
-                         * Bei f.berührt(r) gibt es eine Variante mit Parametertyp String (schlecht!) und
-                         * eine mit Parametertyp Object. Letztere soll genommen werden, also:
-                         */
-                         if(mParameterTypeEllispsis == stringPrimitiveType) howManyCastings += 0.5;
+                            /**
+                             * Rechteck r; 
+                             * GNGFigur f;
+                             * Bei f.berührt(r) gibt es eine Variante mit Parametertyp String (schlecht!) und
+                             * eine mit Parametertyp Object. Letztere soll genommen werden, also:
+                             */
+                            if (mParameterTypeEllispsis == stringPrimitiveType) howManyCastings += 0.5;
                             continue;
                         }
 
@@ -1489,3 +1487,25 @@ export function getVisibilityUpTo(objectType: Klass | StaticClass, currentClassC
 
 }
 
+
+export class UnboxableKlass extends Klass {
+
+    public unboxableAs: Type[] = [];
+
+    public castTo(value: Value, type: Type): Value {
+        if (!(type instanceof PrimitiveType)) return null;
+        if (this.unboxableAs.includes(type)) {
+            if (value.value == null && !type.allowsNull()) throw Error("null kann nicht in einen primitiven " + type.identifier + " umgewandelt werden.");
+            else return {
+                value: value.value,
+                type: type
+            }
+        }
+        return null;
+    }
+
+    canCastTo(type: Type): boolean {
+        return this.unboxableAs.indexOf(type) >= 0 || super.canCastTo(type);
+    }
+
+}

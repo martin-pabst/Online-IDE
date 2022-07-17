@@ -1,5 +1,5 @@
 import { Type, Method, Value } from "../compiler/types/Types.js";
-import { stringPrimitiveType, charPrimitiveType, intPrimitiveType } from "../compiler/types/PrimitiveTypes.js";
+import { stringPrimitiveType, charPrimitiveType, intPrimitiveType, booleanPrimitiveType } from "../compiler/types/PrimitiveTypes.js";
 import { MainBase } from "../main/MainBase.js";
 import { PrintManager } from "../main/gui/PrintManager.js";
 
@@ -101,7 +101,7 @@ export class InputManager {
             }
         }
 
-        if(type == charPrimitiveType){
+        if(type == booleanPrimitiveType){
             if(v != "true" && v != "false") return {error: "Erwartet wird true oder false.", value: null};
             return {
                 error: null,

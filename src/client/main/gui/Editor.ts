@@ -168,12 +168,20 @@ export class Editor implements monaco.languages.RenameProvider {
         }
         );
 
+        let keysWhichDontStopProgram = ["Arrow", "Page", "ControlLeft", "ControlRight"];
+
         this.editor.onKeyDown((e: monaco.IKeyboardEvent) => {
             let state = this.main.getInterpreter().state;
 
             if ([InterpreterState.done, InterpreterState.error, InterpreterState.not_initialized].indexOf(state) < 0) {
 
-                if (e.code.indexOf("Arrow") >= 0 || e.code.indexOf("Page") >= 0) return; // don't react to Cursor keys
+                console.log(e);
+
+                for(let kdp of keysWhichDontStopProgram){
+                    if(e.code.indexOf(kdp) >= 0) return;
+                }
+
+                if(e.code == "KeyC" && e.ctrlKey ) return;
 
                 this.main.getActionManager().trigger("interpreter.stop");
             }

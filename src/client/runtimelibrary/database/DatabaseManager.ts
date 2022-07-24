@@ -5,6 +5,7 @@ import { stringPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
 import { Method, Parameterlist } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { ConnectionHelper } from "./Connection.js";
+import { InterpreterState } from "../../interpreter/Interpreter.js";
 
 export class DatabaseManagerClass extends Klass {
 
@@ -30,7 +31,7 @@ export class DatabaseManagerClass extends Klass {
                 }
 
                 let ch: ConnectionHelper = new ConnectionHelper(<Main>module.main);
-                interpreter.pauseForInput();
+                interpreter.pauseForInput(InterpreterState.waitingForDB);
                 module.main.getBottomDiv().showHideDbBusyIcon(true);
                 ch.connect(code, (error: string) => {
                     module.main.getBottomDiv().showHideDbBusyIcon(false);

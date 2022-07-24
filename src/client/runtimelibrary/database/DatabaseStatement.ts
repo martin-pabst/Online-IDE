@@ -1,3 +1,4 @@
+import { InterpreterState } from "../../interpreter/Interpreter.js";
 import { Module } from "../../compiler/parser/Module.js";
 import { Klass } from "../../compiler/types/Class.js";
 import { intPrimitiveType, stringPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
@@ -34,7 +35,7 @@ export class DatabaseStatementClass extends Klass {
                     return null;
                 }
 
-                interpreter.pauseForInput();
+                interpreter.pauseForInput(InterpreterState.waitingForDB);
                 
                 module.main.getBottomDiv().showHideDbBusyIcon(true);
 
@@ -74,7 +75,7 @@ export class DatabaseStatementClass extends Klass {
                     return;
                 }
 
-                interpreter.pauseForInput();
+                interpreter.pauseForInput(InterpreterState.waitingForDB);
                 module.main.getBottomDiv().showHideDbBusyIcon(true);
 
                 connectionHelper.executeWriteStatement(query, (error) => {

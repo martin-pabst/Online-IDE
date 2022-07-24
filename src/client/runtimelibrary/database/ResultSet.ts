@@ -4,7 +4,7 @@ import { Klass } from "../../compiler/types/Class.js";
 import { booleanPrimitiveType, charPrimitiveType, doublePrimitiveType, floatPrimitiveType, intPrimitiveType, StringPrimitiveType, stringPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
 import { Method, Parameterlist, Type } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
-import { Interpreter } from "src/client/interpreter/Interpreter.js";
+import { Interpreter } from "../../interpreter/Interpreter.js";
 
 export class ResultSetClass extends Klass {
 
@@ -157,8 +157,6 @@ export class ResultsetHelper {
             interpreter.throwException("Es wurde versucht, auf den " + (this.cursor + 1) + ". Datensatz zuzugreifen, das ResultSet hat aber nur " + this.result.values.length + " Datensätze.");
             return null;
         }
-
-        console.log({values: this.result.values, cursor: this.cursor, columnIndex: columnIndex});
 
         let value = this.result.values[this.cursor][columnIndex - 1];
         this.wasNull = value == null;

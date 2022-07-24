@@ -387,7 +387,7 @@ export class WebSocketHelper {
             value: this.runtimeObject
         });
 
-        if (this.interpreter.state == InterpreterState.waitingForInput) {
+        if (this.interpreter.state == InterpreterState.waitingForInput || this.interpreter.state == InterpreterState.waitingForDB) {
             this.interpreter.executeImmediatelyInNewStackframe(method.program, stackElements);
         } else {
             this.interpreter.runTimer(method, stackElements, () => { }, false);

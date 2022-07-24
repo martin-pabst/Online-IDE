@@ -8,21 +8,21 @@
             "name": "Launch Edge",
             "request": "launch",
             "type": "pwa-msedge",
-            "url": "http://localhost:5500",
+            "url": "http://localhost:5502",
             "webRoot": "${workspaceFolder}/htdocs"
         },
         {
             "name": "Statistiken (Edge)",
             "request": "launch",
             "type": "pwa-msedge",
-            "url": "http://localhost:5500/statistics.html",
+            "url": "http://localhost:5502/statistics.html",
             "webRoot": "${workspaceFolder}/htdocs"
         },
         {
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome",
-            "url": "http://localhost:5500",
+            "url": "http://localhost:5502",
             "webRoot": "${workspaceFolder}/htdocs",
             "sourceMaps": true
         },
@@ -30,7 +30,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch API-Docs",
-            "url": "http://localhost:5500/api_documentation.html",
+            "url": "http://localhost:5502/api_documentation.html",
             "webRoot": "${workspaceFolder}/htdocs"
         },
         {

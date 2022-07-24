@@ -27,7 +27,7 @@ import { GamepadTool } from "../tools/GamepadTool.js";
 import { ConnectionHelper } from "../runtimelibrary/database/Connection.js";
 
 export enum InterpreterState {
-    not_initialized, running, paused, error, done, waitingForInput, waitingForTimersToEnd
+    not_initialized, running, paused, error, done, waitingForDB, waitingForInput, waitingForTimersToEnd
 }
 
 export type ProgramStackElement = {
@@ -769,7 +769,7 @@ export class Interpreter {
             } else {
                 this.showProgramPointerAndVariables();
                 //@ts-ignore
-                if (this.state != InterpreterState.waitingForInput) {
+                if (this.state != InterpreterState.waitingForInput && this.state != InterpreterState.waitingForDB) {
                     this.setState(InterpreterState.paused);
                 }
             }
@@ -1136,7 +1136,7 @@ export class Interpreter {
                 let parameterBegin1 = stackTop + 1 + node.stackframeBegin;
                 let parameters = stack.splice(parameterBegin1);
 
-                this.pauseForInput();
+                this.pauseForInput(InterpreterState.waitingForInput);
 
                 let that = this;
                 this.inputManager.readInput(method1, parameters, (value: Value) => {
@@ -1460,14 +1460,16 @@ export class Interpreter {
     }
 
     oldState: InterpreterState;
-    pauseForInput(){
+    pauseForInput(newState: InterpreterState){
         this.timerStopped = true;
         this.additionalStepFinishedFlag = true;
         this.oldState = this.state;
-        this.setState(InterpreterState.waitingForInput);
-        this.showProgramPointerAndVariables();
+        this.setState(newState);
+        if(newState == InterpreterState.waitingForInput){
+            this.showProgramPointerAndVariables();
+        }
     }
-
+    
     resumeAfterInput(value: Value, popPriorValue: boolean = false){
         if(popPriorValue) this.stack.pop();
         if(value != null) this.stack.push(value);
@@ -1551,7 +1553,7 @@ export class Interpreter {
         return "" + Math.round(n * 10000) / 10000;
     }
 
-    runningStates: InterpreterState[] = [InterpreterState.paused, InterpreterState.running, InterpreterState.waitingForInput];
+    runningStates: InterpreterState[] = [InterpreterState.paused, InterpreterState.running, InterpreterState.waitingForInput, InterpreterState.waitingForDB];
 
     setState(state: InterpreterState) {
 

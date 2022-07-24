@@ -1,3 +1,4 @@
+import { InterpreterState } from "../../interpreter/Interpreter.js";
 import { Module } from "../../compiler/parser/Module.js";
 import { Klass } from "../../compiler/types/Class.js";
 import { booleanPrimitiveType, doublePrimitiveType, floatPrimitiveType, intPrimitiveType, stringPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
@@ -32,7 +33,7 @@ export class DatabasePreparedStatementClass extends Klass {
                     return null;
                 }
 
-                interpreter.pauseForInput();
+                interpreter.pauseForInput(InterpreterState.waitingForDB);
 
                 module.main.getBottomDiv().showHideDbBusyIcon(true);
 
@@ -76,7 +77,7 @@ export class DatabasePreparedStatementClass extends Klass {
                     return null;
                 }
 
-                interpreter.pauseForInput();
+                interpreter.pauseForInput(InterpreterState.waitingForDB);
 
                 module.main.getBottomDiv().showHideDbBusyIcon(true);
 

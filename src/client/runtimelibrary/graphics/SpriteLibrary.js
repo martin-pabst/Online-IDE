@@ -196,10 +196,13 @@ var SpriteLibrary = [
     {filename: "pixelmon/whitefence1.png", name: "pixelmon", index: 41}, 
     {filename: "pixelmon/whitefence2.png", name: "pixelmon", index: 42}, 
     {filename: "pixelmon/woodfence1.png", name: "pixelmon", index: 43}, 
-    {filename: "pixelmon/woodfence2.png", name: "pixelmon", index: 44}
-
-
-
+    {filename: "pixelmon/woodfence2.png", name: "pixelmon", index: 44},
+    {filename: "little_figure/Animation_Run/Run0.png", name: "Sneaker", index: 0},
+    {filename: "little_figure/Animation_Run/Run1.png", name: "Sneaker", index: 1},
+    {filename: "little_figure/Animation_Run/Run2.png", name: "Sneaker", index: 2},
+    {filename: "little_figure/Animation_Sneak/Sneak0.png", name: "Sneaker", index: 3},
+    {filename: "little_figure/Animation_Sneak/Sneak1.png", name: "Sneaker", index: 4},
+    {filename: "little_figure/Animation_Sneak/Sneak2.png", name: "Sneaker", index: 5}
 ]
 
 function expandDigits(n, digits){

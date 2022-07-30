@@ -100,7 +100,7 @@ export class FilledShapeClass extends Klass {
 
                 sh.setFillColor(color);
 
-            }, false, false, 'Setzt die Füllfarbe. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau', false));
+            }, false, false, 'Setzt die Füllfarbe. Die Farbe wird als int-Wert gegeben, wobei farbe == 256*256*rot + 256*grün + blau', false));
 
         this.addMethod(new Method("setDefaultBorder", new Parameterlist([
             { identifier: "width", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -113,7 +113,7 @@ export class FilledShapeClass extends Klass {
 
                 FilledShapeDefaults.setDefaultBorder(width, color);
 
-            }, false, true, 'Setzt Default-Eigenschaften des Randes. Sie werden nachfolgend immer dann verwendet, wenn ein neues grafisches Objekt erstellt wird. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau und 0.0 <= alpha <= 1.0', false));
+            }, false, true, 'Setzt Default-Eigenschaften des Randes. Sie werden nachfolgend immer dann verwendet, wenn ein neues grafisches Objekt erstellt wird. Die Farbe wird als int-Wert gegeben, wobei farbe == 256*256*rot + 256*grün + blau und 0.0 <= alpha <= 1.0', false));
 
         this.addMethod(new Method("setDefaultBorder", new Parameterlist([
             { identifier: "width", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -128,7 +128,7 @@ export class FilledShapeClass extends Klass {
 
                 FilledShapeDefaults.setDefaultBorder(width, color, alpha);
 
-            }, false, true, 'Setzt Default-Eigenschaften des Randes. Sie werden nachfolgend immer dann verwendet, wenn ein neues grafisches Objekt erstellt wird. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau und 0.0 <= alpha <= 1.0', false));
+            }, false, true, 'Setzt Default-Eigenschaften des Randes. Sie werden nachfolgend immer dann verwendet, wenn ein neues grafisches Objekt erstellt wird. Die Farbe wird als int-Wert gegeben, wobei farbe == 256*256*rot + 256*grün + blau und 0.0 <= alpha <= 1.0', false));
 
         this.addMethod(new Method("setDefaultFillColor", new Parameterlist([
             { identifier: "color", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -141,7 +141,7 @@ export class FilledShapeClass extends Klass {
 
                 FilledShapeDefaults.setDefaultFillColor(color, alpha);
 
-            }, false, true, 'Setzt die Default-Füllfarbe. Sie wird nachfolgend immer dann verwendet, wenn ein neues grafisches Objekt erstellt wird. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau und 0.0 <= alpha <= 1.0', false));
+            }, false, true, 'Setzt die Default-Füllfarbe. Sie wird nachfolgend immer dann verwendet, wenn ein neues grafisches Objekt erstellt wird. Die Farbe wird als int-Wert gegeben, wobei farbe == 256*256*rot + 256*grün + blau und 0.0 <= alpha <= 1.0', false));
 
         this.addMethod(new Method("setDefaultFillColor", new Parameterlist([
             { identifier: "color", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -152,7 +152,7 @@ export class FilledShapeClass extends Klass {
 
                 FilledShapeDefaults.setDefaultFillColor(color);
 
-            }, false, true, 'Setzt die Default-Füllfarbe. Sie wird nachfolgend immer dann verwendet, wenn ein neues grafisches Objekt erstellt wird. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau und 0.0 <= alpha <= 1.0', false));
+            }, false, true, 'Setzt die Default-Füllfarbe. Sie wird nachfolgend immer dann verwendet, wenn ein neues grafisches Objekt erstellt wird. Die Farbe wird als int-Wert gegeben, wobei farbe == 256*256*rot + 256*grün + blau und 0.0 <= alpha <= 1.0', false));
 
         this.addMethod(new Method("setFillColor", new Parameterlist([
             { identifier: "color", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -169,7 +169,7 @@ export class FilledShapeClass extends Klass {
 
                 sh.setFillColor(color, alpha);
 
-            }, false, false, 'Setzt die Füllfarbe. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau und 0.0 <= alpha <= 1.0', false));
+            }, false, false, 'Setzt die Füllfarbe. Die Farbe wird als int-Wert gegeben, wobei farbe == 256*256*rot + 256*grün + blau und 0.0 <= alpha <= 1.0', false));
 
         this.addMethod(new Method("setFillColor", new Parameterlist([
             { identifier: "color", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -216,7 +216,7 @@ export class FilledShapeClass extends Klass {
 
                 sh.setBorderColor(color);
 
-            }, false, false, 'Setzt die Randfarbe. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau"', false));
+            }, false, false, 'Setzt die Randfarbe. Die Farbe wird als int-Wert gegeben, wobei farbe == 256*256*rot + 256*grün + blau"', false));
 
         this.addMethod(new Method("setBorderColor", new Parameterlist([
             { identifier: "color", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -233,7 +233,7 @@ export class FilledShapeClass extends Klass {
 
                 sh.setBorderColor(color, alpha);
 
-            }, false, false, 'Setzt die Randfarbe. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau und 0.0 <= alpha <= 1.0"', false));
+            }, false, false, 'Setzt die Randfarbe. Die Farbe wird als int-Wert gegeben, wobei farbe == 256*256*rot + 256*grün + blau und 0.0 <= alpha <= 1.0"', false));
 
         this.addMethod(new Method("setBorderColor", new Parameterlist([
             { identifier: "color", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },

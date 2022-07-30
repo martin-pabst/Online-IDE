@@ -77,7 +77,7 @@ export class BitmapClassOld extends Klass {
 
                 sh.setzeFarbe(x, y, color, alpha);
 
-            }, false, false, 'Setzt die Farbe des Pixels bei (x, y). Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau und 0.0 <= alpha <= 1.0.', false));
+            }, false, false, 'Setzt die Farbe des Pixels bei (x, y). Die Farbe wird als int-Wert gegeben, wobei farbe == 256*256*rot + 256*grün + blau und 0.0 <= alpha <= 1.0.', false));
 
         this.addMethod(new Method("setColor", new Parameterlist([
             { identifier: "x", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -94,7 +94,7 @@ export class BitmapClassOld extends Klass {
 
                 sh.setzeFarbe(x, y, color);
 
-            }, false, false, 'Setzt die Farbe des Pixels bei (x, y). Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau.', false));
+            }, false, false, 'Setzt die Farbe des Pixels bei (x, y). Die Farbe wird als int-Wert gegeben, wobei farbe == 256*256*rot + 256*grün + blau.', false));
 
         this.addMethod(new Method("setColor", new Parameterlist([
             { identifier: "x", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -164,7 +164,7 @@ export class BitmapClassOld extends Klass {
 
                 return sh.istFarbe(x, y, color, 1);
 
-            }, false, false, 'Gibt genau dann true zurück, wenn das Pixel bei (x, y) die angegebene Farbe besitzt. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau und 0.0 <= alpha <= 1.0', false));
+            }, false, false, 'Gibt genau dann true zurück, wenn das Pixel bei (x, y) die angegebene Farbe besitzt. Die Farbe wird als int-Wert gegeben, wobei farbe == 256*256*rot + 256*grün + blau und 0.0 <= alpha <= 1.0', false));
 
 
         this.addMethod(new Method("fillAll", new Parameterlist([
@@ -180,7 +180,7 @@ export class BitmapClassOld extends Klass {
 
                 sh.fillAll(color, alpha);
 
-            }, false, false, 'Füllt die ganze Bitmap mit einer Farbe. Die Farbe wird als int-Wert gegeben, wobei farbe == 255*255*rot + 255*grün + blau und 0.0 <= alpha <= 1.0', false));
+            }, false, false, 'Füllt die ganze Bitmap mit einer Farbe. Die Farbe wird als int-Wert gegeben, wobei farbe == 256*256*rot + 256*grün + blau und 0.0 <= alpha <= 1.0', false));
 
         this.addMethod(new Method("fillAll", new Parameterlist([
             { identifier: "colorAsRGBAString", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },

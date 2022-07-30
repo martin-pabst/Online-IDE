@@ -5591,6 +5591,48 @@
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
+.Sneaker_0{
+   width: 32px;
+   height: 32px;
+   background-position: -2435px -1820px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Sneaker_1{
+   width: 32px;
+   height: 32px;
+   background-position: -2469px -1820px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Sneaker_2{
+   width: 32px;
+   height: 32px;
+   background-position: -2503px -1820px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Sneaker_3{
+   width: 32px;
+   height: 32px;
+   background-position: -2537px -1820px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Sneaker_4{
+   width: 32px;
+   height: 32px;
+   background-position: -2571px -1820px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Sneaker_5{
+   width: 32px;
+   height: 32px;
+   background-position: -2605px -1820px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
 .Explosion_1_0{
    width: 96px;
    height: 96px;
@@ -5986,70 +6028,70 @@
 .Boulders_0{
    width: 32px;
    height: 32px;
-   background-position: -2435px -1820px;
+   background-position: -1771px -1886px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_1{
    width: 32px;
    height: 32px;
-   background-position: -2469px -1820px;
+   background-position: -1805px -1886px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_2{
    width: 32px;
    height: 32px;
-   background-position: -2503px -1820px;
+   background-position: -1839px -1886px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_3{
    width: 32px;
    height: 32px;
-   background-position: -2537px -1820px;
+   background-position: -1873px -1886px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_4{
    width: 32px;
    height: 32px;
-   background-position: -2571px -1820px;
+   background-position: -1907px -1886px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_5{
    width: 32px;
    height: 32px;
-   background-position: -2605px -1820px;
+   background-position: -1941px -1886px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_6{
    width: 32px;
    height: 32px;
-   background-position: -1771px -1886px;
+   background-position: -1975px -1886px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_7{
    width: 32px;
    height: 32px;
-   background-position: -1805px -1886px;
+   background-position: -2009px -1886px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_8{
    width: 32px;
    height: 32px;
-   background-position: -1839px -1886px;
+   background-position: -2043px -1886px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
 .Boulders_9{
    width: 32px;
    height: 32px;
-   background-position: -1873px -1886px;
+   background-position: -2077px -1886px;
    background-image: url(../assets/graphics/spritesheet.png);
 }
 

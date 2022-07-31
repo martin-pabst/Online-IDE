@@ -1537,9 +1537,10 @@ export class Interpreter {
             };
         } else {
             let array: Value[] = [];
-            let n = counts.pop();
+            let counts1 = counts.slice();
+            let n = counts1.pop();
             for (let i = 0; i < n; i++) {
-                array.push(this.makeEmptyArray(counts, type1));
+                array.push(this.makeEmptyArray(counts1, type1));
             }
             return {
                 type: type,

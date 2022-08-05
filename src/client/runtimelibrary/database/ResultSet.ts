@@ -37,6 +37,17 @@ export class ResultSetClass extends Klass {
             }, false, false, 'Gibt die Anzahl der Zeilen der Ergebnistabelle zurück.',
             false));
 
+        this.addMethod(new Method("getIndex", new Parameterlist([
+        ]), intPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let rsh: ResultsetHelper = o.intrinsicData["Helper"];
+                return rsh.cursor;
+
+            }, false, false, 'Gibt den Index zurück, auf dem der "Cursor" in der Liste der Zeilen der Ergebnistabelle steht. Vor dem ersten Aufruf von next() wird -1 zurückgegeben.',
+            false));
+
         this.addMethod(new Method("wasNull", new Parameterlist([
         ]), booleanPrimitiveType,
             (parameters) => {

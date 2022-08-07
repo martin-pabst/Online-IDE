@@ -147,6 +147,21 @@ export class MainMenu {
                     }
                 },
                 {
+                    identifier: "Sprites", subMenu: {
+                        items: [
+                            {
+                                identifier: "Eigene Sprites verwalten ...",
+                                action: () => {this.main.spriteManager.show()}
+                            },
+                            { identifier: "-" },
+                            {
+                                identifier: "Sprite-Bilderübersicht",
+                                link: serverURL + "spriteLibrary.html"
+                            },
+                        ]
+                    }
+                },
+                {
                     identifier: "Hilfe", subMenu:
                     {
                         items: [
@@ -172,11 +187,6 @@ export class MainMenu {
                                 identifier: "API-Verzeichnis",
                                 //link: "https://www.learnj.de/doku.php?id=api:documentation:start"
                                 link: serverURL + "api_documentation.html"
-                            },
-                            { identifier: "-" },
-                            {
-                                identifier: "Sprite-Bilderübersicht",
-                                link: serverURL + "spriteLibrary.html"
                             },
                             { identifier: "-" },
                             {

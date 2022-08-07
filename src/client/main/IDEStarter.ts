@@ -3,6 +3,7 @@ import { SynchronizationManager } from "../repository/synchronize/RepositorySync
 import { RepositoryCreateManager } from "../repository/update/RepositoryCreateManager.js";
 import { RepositorySettingsManager } from "../repository/update/RepositorySettingsManager.js";
 import { RepositoryCheckoutManager } from "../repository/update/RepositoryCheckoutManager.js";
+import { SpriteManager } from "../spritemanager/SpriteManager.js";
 
 
 jQuery(function () {
@@ -41,6 +42,9 @@ jQuery(function () {
             main.repositoryCheckoutManager.initGUI();
 
         }
+
+        main.spriteManager = new SpriteManager(main);
+        main.spriteManager.initGUI();
         // main.loadWorkspace();
 
         

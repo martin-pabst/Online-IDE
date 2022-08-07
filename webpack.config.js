@@ -20,6 +20,7 @@ const ideConfig = {
             './css/dialog.css',
             './css/synchronize-repo.css',
             './css/updatecreate-repo.css',
+            './css/spritemanager.css',
             './assets/fonts/fonts.css',
         ],
         // style: [

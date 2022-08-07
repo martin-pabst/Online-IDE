@@ -1,0 +1,145 @@
+#spritemanager-div {
+    visibility: hidden;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    background-color: var(--backgroundDark);
+    top: 0;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+
+.jo_sm_mainHeading {
+    font-size: 20pt;
+    width: 100%;
+    color: var(--fontColorNormal);
+    user-select: none;
+    background-color: var(--backgroundLight);
+    padding: 2px;
+    border-bottom: 2px solid var(--slider);
+}
+
+
+.jo_sm_buttonDiv {
+    width: 100%;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.jo_sm_spritelistDiv {
+    width: 100%;
+    flex: 1;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    border-bottom: 2px solid var(--slider);
+    overflow: scroll;
+}
+
+.jo_sm_spriteListLine {
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid var(--slider);
+}
+
+.jo_sm_spriteImage {
+    width: 40px;
+    max-height: 40px;
+}
+
+.jo_sm_button {
+    padding: 5px;
+}
+
+.jo_sm_button:hover {
+    filter: brightness(150%);
+    cursor: pointer;
+}
+
+.jo_sm_button.jo_active:active {
+    transform: scale(1.1);
+}
+
+.jo_sm_button:not(.jo_active) {
+    filter: grayscale();
+}
+
+.jo_sm_importExportArea {
+    display: flex;
+    flex-direction: row;
+    border-bottom: 2px solid var(--slider);
+}
+
+.jo_sm_importExportLeft {
+    display: flex;
+    flex-direction: column;
+    border-right: 2px solid var(--slider);
+    align-items: center;
+    padding: 10px;
+}
+
+.jo_sm_importExportRight {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    padding: 10px;
+}
+
+.jo_sm_importDropZone {
+    height: 3em;
+    border: 2px dotted lightgray;
+    border-radius: 0.5em;
+    text-align: center;
+    line-height: 2em;
+    padding: 5px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.jo_sm_importParameters {
+    display: flex;
+    flex-direction: row;
+    margin: 5px;
+}
+
+.jo_sm_parameterDiv {
+    display: flex;
+    flex-direction: row;
+}
+
+.jo_sm_parameterCaption {
+    margin-right: 5px;
+    margin-left: 10px;
+}
+
+.jo_sm_parameterInput {
+    width: 2em;
+}
+
+.jo_sm_importButton {
+    margin: 5px 0;
+    background-color: var(--speedcontrol-grip);
+    color: var(--fontColorLight);
+    font-size: 10pt;
+}
+
+.jo_sm_buttonImportAll {
+    margin: 5px 0;
+    background-color: var(--speedcontrol-grip);
+    color: var(--fontColorLight);
+    font-size: 10pt;
+}
+
+.jo_sm_buttonExportAll {
+    margin: 5px 0;
+    background-color: var(--speedcontrol-grip);
+    color: var(--fontColorLight);
+    font-size: 10pt;
+}

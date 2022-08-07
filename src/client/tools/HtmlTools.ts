@@ -180,7 +180,7 @@ export function convertPxToNumber(pxString: string): number {
     return Number.parseInt(pxString);
 }
 
-export function makeDiv(id: string, klass: string = "", text: string = "", css?: { [id: string]: any }): JQuery<HTMLDivElement> {
+export function makeDiv(id: string, klass: string = "", text: string = "", css?: { [id: string]: any }, $parentDiv?: JQuery<HTMLElement>): JQuery<HTMLDivElement> {
 
     let s = "";
     if (id != null && id != "") s += ` id="${id}"`;
@@ -195,6 +195,10 @@ export function makeDiv(id: string, klass: string = "", text: string = "", css?:
 
     if (text != null && text != "") {
         div.text(text);
+    }
+
+    if($parentDiv != null){
+        $parentDiv.append(div);
     }
 
     return <any>div;

@@ -32,6 +32,7 @@ import { WindowStateManager } from "./gui/WindowStateManager.js";
 import { TextPositionWithModule } from "../compiler/types/Types.js";
 import { checkIfMousePresent } from "../tools/HtmlTools.js";
 import { InconsistencyFixer } from "../workspace/InconsistencyFixer.js";
+import { SpriteManager } from "../spritemanager/SpriteManager.js";
 
 export class Main implements MainBase {
 
@@ -113,6 +114,8 @@ export class Main implements MainBase {
     repositoryCreateManager: RepositoryCreateManager;
     repositoryUpdateManager: RepositorySettingsManager;
     repositoryCheckoutManager: RepositoryCheckoutManager;
+
+    spriteManager: SpriteManager;
 
     windowStateManager: WindowStateManager = new WindowStateManager(this);
 

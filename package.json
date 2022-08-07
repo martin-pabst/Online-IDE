@@ -19,6 +19,7 @@
     "monaco-editor": "^0.29.0",
     "mysql": "^2.18.1",
     "pixi.js": "^6.0.2",
+    "potpack": "^1.0.2",
     "regenerator-runtime": "^0.13.9",
     "spritesmith": "^3.4.0",
     "ts-node": "^8.6.2"

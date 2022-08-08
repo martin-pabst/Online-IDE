@@ -34,17 +34,22 @@
 
 .jo_sm_spritelistDiv {
     width: 100%;
-    flex: 1;
     padding: 10px;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
+}
+
+.jo_sm_spritelistOuter {
+    flex: 1;
+    overflow: auto;
+    width: 100%;
     border-bottom: 2px solid var(--slider);
-    overflow: scroll;
 }
 
 .jo_sm_spriteListLine {
-    height: 50px;
     display: flex;
+    padding: 3px 0;
     flex-direction: row;
     border-bottom: 1px solid var(--slider);
 }
@@ -56,6 +61,7 @@
 
 .jo_sm_button {
     padding: 5px;
+    user-select: none;
 }
 
 .jo_sm_button:hover {
@@ -85,6 +91,14 @@
     padding: 10px;
 }
 
+.jo_sm_importExportCenter {
+    display: flex;
+    flex-direction: column;
+    border-right: 2px solid var(--slider);
+    align-items: left;
+    padding: 10px;
+}
+
 .jo_sm_importExportRight {
     display: flex;
     flex-direction: column;
@@ -93,7 +107,7 @@
 }
 
 .jo_sm_importDropZone {
-    height: 3em;
+    height: 6em;
     border: 2px dotted lightgray;
     border-radius: 0.5em;
     text-align: center;
@@ -116,11 +130,10 @@
 
 .jo_sm_parameterCaption {
     margin-right: 5px;
-    margin-left: 10px;
 }
 
 .jo_sm_parameterInput {
-    width: 2em;
+    margin-right: 10px;
 }
 
 .jo_sm_importButton {
@@ -142,4 +155,28 @@
     background-color: var(--speedcontrol-grip);
     color: var(--fontColorLight);
     font-size: 10pt;
+}
+
+.jo_sm_spritepreview {
+    position: relative;
+}
+
+.jo_spritepreview-innerbox {
+    background: url('../assets/graphics/checkerboard-background.png');
+    background-repeat: repeat;
+}
+
+.jo_sm_inputInfoDiv {
+    width: 25em;
+    display: flex;
+    flex-direction: column;
+}
+
+.jo_sm_inputDiv {
+    display: flex;
+    flex-direction: row;
+}
+
+.jo_sm_infoDiv {
+    color: lightgray;
 }

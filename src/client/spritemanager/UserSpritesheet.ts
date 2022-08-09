@@ -114,7 +114,6 @@ export class UserSpritesheet {
 
     addSprite(spriteData: SpriteData) {
         this.spriteDataList.push(spriteData);
-        this.generatePixiSpritesheet();
     }
 
     generatePixiSpritesheet() {

@@ -14,6 +14,7 @@ export class SpriteManager {
 
     $importDropZone: JQuery<HTMLDivElement>;
     $uploadRect: JQuery<HTMLDivElement>;
+    $messagesDiv: JQuery<HTMLDivElement>;
     $uploadButtonStart: JQuery<HTMLDivElement>;
     $uploadLinesCount: JQuery<HTMLInputElement>;
     $uploadColumnsCount: JQuery<HTMLInputElement>;
@@ -78,13 +79,20 @@ export class SpriteManager {
         this.$buttonImport.on('click', () => {that.importFiles(that.fileList);
         });
 
+
+        let $importExportMessages = makeDiv(null, "jo_sm_importExportMessages", null, null, $importExportArea);
+        makeDiv(null, null, "Meldungen:", {"font-weight": "bold"}, $importExportMessages);
+        let $messagesOuter = makeDiv(null, "jo_sm_messagesOuter jo_scrollable", null, null, $importExportMessages);
+        this.$messagesDiv = makeDiv(null, "jo_sm_messagesDiv jo_scrollable", "Test", null, $messagesOuter);
+
         let $importExportRight = makeDiv(null, "jo_sm_importExportRight", null, null, $importExportArea);
         let $buttonImportAll = makeDiv(null, 'jo_sm_buttonImportAll jo_sm_button jo_active', "Alle importieren", null, $importExportRight );
         let $buttonExportAll = makeDiv(null, 'jo_sm_buttonExportAll jo_sm_button jo_active', "Alle exportieren", null, $importExportRight );
 
-        let $spritelistOuter = makeDiv(null, "jo_sm_spritelistOuter", null, null, $spritemanagerDiv);
 
+        
         // Sprite list
+        let $spritelistOuter = makeDiv(null, "jo_sm_spritelistOuter", null, null, $spritemanagerDiv);
         this.$spriteListDiv = makeDiv(null, "jo_sm_spritelistDiv jo_scrollable", null, null, $spritelistOuter);
 
 
@@ -106,6 +114,10 @@ export class SpriteManager {
             this.userSpritesheet.addSprite(image);
             this.renderImageInList(image);
         }
+        setTimeout(() => {
+            this.userSpritesheet.generatePixiSpritesheet();
+            this.printMessage(images.length + " Bilder hinzugefügt, Größe des Spritesheets: " + this.userSpritesheet.pngFile.length + " Bytes");
+        }, 500);
     }
 
     renderImageInList(imageData: SpriteData){
@@ -113,8 +125,9 @@ export class SpriteManager {
         let $line = makeDiv(null, "jo_sm_spriteListLine", null, null, this.$spriteListDiv);
 
         // let pngFile = UPNG.encode([imageData.image.buffer], imageData.width, imageData.height, 0);
-        // let $img: JQuery<HTMLImageElement> = jQuery('<img class="jo_sm_spritepreview">')
-        // $img[0].src = URL.createObjectURL(new Blob([pngFile], { type: 'image/png' } ));
+        // let $img1: JQuery<HTMLImageElement> = jQuery('<img class="jo_sm_spritepreview">')
+        // $img1[0].src = URL.createObjectURL(new Blob([pngFile], { type: 'image/png' } ));
+
 
         let $img: JQuery<HTMLCanvasElement> = jQuery('<canvas width="' + imageData.width + '" height="'+imageData.height+'"></canvas>');
         let canvas = $img[0].getContext("2d");
@@ -225,5 +238,11 @@ export class SpriteManager {
         window.history.back();
     }
 
+    printMessage(message: string, color?: string){
+        let colorString = color == null ? "" : 'style="color: ' + color + '"';
+        this.$messagesDiv.append(`<div ${colorString}>${message}</div>`);
+        let md = this.$messagesDiv[0];
+        md.scrollTop = md.scrollHeight;
+    }
 
-}
+}   

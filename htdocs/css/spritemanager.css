@@ -99,6 +99,27 @@
     padding: 10px;
 }
 
+.jo_sm_importExportMessages {
+    display: flex;
+    flex-direction: column;
+    width: 20em;
+    border-right: 2px solid var(--slider);
+    align-items: left;
+    padding: 10px 5px 5px 5px;
+}
+
+.jo_sm_messagesDiv {
+    width: 100%;
+}
+
+.jo_sm_messagesOuter {
+    width: 100%;
+    height: 8em;
+    margin-top: 5px;
+    overflow: auto;
+    background-color: var(--backgroundHeading);
+}
+
 .jo_sm_importExportRight {
     display: flex;
     flex-direction: column;

@@ -100,6 +100,7 @@ export class SpriteManager {
     }
 
     async importFiles(files: FileList) {
+        let t = performance.now();
         let images = await (new ImageLoader()).loadFiles(files);
         for(let image of images){
             this.userSpritesheet.addSprite(image);
@@ -108,13 +109,18 @@ export class SpriteManager {
     }
 
     renderImageInList(imageData: SpriteData){
-
         let that = this;
         let $line = makeDiv(null, "jo_sm_spriteListLine", null, null, this.$spriteListDiv);
 
-        let pngFile = UPNG.encode([imageData.image.buffer], imageData.width, imageData.height, 0);
-        let $img: JQuery<HTMLImageElement> = jQuery('<img class="jo_sm_spritepreview">')
-        $img[0].src = URL.createObjectURL(new Blob([pngFile], { type: 'image/png' } ));
+        // let pngFile = UPNG.encode([imageData.image.buffer], imageData.width, imageData.height, 0);
+        // let $img: JQuery<HTMLImageElement> = jQuery('<img class="jo_sm_spritepreview">')
+        // $img[0].src = URL.createObjectURL(new Blob([pngFile], { type: 'image/png' } ));
+
+        let $img: JQuery<HTMLCanvasElement> = jQuery('<canvas width="' + imageData.width + '" height="'+imageData.height+'"></canvas>');
+        let canvas = $img[0].getContext("2d");
+        const id = new ImageData(new Uint8ClampedArray(imageData.image), imageData.width, imageData.height);
+        canvas.putImageData(id, 0, 0);
+
         let maxWidth: number = 300;
         let maxHeight: number = 100;
 
@@ -129,8 +135,8 @@ export class SpriteManager {
             w = imageData.width/imageData.height * h;
         }
 
-        $img.attr('width', w + "px");
-        $img.attr('height', h + "px");
+        $img.css('width', w + "px");
+        $img.css('height', h + "px");
 
         let $innerbox = makeDiv(null, "jo_spritepreview-innerbox", null, {width: w + "px", height: h + "px", "margin-right": (maxWidth - w) + "px"}, $line);
         $innerbox.append($img);

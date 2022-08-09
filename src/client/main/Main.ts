@@ -196,6 +196,9 @@ export class Main implements MainBase {
 
         this.checkStartupComplete();
 
+        //@ts-ignore
+        window.UZIP = null; // needed by UPNG
+
         this.correctPIXITransform();
 
         PIXI.utils.skipHello(); // don't show PIXI-Message in browser console

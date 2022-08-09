@@ -64,7 +64,7 @@
     user-select: none;
 }
 
-.jo_sm_button:hover {
+.jo_sm_button.jo_active:hover {
     filter: brightness(150%);
     cursor: pointer;
 }
@@ -96,13 +96,13 @@
     flex-direction: column;
     border-right: 2px solid var(--slider);
     align-items: left;
-    padding: 10px;
+    padding: 0;
 }
 
 .jo_sm_importExportMessages {
     display: flex;
     flex-direction: column;
-    width: 20em;
+    width: 23em;
     border-right: 2px solid var(--slider);
     align-items: left;
     padding: 10px 5px 5px 5px;
@@ -162,6 +162,7 @@
     background-color: var(--speedcontrol-grip);
     color: var(--fontColorLight);
     font-size: 10pt;
+    margin-left: 5px;
 }
 
 .jo_sm_buttonImportAll {

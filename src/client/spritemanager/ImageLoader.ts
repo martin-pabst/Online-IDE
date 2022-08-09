@@ -21,7 +21,11 @@ export class ImageLoader {
 
         let images: SpriteData[] = [];
         for await(let file of files){
-            images.push(await this.loadFile(file));
+            if(file.name.endsWith(".png")){
+                try{
+                    images.push(await this.loadFile(file));
+                } catch (ex){}
+            }
         }
 
         images = images.sort((a, b) => a.filename.localeCompare(b.filename));

@@ -11,7 +11,7 @@ export type SpriteData = {
     y?: number
 }
 
-export class ImageLoader {
+export class ImageFile {
 
     async loadFiles(files: FileList): Promise<SpriteData[]>{
         if(files == null || files.length == 0){

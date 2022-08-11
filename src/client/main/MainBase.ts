@@ -18,6 +18,7 @@ export interface MainBase {
 
     version: number;
     pixiApp: PIXI.Application;
+    userSpritesheet: PIXI.Spritesheet;
 
     getCurrentlyEditedModule(): import("../compiler/parser/Module").Module;
     drawClassDiagrams(onlyUpdateIdentifiers: boolean);

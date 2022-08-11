@@ -547,6 +547,10 @@ export class SpriteHelper extends ShapeHelper {
         let sheet = PIXI.Loader.shared.resources["spritesheet"].spritesheet;
         let nameWithIndex = name + "#" + index;
         let texture = sheet.textures[nameWithIndex];
+        if(texture == null){
+            sheet = this.worldHelper.interpreter.main.userSpritesheet;
+            texture = sheet.textures[nameWithIndex];
+        }
 
         if (texture != null) {
 

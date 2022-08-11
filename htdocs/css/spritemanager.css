@@ -179,6 +179,13 @@
     font-size: 10pt;
 }
 
+.jo_sm_buttonDeleteAll {
+    margin: 5px 0;
+    background-color: var(--error-position);
+    color: var(--fontColorLight);
+    font-size: 10pt;
+}
+
 .jo_sm_spritepreview {
     position: relative;
 }

@@ -67,7 +67,9 @@ export type WorkspaceData = {
     language: number,
     sql_baseDatabase: string,
     sql_manipulateDatabaseStatements: string,
-    sql_history: string
+    sql_history: string, 
+
+    spritesheetId: number
 }
 
 export type Workspaces = {
@@ -411,7 +413,9 @@ export type Repository = {
     description: string,
 
     secret_read?: string,
-    secret_write?: string
+    secret_write?: string,
+
+    spritesheetId: number
 
 }
 
@@ -770,4 +774,10 @@ export type LongPollingListenerResponse = {
     firstNewStatementIndex: number,
     newStatements: string[],
     rollbackToVersion: number
+}
+
+export type UploadSpriteResponse = {
+    success: boolean,
+    message: string,
+    spriteFileId: number
 }

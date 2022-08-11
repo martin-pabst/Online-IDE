@@ -37,6 +37,7 @@ import { SpriteManager } from "../spritemanager/SpriteManager.js";
 export class Main implements MainBase {
 
     pixiApp: PIXI.Application;
+    userSpritesheet: PIXI.Spritesheet;
 
     repositoryOn: boolean = true;
 

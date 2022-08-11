@@ -1,4 +1,4 @@
-import { Workspace } from "src/client/workspace/Workspace.js";
+import { Workspace } from "../../workspace/Workspace.js";
 import { Main } from "../Main.js";
 import { MainBase } from "../MainBase.js";
 import { CheckboxState, Dialog } from "./Dialog.js";

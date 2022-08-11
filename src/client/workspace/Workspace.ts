@@ -21,6 +21,8 @@ export class Workspace {
     repository_id: number;    // id of repository-workspace
     has_write_permission_to_repository: boolean; // true if owner of this working copy has write permission to repository workspace
 
+    spritesheetId: number;
+
     moduleStore: ModuleStore;
     panelElement: AccordionElement;
     currentlyOpenModule: Module;
@@ -71,7 +73,8 @@ export class Workspace {
             sql_baseDatabase: "",
             sql_history: "",
             sql_manipulateDatabaseStatements: "",
-            settings: JSON.stringify(this.settings)
+            settings: JSON.stringify(this.settings),
+            spritesheetId: this.spritesheetId
         }
 
         if(withFiles){
@@ -138,6 +141,8 @@ export class Workspace {
         w.repository_id = ws.repository_id;
         w.has_write_permission_to_repository = ws.has_write_permission_to_repository;
         w.settings = settings;
+
+        w.spritesheetId = ws.spritesheetId;
 
         if(w.settings.libraries == null){
             w.settings.libraries = [];

@@ -18,6 +18,7 @@ import { EmbeddedIndexedDB } from "./EmbeddedIndexedDB.js";
 import { SemicolonAngel } from "../compiler/parser/SemicolonAngel.js";
 import { TextPositionWithModule } from "../compiler/types/Types.js";
 import { HitPolygonStore } from "../runtimelibrary/graphics/PolygonStore.js";
+import { Spritesheet } from "pixi.js/index.js";
 
 type JavaOnlineConfig = {
     withFileList?: boolean,
@@ -119,6 +120,8 @@ export class MainEmbedded implements MainBase {
 
     semicolonAngel: SemicolonAngel;
 
+    userSpritesheet: Spritesheet;
+    
     constructor($div: JQuery<HTMLElement>, private scriptList: JOScript[]) {
 
         this.readConfig($div);

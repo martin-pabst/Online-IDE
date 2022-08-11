@@ -13,6 +13,7 @@ import { WorkspaceData, Workspaces, ClassData } from "../../communication/Data.j
 import { dateToString } from "../../tools/StringTools.js";
 import { DistributeToStudentsDialog } from "./DistributeToStudentsDialog.js";
 import { WorkspaceSettingsDialog } from "./WorkspaceSettingsDialog.js";
+import { SpritesheetData } from "../../spritemanager/SpritesheetData.js";
 
 
 export class ProjectExplorer {
@@ -211,7 +212,7 @@ export class ProjectExplorer {
         this.$synchronizeAction = jQuery('<div class="img_open-change jo_button jo_active" style="margin-right: 4px"' +
             ' title="Workspace mit Repository synchronisieren">');
 
-        
+
 
         this.$synchronizeAction.on('pointerdown', (e) => {
             e.stopPropagation();
@@ -453,14 +454,14 @@ export class ProjectExplorer {
                         })
                 }
             },
-            {
-                caption: "Exportieren",
-                callback: (element: AccordionElement) => {
-                    let ws: Workspace = <Workspace>element.externalElement;
-                    let name: string = ws.name.replace(/\//g, "_");
-                    downloadFile(ws.toExportedWorkspace(), name + ".json")
+                {
+                    caption: "Exportieren",
+                    callback: (element: AccordionElement) => {
+                        let ws: Workspace = <Workspace>element.externalElement;
+                        let name: string = ws.name.replace(/\//g, "_");
+                        downloadFile(ws.toExportedWorkspace(), name + ".json")
+                    }
                 }
-            } 
             );
 
             if (this.main.user.is_teacher && this.main.teacherExplorer.classPanel.elements.length > 0) {
@@ -694,10 +695,6 @@ export class ProjectExplorer {
                 this.setModuleActive(null);
             }
 
-            for (let m of nonSystemModules) {
-                m.file.dirty = true;
-            }
-
             if (nonSystemModules.length == 0 && !this.main.user.settings.helperHistory.newFileHelperDone) {
 
                 Helper.showHelper("newFileHelper", this.main, this.fileListPanel.$captionElement);
@@ -705,6 +702,13 @@ export class ProjectExplorer {
             }
 
             this.showRepositoryButtonIfNeeded(w);
+
+            let spritesheet = new SpritesheetData();
+            spritesheet.initializeSpritesheetForWorkspace(w, this.main).then(() => {
+                for (let m of nonSystemModules) {
+                    m.file.dirty = true;
+                }
+            });
 
         } else {
             this.setModuleActive(null);

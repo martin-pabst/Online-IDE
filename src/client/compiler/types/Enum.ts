@@ -49,10 +49,14 @@ export class Enum extends Klass {
         return this.identifier + "." + enumObject.enumValue.identifier;
     }
 
-    constructor(identifier: string, module: Module, enumValueNodes: EnumValueNode[]) {
 
-        super(identifier, module);
-        this.baseClass = objectType;
+    setEnumValues(enumValueNodes: EnumValueNode[]) {
+
+        this.enumInfoList = [];
+        this.identifierToInfoMap = {};
+        this.indexToInfoMap = {};
+
+        this.valueList = null;
 
         let i: number = 0;
 
@@ -62,11 +66,11 @@ export class Enum extends Klass {
 
             if (evn.position != null) {
                 attribute.declaration = {
-                    module: module,
+                    module: this.module,
                     position: evn.position
                 }
 
-                attribute.usagePositions.set(module, [evn.position]);
+                attribute.usagePositions.set(this.module, [evn.position]);
             }
 
             this.staticClass.addAttribute(
@@ -85,12 +89,12 @@ export class Enum extends Klass {
 
         }
 
-        if(module.isSystemModule){
+        if (this.module.isSystemModule) {
             this.valueList = {
                 type: new ArrayType(this),
                 value: []
             };
-            for(let ei of this.enumInfoList){
+            for (let ei of this.enumInfoList) {
 
                 ei.object = new EnumRuntimeObject(this, ei);
 
@@ -100,6 +104,15 @@ export class Enum extends Klass {
                 })
             }
         }
+
+    }
+
+    constructor(identifier: string, module: Module, enumValueNodes: EnumValueNode[]) {
+
+        super(identifier, module);
+        this.baseClass = objectType;
+
+        this.setEnumValues(enumValueNodes);
 
         let that = this;
 

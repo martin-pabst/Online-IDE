@@ -175,8 +175,6 @@ export class Editor implements monaco.languages.RenameProvider {
 
             if ([InterpreterState.done, InterpreterState.error, InterpreterState.not_initialized].indexOf(state) < 0) {
 
-                console.log(e);
-
                 for(let kdp of keysWhichDontStopProgram){
                     if(e.code.indexOf(kdp) >= 0) return;
                 }

@@ -372,6 +372,8 @@ export class SpriteManager {
                 }
             }
             );
+
+            this.userSpritesheet.spritesheet.initializeSpritesheetForWorkspace(this.main.getCurrentWorkspace(), this.main);
         }
 
         hide() {

@@ -78,7 +78,12 @@ export class BitmapClass extends Klass {
                 let alpha: number = parameters[4].value;
                 let sh: BitmapHelperNew = o.intrinsicData["Actor"];
 
-                sh.setzeFarbe(x, y, color, alpha);
+                if(x < 0 || x > sh.anzahlX || y < 0 || y > sh.anzahlY){
+                    module.main.getInterpreter().throwException("Die Koordinaten " + x + ", " + y + " liegen außerhalb der Bitmap mit der Auflösung " + sh.anzahlX + ", " + sh.anzahlY + ".");
+                } else {
+                    sh.setzeFarbe(x, y, color, alpha);
+                }
+
 
             }, false, false, 'Setzt die Farbe des Pixels bei (x, y). Die Farbe wird als int-Wert gegeben, wobei farbe == 256*256*rot + 256*grün + blau und 0.0 <= alpha <= 1.0.', false));
 
@@ -95,7 +100,12 @@ export class BitmapClass extends Klass {
                 let color: number = parameters[3].value;
                 let sh: BitmapHelperNew = o.intrinsicData["Actor"];
 
-                sh.setzeFarbe(x, y, color);
+                if(x < 0 || x > sh.anzahlX || y < 0 || y > sh.anzahlY){
+                    module.main.getInterpreter().throwException("Die Koordinaten " + x + ", " + y + " liegen außerhalb der Bitmap mit der Auflösung " + sh.anzahlX + ", " + sh.anzahlY + ".");
+                } else {
+                    sh.setzeFarbe(x, y, color);
+                }
+
 
             }, false, false, 'Setzt die Farbe des Pixels bei (x, y). Die Farbe wird als int-Wert gegeben, wobei farbe == 256*256*rot + 256*grün + blau.', false));
 
@@ -112,7 +122,11 @@ export class BitmapClass extends Klass {
                 let color: string = parameters[3].value;
                 let sh: BitmapHelperNew = o.intrinsicData["Actor"];
 
-                sh.setzeFarbe(x, y, color);
+                if(x < 0 || x > sh.anzahlX || y < 0 || y > sh.anzahlY){
+                    module.main.getInterpreter().throwException("Die Koordinaten " + x + ", " + y + " liegen außerhalb der Bitmap mit der Auflösung " + sh.anzahlX + ", " + sh.anzahlY + ".");
+                } else {
+                    sh.setzeFarbe(x, y, color);
+                }
 
             }, false, false, 'Setzt die Farbe des Pixels bei (x, y). Die Farbe ist entweder eine vordefinierte Farbe (Color.black, Color.red, ...) oder eine css-Farbe der Art "#ffa7b3" (ohne alpha), "#ffa7b380" (mit alpha), "rgb(172, 22, 18)" oder "rgba(123, 22,18, 0.3)"', false));
 
@@ -131,7 +145,11 @@ export class BitmapClass extends Klass {
                 let alpha: number = parameters[4].value;
                 let sh: BitmapHelperNew = o.intrinsicData["Actor"];
 
-                sh.setzeFarbe(x, y, color, alpha);
+                if(x < 0 || x > sh.anzahlX || y < 0 || y > sh.anzahlY){
+                    module.main.getInterpreter().throwException("Die Koordinaten " + x + ", " + y + " liegen außerhalb der Bitmap mit der Auflösung " + sh.anzahlX + ", " + sh.anzahlY + ".");
+                } else {
+                    sh.setzeFarbe(x, y, color, alpha);
+                }
 
             }, false, false, 'Setzt die Farbe des Pixels bei (x, y). Die Farbe ist entweder eine vordefinierte Farbe (Color.black, Color.red, ...) oder eine css-Farbe der Art "#ffa7b3" (ohne alpha), "#ffa7b380" (mit alpha), "rgb(172, 22, 18)" oder "rgba(123, 22,18, 0.3)". 0.0 <= alpha <= 1.0.', false));
 

@@ -467,6 +467,9 @@ export class Main implements MainBase {
 
         }
 
+        if(Math.random() < 0.9){
+            Helper.showHelper("spritesheetHelper", this);
+        }
 
     }
 

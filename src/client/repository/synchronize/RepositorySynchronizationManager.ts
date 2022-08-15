@@ -9,6 +9,7 @@ import { RepositoryTool } from "./RepositoryTool.js";
 import { LeftRight, SynchronizationListElement } from "./SynchronizationListElement.js";
 import { SynchroFile, SynchroWorkspace } from "./SynchroWorkspace.js";
 import { Dialog } from "../../main/gui/Dialog.js";
+import { SpritesheetData } from "../../spritemanager/SpritesheetData.js";
 
 
 type FileElement = {
@@ -127,6 +128,15 @@ export class SynchronizationManager {
         ajax("getRepository", request, (response: GetRepositoryResponse) => {
 
             that.attachToRepository(response.repository);
+            if(response.repository.spritesheetId != workspace.spritesheetId){
+                workspace.spritesheetId = response.repository.spritesheetId;
+                let spritesheet = new SpritesheetData();
+                spritesheet.initializeSpritesheetForWorkspace(workspace, this.main).then(() => {
+                    for (let m of workspace.moduleStore.getModules(false)) {
+                        m.file.dirty = true;
+                    }
+                });
+            }
 
         }, (message: string) => {
             alert(message);

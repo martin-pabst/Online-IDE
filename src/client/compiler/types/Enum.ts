@@ -58,11 +58,16 @@ export class Enum extends Klass {
 
         this.valueList = null;
 
+        this.staticClass.attributes = this.staticClass.attributes.filter((a) => a.annotation != "@enumvalue");
+        this.staticClass.attributeMap = new Map();
+        this.staticClass.attributes.forEach((a) => this.attributeMap.set(a.identifier, a));
+
         let i: number = 0;
 
         for (let evn of enumValueNodes) {
 
             let attribute: Attribute = new Attribute(evn.identifier, this, null, true, Visibility.public, true);
+            attribute.annotation = "@enumvalue";
 
             if (evn.position != null) {
                 attribute.declaration = {

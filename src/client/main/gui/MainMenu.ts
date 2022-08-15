@@ -150,7 +150,7 @@ export class MainMenu {
                     identifier: "Sprites", subMenu: {
                         items: [
                             {
-                                identifier: "Eigene Sprites verwalten ...",
+                                identifier: "Spritesheet ergänzen ...",
                                 action: () => {this.main.spriteManager.show()}
                             },
                             { identifier: "-" },

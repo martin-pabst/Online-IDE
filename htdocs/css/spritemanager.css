@@ -128,7 +128,7 @@
 }
 
 .jo_sm_importDropZone {
-    height: 6em;
+    height: 100%;
     border: 2px dotted lightgray;
     border-radius: 0.5em;
     text-align: center;
@@ -208,4 +208,9 @@
 
 .jo_sm_infoDiv {
     color: lightgray;
+}
+
+.jo_sm_errorspan {
+    margin-left: 10px;
+    color: red;
 }

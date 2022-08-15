@@ -30,6 +30,7 @@ export class SpritesheetData {
     pixiSpritesheetData: PixiSpritesheetData;
     pngImageData: Uint8Array;
     pngFile: Uint8Array;
+    zipFile: Uint8Array;
 
     async initializeSpritesheetForWorkspace(workspace: Workspace, main: MainBase){
 
@@ -71,19 +72,16 @@ export class SpritesheetData {
         let path = "sprites/" +   ('0' + (spritesheetId % 256).toString(16)).slice(-2).toUpperCase() + "/" + spritesheetId;
 
         let cacheManager = new CacheManager();
-        this.pngFile = await cacheManager.fetchUint8ArrayFromCache(path + ".png");
-        let sd = await cacheManager.fetchStringFromCache(path + ".json");
-        if(this.pngFile == null || sd == null){
+        this.zipFile = await cacheManager.fetchUint8ArrayFromCache(path + ".zip");
+        if(this.zipFile == null){
             await this.loadFromServer(path);
-            if(this.pngFile != null && this.pixiSpritesheetData != null){
-                cacheManager.store(path + ".png", this.pngFile);
-                cacheManager.store(path + ".json", JSON.stringify(this.pixiSpritesheetData));
+            if(this.zipFile != null){
+                cacheManager.store(path + ".zip", this.zipFile);
             }
-        } else {
-            this.pixiSpritesheetData = JSON.parse(sd);
-        }
+        } 
 
-        this.unpackPngFile();
+        await this.unpackZip(this.zipFile)
+
         return;
     }
 
@@ -100,25 +98,12 @@ export class SpritesheetData {
             $.ajax({
                 type: 'GET',
                 async: true,
-                url: path + ".png",
+                url: path + ".zip",
                 xhrFields: { responseType: 'arraybuffer' },
                 success: (arrayBuffer: ArrayBuffer) => {
-                    this.pngFile = new Uint8Array(arrayBuffer);
 
-                    $.ajax({
-                        type: 'GET',
-                        async: true,
-                        url: path + ".json",
-                        success: (pixiSpritesheetData: PixiSpritesheetData) => {
-                            this.pixiSpritesheetData = pixiSpritesheetData;
-                            resolve();
-                        },
-                        error: (jqXHR, message) => {
-                            alert("Konnte das Spritesheet nicht laden: " + message);
-                            reject();
-                        }
-                    });
-
+                    this.zipFile = new Uint8Array(arrayBuffer);
+                    resolve();
 
                 },
                 error: (jqXHR, message) => {
@@ -129,6 +114,37 @@ export class SpritesheetData {
         });
 
     }
+
+    async unpackZip(zipData: File|Uint8Array) {
+
+        let pixiDataFile: any;
+        let pngDataFile: any;
+
+        let zip = await JSZip.loadAsync(zipData);
+        zip.forEach(function (relativePath, zipEntry) {  // 2) print entries
+            if((<string>zipEntry.name).endsWith(".png")) pngDataFile = zipEntry;
+            if((<string>zipEntry.name).endsWith(".json")) pixiDataFile = zipEntry;
+        })
+
+        this.pngFile = await pngDataFile.async("uint8array");
+        this.pixiSpritesheetData = JSON.parse(await pixiDataFile.async("text"));
+
+        this.unpackPngFile();
+
+    }
+
+    async makeZip(filename: string = "spritesheet") {
+        const zip = new JSZip();
+
+        zip.file(filename + ".png", this.pngFile);
+        zip.file(filename + ".json", JSON.stringify(this.pixiSpritesheetData), {
+            compression: 'DEFLATE',
+            compressionOptions: {level: 9}
+        })
+
+        this.zipFile = await zip.generateAsync({ type: "uint8array" });
+    }
+
 
 
 }

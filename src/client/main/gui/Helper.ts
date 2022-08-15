@@ -149,6 +149,13 @@ export class Helper {
                     `;
                     direction = "bottom";
                     $element = main.bottomDiv.console.$consoleTab.find('.jo_monaco-editor');
+                    break;
+                case "spritesheetHelper":
+                    text=`Unter "Sprites -> Spritesheet ergänzen" können Sie eigene png-Grafikdateien hochladen und dann als Sprites verwenden. Die Sprites werden je Workspace bzw. je Repository gespeichert.
+                    <br><br>Die Übersicht der fest in die Online-IDE integrierten Sprites finden Sie jetzt nicht mehr im Hilfe-Menü, sondern auch hier unter "Sprites->Sprite-Bilderübersicht".`;
+                    direction = "top";
+                    $element = $('#mainmenu').find('div:contains("Sprites")');
+                    break;
             }
 
             if (text != "" && $element != null && $element.length > 0) {

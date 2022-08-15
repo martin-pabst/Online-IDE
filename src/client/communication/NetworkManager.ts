@@ -475,6 +475,7 @@ export class NetworkManager {
         w.path = remoteWorkspace.path;
         w.isFolder = remoteWorkspace.isFolder;
         w.moduleStore.dirty = true;
+        w.spritesheetId = remoteWorkspace.spritesheetId;
 
         if(remoteWorkspace.settings != null && remoteWorkspace.settings.startsWith("{")){
             let remoteWorkspaceSettings:WorkspaceSettings = JSON.parse(remoteWorkspace.settings);

@@ -33,6 +33,8 @@ import { TextPositionWithModule } from "../compiler/types/Types.js";
 import { checkIfMousePresent } from "../tools/HtmlTools.js";
 import { InconsistencyFixer } from "../workspace/InconsistencyFixer.js";
 import { SpriteManager } from "../spritemanager/SpriteManager.js";
+import { NPrimitiveTypeManager } from "../newcompiler/types/NPrimitiveTypeManager.js";
+import { NInterpreter } from "../newcompiler/interpreter/NInterpreter.js";
 
 export class Main implements MainBase {
 
@@ -43,7 +45,11 @@ export class Main implements MainBase {
 
     isEmbedded(): boolean { return false; }
 
-    getInterpreter(): Interpreter {
+    getPrimitiveTypes(): NPrimitiveTypeManager {
+        return this.primitiveTypes;
+    }
+
+    getInterpreter(): NInterpreter {
         return this.interpreter;
     }
     getCurrentWorkspace(): Workspace {
@@ -150,6 +156,9 @@ export class Main implements MainBase {
     debounceDiagramDrawing: any;
 
     viewModeController: ViewModeController;
+
+    primitiveTypes: NPrimitiveTypeManager;
+
 
     initGUI() {
 

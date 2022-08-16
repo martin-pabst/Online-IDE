@@ -19,6 +19,8 @@ import { SemicolonAngel } from "../compiler/parser/SemicolonAngel.js";
 import { TextPositionWithModule } from "../compiler/types/Types.js";
 import { HitPolygonStore } from "../runtimelibrary/graphics/PolygonStore.js";
 import { Spritesheet } from "pixi.js/index.js";
+import { NPrimitiveTypeManager } from "../newcompiler/types/NPrimitiveTypeManager.js";
+import { NInterpreter } from "../newcompiler/interpreter/NInterpreter.js";
 
 type JavaOnlineConfig = {
     withFileList?: boolean,
@@ -45,7 +47,7 @@ export class MainEmbedded implements MainBase {
     getCompiler(): Compiler {
         return this.compiler;
     }
-    getInterpreter(): Interpreter {
+    getInterpreter(): NInterpreter {
         return this.interpreter;
     }
     getCurrentWorkspace(): Workspace {
@@ -78,6 +80,10 @@ export class MainEmbedded implements MainBase {
         }
     }
 
+    getPrimitiveTypes(): NPrimitiveTypeManager {
+        return this.primitiveTypes;
+    }
+
     config: JavaOnlineConfig;
 
     editor: Editor;
@@ -91,6 +97,8 @@ export class MainEmbedded implements MainBase {
 
     interpreter: Interpreter;
     $runDiv: JQuery<HTMLElement>;
+
+    primitiveTypes: NPrimitiveTypeManager;
 
     debugger: Debugger;
     $debuggerDiv: JQuery<HTMLElement>;
@@ -507,6 +515,8 @@ export class MainEmbedded implements MainBase {
         let $coordinates = jQuery('<div class="jo_coordinates">(0/0)</div>');
         this.$rightDivInner.append($rightSideContainer);
         $rightSideContainer.append($coordinates);
+
+        this.primitiveTypes = new NPrimitiveTypeManager();
 
         this.debugger = new Debugger(this, this.$debuggerDiv, null);
 

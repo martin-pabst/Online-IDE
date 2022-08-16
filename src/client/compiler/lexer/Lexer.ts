@@ -1,5 +1,4 @@
 import { TokenList, specialCharList, TokenType, Token, EscapeSequenceList, keywordList, TextPosition, TokenTypeReadable } from "./Token.js";
-import { text } from "express";
 import { ColorLexer } from "./ColorLexer.js";
 import { ColorHelper } from "../../runtimelibrary/graphics/ColorHelper.js";
 
@@ -50,6 +49,8 @@ export class Lexer {
     correspondingBracket: { [key: number]: TokenType } = {};
     colorIndices: number[];
 
+    static instance: Lexer = new Lexer();
+
     constructor() {
         this.correspondingBracket[TokenType.leftBracket] = TokenType.rightBracket;
         this.correspondingBracket[TokenType.leftCurlyBracket] = TokenType.rightCurlyBracket;
@@ -58,6 +59,10 @@ export class Lexer {
         this.correspondingBracket[TokenType.rightCurlyBracket] = TokenType.leftCurlyBracket;
         this.correspondingBracket[TokenType.rightSquareBracket] = TokenType.leftSquareBracket;
     }
+
+    static quicklex(input: string): TokenList {
+        return Lexer.instance.lex(input).tokens;
+    }    
 
     lex(input: string): { tokens: TokenList, errors: Error[], bracketError: string, colorInformation: monaco.languages.IColorInformation[] } {
 

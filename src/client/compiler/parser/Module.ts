@@ -88,6 +88,11 @@ import { DatabaseStatementClass } from "../../runtimelibrary/database/DatabaseSt
 import { ConnectionClass } from "../../runtimelibrary/database/Connection.js";
 import { DatabaseManagerClass } from "../../runtimelibrary/database/DatabaseManager.js";
 import { DatabasePreparedStatementClass } from "../../runtimelibrary/database/DatabasePreparedStatement.js";
+import { NType } from "../../newcompiler/types/NType.js";
+import { NAttributeInfo, NMethodInfo, NVariable } from "../../newcompiler/types/NAttributeMethod.js";
+import { NSymbolTable } from "../../newcompiler/compiler/NSymbolTable.js";
+import { NStaticClassObject } from "../../newcompiler/NRuntimeObject.js";
+import { NProgram } from "../../newcompiler/compiler/NProgram.js";
 
 export type ExportedWorkspace = {
     name: string;
@@ -174,9 +179,9 @@ export class Module {
     2. execute main Program
     */
 
-    mainProgram?: Program;
+    mainProgram?: NProgram;
     mainProgramEnd: TextPosition;
-    mainSymbolTable: SymbolTable;
+    mainSymbolTable: NSymbolTable;
 
     identifierPositions: { [line: number]: IdentifierPosition[] } = {};
     methodCallPositions: { [line: number]: MethodCallPosition[] } = {};
@@ -229,7 +234,7 @@ export class Module {
             }
 
             if(!that.main.isEmbedded()){
-                let main1: Main = <Main>main;
+                let main1: Main = <Main><any>main;
                 if(main1.workspacesOwnerId != main1.user.id){
                     if(that.file.text_before_revision == null || that.file.student_edited_after_revision){
                         that.file.student_edited_after_revision = false;
@@ -558,7 +563,7 @@ export class Module {
     }
 
 
-    addIdentifierPosition(position: TextPosition, element: Type | Method | Attribute | Variable) {
+    addIdentifierPosition(position: TextPosition, element: NType | NMethodInfo | NAttributeInfo | NVariable) {
         let positionList: IdentifierPosition[] = this.identifierPositions[position.line];
         if (positionList == null) {
             positionList = [];
@@ -951,6 +956,8 @@ export class ModuleStore {
     private baseModule: BaseModule;
 
     dirty: boolean = false;
+
+    public staticClassObjects: {[identifier: string]: NStaticClassObject};
 
     constructor(private main: MainBase, withBaseModule: boolean, private additionalLibraries: string[] = []) {
         if (withBaseModule) {

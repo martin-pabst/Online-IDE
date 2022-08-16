@@ -291,25 +291,6 @@ export class Main implements MainBase {
         }
     }
 
-    initTypes() {
-        voidPrimitiveType.init();
-        intPrimitiveType.init();
-        longPrimitiveType.init();
-        floatPrimitiveType.init();
-        doublePrimitiveType.init();
-        booleanPrimitiveType.init();
-        stringPrimitiveType.init();
-        charPrimitiveType.init();
-
-        IntegerType.init();
-        LongType.init();
-        FloatType.init();
-        DoubleType.init();
-        CharacterType.init();
-        BooleanType.init();
-
-    }
-
     start() {
 
         if (this.waitForGUICallback != null) {

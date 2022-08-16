@@ -32,7 +32,6 @@ type JavaOnlineConfig = {
     hideStartPanel?: boolean,
     hideEditor?: boolean,
     libraries?: string[],
-    jsonFilename?: string,
     jsonFilename?: string
 }
 

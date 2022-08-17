@@ -1,14 +1,14 @@
 import { NInterpreter } from "./NInterpreter.js";
-import { NThreadPool, NThreadPoolLstate } from "./NThreadPool.js";
+import { NThreadPool, NThreadPoolState } from "./NThreadPool.js";
 
 export class NLoadController {
 
-    private maxLoadFactor: number = 0.7;
+    private maxLoadFactor: number = 0.7;    // what fraction of execution time should get used for the interpreter?
 
-    private lastTickTime: number = 0;
+    private lastTickTime: number = 0;       // last system time in ms that tick() was executed
 
-    private stepsPerSecondGoal: number;
-    private timeBetweenStepsGoal: number;
+    private stepsPerSecondGoal: number;     // set by method setStepsPerSecond
+    private timeBetweenStepsGoal: number;   // set by method setStepsPerSecond
 
     constructor(private threadPool: NThreadPool, private interpreter: NInterpreter) {
         this.setStepsPerSecond(100);
@@ -21,7 +21,7 @@ export class NLoadController {
         if (deltaTime < this.timeBetweenStepsGoal) return;
         this.lastTickTime = t0;
 
-        if (this.timeBetweenStepsGoal >= deltaUntilNextTick && this.threadPool.state == NThreadPoolLstate.running) {
+        if (this.timeBetweenStepsGoal >= deltaUntilNextTick && this.threadPool.state == NThreadPoolState.running) {
             this.threadPool.run(1);
             if(this.stepsPerSecondGoal <= 12){
                 this.interpreter.showProgramPointer(this.threadPool.getNextStepPosition());
@@ -35,7 +35,7 @@ export class NLoadController {
         let i: number = 0;
         while (i < stepsPerTickGoal &&
             (performance.now() - t0) / deltaUntilNextTick < this.maxLoadFactor &&
-            this.threadPool.state == NThreadPoolLstate.running) {
+            this.threadPool.state == NThreadPoolState.running) {
 
             this.threadPool.run(batch);
             i += batch;

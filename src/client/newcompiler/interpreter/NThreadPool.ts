@@ -1,58 +1,65 @@
 import { ModuleStore, Module } from "src/client/compiler/parser/Module.js";
 import { TextPositionWithModule } from "src/client/compiler/types/Types.js";
-import { NProgram, NStep } from "../compiler/NProgram.js";
+import { NHelper, NProgram, NStep } from "../compiler/NProgram.js";
 import { NRuntimeObject, NStaticClassObject } from "../NRuntimeObject.js";
 import { NMethodInfo } from "../types/NAttributeMethod.js";
 import { NClass } from "../types/NClass.js";
 import { NInterpreter } from "./NInterpreter.js";
 
+/**
+ * every time a try-block is entered a NExceptionInfo-object is pushed
+ * onto NProgramState.exceptionInfoList. On leaving the try-block it is popped.
+ */
 type NExceptionInfo = {
-    types: string[],
-    stepIndex: number,
-    stackSize: number
+    types: string[],        // identifiers of Exceptions being catched
+    stepIndexAfterTryBlock: number,  // this is usually the first step inside a catch block
+    stackPointerBeforeCatch: number // after exception we have to cleanup our stack
 }
 
-type NException = {
-    javaClass: string,
-    message: string
-}
-
+/**
+ * corresponds to currently executed method; program states are pushed onto NThread.programStack.
+ */
 type NProgramState = {
     program: NProgram;
     currentStepList: NStep[];   // Link to program.stepSingle or program.stepMultiple
-    stepIndex: number;
-    stackBase: number;
-    callbackAfterFinished?: (value: any) => void;
-    exceptionInfoList: NExceptionInfo[];
+    stepIndex: number;  // when step is currently executed: index of this step
+    stackBase: number;  // used to adress local variables on stack
+    callbackAfterFinished?: (value: any) => void;   // used when system methods call compiled methods
+    exceptionInfoList: NExceptionInfo[];    // each entry corresponds to a currently entered try-block
 }
 
 enum NThreadState { running, paused, exited, exitedWithException }
 
-export enum NThreadPoolLstate { done, running, paused, not_initialized }
+export enum NThreadPoolState { ready, running, paused, not_initialized }
 
 export class NThread {
     stack: any[];
     programStack: NProgramState[] = [];
 
+    // for performance reasons 
     currentProgramState: NProgramState;  // also lies on top of programStack
 
     currentlyHeldSemaphors: NSemaphor[] = [];
 
     state: NThreadState;
 
-    exception: NRuntimeObject;
-    stackTrace: NProgramState[];
+    exception: NRuntimeObject;  // if program terminated because of exception, here it is!
 
+    /**
+     * immediately before executing a "step over" set this attributes so that run-method 
+     * knows when to pause program execution
+     */
     stepEndsWhenProgramstackLengthLowerOrEqual: number;
     stepEndsWhenStepIndexGreater: number;
-    stepCallback: () => void;
+    stepCallback: () => void;   // this is called after "step over" is done
 
     constructor(public threadPool: NThreadPool, initialStack: any[]) {
         this.stack = initialStack;
     }
 
     /**
-     * returns true if Thread exits
+     * contains main loop of program execution
+     * maxNumberOfSteps corresponds to maximum granted execution time
      */
     run(maxNumberOfSteps: number): NThreadState {
         let numberOfSteps = 0;
@@ -63,18 +70,27 @@ export class NThread {
             //@ts-ignore
             while (numberOfSteps < maxNumberOfSteps && this.state != NThreadState.exited) {
                 // For performance reasons: store all necessary data in local variables
-                let currentProgramState = this.currentProgramState;
-                let stepIndex = currentProgramState.stepIndex;
-                let currentStepList = currentProgramState.currentStepList;
-                let stackBase = currentProgramState.stackBase;
-                let helper = currentProgramState.program.helper;
+                let currentProgramState: NProgramState = null;
+                let currentStepList: NStep[];
+                let stackBase: number;
+                let helper: NHelper;
 
+                // has user pressed "step over"-button?
+                // then for performance reasons enter a special while-loop
+                // which tests for "step over"-completion after every step
                 if (this.stepEndsWhenProgramstackLengthLowerOrEqual >= 0) {
                     while (numberOfSteps < maxNumberOfSteps &&
                         this.state == NThreadState.running && !this.isSingleStepCompleted()) {
-                        let step = currentStepList[stepIndex];
-                        stepIndex = step.run(stack, stackBase, helper, this);
-                        this.currentProgramState.stepIndex = stepIndex;
+
+                        if (currentProgramState != this.currentProgramState) {
+                            currentProgramState = this.currentProgramState;
+                            currentStepList = currentProgramState.currentStepList;
+                            stackBase = currentProgramState.stackBase;
+                            helper = currentProgramState.program.helper;
+                        }
+
+                        let step = currentStepList[currentProgramState.stepIndex];
+                        currentProgramState.stepIndex = step.run(stack, stackBase, helper, this);
                         numberOfSteps++;
                     }
                     if (this.isSingleStepCompleted()) {
@@ -82,22 +98,30 @@ export class NThread {
                         this.state = NThreadState.paused;
                     }
                 } else {
+                    // we keep this loop as fast as possible:
                     while (numberOfSteps < maxNumberOfSteps && this.state == NThreadState.running) {
-                        let step = currentStepList[stepIndex];
-                        stepIndex = step.run(stack, stackBase, helper, this);
+
+                        if (currentProgramState != this.currentProgramState) {
+                            currentProgramState = this.currentProgramState;
+                            currentStepList = currentProgramState.currentStepList;
+                            stackBase = currentProgramState.stackBase;
+                            helper = currentProgramState.program.helper;
+                        }
+
+                        let step = currentStepList[currentProgramState.stepIndex];
+                        currentProgramState.stepIndex = step.run(stack, stackBase, helper, this);
                         numberOfSteps++;
                     }
                 }
 
 
-                currentProgramState.stepIndex = stepIndex;
                 // this currentProgram might by now not be the same as before this inner while-loop
                 // because callMethod or returnFromMethod may have been called since from within 
                 // step.run
             }
         } catch (exception) {
             let exceptionObject: NRuntimeObject;
-            if (exception["javaClass"] != null) {
+            if (exception["class"] != null) {
                 exceptionObject = this.threadPool.getExceptionObject(exception.javaClass, exception.message);
             } else {
                 exceptionObject = this.threadPool.getExceptionObject("RuntimeException", exception + "");
@@ -105,131 +129,9 @@ export class NThread {
             this.throwException(exceptionObject);
         }
 
+        this.threadPool.numberOfSteps += Math.min(numberOfSteps, 1);
+
         return this.state;
-    }
-
-
-
-    isSingleStepCompleted() {
-        return this.programStack.length < this.stepEndsWhenProgramstackLengthLowerOrEqual ||
-            this.programStack.length == this.stepEndsWhenProgramstackLengthLowerOrEqual &&
-            this.currentProgramState.stepIndex > this.stepEndsWhenStepIndexGreater;
-    }
-
-    markSingleStepOver(callbackWhenSingleStepOverEnds: () => void) {
-
-        this.stepEndsWhenProgramstackLengthLowerOrEqual = this.programStack.length - 1;
-        this.stepEndsWhenStepIndexGreater = this.currentProgramState.stepIndex;
-        this.stepCallback = () => {
-            this.stepEndsWhenProgramstackLengthLowerOrEqual = -1;
-            callbackWhenSingleStepOverEnds();
-        };
-
-    }
-
-    unmarkStep() {
-        this.stepEndsWhenProgramstackLengthLowerOrEqual = -1;
-    }
-
-    markStepOut(callbackWhenStepOutEnds: () => void) {
-
-        this.stepEndsWhenProgramstackLengthLowerOrEqual = this.programStack.length - 2;
-        this.stepEndsWhenStepIndexGreater = -1;
-        this.stepCallback = () => {
-            this.stepEndsWhenProgramstackLengthLowerOrEqual = -1;
-            callbackWhenStepOutEnds();
-        };
-
-    }
-
-
-    throwException(exception: NRuntimeObject) {
-        let exceptionClass: NClass = exception.__class;
-        let className = exceptionClass.identifier;
-        let classNames = exceptionClass.allExtendedImplementedTypes;
-
-        let stackTrace: NProgramState[] = [];
-        do {
-
-            let ps = this.programStack[this.programStack.length - 1];
-            for (let exInfo of ps.exceptionInfoList) {
-                let found = false;
-                if (exInfo.types.indexOf(className) >= 0) {
-                    found = true;
-                } else {
-                    for (let cn in classNames) {
-                        if (exInfo.types.indexOf(cn) >= 0) {
-                            found = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (found) {
-                    stackTrace.push(Object.assign(ps));
-                    ps.stepIndex = exInfo.stepIndex;
-                    this.stack.splice(exInfo.stackSize, this.stack.length - exInfo.stackSize);
-                    this.stack.push(exception);
-                    break;
-                } else {
-                    stackTrace.push(ps);
-                    this.programStack.pop();
-                }
-            }
-
-        } while (this.programStack.length > 0)
-
-        if (this.programStack.length == 0) {
-            this.stackTrace = stackTrace;
-            this.exception = exception;
-            this.state = NThreadState.exitedWithException;
-        }
-    }
-
-    beginCatchExceptions(exceptionInfo: NExceptionInfo) {
-        exceptionInfo.stackSize = this.stack.length;
-        this.currentProgramState.exceptionInfoList.push(exceptionInfo);
-    }
-
-    endCatchExceptions() {
-        this.currentProgramState.exceptionInfoList.pop();
-    }
-
-    aquireSemaphor(semaphor: NSemaphor) {
-        if (!semaphor.aquire(this)) {
-            this.state = NThreadState.exited;
-        }
-    }
-
-    returnFromMethod(returnValue: any) {
-        while (this.stack.length > this.currentProgramState.stackBase) {
-            this.stack.pop();
-        }
-
-        let callback = this.programStack.pop().callbackAfterFinished;
-        if (callback != null) {
-            callback(returnValue);
-        } else {
-            if (returnValue != null) this.stack.push(returnValue);
-        }
-
-        if (this.programStack.length > 0) {
-            this.currentProgramState = this.programStack[this.programStack.length - 1];
-            if (this.threadPool.executeMode == NExecuteMode.singleSteps && this.currentProgramState.currentStepList == this.currentProgramState.program.stepsMultiple) {
-                this.switchFromMultipleToSingleStep(this.currentProgramState);
-            }
-        } else {
-            this.state = NThreadState.exited;
-        }
-    }
-
-    switchFromMultipleToSingleStep(programState: NProgramState) {
-        let multiStep = programState.currentStepList[programState.stepIndex];
-        let singleStep = multiStep.correspondingStepInOtherStepmode;
-        if (singleStep != null) {
-            programState.currentStepList = programState.program.stepsSingle;
-            programState.stepIndex = programState.currentStepList.indexOf(singleStep);
-        }
     }
 
     /**
@@ -256,7 +158,7 @@ export class NThread {
         this.currentProgramState = state;
     }
 
-    callJsMethod(parameterCount: number, invoke: any, callbackAfterFinished?: (value: any) => void) {
+    private callJsMethod(parameterCount: number, invoke: any, callbackAfterFinished?: (value: any) => void) {
         let params: any[] = Array(parameterCount + 1);      // + 1 because of thread
         for (let i = 1; i <= parameterCount + 1; i++) {
             params[parameterCount - i] = this.stack.pop();
@@ -282,8 +184,10 @@ export class NThread {
      * b) thread is on the stack
      * c) all parameters are on the stack
      * d) thread.callVirtualMethod is last statement of step
+     * 
+     * Could also be used for static methods. In this case this = threadPool.staticClassObjects[classIdentifier]
      */
-    callVirtualMethod(parameterCount: number, signature: string, callbackAfterFinished?: (value: any) => void) {
+    callVirtualMethodFromProgram(parameterCount: number, signature: string, callbackAfterFinished?: (value: any) => void) {
         let runtimeObject = this.stack[this.stack.length - 2 - parameterCount]; // 2 because of [this, thread, parameter 1, ..., parameter n]
         let method: NMethodInfo = runtimeObject[signature];
         if (method.invoke == null) {
@@ -293,6 +197,9 @@ export class NThread {
         }
     }
 
+    /**
+     * Could also be used for static methods. In this case runtimeObject = threadPool.staticClassObjects[classIdentifier
+     */
     callVirtualMethodFromJs(runtimeObject: any, signature: string, parameters: any[], callbackAfterFinished?: (value: any) => void) {
         // let runtimeObject = this.stack[this.stack.length - 2 - parameterCount]; // 2 because of [this, thread, parameter 1, ..., parameter n]
         let method: NMethodInfo = runtimeObject[signature];
@@ -315,9 +222,160 @@ export class NThread {
     }
 
 
+    returnFromMethod(returnValue: any) {
+        while (this.stack.length > this.currentProgramState.stackBase) {
+            this.stack.pop();
+        }
 
-    callStaticMethod(classIdentifier: string, methodSignature: string) {
+        let callback = this.programStack.pop().callbackAfterFinished;
+        if (callback != null) {
+            callback(returnValue);
+        } else {
+            if (typeof returnValue != "undefined") this.stack.push(returnValue);
+        }
 
+        if (this.programStack.length > 0) {
+            this.currentProgramState = this.programStack[this.programStack.length - 1];
+            if (this.threadPool.executeMode == NExecuteMode.singleSteps &&
+                this.currentProgramState.currentStepList == this.currentProgramState.program.stepsMultiple) {
+                this.switchFromMultipleToSingleStep(this.currentProgramState);
+            }
+        } else {
+            this.state = NThreadState.exited;
+        }
+    }
+
+    private isSingleStepCompleted() {
+        return this.programStack.length < this.stepEndsWhenProgramstackLengthLowerOrEqual ||
+            this.programStack.length == this.stepEndsWhenProgramstackLengthLowerOrEqual &&
+            this.currentProgramState.stepIndex > this.stepEndsWhenStepIndexGreater;
+    }
+
+    markSingleStepOver(callbackWhenSingleStepOverEnds: () => void) {
+
+        this.stepEndsWhenProgramstackLengthLowerOrEqual = this.programStack.length - 1;
+        this.stepEndsWhenStepIndexGreater = this.currentProgramState.stepIndex;
+        this.stepCallback = () => {
+            this.unmarkStep();
+            callbackWhenSingleStepOverEnds();
+        };
+
+    }
+
+    unmarkStep() {
+        this.stepEndsWhenProgramstackLengthLowerOrEqual = -1;
+    }
+
+    markStepOut(callbackWhenStepOutEnds: () => void) {
+
+        this.stepEndsWhenProgramstackLengthLowerOrEqual = this.programStack.length - 2;
+        this.stepEndsWhenStepIndexGreater = -1;
+        this.stepCallback = () => {
+            this.unmarkStep();
+            callbackWhenStepOutEnds();
+        };
+
+    }
+
+
+    /**
+     * pops entries from programStack until it finds try..catch-block which corresponds to exception.
+     * if found, resumes execution in catch-block.
+     * if not found, stops program execution.
+     * Leaves stacktrace in this.stacktrace and exception in this.exception.
+     */
+    throwException(exception: NRuntimeObject) {
+        let exceptionClass: NClass = exception.__class;
+        let className = exceptionClass.identifier;
+        let classNames = exceptionClass.allExtendedImplementedTypes;
+
+        let stackTrace: NProgramState[] = [];
+        do {
+
+            let ps = this.programStack[this.programStack.length - 1];
+            for (let exInfo of ps.exceptionInfoList) {
+                let found = false;
+                if (exInfo.types.indexOf(className) >= 0) {
+                    found = true;
+                } else {
+                    for (let cn in classNames) {
+                        if (exInfo.types.indexOf(cn) >= 0) {
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (found) {
+                    stackTrace.push(Object.assign(ps));
+                    ps.stepIndex = exInfo.stepIndexAfterTryBlock;
+                    this.stack.splice(exInfo.stackPointerBeforeCatch, this.stack.length - exInfo.stackPointerBeforeCatch);
+                    this.stack.push(exception); // as 'parameter' for catch-block
+                    this.currentProgramState = ps;
+                    break;
+                } else {
+                    stackTrace.push(ps);
+                    this.programStack.pop();
+                }
+            }
+
+        } while (this.programStack.length > 0)
+
+        exception.__a[exception.__fai + 1] = this.stacktraceToString(stackTrace);   // set stacktrace-attribute of throwable
+
+        if (this.programStack.length == 0) {
+            this.exception = exception;
+            this.state = NThreadState.exitedWithException;
+        }
+    }
+
+    stacktraceToString(stacktrace: NProgramState[]): string {
+        if (stacktrace == null || stacktrace.length == 0) {
+            return "No stacktrace available";
+        }
+        let s: string = "";
+        for (let ps of stacktrace) {
+            let step: NStep = ps.currentStepList[ps.stepIndex];
+            s += "   at ";
+            let method = ps.program.method;
+            if (method != null) {
+                s += method.classOrInterfaceOrEnum.identifier + "." + method.identifier;
+            } else {
+                s += "main program";
+            }
+            s += "(File " + ps.program.filename + " line " + step.start.line + " column " + step.start.column + ")\n";
+        }
+        return s;
+    }
+
+    /**
+     * Call this everytime a try... block starts
+     */
+    beginCatchExceptions(exceptionInfo: NExceptionInfo) {
+        exceptionInfo.stackPointerBeforeCatch = this.stack.length;
+        this.currentProgramState.exceptionInfoList.push(exceptionInfo);
+    }
+
+    /**
+     * Call this everytime a try... block ends (before jumping over catch block)
+     */
+    endCatchExceptions() {
+        this.currentProgramState.exceptionInfoList.pop();
+    }
+
+    aquireSemaphor(semaphor: NSemaphor) {
+        if (!semaphor.aquire(this)) {
+            this.state = NThreadState.exited;
+        }
+    }
+
+    switchFromMultipleToSingleStep(programState: NProgramState) {
+        let multiStep = programState.currentStepList[programState.stepIndex];
+        let singleStep = multiStep.correspondingStepInOtherStepmode;
+        if (singleStep != null) {
+            programState.currentStepList = programState.program.stepsSingle;
+            programState.stepIndex = programState.currentStepList.indexOf(singleStep);
+        }
     }
 
     divide(a: number, b: number) {
@@ -354,32 +412,33 @@ export class NThreadPool {
     currentThreadIndex: number = 0;
     executeMode: NExecuteMode;
     semaphors: NSemaphor[] = [];
-    state: NThreadPoolLstate;
+    state: NThreadPoolState;
 
     keepThread: boolean = false;    // for single step mode
 
     staticClassObjects: { [identifier: string]: NStaticClassObject };
 
+    numberOfSteps: number;
+
     constructor(private interpreter: NInterpreter) {
-        this.setState(NThreadPoolLstate.not_initialized);
+        this.setState(NThreadPoolState.not_initialized);
     }
 
     run(numberOfStepsMax: number) {
         let stepsPerThread = Math.ceil(numberOfStepsMax / this.runningThreads.length);
-        let numberOfSteps = 0;
+        this.numberOfSteps = 0;
         if (this.runningThreads.length == 0) return NThreadState.exited;
 
-        if ([NThreadPoolLstate.done, NThreadPoolLstate.running].indexOf(this.state) < 0) {
+        if ([NThreadPoolState.ready, NThreadPoolState.running].indexOf(this.state) < 0) {
             return;
         }
 
-        this.setState(NThreadPoolLstate.running);
+        this.setState(NThreadPoolState.running);
 
-        while (numberOfSteps < numberOfStepsMax) {
+        while (this.numberOfSteps < numberOfStepsMax) {
             let currentThread = this.runningThreads[this.currentThreadIndex];
 
-            let status = currentThread.run(stepsPerThread);
-            numberOfSteps += stepsPerThread;
+            let status = currentThread.run(stepsPerThread);  // increases this.numberOfSteps as side effekt!
 
             switch (status) {
                 case NThreadState.exited:
@@ -391,17 +450,19 @@ export class NThreadPool {
                     this.runningThreads.splice(this.currentThreadIndex, 1);
 
                     if (this.runningThreads.length == 0) {
-                        this.setState(NThreadPoolLstate.done);
+                        this.setState(NThreadPoolState.ready);
                         return;
                     }
 
                     break;
                 case NThreadState.exitedWithException:
+                    let exception = currentThread.exception;
+                    let stacktrace = exception.__a[exception.__fai + 1];
                     // TODO: Print Exception
-                    this.setState(NThreadPoolLstate.done);
+                    this.setState(NThreadPoolState.ready);
                     return;
                 case NThreadState.paused:
-                    this.setState(NThreadPoolLstate.paused);
+                    this.setState(NThreadPoolState.paused);
                     return;
             }
 
@@ -416,17 +477,19 @@ export class NThreadPool {
 
     }
 
-    setState(newState: NThreadPoolLstate) {
+    setState(newState: NThreadPoolState) {
         this.interpreter.setState(this.state, newState);
         this.state = newState;
     }
 
     runSingleStepKeepingThread(stepInto: boolean, callback: () => void) {
+        if ([NThreadPoolState.paused, NThreadPoolState.ready].indexOf(this.state) < 0) {
+            callback();
+        }
+
         this.keepThread = true;
         if (stepInto) {
-            if (this.state <= NThreadPoolLstate.paused) {
-                this.run(1);
-            }
+            this.run(1);
             this.keepThread = false;
             callback();
         } else {
@@ -436,10 +499,15 @@ export class NThreadPool {
                 this.keepThread = false;
                 callback();
             });
+            this.state = NThreadPoolState.running;
         }
     }
-
+    
     stepOut(callback: () => void) {
+        if ([NThreadPoolState.paused, NThreadPoolState.ready].indexOf(this.state) < 0) {
+            callback();
+        }
+        
         this.keepThread = true;
         let thread = this.runningThreads[this.currentThreadIndex];
         if (thread == null) return;
@@ -447,6 +515,7 @@ export class NThreadPool {
             this.keepThread = false;
             callback();
         });
+        this.state = NThreadPoolState.running;
     }
 
     unmarkStep() {
@@ -554,7 +623,7 @@ export class NThreadPool {
 
     makeObject(klass: NClass): NRuntimeObject {
         let obj = Object.create(klass.runtimeObjectPrototype);
-        obj.__a = [];
+        obj.__a = klass.initialAttributeValues.slice();
         return obj;
     }
 

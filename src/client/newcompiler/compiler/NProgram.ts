@@ -1,6 +1,7 @@
 import { TextPosition, TokenType, TokenTypeReadable } from "../../compiler/lexer/Token.js";
 import { Module } from "../../compiler/parser/Module.js"
 import { NThread } from "../interpreter/NThreadPool.js";
+import { NMethodInfo } from "../types/NAttributeMethod.js";
 import { NClassLike } from "../types/NClass.js";
 import { NType } from "../types/NType.js";
 import { NSymbolTable } from "./NSymbolTable.js";
@@ -199,6 +200,7 @@ export class NStep {
     run?: (stack: any, stackBase: number, helper: NHelper, thread: NThread) => number;
 
     codeAsString: string;
+
     start?: TextPosition;
     end?: TextPosition;
     stopStepOverBeforeStep?: boolean;
@@ -217,6 +219,12 @@ export class NProgram {
 
     // only at compile time:
     fragments: NFragment[] = [];
+
+    // for printing stacktrace:
+    method: NMethodInfo;
+    filename: string;
+
+
 
     constructor(public module: Module, public symbolTable: NSymbolTable, public methodIdentifierWithClass: string) {
 

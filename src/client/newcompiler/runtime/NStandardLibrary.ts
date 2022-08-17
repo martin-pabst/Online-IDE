@@ -4,6 +4,7 @@ import { NClassLike } from "../types/NClass.js";
 import { NType } from "../types/NType.js";
 import { NPrimitiveTypeManager } from "../types/NPrimitiveTypeManager.js";
 import { NArithmeticException, NClassCastException, NException, NThrowable } from "./NExceptions.js";
+import { NObjectType } from "./NObjectType.js";
 
 export class NLibrary {
 

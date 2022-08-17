@@ -9,25 +9,44 @@ export class NArrayType extends NType {
     }
 
     getCastExpression(otherType: NType): NExpression {
-        throw new Error("Method not implemented.");
+        if(!(otherType instanceof NArrayType)) return null;
+        if(otherType.dimension != this.dimension) return null;
+        let ce = this.elementType.getCastExpression(otherType.elementType);
+        if(ce != null && ce.e == "$1") return {e: "$1"};
+        return null;
     }
     castTo(otherType: NType, value: any) {
-        throw new Error("Method not implemented.");
+        return value;
     }
     getOperatorExpression(operator: TokenType, otherType?: NType): NExpression {
-        throw new Error("Method not implemented.");
+        return null;
     }
     getOperatorResultType(operator: TokenType, otherType: NType): NType {
-        throw new Error("Method not implemented.");
+        return null;
     }
     compute(operator: TokenType, otherType: NType, value1: any, value2?: any) {
-        throw new Error("Method not implemented.");
+        return null;
     }
     equals(otherType: NType): boolean {
-        throw new Error("Method not implemented.");
+        return null;
     }
+
     public debugOutput(value: any, maxLength?: number): string {
-        throw new Error("Method not implemented.");
+        if(value == null) return "null";
+        let length = 1;
+        let a = <any[]> value;
+        let elementStrings: string[] = [];
+        
+        for(let e of a){
+            let eString = this.elementType.debugOutput(e, maxLength - length - 2);
+            if(length + eString.length + 1 >= maxLength) break;
+            elementStrings.push(eString);
+        }
+        
+        if(elementStrings.length < a.length) elementStrings.push("...");
+
+        return "[" + elementStrings.join(", ") + "]";
+
     }
 
 }

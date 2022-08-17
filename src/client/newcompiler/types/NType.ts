@@ -14,7 +14,7 @@ export abstract class NType {
 
     public documentation: string = "";
 
-    abstract getCastExpression(otherType: NType): NExpression;        // e.g. Math.floor($1)
+    abstract getCastExpression(otherType: NType): NExpression;        // e.g. Math.floor($1); null if cast is not possible
     abstract castTo(otherType: NType, value: any): any;
 
     unboxableAs?: NType;

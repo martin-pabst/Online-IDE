@@ -1,5 +1,7 @@
 import { UsagePositions, TextPositionWithModule } from "src/client/compiler/types/Types.js";
 import { NProgram } from "../compiler/NProgram.js";
+import { NClass, NClassLike, NInterface } from "./NClass.js";
+import { NEnum } from "./NEnum.js";
 import { NType } from "./NType.js";
 import { NVisibility } from "./NVisibility.js";
 
@@ -28,6 +30,8 @@ export class NMethodInfo {
 
 
     reserveStackForLocalVariables: number = 0;
+
+    classOrInterfaceOrEnum: NClassLike;    // for printing stacktrace
 
     setupSignature(){
         this.signature = this.identifier + "(" + this.parameterlist.parameters.map((p) => p.type.identifier).join(",") + (this.hasEllipsis ? "..." : "") +  ")";

@@ -13,36 +13,43 @@ import { GamepadTool } from "../../tools/GamepadTool.js";
 import { KeyboardTool } from "../../tools/KeyboardTool.js";
 import { NPrimitiveTypeManager } from "../types/NPrimitiveTypeManager.js";
 import { NLoadController } from "./NLoadController.js";
-import { NThreadPool, NThreadPoolLstate } from "./NThreadPool.js";
+import { NThreadPool, NThreadPoolState } from "./NThreadPool.js";
 
-
+/**
+ * other classes (world, timer, ...) may want go get notified if interpreter state changes
+ * so we setup an eventManager according to the observer pattern:
+ */
 type NInterpreterEvents = "stop" | "done" | "resetRuntime";
 
 export class NInterpreter {
 
-    loadController: NLoadController;
-    threadPool: NThreadPool;
+    eventManager: EventManager<NInterpreterEvents> = new EventManager();
 
-    isExternalTimer: boolean = false;
-    timerId: any;
-    timerIntervalMs: number = 16;
+    loadController: NLoadController;    // calls threadPool.run
+    threadPool: NThreadPool;            // manages threads in a round robin fashion
+
+    isExternalTimer: boolean = false;   // if graphic window is open then it triggers program execution steps
+    timerId: any;                       // id of internal timer
+    timerIntervalMs: number = 16;       // interval of internal timer
 
     mainModule: Module;
     moduleStore: ModuleStore;
     moduleStoreVersion: number = -100;
 
-    printManager: PrintManager;
-    inputManager: InputManager;
+    printManager: PrintManager;         // facilitates output via print()
+    inputManager: InputManager;         // facilitates input via Input.readXY
 
-    keyboardTool: KeyboardTool;
-    gamepadTool: GamepadTool;
+    keyboardTool: KeyboardTool;         // manages keyboard input
+    gamepadTool: GamepadTool;           // manages gamepad input
 
-    eventManager: EventManager<NInterpreterEvents> = new EventManager();
+    /** 
+     * store helper like worldHelper, GNGHelper, ...
+     */
     private helperRegistry: Map<string, Object> = new Map();
 
     actions: string[] = ["start", "pause", "stop", "stepOver",
         "stepInto", "stepOut", "restart"];
-    //NThreadPoolLstatus { done, running, paused, not_initialized }
+    //NThreadPoolLstatus { ready, running, paused, not_initialized }
 
     // buttonActiveMatrix[button][i] tells if button is active at 
     // InterpreterState i
@@ -78,18 +85,30 @@ export class NInterpreter {
         this.initTimer();
     }
 
+    /**
+     * Get Worldhelper, GNGHelper, ...
+     */
     getHelper<HelperType>(identifier: string):HelperType {
         return <HelperType>this.helperRegistry.get(identifier);
     }
 
-    registerHelper(identifier: string, helper: Object){
+    /**
+     * Register Worldhelper, GNGHelper, ...
+     */
+     registerHelper(identifier: string, helper: Object){
         this.helperRegistry.set(identifier, helper);
     }
 
+    /**
+     * Unregister Worldhelper, GNGHelper, ...
+     */
     unRegisterHelper(identifier: string){
         this.helperRegistry.delete(identifier);
     }
 
+    /**
+     * init internal timer
+     */
     initTimer() {
 
         let that = this;
@@ -105,28 +124,31 @@ export class NInterpreter {
 
     }
 
-    timerFunction(timerIntervalMs: number) {
-        if (this.threadPool.state == NThreadPoolLstate.running) {
+    /**
+     * is called periodically
+     */
+    public timerFunction(timerIntervalMs: number) {
+        if (this.threadPool.state == NThreadPoolState.running) {
             this.loadController.tick(timerIntervalMs);
         }
     }
 
+    /**
+     * executes one step and then pauses program execution
+     */
     executeOneStep(stepInto: boolean) {
 
-        if (this.threadPool.state != NThreadPoolLstate.paused) {
+        if (this.threadPool.state != NThreadPoolState.paused) {
             this.init();
-            if(this.threadPool.state == NThreadPoolLstate.not_initialized){
+            if(this.threadPool.state == NThreadPoolState.not_initialized){
                 return;
             }
-            this.resetRuntime();
         }
 
         this.threadPool.runSingleStepKeepingThread(stepInto, () => {
             this.pause();
         });
-        if (!stepInto) {
-            this.threadPool.setState(NThreadPoolLstate.running);
-        }
+
     }
 
     showProgramPointer(position: TextPositionWithModule) {
@@ -134,7 +156,7 @@ export class NInterpreter {
     }
 
     pause() {
-        this.threadPool.setState(NThreadPoolLstate.paused);
+        this.threadPool.setState(NThreadPoolState.paused);
         this.threadPool.unmarkStep();
         this.showProgramPointer(this.threadPool.getNextStepPosition());
     }
@@ -142,7 +164,7 @@ export class NInterpreter {
     stop(restart: boolean) {
 
         this.inputManager.hide();
-        this.threadPool.setState(NThreadPoolLstate.done);
+        this.threadPool.setState(NThreadPoolState.ready);
         this.threadPool.unmarkStep();
 
         this.getTimerClass().stopTimer();
@@ -170,14 +192,13 @@ export class NInterpreter {
 
         this.main.getBottomDiv()?.console?.clearErrors();
 
-        if (this.threadPool.state != NThreadPoolLstate.paused) {
+        if (this.threadPool.state != NThreadPoolState.paused) {
             this.init();
-            this.resetRuntime();
         }
 
         this.hideProgrampointerPosition();
 
-        this.threadPool.setState(NThreadPoolLstate.running);
+        this.threadPool.setState(NThreadPoolState.running);
 
         this.getTimerClass().startTimer();
 
@@ -242,9 +263,9 @@ export class NInterpreter {
 
     }
 
-    setState(oldState: NThreadPoolLstate, state: NThreadPoolLstate) {
+    setState(oldState: NThreadPoolState, state: NThreadPoolState) {
 
-        if (state == NThreadPoolLstate.done) {
+        if (state == NThreadPoolState.ready) {
             // TODO
             // this.closeAllWebsockets();
         }
@@ -267,24 +288,24 @@ export class NInterpreter {
 
         let buttonStopActive = this.buttonActiveMatrix['stop'][state];
 
-        if (state == NThreadPoolLstate.done) {
+        if (state == NThreadPoolState.ready) {
             this.eventManager.fireEvent("done");
-            if (this.worldHelper != null) {
-                this.worldHelper.clearActorLists();
-            }
-            this.gngEreignisbehandlungHelper?.detachEvents();
-            this.gngEreignisbehandlungHelper = null;
+            // if (this.worldHelper != null) {
+            //     this.worldHelper.clearActorLists();
+            // }
+            // this.gngEreignisbehandlungHelper?.detachEvents();
+            // this.gngEreignisbehandlungHelper = null;
 
         }
 
-        if (oldState != NThreadPoolLstate.done && state == NThreadPoolLstate.done) {
+        if (oldState != NThreadPoolState.ready && state == NThreadPoolState.ready) {
             // TODO
             // this.debugger.disable();
             this.keyboardTool.unsubscribeAllListeners();
         }
 
-        if ([NThreadPoolLstate.running, NThreadPoolLstate.paused].indexOf(oldState) < 0
-            && state == NThreadPoolLstate.running) {
+        if ([NThreadPoolState.running, NThreadPoolState.paused].indexOf(oldState) < 0
+            && state == NThreadPoolState.running) {
             // TODO
             //   this.debugger.enable();
         }
@@ -336,10 +357,10 @@ export class NInterpreter {
         this.printManager.clear();
         this.eventManager.fireEvent("resetRuntime");
 
-        this.worldHelper?.destroyWorld();
-        this.processingHelper?.destroyWorld();
-        this.gngEreignisbehandlungHelper?.detachEvents();
-        this.gngEreignisbehandlungHelper = null;
+        // this.worldHelper?.destroyWorld();
+        // this.processingHelper?.destroyWorld();
+        // this.gngEreignisbehandlungHelper?.detachEvents();
+        // this.gngEreignisbehandlungHelper = null;
     }
 
     getTimerClass(): TimerClass {
@@ -369,14 +390,16 @@ export class NInterpreter {
         let newMainModule = this.getStartableModule(this.moduleStore);
 
         if (newMainModule == null) {
-            this.threadPool.setState(NThreadPoolLstate.not_initialized);
+            this.threadPool.setState(NThreadPoolState.not_initialized);
             return;
         }
 
         this.mainModule = newMainModule;
 
         this.threadPool.init(this.moduleStore, this.mainModule);
-        this.threadPool.setState(NThreadPoolLstate.done);
+        this.threadPool.setState(NThreadPoolState.ready);
+
+        this.resetRuntime();    // clear output, destroy graphic output, ...
 
     }
 

@@ -11,15 +11,19 @@ export class NThrowable extends NRuntimeObject {
 
             "public Throwable(String message)": (thread: NThread, message: string) => {
                 this.__a[this.__fai + 0] = message;
+                this.__a[this.__fai + 1] = "";
                 return this;
             },
-            "public getMessage()": (thread: NThread) => {
+            "public String getMessage()": (thread: NThread) => {
                 return this.__a[this.__fai + 0]    
+            },
+            "public String getStackTrace()": (thread: NThread) => {
+                return this.__a[this.__fai + 1]    
             }
         }
     }
     __getAttributes(): string[] {
-        return ["private String message"];
+        return ["private String message", "private String stacktrace"];
     }
     
 }

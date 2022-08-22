@@ -1,5 +1,5 @@
-import { UsagePositions, TextPositionWithModule } from "src/client/compiler/types/Types.js";
-import { NProgram } from "../compiler/NProgram.js";
+import { TextPositionWithModule, UsagePositions } from "../compiler/Commontypes.js";
+import { NProgram } from "../javacompiler/NProgram.js";
 import { NClass, NClassLike, NInterface } from "./NClass.js";
 import { NEnum } from "./NEnum.js";
 import { NType } from "./NType.js";

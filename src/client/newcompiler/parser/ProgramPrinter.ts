@@ -1,7 +1,7 @@
 import { TokenType, TokenTypeReadable } from "../lexer/Token.js";
 import { Variable } from "../types/Types.js";
 import { Statement } from "./Program.js";
-import { Module } from "./Module.js";
+import { Module } from "../compiler/Module.js";
 import { Klass } from "../types/Class.js";
 import { Workspace } from "../../workspace/Workspace.js";
 import { Main } from "../../main/Main.js";

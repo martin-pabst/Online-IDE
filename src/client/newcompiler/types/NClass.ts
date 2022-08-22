@@ -1,5 +1,5 @@
-import { TokenType } from "../../compiler/lexer/Token.js";
-import { NProgram } from "../compiler/NProgram.js";
+import { NProgram } from "../javacompiler/NProgram.js";
+import { TokenType } from "../lexer/Token.js";
 import { NRuntimeObject, NStaticClassObject } from "../NRuntimeObject.js";
 import { NMethodInfo, NAttributeInfo, NParameterlist, NVariable } from "./NAttributeMethod.js";
 import { NPrimitiveType } from "./NPrimitiveType.js";
@@ -123,14 +123,128 @@ export abstract class NClassLike extends NType {
 
 }
 
-export class NClass extends NClassLike {
+export abstract class NClassOrEnum extends NClassLike {
+    implements: (NInterface)[] = [];
+
+    protected methodInfoList: NMethodInfo[] = [];
+    protected attributeInfoList: NAttributeInfo[] = [];
+    
+    staticMethodInfoList: NMethodInfo[] = [];
+    staticAttributeInfoList: NAttributeInfo[] = [];
+    initialStaticAttributeValues: any[] = [];
+
+    initialAttributeValues: any[];                      // used only for non-system classes
+    attributeInitializationProgram: NProgram;
+
+    //@ts-ignore
+    runtimeObjectPrototype: NRuntimeObject = {};              // contains all methods and reference to class object; contains NOT __a 
+    runtimeObjectPrototypeIsClass: boolean = false;     // true for system classes
+    firstAttributeIndex: number = null;                 // attributes prior to this index belong to base class
+
+    setupAllExtendedImplementedList(visited: string[]):string {
+        if(this instanceof NClass){
+            if(this.isParameterizedTypeOf != null) return;
+            
+            if(this.extends != null){
+                visited.push(this.identifier);
+                let error = this.extends.setupAllExtendedImplementedList(visited);    
+                Object.assign(this.allExtendedImplementedTypes, this.extends.allExtendedImplementedTypes);
+                return error;
+            }
+        }
+        
+        if(this.allExtendedImplementedTypes[this.identifier]) return;
+
+        if(visited.find((s) => s == this.identifier) != null){
+            return "Fehler: Mehrere Klassen sind mittels 'extends' zyklisch miteinander verkettet: " + visited.join("->");
+        }
+        
+        this.allExtendedImplementedTypes[this.identifier] = true;
+        this.implements.forEach((intf) => this.allExtendedImplementedTypes[intf.identifier] = true);
+
+        return null;
+    }
+
+    getStaticClassObject(): NStaticClassObject{
+        let sco = new NStaticClassObject(this, this.initialStaticAttributeValues);
+        for(let m of this.staticMethodInfoList){
+            sco[m.signature] = m.program;
+        }
+        return sco;
+    }
+
+    implementsInterface(ifa: NInterface): boolean {
+
+        for (let i of this.implements) {
+            if (i.extendsOrIs(ifa)) return true;
+        }
+
+        return false;
+    }
+
+    addMethod(mi: NMethodInfo) {
+        if(mi.isStatic){
+            this.staticMethodInfoList.push(mi);
+        } else {
+            this.methodInfoList.push(mi);
+        }
+    }
+
+    addJavascriptMethod(identifier: string, parameters: NVariable[], returnType: NType, isStatic: boolean, invoke: any): NMethodInfo{
+        let mi = new NMethodInfo();
+        mi.identifier = identifier;
+        mi.parameterlist = new NParameterlist(parameters);
+        mi.returnType = returnType;
+        mi.isStatic = isStatic;
+        mi.program = new NProgram(null, null, this.identifier + "." + identifier);
+        mi.invoke = invoke;
+        mi.setupSignature();
+        this.addMethod(mi);
+        return mi;
+    }
+
+    addAttribute(ai: NAttributeInfo) {
+        this.attributeInfoList.push(ai);
+    }
+
+    addStaticAttribute(ai: NAttributeInfo, initialValue: any){
+        ai.isStatic = true;
+        this.staticAttributeInfoList.push(ai);
+        this.initialStaticAttributeValues.push(initialValue);
+    }
+
+    setupRuntimeObjectPrototype() {
+        for(let m of this.methodInfoList){
+            this.runtimeObjectPrototype[m.signature] = m.program;
+        }
+        this.runtimeObjectPrototype.__class = this;
+    }
+
+    computeFirstAttributeIndexAndInitialAttributeValues(){
+        this.firstAttributeIndex = 0;
+        this.initialAttributeValues = [];
+        if(this instanceof NClass && this.extends != null){
+            if(this.extends.firstAttributeIndex == null) this.extends.computeFirstAttributeIndexAndInitialAttributeValues();
+            this.firstAttributeIndex = this.extends.firstAttributeIndex + this.extends.attributeInfoList.length;
+            this.initialAttributeValues = this.extends.initialAttributeValues.slice();
+        }
+        for(let ai of this.attributeInfoList){
+            if(ai.type.isPrimitive()){
+                this.initialAttributeValues.push((<NPrimitiveType>ai.type).initialValue);
+            } else {
+                this.initialAttributeValues.push(null);
+            }
+        }
+    }
+}
+
+
+export class NClass extends NClassOrEnum {
     
     extends: NClass;
-    implements: (NInterface)[] = [];
     
     genericParameters: NClassLike[] = [];
     isParameterizedTypeOf: NClass = null;
-    
     /**
      * If you bind a generic class like e.g. ArrayList<Integer>
      * then a new NClass-object will be instantiated which is a shallow copy of ArrayList class object. It
@@ -143,54 +257,12 @@ export class NClass extends NClassLike {
      * Call propagateGenericParameterTypes() to populate methodInfoList and attributeInfoList.
      * 
      */
-    private methodInfoList: NMethodInfo[] = [];
-    private attributeInfoList: NAttributeInfo[] = [];
 
     isAbstract: boolean = false;
-
-    staticMethodInfoList: NMethodInfo[] = [];
-    staticAttributeInfoList: NAttributeInfo[] = [];
-    initialStaticValues: any[] = [];
-
-    //@ts-ignore
-    runtimeObjectPrototype: NRuntimeObject = {};              // contains all methods and reference to class object; contains NOT __a 
-    runtimeObjectPrototypeIsClass: boolean = false;     // true for system classes
-    initialAttributeValues: any[];                      // used only for non-system classes
-    firstAttributeIndex: number = null;                 // attributes prior to this index belong to base class
-
-
-    setupAllExtendedImplementedList(visited: string[]):string {
-        if(this.isParameterizedTypeOf != null) return;
-        if(this.allExtendedImplementedTypes[this.identifier]) return;
-
-        if(visited.find((s) => s == this.identifier) != null){
-            return "Fehler: Mehrere Klassen sind mittels 'extens' zyklisch miteinander verkettet: " + visited.join("->");
-        }
-        
-        this.allExtendedImplementedTypes[this.identifier] = true;
-        this.implements.forEach((intf) => this.allExtendedImplementedTypes[intf.identifier] = true);
-
-        if(this.extends != null){
-            visited.push(this.identifier);
-            let error = this.extends.setupAllExtendedImplementedList(visited);    
-            Object.assign(this.allExtendedImplementedTypes, this.extends.allExtendedImplementedTypes);
-            return error;
-        }
-
-        return null;
-    }
-
+    
     addGenericParameter(gp: NGenericParameter){
         this.genericParameters.push(gp);
         this.typeCache.set(gp.identifier, gp);
-    }
-
-    getStaticClassObject(): NStaticClassObject{
-        let sco = new NStaticClassObject(this, this.initialStaticValues);
-        for(let m of this.staticMethodInfoList){
-            sco[m.signature] = m.program;
-        }
-        return sco;
     }
 
     containsUnresolvedGenericParameters(): boolean {
@@ -231,15 +303,6 @@ export class NClass extends NClassLike {
             if (superClass == otherType) return true;
             superClass = superClass.extends;
         }
-        return false;
-    }
-
-    implementsInterface(ifa: NInterface): boolean {
-
-        for (let i of this.implements) {
-            if (i.extendsOrIs(ifa)) return true;
-        }
-
         return false;
     }
 
@@ -336,9 +399,6 @@ export class NClass extends NClassLike {
 
     }
 
-
-
-
     toString() {
         let s: string = this.identifier;
         if (this.genericParameters.length > 0) {
@@ -347,60 +407,6 @@ export class NClass extends NClassLike {
         return s;
     }
 
-    addMethod(mi: NMethodInfo) {
-        if(mi.isStatic){
-            this.staticMethodInfoList.push(mi);
-        } else {
-            this.methodInfoList.push(mi);
-        }
-    }
-
-    addJavascriptMethod(identifier: string, parameters: NVariable[], returnType: NType, isStatic: boolean, invoke: any): NMethodInfo{
-        let mi = new NMethodInfo();
-        mi.identifier = identifier;
-        mi.parameterlist = new NParameterlist(parameters);
-        mi.returnType = returnType;
-        mi.isStatic = isStatic;
-        mi.program = new NProgram(null, null, this.identifier + "." + identifier);
-        mi.invoke = invoke;
-        mi.setupSignature();
-        this.addMethod(mi);
-        return mi;
-    }
-
-    addAttribute(ai: NAttributeInfo) {
-        this.attributeInfoList.push(ai);
-    }
-
-    addStaticAttribute(ai: NAttributeInfo, initialValue: any){
-        ai.isStatic = true;
-        this.staticAttributeInfoList.push(ai);
-        this.initialStaticValues.push(initialValue);
-    }
-
-    setupRuntimeObjectPrototype() {
-        for(let m of this.methodInfoList){
-            this.runtimeObjectPrototype[m.signature] = m.program;
-        }
-        this.runtimeObjectPrototype.__class = this;
-    }
-
-    computeFirstAttributeIndexAndInitialAttributeValues(){
-        this.firstAttributeIndex = 0;
-        this.initialAttributeValues = [];
-        if(this.extends != null){
-            if(this.extends.firstAttributeIndex == null) this.extends.computeFirstAttributeIndexAndInitialAttributeValues();
-            this.firstAttributeIndex = this.extends.firstAttributeIndex + this.extends.attributeInfoList.length;
-            this.initialAttributeValues = this.extends.initialAttributeValues.slice();
-        }
-        for(let ai of this.attributeInfoList){
-            if(ai.type.isPrimitive()){
-                this.initialAttributeValues.push((<NPrimitiveType>ai.type).initialValue);
-            } else {
-                this.initialAttributeValues.push(null);
-            }
-        }
-    }
 
     /**
      * Call this for each class BEFORE resolving generic types

@@ -1,6 +1,6 @@
 import { ModuleStore, Module } from "src/client/compiler/parser/Module.js";
 import { TextPositionWithModule } from "src/client/compiler/types/Types.js";
-import { NHelper, NProgram, NStep } from "../compiler/NProgram.js";
+import { NHelper, NProgram, NStep } from "../javacompiler/NProgram.js";
 import { NRuntimeObject, NStaticClassObject } from "../NRuntimeObject.js";
 import { NMethodInfo } from "../types/NAttributeMethod.js";
 import { NClass } from "../types/NClass.js";

@@ -1,11 +1,8 @@
-import { TokenType } from "src/client/compiler/lexer/Token.js";
-import { NProgram } from "../compiler/NProgram.js";
-import { NRuntimeObject } from "../NRuntimeObject.js";
-import { NAttributeInfo, NMethodInfo, NParameterlist, NVariable } from "../types/NAttributeMethod.js";
+import { TokenType } from "../lexer/Token.js";
+import { NAttributeInfo, NVariable } from "../types/NAttributeMethod.js";
 import { NClass } from "../types/NClass.js";
-import { NPrimitiveType } from "../types/NPrimitiveType.js";
-import { NExpression, NType } from "../types/NType.js";
 import { NPrimitiveTypeManager } from "../types/NPrimitiveTypeManager.js";
+import { NExpression, NType } from "../types/NType.js";
 import { NVisibility } from "../types/NVisibility.js";
 
 export class NBoxedType extends NClass {

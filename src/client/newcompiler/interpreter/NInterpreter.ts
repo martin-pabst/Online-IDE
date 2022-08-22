@@ -1,19 +1,15 @@
 import { EventManager } from "../../tools/EventManager.js";
-import { Module, ModuleStore } from "../../compiler/parser/Module.js";
-import { TextPositionWithModule } from "../../compiler/types/Types.js";
 import { InputManager } from "../../interpreter/InputManager.js";
 import { PrintManager } from "../../main/gui/PrintManager.js";
 import { ProgramControlButtons } from "../../main/gui/ProgramControlButtons.js";
 import { MainBase } from "../../main/MainBase.js";
-import { GNGEreignisbehandlungHelper as GNGHelper } from "../../runtimelibrary/gng/GNGEreignisbehandlung.js";
-import { ProcessingHelper } from "../../runtimelibrary/graphics/Processing.js";
-import { WorldHelper } from "../../runtimelibrary/graphics/World.js";
-import { TimerClass } from "../../runtimelibrary/Timer.js";
 import { GamepadTool } from "../../tools/GamepadTool.js";
 import { KeyboardTool } from "../../tools/KeyboardTool.js";
 import { NPrimitiveTypeManager } from "../types/NPrimitiveTypeManager.js";
 import { NLoadController } from "./NLoadController.js";
 import { NThreadPool, NThreadPoolState } from "./NThreadPool.js";
+import { Module, ModuleStore } from "../compiler/Module.js";
+import { TextPositionWithModule } from "../compiler/Commontypes.js";
 
 /**
  * other classes (world, timer, ...) may want go get notified if interpreter state changes
@@ -167,8 +163,6 @@ export class NInterpreter {
         this.threadPool.setState(NThreadPoolState.ready);
         this.threadPool.unmarkStep();
 
-        this.getTimerClass().stopTimer();
-
         this.eventManager.fireEvent("stop");
 
         // Beware: originally this was after this.getTimerClass().stopTimer();
@@ -199,8 +193,6 @@ export class NInterpreter {
         this.hideProgrampointerPosition();
 
         this.threadPool.setState(NThreadPoolState.running);
-
-        this.getTimerClass().startTimer();
 
     }
 
@@ -361,11 +353,6 @@ export class NInterpreter {
         // this.processingHelper?.destroyWorld();
         // this.gngEreignisbehandlungHelper?.detachEvents();
         // this.gngEreignisbehandlungHelper = null;
-    }
-
-    getTimerClass(): TimerClass {
-        let baseModule = this.main.getCurrentWorkspace().moduleStore.getModule("Base Module");
-        return <TimerClass>baseModule.typeStore.getType("Timer");
     }
 
     init() {

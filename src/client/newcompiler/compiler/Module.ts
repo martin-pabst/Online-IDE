@@ -1,98 +1,20 @@
 import { FileData, WorkspaceSettings } from "../../communication/Data.js";
 import { AccordionElement } from "../../main/gui/Accordion.js";
 import { MainBase } from "../../main/MainBase.js";
-import { ArrayListClass } from "../../runtimelibrary/collections/ArrayList.js";
-import { CollectionClass } from "../../runtimelibrary/collections/Collection.js";
-import { IterableClass } from "../../runtimelibrary/collections/Iterable.js";
-import { IteratorClass } from "../../runtimelibrary/collections/Iterator.js";
-import { ListClass } from "../../runtimelibrary/collections/List.js";
-import { ListIteratorImplClass } from "../../runtimelibrary/collections/ListIteratorImpl.js";
-import { StackClass } from "../../runtimelibrary/collections/Stack.js";
-import { VectorClass } from "../../runtimelibrary/collections/Vector.js";
-import { SetClass } from "../../runtimelibrary/collections/Set.js";
-import { SetIteratorImplClass } from "../../runtimelibrary/collections/SetIteratorImpl.js";
-import { HashSetClass } from "../../runtimelibrary/collections/HashSet.js";
-import { LinkedHashSetClass } from "../../runtimelibrary/collections/LinkedHashSet.js";
-import { QueueClass } from "../../runtimelibrary/collections/Queue.js";
-import { DequeClass } from "../../runtimelibrary/collections/Deque.js";
-import { LinkedListClass } from "../../runtimelibrary/collections/LinkedList.js";
-import { ConsoleClass } from "../../runtimelibrary/Console.js";
-import { Actor as ActorClass } from "../../runtimelibrary/graphics/Actor.js";
-import { AlignmentClass } from "../../runtimelibrary/graphics/Alignment.js";
-import { BitmapClass } from "../../runtimelibrary/graphics/Bitmap.js";
-import { CircleClass as CircleClass } from "../../runtimelibrary/graphics/Circle.js";
-import { SectorClass } from "../../runtimelibrary/graphics/Sector.js";
-import { ArcClass } from "../../runtimelibrary/graphics/Arc.js";
-import { ColorClass } from "../../runtimelibrary/graphics/Color.js";
-import { EllipseClass } from "../../runtimelibrary/graphics/Ellipse.js";
-import { FilledShapeClass } from "../../runtimelibrary/graphics/FilledShape.js";
-import { CollisionPairClass, GroupClass } from "../../runtimelibrary/graphics/Group.js";
-import { KeyClass } from "../../runtimelibrary/graphics/Key.js";
-import { PolygonClass } from "../../runtimelibrary/graphics/Polygon.js";
-import { RectangleClass } from "../../runtimelibrary/graphics/Rectangle.js";
-import { RepeatTypeClass } from "../../runtimelibrary/graphics/RepeatType.js";
-import { RoundedRectangleClass } from "../../runtimelibrary/graphics/RoundedRectangle.js";
-import { ScaleModeClass } from "../../runtimelibrary/graphics/ScaleMode.js";
-import { ShapeClass } from "../../runtimelibrary/graphics/Shape.js";
-import { SoundKlass as SoundClass } from "../../runtimelibrary/graphics/Sound.js";
-import { SpriteClass, TileClass } from "../../runtimelibrary/graphics/Sprite.js";
-import { SpriteLibraryClass } from "../../runtimelibrary/graphics/SpriteLibraryEnum.js";
-import { TextClass } from "../../runtimelibrary/graphics/Text.js";
-import { WorldClass } from "../../runtimelibrary/graphics/World.js";
-import { InputClass } from "../../runtimelibrary/Input.js";
-import { GamepadClass } from "../../runtimelibrary/Gamepad.js";
-import { MathClass } from "../../runtimelibrary/Math.js";
-import { MathToolsClass } from "../../runtimelibrary/MathToolsClass.js";
-import { PrintStreamClass, SystemClass } from "../../runtimelibrary/System.js";
-import { KeyListener, SystemToolsClass } from "../../runtimelibrary/SystemTools.js";
-import { Runnable, TimerClass } from "../../runtimelibrary/Timer.js";
 import { Workspace } from "../../workspace/Workspace.js";
-import { Error, ErrorLevel } from "../lexer/Lexer.js";
-import { TextPosition, Token, TokenType, TextPositionWithoutLength } from "../lexer/Token.js";
-import { Interface, Klass, Visibility } from "../types/Class.js";
-import { booleanPrimitiveType, BooleanType, CharacterType, charPrimitiveType, doublePrimitiveType, DoubleType, floatPrimitiveType, FloatType, IntegerType, intPrimitiveType, objectType, stringPrimitiveType, voidPrimitiveType, varType, longPrimitiveType, LongType } from "../types/PrimitiveTypes.js";
-import { Attribute, Method, PrimitiveType, Type, Variable } from "../types/Types.js";
-import { ASTNode, MethodDeclarationNode, TypeNode } from "./AST.js";
-import { Breakpoint, Program, Statement } from "./Program.js";
-import { SymbolTable } from "./SymbolTable.js";
-import { MapClass } from "../../runtimelibrary/collections/Map.js";
-import { HashMapClass } from "../../runtimelibrary/collections/HashMap.js";
-import { TriangleClass } from "../../runtimelibrary/graphics/Triangle.js";
-import { Main } from "../../main/Main.js";
-import { LocalDateTimeClass, DayOfWeekEnum, MonthEnum } from "../../runtimelibrary/graphics/LocalDateTime.js";
-import { LineClass } from "../../runtimelibrary/graphics/Line.js";
-import { Vector2Class } from "../../runtimelibrary/Vector2.js";
-import { MouseAdapterClass, MouseListenerInterface } from "../../runtimelibrary/graphics/MouseListener.js";
-import { WebSocketClass } from "../../runtimelibrary/network/WebSocket.js";
-import { WebSocketClientClass } from "../../runtimelibrary/network/WebSocketClient.js";
-import { ProcessingClass } from "../../runtimelibrary/graphics/Processing.js";
-import { TurtleClass } from "../../runtimelibrary/graphics/Turtle.js";
-import { GNGZeichenfensterClass } from "../../runtimelibrary/gng/GNGZeichenfenster.js";
-import { GNGRechteckClass } from "../../runtimelibrary/gng/GNGRechteck.js";
-import { GNGBaseFigurClass } from "../../runtimelibrary/gng/GNGBaseFigur.js";
-import { GNGAktionsempfaengerInterface } from "../../runtimelibrary/gng/GNGAktionsempfaenger.js";
-import { GNGDreieckClass } from "../../runtimelibrary/gng/GNGDreieck.js";
-import { GNGKreisClass } from "../../runtimelibrary/gng/GNGKreis.js";
-import { GNGTurtleClass } from "../../runtimelibrary/gng/GNGTurtle.js";
-import { GNGTextClass } from "../../runtimelibrary/gng/GNGText.js";
-import { GNGEreignisbehandlung } from "../../runtimelibrary/gng/GNGEreignisbehandlung.js";
-import { GNGFigurClass } from "../../runtimelibrary/gng/GNGFigur.js";
-import { RandomClass } from "../../runtimelibrary/Random.js";
-import { DirectionClass } from "../../runtimelibrary/graphics/Direction.js";
-import { Patcher } from "./Patcher.js";
-import { KeyEvent as KeyEventClass } from "../../runtimelibrary/graphics/KeyEvent.js";
+import { Token, TokenType, } from "../lexer/Token.js";
+import { NType } from "../types/NType.js";
+import { NAttributeInfo, NMethodInfo, NVariable } from "../types/NAttributeMethod.js";
+import { NSymbolTable } from "../javacompiler/NSymbolTable.js";
+import { NStaticClassObject } from "../NRuntimeObject.js";
+import { Breakpoint, NProgram, NStep } from "../javacompiler/NProgram.js";
+import { TextPosition } from "./Commontypes.js";
+import { ASTNode, MethodDeclarationNode, TypeNode } from "../parser/AST.js";
 import { Formatter } from "../../main/gui/Formatter.js";
-import { RobotClass, RobotWorldClass } from "../../runtimelibrary/graphics/3d/Robot.js";
-import { ResultSetClass } from "../../runtimelibrary/database/ResultSet.js";
-import { DatabaseStatementClass } from "../../runtimelibrary/database/DatabaseStatement.js";
-import { ConnectionClass } from "../../runtimelibrary/database/Connection.js";
-import { DatabaseManagerClass } from "../../runtimelibrary/database/DatabaseManager.js";
-import { DatabasePreparedStatementClass } from "../../runtimelibrary/database/DatabasePreparedStatement.js";
-import { NType } from "../../newcompiler/types/NType.js";
-import { NAttributeInfo, NMethodInfo, NVariable } from "../../newcompiler/types/NAttributeMethod.js";
-import { NSymbolTable } from "../../newcompiler/compiler/NSymbolTable.js";
-import { NStaticClassObject } from "../../newcompiler/NRuntimeObject.js";
-import { NProgram } from "../../newcompiler/compiler/NProgram.js";
+import { Main } from "../../main/Main.js";
+import { Patcher } from "../parser/Patcher.js";
+import { NClass, NClassLike } from "../types/NClass.js";
+import { NEnum } from "../types/NEnum.js";
 
 export type ExportedWorkspace = {
     name: string;
@@ -131,12 +53,12 @@ export type File = {
 
 export type IdentifierPosition = {
     position: TextPosition,
-    element: Type | Method | Attribute | Variable;
+    element: NType | NMethodInfo | NAttributeInfo | NVariable;
 }
 
 export type MethodCallPosition = {
     identifierPosition: TextPosition,
-    possibleMethods: Method[] | string, // string for print, println, ...
+    possibleMethods: NMethodInfo[] | string, // string for print, println, ...
     commaPositions: TextPosition[],
     rightBracketPosition: TextPosition
 }
@@ -330,7 +252,7 @@ export class Module {
     }
 
     pushMethodCallPosition(identifierPosition: TextPosition, commaPositions: TextPosition[],
-        possibleMethods: Method[] | string, rightBracketPosition: TextPosition) {
+        possibleMethods: NMethodInfo[] | string, rightBracketPosition: TextPosition) {
 
         let lines: number[] = [];
         lines.push(identifierPosition.line);
@@ -374,11 +296,11 @@ export class Module {
         for (let i = 0; i < this.breakpoints.length; i++) {
             let b = this.breakpoints[i];
             if (b.line == line) {
-                this.breakpoints.splice(i, 1);
-                if (b.statement != null) {
-                    b.statement.breakpoint = undefined;
-                }
-                return b;
+                if(remove){
+                    this.breakpoints.splice(i, 1);
+                    if(b.step != null) b.step.isBreakpoint = false;
+                }  
+                 return b;
             }
         }
 
@@ -391,7 +313,7 @@ export class Module {
         let breakpoint: Breakpoint = {
             line: line,
             column: column,
-            statement: null
+            step: null
         }
 
         this.attachToStatement(breakpoint);
@@ -401,24 +323,24 @@ export class Module {
 
     }
 
-    attachToStatement(breakpoint: Breakpoint, programList?: Program[]) {
+    attachToStatement(breakpoint: Breakpoint, programList?: NProgram[]) {
 
-        if (breakpoint.statement != null) {
-            breakpoint.statement.breakpoint = undefined;
+        if (breakpoint.step != null) {
+            breakpoint.step.isBreakpoint = false;
         }
 
         if (programList == null) programList = this.getPrograms();
 
-        let nearestStatement: Statement = null;
+        let nearestStep: NStep = null;
         let nearestDistance: number = 100000;
 
         for (let program of programList) {
-            for (let statement of program.statements) {
+            for (let step of program.stepsSingle) {
 
-                let line = statement?.position?.line;
+                let line = step?.start?.line;
                 if (line != null && line >= breakpoint.line) {
                     if (line - breakpoint.line < nearestDistance) {
-                        nearestStatement = statement;
+                        nearestStep = step;
                         nearestDistance = line - breakpoint.line;
                     }
 
@@ -429,20 +351,15 @@ export class Module {
 
         }
 
-        breakpoint.statement = nearestStatement;
-        if (nearestStatement != null) {
-            nearestStatement.breakpoint = breakpoint;
-            // let pp = new ProgramPrinter();
-            // console.log("Attached Breakpoint line " + breakpoint.line + ", column " + 
-            //     breakpoint.column + " to statement " + pp.print([nearestStatement]));
+        breakpoint.step = nearestStep;
+        if (nearestStep != null) {
+            nearestStep.isBreakpoint = true;
         }
 
     }
 
-
-
-    getPrograms(): Program[] {
-        let programList: Program[] = [];
+    getPrograms(): NProgram[] {
+        let programList: NProgram[] = [];
 
         if (this.mainProgram != null) {
             programList.push(this.mainProgram);
@@ -451,7 +368,7 @@ export class Module {
         if (this.typeStore != null) {
 
             for (let type of this.typeStore.typeList) {
-                if (type instanceof Klass) {
+                if (type instanceof NClass || type instanceof NEnum) {
                     if (type.attributeInitializationProgram != null) {
                         programList.push(type.attributeInitializationProgram);
                     }

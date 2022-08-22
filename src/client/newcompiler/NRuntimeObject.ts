@@ -1,6 +1,5 @@
-import { Klass } from "../compiler/types/Class.js";
-import { NClass } from "./types/NClass.js";
-import { NProgram } from "./compiler/NProgram.js";
+import { NClass, NClassOrEnum } from "./types/NClass.js";
+import { NProgram } from "./javacompiler/NProgram.js";
 import { NThread } from "./interpreter/NThreadPool.js";
 
 
@@ -9,7 +8,7 @@ export abstract class NRuntimeObject {
 
     // these two attributes will be set by the compiler in NClass.runtimeObjectPrototype:
     __fai: number;          // first Attribute index of this class; prior indexes are attributes from base classes
-    __class: NClass;        // reference to class object 
+    __class: NClassOrEnum;        // reference to class object 
 
     // these three methods are only populated in system classes and will get evaluated
     // by LibraryCompiler:
@@ -30,9 +29,9 @@ export abstract class NRuntimeObject {
 export class NStaticClassObject {
     __a: any = [];              // Attribute values
     __initialValues: any[] = [];  // initial attribute values
-    __class: NClass;            // reference to class
+    __class: NClassOrEnum;            // reference to class
 
-    constructor(klass: NClass, initialAttributeValues: any[]){
+    constructor(klass: NClassOrEnum, initialAttributeValues: any[]){
         this.__class = klass;
         this.__initialValues = initialAttributeValues;
         this.__a = initialAttributeValues.slice();

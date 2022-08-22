@@ -1,26 +1,13 @@
-import { TokenList, specialCharList, TokenType, Token, EscapeSequenceList, keywordList, TextPosition, TokenTypeReadable } from "./Token.js";
+import { ColorHelper } from "../../tools/ColorHelper.js";
+import { Error, ErrorLevel } from "../compiler/Commontypes.js";
 import { ColorLexer } from "./ColorLexer.js";
-import { ColorHelper } from "../../runtimelibrary/graphics/ColorHelper.js";
+import { EscapeSequenceList, keywordList, specialCharList, Token, TokenList, TokenType, TokenTypeReadable } from "./Token.js";
 
 enum LexerState {
     number, identifier, stringConstant, characterConstant, multilineComment, EndoflineComment
 }
 
 var endChar = "►"; // \u10000
-
-export type QuickFix = {
-    title: string,
-    editsProvider: (uri: monaco.Uri) => monaco.languages.WorkspaceTextEdit[]
-}
-
-export type ErrorLevel = "info" | "error" | "warning";
-
-export type Error = {
-    position: TextPosition,
-    text: string,
-    quickFix?: QuickFix,
-    level: ErrorLevel
-}
 
 export class Lexer {
 

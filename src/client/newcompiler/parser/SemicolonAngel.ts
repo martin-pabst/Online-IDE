@@ -1,5 +1,5 @@
 import { TextPosition } from "../lexer/Token";
-import { Module } from "./Module";
+import { Module } from "../compiler/Module";
 import { MainBase } from "../../main/MainBase";
 
 type SemicolonPosition = {

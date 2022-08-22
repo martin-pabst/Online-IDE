@@ -1,18 +1,10 @@
-import { TokenType } from "src/client/compiler/lexer/Token.js";
+import { NProgram } from "../javacompiler/NProgram.js";
+import { TokenType } from "../lexer/Token.js";
 import { NAttributeInfo, NMethodInfo } from "./NAttributeMethod.js";
-import { NClassLike, NInterface } from "./NClass.js";
+import { NClassLike, NClassOrEnum, NInterface } from "./NClass.js";
 import { NType, NExpression } from "./NType.js";
 
-export class NEnum extends NClassLike {
-
-    implements: NInterface[] = [];
-
-    private methodInfoList: NMethodInfo[] = [];
-    private attributeInfoList: NAttributeInfo[] = [];
-
-    staticMethodInfoList: NMethodInfo[] = [];
-    staticAttributeInfoList: NAttributeInfo[] = [];
-    initialStaticValues: any[] = [];
+export class NEnum extends NClassOrEnum {
 
     getSignatureIntern(): string {
         return "enum " + this.identifier;
@@ -32,6 +24,10 @@ export class NEnum extends NClassLike {
 
     castTo(otherType: NType, value: any) {
         return value;
+    }
+
+    canCastTo(otherType: NType): boolean {
+        return false;
     }
 
     getOperatorExpression(operator: TokenType, otherType?: NType): NExpression {

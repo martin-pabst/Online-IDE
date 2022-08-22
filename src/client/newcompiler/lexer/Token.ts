@@ -1,3 +1,5 @@
+import { TextPosition } from "../compiler/Commontypes.js";
+
 export enum TokenType {
     identifier,
     // constants
@@ -425,17 +427,6 @@ export var EscapeSequenceList: {[keyword: string]:string} = {
     "\"": "\"",
     "'": "'",
     "\\": "\\"
-}
-
-export type TextPosition = {
-    line: number,
-    column: number, 
-    length: number
-}
-
-export type TextPositionWithoutLength = {
-    line: number,
-    column: number
 }
 
 export type Token = {

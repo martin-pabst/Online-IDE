@@ -1,4 +1,4 @@
-import { TokenType } from "src/client/compiler/lexer/Token.js";
+import { TokenType } from "../lexer/Token.js";
 import { NExpression, NType } from "./NType.js";
 
 export class NArrayType extends NType {
@@ -36,7 +36,7 @@ export class NArrayType extends NType {
         let length = 1;
         let a = <any[]> value;
         let elementStrings: string[] = [];
-        
+
         for(let e of a){
             let eString = this.elementType.debugOutput(e, maxLength - length - 2);
             if(length + eString.length + 1 >= maxLength) break;

@@ -537,6 +537,7 @@ export class TurtleHelper extends FilledShapeHelper {
                 return true;
             }
         }
+        return false;
     }
 
     touchesColor(farbe: number): boolean {

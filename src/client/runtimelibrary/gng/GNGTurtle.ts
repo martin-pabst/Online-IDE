@@ -75,8 +75,10 @@ export class GNGTurtleClass extends Klass {
                 let größe: number = parameters[1].value;
 
                 if (sh.testdestroyed("größeSetzen")) return;
-
                 sh.turtleSize = größe;
+                sh.moveTurtleTo(0,0, 0);
+                sh.initTurtle(0, 0, sh.angle);
+                sh.moveTurtleTo(sh.lineElements[sh.lineElements.length - 1].x, sh.lineElements[sh.lineElements.length - 1].y, sh.angle)
                 sh.turn(0);
 
             }, false, false, "Setzt die Größe des Turtle-Dreiecks.", false));

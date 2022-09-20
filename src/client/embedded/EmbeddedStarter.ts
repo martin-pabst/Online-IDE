@@ -21,8 +21,6 @@ export class EmbeddedStarter {
 
     themeManager: ThemeManager;
 
-    mainEmbeddedList: MainEmbedded[] = [];
-
     initGUI() {
 
         this.initTypes();

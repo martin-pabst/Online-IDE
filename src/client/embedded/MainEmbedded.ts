@@ -19,6 +19,7 @@ import { SemicolonAngel } from "../compiler/parser/SemicolonAngel.js";
 import { TextPositionWithModule } from "../compiler/types/Types.js";
 import { HitPolygonStore } from "../runtimelibrary/graphics/PolygonStore.js";
 import { Spritesheet } from "pixi.js/index.js";
+import { SpritesheetData } from "../spritemanager/SpritesheetData.js";
 
 type JavaOnlineConfig = {
     withFileList?: boolean,
@@ -31,7 +32,8 @@ type JavaOnlineConfig = {
     hideStartPanel?: boolean,
     hideEditor?: boolean,
     libraries?: string[],
-    jsonFilename?: string
+    jsonFilename?: string,
+    spritesheetURL?: string
 }
 
 export class MainEmbedded implements MainBase {
@@ -532,9 +534,11 @@ export class MainEmbedded implements MainBase {
         setTimeout(() => {
             this.interpreter.initGUI();
             this.editor.editor.layout();
-            this.compiler = new Compiler(this);
-            this.interpreter.controlButtons.speedControl.setSpeedInStepsPerSecond(this.config.speed);
-            this.startTimer();
+            this.loadUserSpritesheet().then(() => {
+                this.compiler = new Compiler(this);
+                this.interpreter.controlButtons.speedControl.setSpeedInStepsPerSecond(this.config.speed);
+                this.startTimer();
+            });
         }, 200);
 
         if (this.config.hideEditor) {
@@ -973,6 +977,16 @@ export class MainEmbedded implements MainBase {
 
     getSemicolonAngel(): SemicolonAngel {
         return this.semicolonAngel;
+    }
+
+    async loadUserSpritesheet(){
+        if(this.config.spritesheetURL != null){
+
+            let spritesheet = new SpritesheetData();
+
+            await spritesheet.initializeSpritesheetForWorkspace(this.currentWorkspace, this, this.config.spritesheetURL);
+    
+        }
     }
 
 }

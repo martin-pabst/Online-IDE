@@ -32,12 +32,12 @@ export class SpritesheetData {
     pngFile: Uint8Array;
     zipFile: Uint8Array;
 
-    async initializeSpritesheetForWorkspace(workspace: Workspace, main: MainBase){
+    async initializeSpritesheetForWorkspace(workspace: Workspace, main: MainBase, spritesheetURL?: string){
 
         let spriteIdentifiers: Set<string> = new Set();
 
-        if(workspace.spritesheetId != null){
-            await this.load(workspace.spritesheetId);
+        if(workspace.spritesheetId != null || spritesheetURL != null ){
+            await this.load(workspace.spritesheetId != null ? workspace.spritesheetId : spritesheetURL);
     
             if(main.userSpritesheet != null){
                 main.userSpritesheet.destroy();
@@ -66,17 +66,19 @@ export class SpritesheetData {
     }
 
 
-    async load(spritesheetId: number): Promise<void> {
-        if(spritesheetId == null) return;
+    async load(spritesheetIdOrURL: number | string): Promise<void> {
+        if(spritesheetIdOrURL == null) return;
 
-        let path = "sprites/" +   ('0' + (spritesheetId % 256).toString(16)).slice(-2).toUpperCase() + "/" + spritesheetId;
+        if(typeof spritesheetIdOrURL == "number"){
+            spritesheetIdOrURL = "sprites/" +   ('0' + (spritesheetIdOrURL % 256).toString(16)).slice(-2).toUpperCase() + "/" + spritesheetIdOrURL + ".zip";
+        }
 
         let cacheManager = new CacheManager();
-        this.zipFile = await cacheManager.fetchUint8ArrayFromCache(path + ".zip");
+        this.zipFile = await cacheManager.fetchUint8ArrayFromCache(spritesheetIdOrURL);
         if(this.zipFile == null){
-            await this.loadFromServer(path);
+            await this.loadFromServer(spritesheetIdOrURL);
             if(this.zipFile != null){
-                cacheManager.store(path + ".zip", this.zipFile);
+                cacheManager.store(spritesheetIdOrURL, this.zipFile);
             }
         } 
 
@@ -98,7 +100,7 @@ export class SpritesheetData {
             $.ajax({
                 type: 'GET',
                 async: true,
-                url: path + ".zip",
+                url: path,
                 xhrFields: { responseType: 'arraybuffer' },
                 success: (arrayBuffer: ArrayBuffer) => {
 

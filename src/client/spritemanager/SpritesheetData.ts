@@ -97,7 +97,7 @@ export class SpritesheetData {
 
     private async loadFromServer(path: string):Promise<void>{
         return new Promise((resolve, reject) => {
-            $.ajax({
+            jQuery.ajax({
                 type: 'GET',
                 async: true,
                 url: path,

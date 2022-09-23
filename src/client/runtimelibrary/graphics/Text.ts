@@ -199,7 +199,7 @@ export class TextHelper extends FilledShapeHelper {
         this.addToDefaultGroupAndSetDefaultVisibility();
     }
 
-    setStyle(isBold: boolean, isItalic: boolean){
+    setStyle(isBold: boolean, isItalic: boolean) {
         this.textStyle.fontWeight = isBold ? "bold" : "normal";
         this.textStyle.fontStyle = isItalic ? "italic" : "normal";
         this.render();

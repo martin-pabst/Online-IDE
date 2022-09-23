@@ -1080,9 +1080,9 @@ export abstract class ShapeHelper extends ActorHelper {
     }
 
     transformHitPolygon() {
-        let p = new PIXI.Point(this.centerXInitial, this.centerYInitial);
         this.displayObject.updateTransform();
-        this.displayObject.transform.worldTransform.apply(p, p);
+        // let p = new PIXI.Point(this.centerXInitial, this.centerYInitial);
+        // this.displayObject.transform.worldTransform.apply(p, p);
 
         this.hitPolygonTransformed = [];
         let m = this.displayObject.transform.worldTransform;

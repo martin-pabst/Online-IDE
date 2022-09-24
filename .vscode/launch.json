@@ -8,7 +8,7 @@
             "name": "Launch Edge",
             "request": "launch",
             "type": "msedge",
-            "url": "http://localhost:5500",
+            "url": "http://localhost:5502",
             "webRoot": "${workspaceFolder}/htdocs"
         },
         {
@@ -22,7 +22,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome",
-            "url": "http://localhost:5500",
+            "url": "http://localhost:5502",
             "webRoot": "${workspaceFolder}/htdocs",
             "sourceMaps": true
         },

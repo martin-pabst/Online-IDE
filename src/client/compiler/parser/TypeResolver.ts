@@ -485,7 +485,9 @@ export class TypeResolver {
     checkDoubleIdentifierDefinition() {
         let identifierModuleMap: Map<string, Module> = new Map();
 
-        for (let module of this.moduleStore.getModules(false)) {
+        let modules = this.moduleStore.getModules(true);
+
+        for (let module of modules) {
             for (let type of module.typeStore.typeList) {
                 let otherModule = identifierModuleMap.get(type.identifier);
                 if (otherModule != null) {
@@ -496,7 +498,7 @@ export class TypeResolver {
                         level: "error"
                     });
                     let otherType = otherModule.typeStore.getType(type.identifier);
-                    if (otherType != null) {
+                    if (otherType != null && !otherModule.isSystemModule) {
                         otherModule.errors[1].push({
                             text: "Der Typbezeichner " + type.identifier + " wurde mehrfach definiert, nämlich in den Modulen " +
                                 otherModule.file.name + " und " + module.file.name + ".",

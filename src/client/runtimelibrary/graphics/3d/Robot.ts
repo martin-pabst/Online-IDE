@@ -381,7 +381,6 @@ export class RobotClass extends Klass {
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
-                let farbe: string = parameters[1].value;
                 let rh = <RobotHelper>o.intrinsicData["Robot"];
                 return rh.istMarke(null);
 

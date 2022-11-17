@@ -136,6 +136,19 @@ export class TextClass extends Klass {
 
             }, false, false, 'Gibt die Höhe des Textes zurück.', false));
 
+        this.addMethod(new Method("getFontSize", new Parameterlist([
+        ]), doublePrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: TextHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("getFontSize")) return;
+
+                return sh.fontsize;
+
+            }, false, false, 'Gibt die Schriftgröße zurück.', false));
+
         this.addMethod(new Method("setStyle", new Parameterlist([
             { identifier: "isBold", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "isItalic", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
@@ -147,7 +160,7 @@ export class TextClass extends Klass {
                 let isItalic: boolean = parameters[2].value;
                 let sh: TextHelper = o.intrinsicData["Actor"];
 
-                if (sh.testdestroyed("getHeight")) return;
+                if (sh.testdestroyed("setStyle")) return;
 
                 sh.setStyle(isBold, isItalic);
 

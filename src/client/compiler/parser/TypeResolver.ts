@@ -669,6 +669,7 @@ export class TypeResolver {
         if (typesOK) {
             let method = new Method(mn.identifier, pl, mn.returnType.resolvedType, null, mn.isAbstract, mn.isStatic);
             method.isConstructor = mn.identifier == c.identifier;
+            method.isFinal = mn.isFinal;
             method.visibility = mn.visibility;
             method.isConstructor = mn.isConstructor;
             mn.resolvedType = method;

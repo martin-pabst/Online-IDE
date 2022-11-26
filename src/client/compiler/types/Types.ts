@@ -133,6 +133,7 @@ export class Method extends Type {
 
     isAbstract: boolean;
     isStatic: boolean;
+    isFinal: boolean;
     isConstructor: boolean = false;
     isVirtual: boolean = false; // true, if child class has method with same signature
 

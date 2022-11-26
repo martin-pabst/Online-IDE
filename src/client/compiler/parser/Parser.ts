@@ -1544,6 +1544,8 @@ export class Parser {
         let position = this.getCurrentPosition();
         this.nextToken();
 
+        this.parseArrayBracketsAfterVariableIdentifier(type);
+
         let initialization: TermNode = null;
 
         //@ts-ignore
@@ -1567,6 +1569,20 @@ export class Parser {
             variableType: type,
             initialization: initialization,
             isFinal: isFinal
+        }
+
+    }
+
+    parseArrayBracketsAfterVariableIdentifier(type: TypeNode){
+        //@ts-ignore
+        if(this.tt == TokenType.leftRightSquareBracket && type != null){
+            if(type.arrayDimension > 0){
+                this.pushError("Sowohl vor als auch hinter dem Bezeichner der Variablendeklaration steht []. Eines davon ist zuviel.");
+            } 
+            while(this.tt == TokenType.leftRightSquareBracket){
+                type.arrayDimension++;
+                this.nextToken();
+            }
         }
 
     }
@@ -1960,6 +1976,7 @@ export class Parser {
                         visibility: modifiers.visibility,
                         isAbstract: modifiers.isAbstract || classType == TokenType.keywordInterface,
                         isStatic: modifiers.isStatic,
+                        isFinal: modifiers.isFinal,
                         isConstructor: isConstructor,
                         returnType: type,
                         annotation: annotation,
@@ -1972,6 +1989,8 @@ export class Parser {
                     if (identifier == className) {
                         this.pushError("Das Attribut " + className + " darf nicht denselben Bezeichner haben wie die Klasse.", "error", position);
                     }
+
+                    this.parseArrayBracketsAfterVariableIdentifier(type);
 
                     let initialization: TermNode = null;
 
@@ -2056,7 +2075,11 @@ export class Parser {
                     isFinal: isFinal,
                     isEllipsis: ellipsis
                 });
+
                 this.nextToken();
+
+                this.parseArrayBracketsAfterVariableIdentifier(type);
+
             }
             if (this.tt != TokenType.comma) {
                 break;

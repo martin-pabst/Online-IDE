@@ -538,7 +538,11 @@ export class CodeGenerator {
         // Assumption: methodNode != null
         let method = methodNode.resolvedType;
 
-        this.checkIfMethodIsVirtual(method);
+        let klass = this.currentSymbolTable.classContext;
+        if (klass != null && method != null) {
+            this.checkIfMethodIsVirtual(method, klass);
+            this.checkIfMethodOverridesFinalMethod(method, klass, methodNode.position);
+        }
 
         if (method == null) return;
 
@@ -675,24 +679,34 @@ export class CodeGenerator {
     /**
      * checks if child classes have method with same signature
      */
-    checkIfMethodIsVirtual(method: Method) {
-
-        let klass = this.currentSymbolTable.classContext;
-        if (klass != null) {
-
-            for (let mo of this.moduleStore.getModules(false)) {
-                for (let c of mo.typeStore.typeList) {
-                    if (c instanceof Klass && c != klass && c.hasAncestorOrIs(klass)) {
-                        for (let m of c.methods) {
-                            if (m != null && method != null && m.signature == method.signature) {
-                                method.isVirtual = true;
-                                return;
-                            }
+    checkIfMethodIsVirtual(method: Method, klass: Klass | StaticClass) {
+        for (let mo of this.moduleStore.getModules(false)) {
+            for (let c of mo.typeStore.typeList) {
+                if (c instanceof Klass && c != klass && c.hasAncestorOrIs(klass)) {
+                    for (let m of c.methods) {
+                        if (m != null && method != null && m.signature == method.signature) {
+                            method.isVirtual = true;
+                            return;
                         }
                     }
                 }
             }
         }
+    }
+
+    checkIfMethodOverridesFinalMethod(method: Method, klass: Klass | StaticClass, position: TextPosition){
+        if(klass instanceof StaticClass) return;
+
+        let baseClass = klass.baseClass;
+        while(baseClass != null){
+            for(let m of baseClass.methods){
+                if(m.identifier == method.identifier && (m.isFinal || m.visibility == Visibility.private) && m.signature == method.signature){
+                    this.pushError("Die Methode " + method.identifier + " überschreibt die gleichnamige private oder finale Methode der Oberklasse " + baseClass.identifier, position);
+                }
+            }
+            baseClass = baseClass.baseClass;
+        }
+
     }
 
 
@@ -1761,7 +1775,7 @@ export class CodeGenerator {
 
         }
 
-        if(switchStatement.defaultDestination == null){
+        if (switchStatement.defaultDestination == null) {
             withReturnStatement = false;
         }
 
@@ -1888,7 +1902,7 @@ export class CodeGenerator {
                 kind = "userDefinedIterable";
             }
             let iterableInterface = collectionType.getImplementedInterface("Iterable");
-            if(collectionType.typeVariables.length == 0){
+            if (collectionType.typeVariables.length == 0) {
                 collectionElementType = objectType;
             } else {
                 collectionElementType = collectionType.typeVariables[0].type;
@@ -2110,11 +2124,11 @@ export class CodeGenerator {
         this.openBreakScope();
         this.openContinueScope();
 
-        let pc = this.currentProgram.statements.length;        
+        let pc = this.currentProgram.statements.length;
         let statements = this.generateStatements(node.statements);
         let withReturnStatement = statements.withReturnStatement;
 
-        if(this.currentProgram.statements.length == pc){
+        if (this.currentProgram.statements.length == pc) {
             this.insertNoOp(node.scopeTo, false);
         }
 
@@ -2131,7 +2145,7 @@ export class CodeGenerator {
 
     }
 
-    insertNoOp(position: TextPosition, stepFinished: boolean){
+    insertNoOp(position: TextPosition, stepFinished: boolean) {
         this.pushStatements({
             type: TokenType.noOp,
             position: position,
@@ -2150,11 +2164,11 @@ export class CodeGenerator {
         this.openBreakScope();
         this.openContinueScope();
 
-        let pc = this.currentProgram.statements.length;        
+        let pc = this.currentProgram.statements.length;
         let statements = this.generateStatements(node.statements);
         let withReturnStatement = statements.withReturnStatement;
 
-        if(this.currentProgram.statements.length == pc){
+        if (this.currentProgram.statements.length == pc) {
             this.insertNoOp(node.scopeTo, false);
         }
 
@@ -2889,7 +2903,7 @@ export class CodeGenerator {
 
         if (!(
             (objectNode.type instanceof Klass) || (objectNode.type instanceof StaticClass) ||
-            (objectNode.type instanceof Interface && 
+            (objectNode.type instanceof Interface &&
                 (node.object["object"] != null || node.object["variable"] != null || node.object["attribute"] != null || node.object["termInsideBrackets"] != null)) || (objectNode.type instanceof Enum))) {
 
             if (objectNode.type == null) {
@@ -3044,43 +3058,43 @@ export class CodeGenerator {
             }
         }
 
-        let isSystemMethod: boolean = false;        
+        let isSystemMethod: boolean = false;
         if (method.isStatic && objectNode.type != null &&
-            (objectNode.type instanceof StaticClass)){
-                let classIdentifier = objectNode.type.Klass.identifier;
+            (objectNode.type instanceof StaticClass)) {
+            let classIdentifier = objectNode.type.Klass.identifier;
 
-                switch (classIdentifier) {
-                    case "Input":
-                        this.pushStatements({
-                            type: TokenType.callInputMethod,
-                            method: method,
+            switch (classIdentifier) {
+                case "Input":
+                    this.pushStatements({
+                        type: TokenType.callInputMethod,
+                        method: method,
+                        position: node.position,
+                        stepFinished: true,
+                        stackframeBegin: -(parameterTypes.length + 1 + stackframeDelta) // this-object followed by parameters
+                    });
+                    isSystemMethod = true;
+                    break;
+                case "SystemTools":
+                case "Robot":
+                    if (["pause", "warten"].indexOf(method.identifier) >= 0) {
+                        this.pushStatements([{
+                            type: TokenType.setPauseDuration,
                             position: node.position,
-                            stepFinished: true,
-                            stackframeBegin: -(parameterTypes.length + 1 + stackframeDelta) // this-object followed by parameters
-                        });
-                        isSystemMethod = true;
-                        break;
-                    case "SystemTools":
-                    case "Robot":
-                        if(["pause", "warten"].indexOf(method.identifier) >= 0){
-                            this.pushStatements([{
-                                type: TokenType.setPauseDuration,
-                                position: node.position,
-                                stepFinished: true
-                            },{
-                                type: TokenType.pause,
-                                position: node.position,
-                                stepFinished: true
-                            }
-                        ]);
-                            isSystemMethod = true;    
+                            stepFinished: true
+                        }, {
+                            type: TokenType.pause,
+                            position: node.position,
+                            stepFinished: true
                         }
-                        break;
-                }
-
+                        ]);
+                        isSystemMethod = true;
+                    }
+                    break;
             }
 
-            if(!isSystemMethod) {
+        }
+
+        if (!isSystemMethod) {
             this.pushStatements({
                 type: TokenType.callMethod,
                 method: method,

@@ -243,6 +243,7 @@ export type MethodDeclarationNode = {
     statements: ASTNode[],
 
     isStatic: boolean,
+    isFinal: boolean,
     isAbstract: boolean,
     visibility: Visibility,
     isConstructor: boolean,

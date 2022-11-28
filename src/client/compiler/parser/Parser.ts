@@ -287,7 +287,8 @@ export class Parser {
 
     static ClassTokens: TokenType[] = [TokenType.keywordClass, TokenType.keywordEnum, TokenType.keywordInterface];
     static VisibilityTokens: TokenType[] = [TokenType.keywordPrivate, TokenType.keywordProtected, TokenType.keywordPublic];
-    static BeforeClassDefinitionTokens: TokenType[] = Parser.ClassTokens.concat(Parser.VisibilityTokens).concat(TokenType.keywordAbstract).concat(Parser.ClassTokens);
+    static BeforeClassDefinitionTokens: TokenType[] = Parser.ClassTokens.concat(Parser.VisibilityTokens)
+            .concat(TokenType.keywordAbstract).concat(Parser.ClassTokens).concat([TokenType.keywordFinal]);
 
     parseMain(): { mainProgramAST: ASTNodes, mainProgramEnd: TextPosition, classDefinitionAST: ASTNodes } {
 
@@ -1705,6 +1706,7 @@ export class Parser {
                         attributes: methodsAndAttributes.attributes,
                         methods: methodsAndAttributes.methods,
                         isAbstract: modifiers.isAbstract,
+                        isFinal: modifiers.isFinal,
                         visibility: modifiers.visibility,
                         extends: extendsImplements.extends,
                         implements: extendsImplements.implements,

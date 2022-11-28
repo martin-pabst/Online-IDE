@@ -54,6 +54,7 @@ export class Klass extends Type {
     firstPassImplements: string[] = [];
 
     isAbstract: boolean = false;
+    isFinal: boolean = false;
 
     attributeInitializationProgram: Program;
 
@@ -683,6 +684,7 @@ export class Klass extends Type {
 
         let klass: Klass = this;
         let hierarchy: string[] = [klass.identifier];
+
         while (klass.baseClass != null) {
             klass = klass.baseClass;
             if (hierarchy.indexOf(klass.identifier) >= 0) {

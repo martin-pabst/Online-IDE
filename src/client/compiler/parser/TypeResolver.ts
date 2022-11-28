@@ -844,6 +844,7 @@ export class TypeResolver {
                             cdn.resolvedType = c;
                             c.visibility = cdn.visibility;
                             c.isAbstract = cdn.isAbstract;
+                            c.isFinal = cdn.isFinal;
                             m.typeStore.addType(c);
                             this.pushUsagePosition(m, cdn.position, c);
                             c.declaration = { module: m, position: cdn.position };

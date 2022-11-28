@@ -378,8 +378,13 @@ export class CodeGenerator {
         }
 
         let baseClass = klass.baseClass;
-        if (baseClass != null && baseClass.module != klass.module && baseClass.visibility == Visibility.private) {
-            this.pushError("Die Basisklasse " + baseClass.identifier + " der Klasse " + klass.identifier + " ist hier nicht sichtbar.", classNode.position);
+        if(baseClass != null){
+            if (baseClass.module != klass.module && baseClass.visibility == Visibility.private) {
+                this.pushError("Die Basisklasse " + baseClass.identifier + " der Klasse " + klass.identifier + " ist hier nicht sichtbar.", classNode.position);
+            }
+            if(baseClass.isFinal){
+                this.pushError("Die Basisklasse " + baseClass.identifier + " der Klasse " + klass.identifier + " ist final, daher kann sie keine Unterklasse haben.", classNode.position);
+            }
         }
 
         this.currentSymbolTable.classContext = klass;
@@ -2797,7 +2802,7 @@ export class CodeGenerator {
 
             this.pushUsagePosition(node.position, attribute);
 
-            return { type: attribute.type, isAssignable: !attribute.isFinal };
+            return { type: attribute.type, isAssignable: !attribute.isFinal || this.currentSymbolTable.method.isConstructor };
         }
 
         let klassModule = this.moduleStore.getType(node.identifier);

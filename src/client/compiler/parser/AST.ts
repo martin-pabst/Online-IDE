@@ -185,6 +185,7 @@ export type ClassDeclarationNode = {
     visibility: Visibility,
     identifier: string,
     isAbstract: boolean,
+    isFinal: boolean,
     extends: TypeNode,
     implements: TypeNode[],
 

@@ -3188,6 +3188,10 @@ export class CodeGenerator {
                 this.pushError("Dem Term/der Variablen auf der linken Seite des Zuweisungsoperators (=) kann kein Wert zugewiesen werden.", node.position);
             }
 
+            if(node.operator == TokenType.divisionAssignment && leftType.type == intPrimitiveType){
+                node.operator = TokenType.divisionAssignmentInteger;
+            }
+
             let statement: AssignmentStatement = {
                 //@ts-ignore
                 type: node.operator,

@@ -73,6 +73,7 @@ export enum TokenType {
     minusAssignment, // -=
     multiplicationAssignment, // *=
     divisionAssignment, // /=
+    divisionAssignmentInteger, // /=
     moduloAssignment, // /%=
     and, or,   // &&, ||
     ampersand, // &

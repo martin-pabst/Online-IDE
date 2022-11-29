@@ -920,6 +920,10 @@ export class Interpreter {
                 value = stack.pop();
                 stack[stackTop - 1].value /= value.value;
                 break;
+            case TokenType.divisionAssignmentInteger:
+                value = stack.pop();
+                stack[stackTop - 1].value = Math.trunc(stack[stackTop - 1].value/value.value);
+                break;
             case TokenType.moduloAssignment:
                 value = stack.pop();
                 stack[stackTop - 1].value %= value.value;

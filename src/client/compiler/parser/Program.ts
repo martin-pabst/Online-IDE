@@ -136,7 +136,7 @@ export type PushArrayLengthStatement = {
 // and takes both objects (or only one) from stack.
 export type AssignmentStatement = {
     type: TokenType.assignment | TokenType.plusAssignment | TokenType.minusAssignment | 
-     TokenType.multiplicationAssignment | TokenType.divisionAssignment | TokenType.moduloAssignment |
+     TokenType.multiplicationAssignment | TokenType.divisionAssignment | TokenType.divisionAssignmentInteger | TokenType.moduloAssignment |
      TokenType.ANDAssigment | TokenType.ORAssigment | TokenType.XORAssigment | TokenType.shiftLeftAssigment |
      TokenType.shiftRightAssigment | TokenType.shiftRightUnsignedAssigment,
     position: TextPosition,

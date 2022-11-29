@@ -813,7 +813,7 @@ export class ProcessingHelper {
                 that.renderer = p5.P2D;
 
                 let afterFinishingBoth = () => {
-                    // p5.createCanvas(that.width, that.height, that.renderer);
+                    that.createCanvas(that.width, that.height);
                     drawMethodPending = false
                     // $div.find('canvas').css({
                     //     'width': '',

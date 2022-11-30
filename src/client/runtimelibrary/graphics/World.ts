@@ -338,6 +338,16 @@ export class WorldClass extends Klass {
 
             }, false, false, 'Ändert die Form des Mauscursors im gesamten Grafikbereich. Mögiche Werte: siehe https://developer.mozilla.org/de/docs/Web/CSS/cursor.', false));
 
+        this.addMethod(new Method("clear", new Parameterlist([
+        ]), null,
+            (parameters) => {
+
+                let wh = module.main.getInterpreter().worldHelper;
+
+                wh?.destroyAll();
+
+            }, false, true, 'Löscht alle grafischen Objekte', false));
+
 
     }
 
@@ -687,6 +697,14 @@ export class WorldHelper {
     setAllHitpolygonsDirty() {
         for (let shape of this.shapes) {
             shape.setHitPolygonDirty(true);
+        }
+    }
+
+    destroyAll(){
+        while(this.shapes.length > 0){
+            // console.log(this.shapes);
+            // debugger;
+            this.shapes.pop().destroy();
         }
     }
 

@@ -73,7 +73,9 @@ export class DebuggerElement {
                 || valueType instanceof StaticClass
                 || valueType instanceof Interface
             ) {
-                if(!this.canOpen){
+                if(!this.canOpen || this.type != valueType){
+                    this.type = valueType;
+                    this.$debuggerElement.find(".jo_deChildContainer").remove();
                     this.canOpen = true;
                     this.$debuggerElement.addClass('jo_canOpen');
                     this.$debuggerElement.append(jQuery('<div class="jo_deChildContainer"></div>'));
@@ -103,6 +105,22 @@ export class DebuggerElement {
         }
 
     }
+
+    updateChildValues(){
+        if (this.type instanceof Klass && this.children.length > 0) {
+
+            let ro: RuntimeObject = this.value.value;
+
+            let listHelper: ListHelper = ro.intrinsicData == null ? null : ro.intrinsicData["ListHelper"];
+            if (listHelper == null) {
+                let childIndex = 0;
+                for (let a of (<Klass>this.value.type).getAttributes(Visibility.private)) {
+                    this.children[childIndex++].value = ro.getValue(a.index);
+                }
+            }
+        }
+    }
+
 
     onFirstOpening() {
 
@@ -239,6 +257,7 @@ export class DebuggerElement {
 
         this.$debuggerElement.find('.jo_deValue').first().html(s == null ? "" : s);
 
+        this.updateChildValues();
 
         for (let child of this.children) {
             child.renderValue();

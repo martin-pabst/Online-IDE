@@ -100,13 +100,19 @@ export class Workspace {
             let $button = jQuery('<div class="jo_startButton img_open-change jo_button jo_active" title="Workspace mit Repository synchronisieren"></div>');
             $buttonDiv.append($button);
             let that = this;
-            $button.on('mousedown', (e) => e.stopPropagation());
-            $button.on('click', (e) => {
+            $button.on('pointerdown', (e) => e.stopPropagation());
+            $button.on('pointerup', (e) => {
                 e.stopPropagation();
 
                 that.synchronizeWithRepository();
 
             });
+
+            $button[0].addEventListener("contextmenu", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+            }, false);
+
 
         } else {
             $buttonDiv.find('.jo_startButton').remove();

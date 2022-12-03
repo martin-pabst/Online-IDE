@@ -463,7 +463,7 @@ export function zufall(von: number, bis: number){
 }
 
 export function intZufall(von: number, bis: number){
-    return Math.trunc(Math.random()*(bis - von + 1 - 0.00000001) + von);
+    return Math.floor(Math.random()*(bis - von + 1) + von);
 }
 
 export function vektorVonPolarkoordinaten(winkelGrad: number, länge: number){

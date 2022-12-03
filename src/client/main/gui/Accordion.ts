@@ -216,7 +216,7 @@ export class AccordionPanel {
 
         if (insertIndex == 0) {
             this.$listElement.prepend(ae.$htmlFirstLine);
-        } else if(insertIndex == $elements.length){
+        } else if (insertIndex == $elements.length) {
             this.$listElement.append(ae.$htmlFirstLine);
         } else {
             let elementAtIndex = $elements.get(insertIndex);
@@ -647,7 +647,9 @@ export class AccordionPanel {
             }
         };
 
-        element.$htmlFirstLine[0].addEventListener("contextmenu", contextmenuHandler, false);
+        element.$htmlFirstLine[0].addEventListener("contextmenu", (event) => {
+                contextmenuHandler(event);
+        }, false);
 
         // long press for touch devices
         let pressTimer: number;
@@ -674,6 +676,13 @@ export class AccordionPanel {
         }
 
         if (that.withDeleteButton) {
+
+            element.$htmlFirstLine.find('.jo_delete')[0].addEventListener("contextmenu", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+            }, false);
+
+
             element.$htmlFirstLine.find('.jo_delete').on(mousePointer + 'down', (ev) => {
                 ev.preventDefault();
                 openContextMenu([{
@@ -723,7 +732,7 @@ export class AccordionPanel {
 
             let sourcePath = elementToMove.path.concat([elementToMove.name]).join("/");
 
-            if(destinationPath.join('/').indexOf(sourcePath) == 0) return;
+            if (destinationPath.join('/').indexOf(sourcePath) == 0) return;
 
             let oldPathLength = elementToMove.path.length;
             elementToMove.path = destinationPath.slice(0);

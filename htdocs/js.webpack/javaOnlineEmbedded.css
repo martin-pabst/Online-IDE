@@ -63,7 +63,8 @@
     --editorTooltip-background: #252526;
     --editorTooltip-border: #454545;
     --renameInput-color: #ffffff;
-
+    /*debugger*/
+    --debugger-classidentifier: #2a709e;
 }   
 
 .monaco-editor .monaco-hover code {
@@ -1669,6 +1670,10 @@ body .monaco-editor-hover .monaco-tokenized-source {
 .jo_file.jo_watcher {
     padding-left: 0px;
     font-size: inherit;
+}
+
+.jo_debugger_classidentifier {
+    color: var(--debugger-classidentifier)
 }
 
 /* .file.watcher>.fileimage:before {

@@ -48,6 +48,11 @@ export class DebuggerElement {
 
     render() {
 
+        this.renderValue();
+
+    }
+
+    initHtml(){
         if (this.$debuggerElement == null) {
             this.$debuggerElement = jQuery('<div>');
             this.$debuggerElement.addClass("jo_debuggerElement");
@@ -58,35 +63,44 @@ export class DebuggerElement {
 
             this.$debuggerElement.append($deFirstLine);
 
+        }
+
+        let valueType = this.value?.type;
+        if(valueType != null){
             // show compound types in own branch of visible tree
-            if (this.type instanceof ArrayType ||
-                (this.type instanceof Klass && !(this.type instanceof Enum) && !(this.type == stringPrimitiveType))
-                || this.type instanceof StaticClass
-                || this.type instanceof Interface
+            if (valueType instanceof ArrayType ||
+                (valueType instanceof Klass && !(valueType instanceof Enum) && valueType != stringPrimitiveType && valueType.hasAttributes())
+                || valueType instanceof StaticClass
+                || valueType instanceof Interface
             ) {
-                this.canOpen = true;
-                this.$debuggerElement.addClass('jo_canOpen');
-                this.$debuggerElement.append(jQuery('<div class="jo_deChildContainer"></div>'));
-
-                this.$debuggerElement.find('.jo_deFirstline').on('mousedown', (event) => {
-                    if (this.value != null && this.value.value != null) {
-                        if (this.children.length == 0) {
-                            this.onFirstOpening();
+                if(!this.canOpen){
+                    this.canOpen = true;
+                    this.$debuggerElement.addClass('jo_canOpen');
+                    this.$debuggerElement.append(jQuery('<div class="jo_deChildContainer"></div>'));
+        
+                    this.$debuggerElement.find('.jo_deFirstline').on('mousedown', (event) => {
+                        if (this.value != null && this.value.value != null) {
+                            if (this.children.length == 0) {
+                                this.onFirstOpening();
+                            }
+                            this.$debuggerElement.toggleClass('jo_expanded');
+                            this.isOpen = !this.isOpen;
+                        } else {
+                            this.children = [];
                         }
-                        this.$debuggerElement.toggleClass('jo_expanded');
-                        this.isOpen = !this.isOpen;
-                    } else {
-                        this.children = [];
-                    }
-
-                    event.stopPropagation();
-
-                });
+        
+                        event.stopPropagation();
+        
+                    });
+                }
+    
+            } else {
+                this.canOpen = false;
+                this.$debuggerElement.removeClass('jo_canOpen');
+                this.$debuggerElement.find(".jo_deChildContainer").remove();
 
             }
         }
-
-        this.renderValue();
 
     }
 
@@ -104,7 +118,7 @@ export class DebuggerElement {
                 for (let a of (<Klass>this.value.type).getAttributes(Visibility.private)) {
                     let de = new DebuggerElement(null, this, a.identifier, ro.getValue(a.index), a.type, null);
                     de.render();
-                    this.$debuggerElement.find('.jo_deChildContainer').append(de.$debuggerElement);
+                    this.$debuggerElement.find('.jo_deChildContainer').first().append(de.$debuggerElement);
                 }
             }
 
@@ -143,7 +157,7 @@ export class DebuggerElement {
                 }
 
             } else {
-                this.children == [];
+                this.children = [];
             }
 
         }
@@ -178,6 +192,9 @@ export class DebuggerElement {
     }
 
     renderValue() {
+
+        this.initHtml();
+
         let s: string;
         let v = this.value;
 
@@ -199,7 +216,12 @@ export class DebuggerElement {
             s = v.type?.debugOutput(v);
 
             if (this.type instanceof Klass) {
-
+                let typeIdentifier = this.value?.type?.identifier;
+                if(typeIdentifier != null){
+                    if(["String", "Integer", "Boolean", "Double", "Float"].indexOf(typeIdentifier) < 0){
+                        s = "<span class='jo_debugger_classidentifier'>" + typeIdentifier + "</span>";
+                    }
+                }
                 let ro: RuntimeObject = this.value.value;
                 let listHelper: ListHelper = ro.intrinsicData == null ? null : ro.intrinsicData["ListHelper"];
                 if (listHelper != null) {

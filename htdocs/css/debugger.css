@@ -89,6 +89,10 @@
     font-size: inherit;
 }
 
+.jo_debugger_classidentifier {
+    color: var(--debugger-classidentifier)
+}
+
 /* .file.watcher>.fileimage:before {
     content: url('../assets/projectexplorer/tree-collapsed-dark.svg');
     position: relative;

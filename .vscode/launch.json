@@ -22,7 +22,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome",
-            "url": "http://localhost:5502",
+            "url": "http://localhost:5500",
             "webRoot": "${workspaceFolder}/htdocs",
             "sourceMaps": true
         },

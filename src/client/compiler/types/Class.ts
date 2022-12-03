@@ -106,6 +106,10 @@ export class Klass extends Type {
 
     }
 
+    hasAttributes() {
+        return this.numberOfAttributesIncludingBaseClass > 0;
+    }
+
 
     getNonGenericClass(): Klass {
         let k: Klass = this;

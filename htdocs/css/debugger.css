@@ -19,6 +19,15 @@
     font-weight: 700;
 }
 
+.jo_debuggerElement>.jo_deFirstline::before {
+    content: url('data:image/svg+xml,%3Csvg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"%3E %3C/svg%3E%0A'); /*img(tree-collapsed-hc.svg)*/
+    position: relative;
+    top: 3px;
+    left: -1px;
+    margin-right: 0px;
+}
+
+
 .jo_debuggerElement.jo_canOpen>.jo_deFirstline::before {
     content: url('data:image/svg+xml,%3Csvg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath fill-rule="evenodd" clip-rule="evenodd" d="M10.0719 7.99999L5.71461 12.3573L6.33333 12.976L11 8.30935V7.69063L6.33333 3.02396L5.71461 3.64268L10.0719 7.99999Z" fill="white"/%3E%3C/svg%3E%0A'); /*img(tree-collapsed-hc.svg)*/
     position: relative;

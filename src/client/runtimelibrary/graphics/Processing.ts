@@ -815,6 +815,7 @@ export class ProcessingHelper {
 
             p5.setup = function () {
                 that.renderer = p5.P2D;
+                that.p5o = p5; 
 
                 let afterFinishingBoth = () => {
                     drawMethodPending = false
@@ -824,7 +825,6 @@ export class ProcessingHelper {
                     // })            
                 }
 
-                that.p5o = p5; 
                 that.createCanvas(that.width, that.height);
 
                 let i = 2;
@@ -899,7 +899,7 @@ export class ProcessingHelper {
         }
 
         //@ts-ignore
-        this.p5o = new p5(sketch, $div[0]);
+        new p5(sketch, $div[0]);
         $div.find('canvas').css({
             'width': '',
             'height': ''

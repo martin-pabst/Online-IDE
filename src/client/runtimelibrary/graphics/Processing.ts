@@ -736,6 +736,7 @@ export class ProcessingHelper {
     loopStopped: boolean = false;
 
     onSizeChanged: () => void;
+    canvasCreated: boolean = false;
 
 
     constructor(private module: Module, private interpreter: Interpreter, public runtimeObject: RuntimeObject) {
@@ -794,6 +795,7 @@ export class ProcessingHelper {
             'height': ''
 
         });
+        this.canvasCreated = true;
     }
 
     main() {
@@ -803,7 +805,9 @@ export class ProcessingHelper {
 
     setupProcessing($div: JQuery<HTMLElement>) {
 
+        
         let that = this;
+        this.canvasCreated = false;
         let drawMethodPending: boolean = true;
         this.$div = $div;
 
@@ -813,13 +817,15 @@ export class ProcessingHelper {
                 that.renderer = p5.P2D;
 
                 let afterFinishingBoth = () => {
-                    that.createCanvas(that.width, that.height);
                     drawMethodPending = false
                     // $div.find('canvas').css({
                     //     'width': '',
                     //     'height': ''
                     // })            
                 }
+
+                that.p5o = p5; 
+                that.createCanvas(that.width, that.height);
 
                 let i = 2;
 
@@ -919,7 +925,7 @@ export class ProcessingHelper {
     noLoop() {
         this.loopStopped = true;
     }
-
+       
     runMethod(methodIdentifier: string, callback: () => void = null) {
 
         let klass: Klass = <Klass>this.runtimeObject.class;

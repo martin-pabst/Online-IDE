@@ -823,6 +823,28 @@ export class StringPrimitiveType extends Klass {
 
             }, false, false, "Teilt die Zeichenkette an den Stellen, die durch den regulären Ausdruck (regex) definiert sind, in Teile auf. Die Fundstellen des regex werden dabei weggelassen. Gibt die Teile als String-Array zurück."));
 
+        charPrimitiveType.identifier = 'char';
+        let valueOfParameterTypes: Type[] = [new ArrayType(charPrimitiveType), charPrimitiveType, intPrimitiveType, doublePrimitiveType, floatPrimitiveType, booleanPrimitiveType, longPrimitiveType, floatPrimitiveType];
+
+        for( let parameterType of valueOfParameterTypes){
+            this.addMethod(new Method("valueOf", new Parameterlist([{identifier: "value", type: parameterType, declaration: null, usagePositions: null, isFinal: false}]),
+            stringPrimitiveType, (parameters) => {
+
+                let p = parameters[1].value;
+                if(p == null) return "null";
+                
+                if(Array.isArray(p)){
+                    return p.map((value: Value) => value.value).join("");
+                }
+
+                return "" + p;
+
+            }, false, true, "Wandelt den Parameter in eine Zeichenkette um", false
+            
+            ))
+        }
+
+
     }
 
     public compute(operation: TokenType, firstOperand: Value, secondOperand?: Value): any {

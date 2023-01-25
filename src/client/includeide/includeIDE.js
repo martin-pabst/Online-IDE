@@ -11,6 +11,7 @@ let base = "https://embed.learnj.de/include/";
 let scripts = [
     base + "lib/pixijs/pixi.js",
     base + "lib/pixi3d/pixi3d.js",
+    base + "lib/p5.js/p5.js",
     base + 'js.webpack/javaOnlineEmbedded.css',
     base + "lib/jquery/jquery-3.3.1.js",
     base + "lib/markdownit/markdownit.min.js",
@@ -66,7 +67,7 @@ function initScripts(jo_doc) {
     bodyElement.style.margin = "0";
     window.javaOnlineDir = base;
     includeJs(base + "js.webpack/javaOnline-embedded.js");
-    includeJs(base + "lib/p5.js/p5.js");
+    // includeJs(base + "lib/p5.js/p5.js");
 
 }
 

@@ -76,7 +76,7 @@ export class IntPrimitiveType extends PrimitiveType {
         this.description = "ganze Zahl"
 
         this.operationTable = {
-            [TokenType.plus]: { "long": longPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType, "String": stringPrimitiveType },
+            [TokenType.plus]: { "char": intPrimitiveType, "long": longPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType, "String": stringPrimitiveType },
             [TokenType.minus]: { "none": intPrimitiveType, "long": longPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
             [TokenType.multiplication]: { "long": longPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
             [TokenType.modulo]: { "long": longPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType },
@@ -909,7 +909,7 @@ export class CharPrimitiveType extends PrimitiveType {
         this.description = "ein Zeichen"
 
         this.operationTable = {
-            [TokenType.plus]: { "String": stringPrimitiveType, "char": stringPrimitiveType },
+            [TokenType.plus]: { "String": stringPrimitiveType, "char": stringPrimitiveType, "int": intPrimitiveType },
             [TokenType.equal]: { "char": booleanPrimitiveType },
             [TokenType.notEqual]: { "char": booleanPrimitiveType },
             [TokenType.lower]: { "char": booleanPrimitiveType },

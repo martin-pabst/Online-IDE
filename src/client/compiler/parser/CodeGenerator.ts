@@ -837,7 +837,7 @@ export class CodeGenerator {
 
     }
 
-    ensureAutomaticCasting(typeFrom: Type, typeTo: Type, position?: TextPosition, nodeFrom?: ASTNode): boolean {
+    ensureAutomaticCasting(typeFrom: Type, typeTo: Type, position?: TextPosition, nodeFrom?: ASTNode, stackPosRelative: number = 0): boolean {
 
         if (typeFrom == null || typeTo == null) return false;
 
@@ -883,7 +883,8 @@ export class CodeGenerator {
                 this.pushStatements({
                     type: TokenType.castValue,
                     newType: typeTo,
-                    position: position
+                    position: position,
+                    stackPosRelative: stackPosRelative
                 });
             }
         }
@@ -3216,6 +3217,12 @@ export class CodeGenerator {
             }
 
             let resultType = leftType.type.getResultType(node.operator, rightType.type);
+            if(leftType.type == charPrimitiveType && rightType.type == intPrimitiveType){
+                this.ensureAutomaticCasting(leftType.type, rightType.type, node.position, node, -1);
+            }
+            if(leftType.type == intPrimitiveType && rightType.type == charPrimitiveType){
+                this.ensureAutomaticCasting(rightType.type, leftType.type, node.position, node, 0);
+            }
 
             let unboxableLeft = leftType.type["unboxableAs"];
             let unboxableRight = rightType.type["unboxableAs"];

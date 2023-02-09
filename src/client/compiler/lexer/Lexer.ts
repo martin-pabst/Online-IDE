@@ -360,7 +360,7 @@ export class Lexer {
                         this.next();
                         return;
                     } else if (this.isDigit(this.nextChar, 10) && !
-                        ([TokenType.identifier, TokenType.integerConstant, TokenType.floatingPointConstant, TokenType.rightBracket, TokenType.rightSquareBracket].indexOf(this.nonSpaceLastTokenType) >= 0)
+                        ([TokenType.identifier, TokenType.integerConstant, TokenType.floatingPointConstant, TokenType.charConstant, TokenType.rightBracket, TokenType.rightSquareBracket].indexOf(this.nonSpaceLastTokenType) >= 0)
                     ) {
                         this.lexNumber();
                         return;

@@ -972,6 +972,15 @@ export class Parser {
                     let resultType = typeLeft.getResultType(operator, typeRight);
                     if (resultType != null) {
                         constantFolding = true;
+
+                        if(typeLeft == charPrimitiveType && typeRight == intPrimitiveType){
+                            pcLeft.constant = (<string>pcLeft.constant).charCodeAt(0);
+                        }
+                        if(typeRight == charPrimitiveType && typeLeft == intPrimitiveType){
+                            pcRight.constant = (<string>pcRight.constant).charCodeAt(0);
+                        }
+
+
                         let result = typeLeft.compute(operator, { type: typeLeft, value: pcLeft.constant },
                             { type: typeRight, value: pcRight.constant });
 

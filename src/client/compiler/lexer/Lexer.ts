@@ -871,55 +871,63 @@ export class Lexer {
         }
 
         let tt = TokenType.integerConstant;
-
-        if (this.currentChar == ".") {
-            tt = TokenType.floatingPointConstant;
-
-            this.next();
-            while (this.isDigit(this.currentChar, 10)) {
-                this.next();
-            }
-
-            if (radix != 10) {
-                this.pushError("Eine float/double-Konstante darf nicht mit 0, 0b oder 0x beginnen.", this.pos - posStart, "error", this.line, this.column - (this.pos - posStart));
-            }
-
-        }
-
+        
+        let exponent: number = 0;
         let base = this.input.substring(posStart, this.pos);
 
-        posStart = this.pos;
-        let exponent: number = 0;
-
-        let hasExponential: boolean = false;
-        //@ts-ignore
-        if (this.currentChar == "e") {
-            hasExponential = true;
+        if(this.currentChar == "L"){
+            tt = TokenType.longConstant;
             this.next();
-            let posExponentStart: number = this.pos;
+        } else {
 
+            if (this.currentChar == ".") {
+                tt = TokenType.floatingPointConstant;
+    
+                this.next();
+                while (this.isDigit(this.currentChar, 10)) {
+                    this.next();
+                }
+    
+                if (radix != 10) {
+                    this.pushError("Eine float/double-Konstante darf nicht mit 0, 0b oder 0x beginnen.", this.pos - posStart, "error", this.line, this.column - (this.pos - posStart));
+                }
+    
+            }
+    
+    
+            posStart = this.pos;
+    
+            let hasExponential: boolean = false;
             //@ts-ignore
-            if (this.currentChar == '-') {
+            if (this.currentChar == "e") {
+                hasExponential = true;
                 this.next();
+                let posExponentStart: number = this.pos;
+    
+                //@ts-ignore
+                if (this.currentChar == '-') {
+                    this.next();
+                }
+    
+                while (this.isDigit(this.currentChar, 10)) {
+                    this.next();
+                }
+                if (radix != 10) {
+                    this.pushError("Eine float/double-Konstante darf nicht mit 0, 0b oder 0x beginnen.", this.pos - posStart, "error", this.line, this.column - (this.pos - posStart));
+                }
+                let exponentString = this.input.substring(posExponentStart, this.pos);
+                exponent = Number.parseInt(exponentString);
             }
-
-            while (this.isDigit(this.currentChar, 10)) {
+    
+            if (this.currentChar == 'd' || this.currentChar == 'f') {
+                tt = TokenType.floatingPointConstant;
                 this.next();
+                if (radix != 10) {
+                    this.pushError("Eine float/double-Konstante darf nicht mit 0, 0b oder 0x beginnen.", this.pos - posStart, "error", this.line, this.column - (this.pos - posStart));
+                }
             }
-            if (radix != 10) {
-                this.pushError("Eine float/double-Konstante darf nicht mit 0, 0b oder 0x beginnen.", this.pos - posStart, "error", this.line, this.column - (this.pos - posStart));
-            }
-            let exponentString = this.input.substring(posExponentStart, this.pos);
-            exponent = Number.parseInt(exponentString);
         }
 
-        if (this.currentChar == 'd' || this.currentChar == 'f') {
-            tt = TokenType.floatingPointConstant;
-            this.next();
-            if (radix != 10) {
-                this.pushError("Eine float/double-Konstante darf nicht mit 0, 0b oder 0x beginnen.", this.pos - posStart, "error", this.line, this.column - (this.pos - posStart));
-            }
-        }
 
         let value: number = (tt == TokenType.integerConstant) ? Number.parseInt(base, radix) : Number.parseFloat(base);
         value *= sign;

@@ -76,11 +76,11 @@ export class IntPrimitiveType extends PrimitiveType {
         this.description = "ganze Zahl"
 
         this.operationTable = {
-            [TokenType.plus]: { "char": intPrimitiveType, "long": longPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType, "String": stringPrimitiveType },
-            [TokenType.minus]: { "none": intPrimitiveType, "long": longPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
-            [TokenType.multiplication]: { "long": longPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
-            [TokenType.modulo]: { "long": longPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType },
-            [TokenType.division]: { "long": longPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
+            [TokenType.plus]: { "char": intPrimitiveType, "long": longPrimitiveType, "short": intPrimitiveType, "Short": intPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType, "String": stringPrimitiveType },
+            [TokenType.minus]: { "none": intPrimitiveType, "long": longPrimitiveType, "short": intPrimitiveType, "Short": intPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
+            [TokenType.multiplication]: { "long": longPrimitiveType, "short": intPrimitiveType, "Short": intPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
+            [TokenType.modulo]: { "long": longPrimitiveType, "short": intPrimitiveType, "Short": intPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType },
+            [TokenType.division]: { "long": longPrimitiveType, "short": intPrimitiveType, "Short": intPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
             [TokenType.doublePlus]: { "none": intPrimitiveType },
             [TokenType.doubleMinus]: { "none": intPrimitiveType },
             [TokenType.negation]: { "none": intPrimitiveType },
@@ -93,12 +93,12 @@ export class IntPrimitiveType extends PrimitiveType {
             [TokenType.notEqual]: { "long": booleanPrimitiveType, "int": booleanPrimitiveType, "float": booleanPrimitiveType, "double": booleanPrimitiveType, "Integer": booleanPrimitiveType, "Float": booleanPrimitiveType, "Double": booleanPrimitiveType },
 
             // binary ops
-            [TokenType.OR]: { "long": longPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType },
-            [TokenType.XOR]: { "long": longPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType },
-            [TokenType.ampersand]: { "long": longPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType },
-            [TokenType.shiftLeft]: { "long": longPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType },
-            [TokenType.shiftRight]: { "long": longPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType },
-            [TokenType.shiftRightUnsigned]: { "long": longPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType }
+            [TokenType.OR]: { "long": longPrimitiveType, "short": intPrimitiveType, "Short": intPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType },
+            [TokenType.XOR]: { "long": longPrimitiveType, "short": intPrimitiveType, "Short": intPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType },
+            [TokenType.ampersand]: { "long": longPrimitiveType, "short": intPrimitiveType, "Short": intPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType },
+            [TokenType.shiftLeft]: { "long": longPrimitiveType, "short": intPrimitiveType, "Short": intPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType },
+            [TokenType.shiftRight]: { "long": longPrimitiveType, "short": intPrimitiveType, "Short": intPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType },
+            [TokenType.shiftRightUnsigned]: { "long": longPrimitiveType, "short": intPrimitiveType, "Short": intPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType }
 
         };
 
@@ -110,6 +110,7 @@ export class IntPrimitiveType extends PrimitiveType {
             "String": { automatic: true, needsStatement: true },
             "char": { automatic: true, needsStatement: true },
             "int": { automatic: true, needsStatement: false },
+            "short": { automatic: true, needsStatement: false },
             "long": { automatic: true, needsStatement: false },
             "Integer": { automatic: true, needsStatement: false },
         }
@@ -248,11 +249,11 @@ export class LongPrimitiveType extends IntPrimitiveType {
         this.description = "ganze Zahl"
 
         this.operationTable = {
-            [TokenType.plus]: { "long": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType, "String": stringPrimitiveType },
-            [TokenType.minus]: { "none": intPrimitiveType, "long": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
-            [TokenType.multiplication]: { "long": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
-            [TokenType.modulo]: { "long": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType },
-            [TokenType.division]: { "long": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
+            [TokenType.plus]: { "long": longPrimitiveType, "short": longPrimitiveType, "Short": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType, "String": stringPrimitiveType },
+            [TokenType.minus]: { "none": intPrimitiveType, "long": longPrimitiveType, "short": longPrimitiveType, "Short": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
+            [TokenType.multiplication]: { "long": longPrimitiveType, "short": longPrimitiveType, "Short": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
+            [TokenType.modulo]: { "long": longPrimitiveType, "short": longPrimitiveType, "Short": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType },
+            [TokenType.division]: { "long": longPrimitiveType, "short": longPrimitiveType, "Short": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
             [TokenType.doublePlus]: { "none": intPrimitiveType },
             [TokenType.doubleMinus]: { "none": intPrimitiveType },
             [TokenType.negation]: { "none": intPrimitiveType },
@@ -265,12 +266,12 @@ export class LongPrimitiveType extends IntPrimitiveType {
             [TokenType.notEqual]: { "long": booleanPrimitiveType, "int": booleanPrimitiveType, "float": booleanPrimitiveType, "double": booleanPrimitiveType, "Integer": booleanPrimitiveType, "Float": booleanPrimitiveType, "Double": booleanPrimitiveType },
 
             // binary ops
-            [TokenType.OR]: { "long": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType },
-            [TokenType.XOR]: { "long": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType },
-            [TokenType.ampersand]: { "long": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType },
-            [TokenType.shiftLeft]: { "long": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType },
-            [TokenType.shiftRight]: { "long": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType },
-            [TokenType.shiftRightUnsigned]: { "long": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType }
+            [TokenType.OR]: { "long": longPrimitiveType, "short": longPrimitiveType, "Short": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType },
+            [TokenType.XOR]: { "long": longPrimitiveType, "short": longPrimitiveType, "Short": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType },
+            [TokenType.ampersand]: { "long": longPrimitiveType, "short": longPrimitiveType, "Short": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType },
+            [TokenType.shiftLeft]: { "long": longPrimitiveType, "short": longPrimitiveType, "Short": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType },
+            [TokenType.shiftRight]: { "long": longPrimitiveType, "short": longPrimitiveType, "Short": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType },
+            [TokenType.shiftRightUnsigned]: { "long": longPrimitiveType, "short": longPrimitiveType, "Short": longPrimitiveType, "int": longPrimitiveType, "Long": longPrimitiveType, "Integer": longPrimitiveType }
 
         };
 
@@ -283,6 +284,7 @@ export class LongPrimitiveType extends IntPrimitiveType {
             "char": { automatic: true, needsStatement: true },
             "int": { automatic: false, needsStatement: false },
             "long": { automatic: true, needsStatement: false },
+            "short": { automatic: true, needsStatement: false },
             "Integer": { automatic: true, needsStatement: false },
             "Long": { automatic: true, needsStatement: false },
         }
@@ -292,6 +294,65 @@ export class LongPrimitiveType extends IntPrimitiveType {
 
     toTokenType(): TokenType {
         return TokenType.longConstant;
+    }
+}
+
+export class ShortPrimitiveType extends IntPrimitiveType {
+    init() {
+
+        this.initialValue = 0;
+
+        this.identifier = "short";
+
+        this.description = "ganze Zahl"
+
+        this.operationTable = {
+            [TokenType.plus]: { "short": shortPrimitiveType, "int": intPrimitiveType, "Short": shortPrimitiveType, "Integer": intPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType, "String": stringPrimitiveType },
+            [TokenType.minus]: { "none": shortPrimitiveType, "short": shortPrimitiveType, "int": intPrimitiveType, "Short": shortPrimitiveType, "Integer": intPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
+            [TokenType.multiplication]: { "short": shortPrimitiveType, "int": intPrimitiveType, "Short": shortPrimitiveType, "Integer": intPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
+            [TokenType.modulo]: { "short": shortPrimitiveType, "int": intPrimitiveType, "Short": shortPrimitiveType, "Integer": intPrimitiveType },
+            [TokenType.division]: { "short": shortPrimitiveType, "int": intPrimitiveType, "Short": shortPrimitiveType, "Integer": intPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
+            [TokenType.doublePlus]: { "none": shortPrimitiveType },
+            [TokenType.doubleMinus]: { "none": shortPrimitiveType },
+            [TokenType.negation]: { "none": shortPrimitiveType },
+            [TokenType.tilde]: { "none": shortPrimitiveType },
+            [TokenType.lower]: { "short": booleanPrimitiveType, "int": booleanPrimitiveType, "float": booleanPrimitiveType, "double": booleanPrimitiveType, "Integer": booleanPrimitiveType, "Float": booleanPrimitiveType, "Double": booleanPrimitiveType },
+            [TokenType.greater]: { "short": booleanPrimitiveType, "int": booleanPrimitiveType, "float": booleanPrimitiveType, "double": booleanPrimitiveType, "Integer": booleanPrimitiveType, "Float": booleanPrimitiveType, "Double": booleanPrimitiveType },
+            [TokenType.lowerOrEqual]: { "short": booleanPrimitiveType, "int": booleanPrimitiveType, "float": booleanPrimitiveType, "double": booleanPrimitiveType, "Integer": booleanPrimitiveType, "Float": booleanPrimitiveType, "Double": booleanPrimitiveType },
+            [TokenType.greaterOrEqual]: { "short": booleanPrimitiveType, "int": booleanPrimitiveType, "float": booleanPrimitiveType, "double": booleanPrimitiveType, "Integer": booleanPrimitiveType, "Float": booleanPrimitiveType, "Double": booleanPrimitiveType },
+            [TokenType.equal]: { "short": booleanPrimitiveType, "int": booleanPrimitiveType, "float": booleanPrimitiveType, "double": booleanPrimitiveType, "Integer": booleanPrimitiveType, "Float": booleanPrimitiveType, "Double": booleanPrimitiveType },
+            [TokenType.notEqual]: { "short": booleanPrimitiveType, "int": booleanPrimitiveType, "float": booleanPrimitiveType, "double": booleanPrimitiveType, "Integer": booleanPrimitiveType, "Float": booleanPrimitiveType, "Double": booleanPrimitiveType },
+
+            // binary ops
+            [TokenType.OR]: { "short": shortPrimitiveType, "int": intPrimitiveType, "Short": shortPrimitiveType, "Integer": shortPrimitiveType },
+            [TokenType.XOR]: { "short": shortPrimitiveType, "int": intPrimitiveType, "Short": shortPrimitiveType, "Integer": shortPrimitiveType },
+            [TokenType.ampersand]: { "short": shortPrimitiveType, "int": intPrimitiveType, "Short": shortPrimitiveType, "Integer": shortPrimitiveType },
+            [TokenType.shiftLeft]: { "short": shortPrimitiveType, "int": intPrimitiveType, "Short": shortPrimitiveType, "Integer": shortPrimitiveType },
+            [TokenType.shiftRight]: { "short": shortPrimitiveType, "int": intPrimitiveType, "Short": shortPrimitiveType, "Integer": shortPrimitiveType },
+            [TokenType.shiftRightUnsigned]: { "short": shortPrimitiveType, "int": intPrimitiveType, "Short": shortPrimitiveType, "Integer": shortPrimitiveType }
+
+        };
+
+        // this.canCastTolist = [floatPrimitiveType, doublePrimitiveType, stringPrimitiveType, charPrimitiveType];
+
+        this.canCastToMap = {
+            "float": { automatic: true, needsStatement: false },
+            "double": { automatic: true, needsStatement: false },
+            "String": { automatic: true, needsStatement: true },
+            "char": { automatic: true, needsStatement: true },
+            "int": { automatic: false, needsStatement: false },
+            "long": { automatic: true, needsStatement: false },
+            "short": { automatic: true, needsStatement: false },
+            "Short": { automatic: true, needsStatement: false },
+            "Integer": { automatic: true, needsStatement: false },
+            "Long": { automatic: true, needsStatement: false },
+        }
+
+
+    }
+
+    toTokenType(): TokenType {
+        return TokenType.shortConstant;
     }
 }
 
@@ -307,10 +368,10 @@ export class FloatPrimitiveType extends PrimitiveType {
         this.description = "Fließkommazahl mit einfacher Genauigkeit"
 
         this.operationTable = {
-            [TokenType.plus]: { "Integer": floatPrimitiveType, "int": floatPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType, "String": stringPrimitiveType },
-            [TokenType.minus]: { "none": floatPrimitiveType, "Integer": floatPrimitiveType, "int": floatPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
-            [TokenType.multiplication]: { "Integer": floatPrimitiveType, "int": floatPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
-            [TokenType.division]: { "Integer": floatPrimitiveType, "int": floatPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
+            [TokenType.plus]: { "short": floatPrimitiveType, "Short": floatPrimitiveType, "Integer": floatPrimitiveType, "int": floatPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType, "String": stringPrimitiveType },
+            [TokenType.minus]: { "none": floatPrimitiveType, "short": floatPrimitiveType, "Short": floatPrimitiveType, "Integer": floatPrimitiveType, "int": floatPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
+            [TokenType.multiplication]: { "short": floatPrimitiveType, "Short": floatPrimitiveType, "Integer": floatPrimitiveType, "int": floatPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
+            [TokenType.division]: { "short": floatPrimitiveType, "Short": floatPrimitiveType, "Integer": floatPrimitiveType, "int": floatPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
             [TokenType.doublePlus]: { "none": floatPrimitiveType },
             [TokenType.doubleMinus]: { "none": floatPrimitiveType },
             [TokenType.negation]: { "none": floatPrimitiveType },
@@ -437,10 +498,10 @@ export class DoublePrimitiveType extends PrimitiveType {
         this.description = "Fließkommazahl mit doppelter Genauigkeit"
 
         this.operationTable = {
-            [TokenType.plus]: { "int": doublePrimitiveType, "Integer": doublePrimitiveType, "float": doublePrimitiveType, "Float": doublePrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType, "String": stringPrimitiveType },
-            [TokenType.minus]: { "none": doublePrimitiveType, "int": doublePrimitiveType, "Integer": doublePrimitiveType, "float": doublePrimitiveType, "Float": doublePrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
-            [TokenType.multiplication]: { "int": doublePrimitiveType, "Integer": doublePrimitiveType, "float": doublePrimitiveType, "Float": doublePrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
-            [TokenType.division]: { "int": doublePrimitiveType, "Integer": doublePrimitiveType, "float": doublePrimitiveType, "Float": doublePrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
+            [TokenType.plus]: { "int": doublePrimitiveType, "short": doublePrimitiveType, "Short": doublePrimitiveType, "Integer": doublePrimitiveType, "float": doublePrimitiveType, "Float": doublePrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType, "String": stringPrimitiveType },
+            [TokenType.minus]: { "none": doublePrimitiveType, "int": doublePrimitiveType, "short": doublePrimitiveType, "Short": doublePrimitiveType, "Integer": doublePrimitiveType, "float": doublePrimitiveType, "Float": doublePrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
+            [TokenType.multiplication]: { "int": doublePrimitiveType, "short": doublePrimitiveType, "Short": doublePrimitiveType, "Integer": doublePrimitiveType, "float": doublePrimitiveType, "Float": doublePrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
+            [TokenType.division]: { "int": doublePrimitiveType, "short": doublePrimitiveType, "Short": doublePrimitiveType, "Integer": doublePrimitiveType, "float": doublePrimitiveType, "Float": doublePrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
             [TokenType.doublePlus]: { "none": doublePrimitiveType },
             [TokenType.doubleMinus]: { "none": doublePrimitiveType },
             [TokenType.negation]: { "none": doublePrimitiveType },
@@ -991,6 +1052,7 @@ export class CharPrimitiveType extends PrimitiveType {
 export var voidPrimitiveType = new VoidPrimitiveType();
 export var intPrimitiveType = new IntPrimitiveType();
 export var longPrimitiveType = new LongPrimitiveType();
+export var shortPrimitiveType = new ShortPrimitiveType();
 export var floatPrimitiveType = new FloatPrimitiveType();
 export var doublePrimitiveType = new DoublePrimitiveType();
 export var booleanPrimitiveType = new BooleanPrimitiveType();

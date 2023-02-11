@@ -1151,6 +1151,7 @@ export class Parser {
             case TokenType.floatingPointConstant:
             case TokenType.stringConstant:
             case TokenType.booleanConstant:
+            case TokenType.longConstant:
                 term = {
                     type: TokenType.pushConstant,
                     position: this.getCurrentPosition(),

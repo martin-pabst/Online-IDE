@@ -2,7 +2,7 @@ import { Error, QuickFix, ErrorLevel } from "../lexer/Lexer.js";
 import { TextPosition, TokenType, TokenTypeReadable } from "../lexer/Token.js";
 import { ArrayType } from "../types/Array.js";
 import { Klass, Interface, StaticClass, Visibility, getVisibilityUpTo } from "../types/Class.js";
-import { booleanPrimitiveType, charPrimitiveType, floatPrimitiveType, intPrimitiveType, stringPrimitiveType, objectType, nullType, voidPrimitiveType, varType, doublePrimitiveType } from "../types/PrimitiveTypes.js";
+import { booleanPrimitiveType, charPrimitiveType, floatPrimitiveType, intPrimitiveType, stringPrimitiveType, objectType, nullType, voidPrimitiveType, varType, doublePrimitiveType, longPrimitiveType, shortPrimitiveType } from "../types/PrimitiveTypes.js";
 import { Attribute, Type, Variable, Value, PrimitiveType, UsagePositions, Method, Heap, getTypeIdentifier, Parameterlist } from "../types/Types.js";
 import { ASTNode, AttributeDeclarationNode, BinaryOpNode, ClassDeclarationNode, ConstantNode, DoWhileNode, ForNode, IdentifierNode, IfNode, IncrementDecrementNode, MethodcallNode, MethodDeclarationNode, NewObjectNode, ReturnNode, SelectArrayElementNode, SelectArributeNode, SuperconstructorCallNode, SuperNode, ThisNode, UnaryOpNode, WhileNode, LocalVariableDeclarationNode, ArrayInitializationNode, NewArrayNode, PrintNode, CastManuallyNode, EnumDeclarationNode, TermNode, SwitchNode, ScopeNode, ParameterNode, ForNodeOverCollecion, ConstructorCallNode } from "./AST.js";
 import { LabelManager } from "./LabelManager.js";
@@ -3126,6 +3126,13 @@ export class CodeGenerator {
         switch (node.constantType) {
             case TokenType.integerConstant:
                 type = intPrimitiveType;
+                break;
+            
+            case TokenType.longConstant:
+                type = longPrimitiveType;
+                break;
+            case TokenType.shortConstant:
+                type = shortPrimitiveType;
                 break;
             case TokenType.booleanConstant:
                 type = booleanPrimitiveType;

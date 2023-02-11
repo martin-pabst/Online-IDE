@@ -50,7 +50,7 @@ import { Workspace } from "../../workspace/Workspace.js";
 import { Error, ErrorLevel } from "../lexer/Lexer.js";
 import { TextPosition, Token, TokenType, TextPositionWithoutLength } from "../lexer/Token.js";
 import { Interface, Klass, Visibility } from "../types/Class.js";
-import { booleanPrimitiveType, BooleanType, CharacterType, charPrimitiveType, doublePrimitiveType, DoubleType, floatPrimitiveType, FloatType, IntegerType, intPrimitiveType, objectType, stringPrimitiveType, voidPrimitiveType, varType, longPrimitiveType, LongType } from "../types/PrimitiveTypes.js";
+import { booleanPrimitiveType, BooleanType, CharacterType, charPrimitiveType, doublePrimitiveType, DoubleType, floatPrimitiveType, FloatType, IntegerType, intPrimitiveType, objectType, stringPrimitiveType, voidPrimitiveType, varType, longPrimitiveType, LongType, shortPrimitiveType } from "../types/PrimitiveTypes.js";
 import { Attribute, Method, PrimitiveType, Type, Variable } from "../types/Types.js";
 import { ASTNode, MethodDeclarationNode, TypeNode } from "./AST.js";
 import { Breakpoint, Program, Statement } from "./Program.js";
@@ -787,6 +787,7 @@ export class BaseModule extends Module {
         this.typeStore.addType(voidPrimitiveType);
         this.typeStore.addType(intPrimitiveType); 
         this.typeStore.addType(longPrimitiveType); 
+        this.typeStore.addType(shortPrimitiveType); 
         this.typeStore.addType(floatPrimitiveType);
         this.typeStore.addType(doublePrimitiveType);
         this.typeStore.addType(charPrimitiveType);

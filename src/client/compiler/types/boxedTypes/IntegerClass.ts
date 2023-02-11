@@ -12,8 +12,8 @@ export class IntegerClass extends Klass {
         super("Integer", null, "Wrapper-Klasse, um int-Werte in Collections verenden zu können.");
         this.baseClass = baseClass;
 
-        this.addAttribute(new Attribute("MAX_VALUE", intPrimitiveType, (value) => { value.value = Number.MAX_SAFE_INTEGER }, true, Visibility.public, true, "Der größte Wert, den eine Variable vom Typ int annehmen kann"));
-        this.addAttribute(new Attribute("MIN_VALUE", intPrimitiveType, (value) => { value.value = Number.MIN_SAFE_INTEGER }, true, Visibility.public, true, "Der kleinste Wert, den eine Variable vom Typ int annehmen kann"));
+        this.addAttribute(new Attribute("MAX_VALUE", intPrimitiveType, (value) => { value.value = 2147483647 }, true, Visibility.public, true, "Der größte Wert, den eine Variable vom Typ int annehmen kann"));
+        this.addAttribute(new Attribute("MIN_VALUE", intPrimitiveType, (value) => { value.value = -2147483648 }, true, Visibility.public, true, "Der kleinste Wert, den eine Variable vom Typ int annehmen kann"));
 
         this.staticClass.setupAttributeIndicesRecursive();
 

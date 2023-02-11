@@ -1,4 +1,4 @@
-import { booleanPrimitiveType, charPrimitiveType, doublePrimitiveType, floatPrimitiveType, intPrimitiveType, stringPrimitiveType, voidPrimitiveType, IntegerType, FloatType, DoubleType, CharacterType, BooleanType, longPrimitiveType, LongType } from "../compiler/types/PrimitiveTypes.js";
+import { booleanPrimitiveType, charPrimitiveType, doublePrimitiveType, floatPrimitiveType, intPrimitiveType, stringPrimitiveType, voidPrimitiveType, IntegerType, FloatType, DoubleType, CharacterType, BooleanType, longPrimitiveType, LongType, shortPrimitiveType } from "../compiler/types/PrimitiveTypes.js";
 import { Formatter } from "../main/gui/Formatter.js";
 import { ThemeManager } from "../main/gui/ThemeManager.js";
 import { MainEmbedded } from "./MainEmbedded.js";
@@ -80,6 +80,7 @@ export class EmbeddedStarter {
         voidPrimitiveType.init();
         intPrimitiveType.init();
         longPrimitiveType.init();
+        shortPrimitiveType.init();
         floatPrimitiveType.init();
         doublePrimitiveType.init();
         booleanPrimitiveType.init();

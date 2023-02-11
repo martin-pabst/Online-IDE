@@ -3,6 +3,7 @@ export enum TokenType {
     // constants
     integerConstant,
     longConstant,
+    shortConstant,
     floatingPointConstant,
     booleanConstant,
     stringConstant,

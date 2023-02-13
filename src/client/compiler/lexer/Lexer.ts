@@ -873,9 +873,10 @@ export class Lexer {
         let tt = TokenType.integerConstant;
         
         let exponent: number = 0;
-        let base = this.input.substring(posStart, this.pos);
+        let base: string = "";
 
         if(this.currentChar == "L"){
+            base = this.input.substring(posStart, this.pos);
             tt = TokenType.longConstant;
             this.next();
         } else {
@@ -888,12 +889,14 @@ export class Lexer {
                     this.next();
                 }
     
+
                 if (radix != 10) {
                     this.pushError("Eine float/double-Konstante darf nicht mit 0, 0b oder 0x beginnen.", this.pos - posStart, "error", this.line, this.column - (this.pos - posStart));
                 }
     
             }
-    
+
+            base = this.input.substring(posStart, this.pos);
     
             posStart = this.pos;
     

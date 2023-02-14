@@ -46,6 +46,11 @@ export class SystemToolsClass extends Klass {
 
             }, false, true, "Pausiert das Programm für die angegebene Zeit in ms."));
 
+        this.addMethod(new Method("getStepCount", new Parameterlist([]), intPrimitiveType,
+            (parameters) => {
+                return module.main.getInterpreter().steps;
+            }, false, true, "Gibt die Anzahl der seit dem Start des Programms ausgeführten PCode-Anweisungen aus."));
+
         this.addMethod(new Method("addKeyListener", new Parameterlist([
             { identifier: "keyListener", type: module.typeStore.getType("KeyListener"), declaration: null, usagePositions: null, isFinal: true }
         ]), null,

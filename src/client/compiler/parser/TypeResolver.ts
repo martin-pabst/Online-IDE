@@ -545,9 +545,9 @@ export class TypeResolver {
     }
 
     resolveUnresolvedTypes(lastPass: boolean) {
-        for (let module of this.moduleStore.getModules(false)) {
-            module.dependsOnModules = new Map();
-        }
+        // for (let module of this.moduleStore.getModules(false)) {
+        //     module.dependsOnModules = new Map();
+        // }
 
         for (let module of this.moduleStore.getModules(false)) {
             let ut = this.unresolvedTypes.get(module);

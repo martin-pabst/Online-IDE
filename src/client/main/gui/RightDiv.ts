@@ -5,6 +5,7 @@ import { Main } from "../Main.js";
 import { ClassDiagram } from "./diagrams/classdiagram/ClassDiagram.js";
 import { ObjectDiagram } from "./diagrams/objectdiagram/ObjectDiagram.js";
 import { MainBase } from "../MainBase.js";
+import jQuery from 'jquery';
 
 export class RightDiv {
 

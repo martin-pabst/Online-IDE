@@ -3,6 +3,7 @@ import { UserData } from "../../communication/Data.js";
 import { PasswordChanger } from "./UserMenu.js";
 import { ajax } from "../../communication/AjaxHelper.js";
 import { WorkspaceImporter } from "./WorkspaceImporter.js";
+import jQuery from 'jquery';
 
 export type Action = (identifier: string) => void;
 

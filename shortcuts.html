@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Java-Online: API-Dokumentation</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <link rel='stylesheet' type='text/css' media='screen' href='assets/fonts/fonts.css'>
+
+    <link rel='stylesheet' type='text/css' media='screen' href='assets/css/shortcuts.css'>
+
+    <script src="lib/jquery/jquery-3.3.1.js"></script>
+    <!-- <script src="js/runtimelibrary/graphics/SpriteLibrary.js"></script> -->
+    <!-- <script src='js/help/ApiDoc.js' type="module"></script> -->
+</head>
+
+<body>
+
+    <div id="outer">
+        <div id="outer-heading">
+            <div>Java-Online: Keyboard-Shortcuts</div>
+        </div>
+        <div id="outer-bottom">
+            <div id="main">
+
+                <div class="jo_heading">Allgemein</div>
+                <table>
+                    <tr>
+                        <td class="jo_key">F1</td>
+                        <td class="jo_explanation">Öffnet die Eingabeleiste für Editor-Befehle</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Strg + Mausrad</td>
+                        <td class="jo_explanation">Editor-Zoom</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">F11</td>
+                        <td class="jo_explanation">Vollbild ein/aus</td>
+                    </tr>
+                </table>
+
+                <div class="jo_heading">Programm starten/debuggen</div>
+                <table>
+                    <tr>
+                        <td class="jo_key">F4</td>
+                        <td class="jo_explanation">Programm starten/pausieren</td>
+                    </tr>
+                    <!-- <tr>
+                        <td class="jo_key">F4</td>
+                        <td class="jo_explanation">Programm stoppen und zurücksetzen</td>
+                    </tr> -->
+                    <tr>
+                        <td class="jo_key">F6</td>
+                        <td class="jo_explanation">Einzelschritt (Step over)</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">F7</td>
+                        <td class="jo_explanation">Einzelschritt (Step into)</td>
+                    </tr>
+                    <!-- <tr>
+                        <td class="jo_key">F9</td>
+                        <td class="jo_explanation">Step out (führe aus bis die aktuelle Methode verlassen worden ist)</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">F10</td>
+                        <td class="jo_explanation">Restart</td>
+                    </tr> -->
+                </table>
+
+
+                <div class="jo_heading">Grundlegendes Editieren</div>
+                <table>
+                    <tr>
+                        <td class="jo_key">Strg + X</td>
+                        <td class="jo_explanation">Ausschneiden (ganze Zeile, falls nichts markiert)</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Strg + C</td>
+                        <td class="jo_explanation">In die Zwischenablage kopieren (ganze Zeile, falls nichts markiert)</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Alt + Pfeil oben/unten</td>
+                        <td class="jo_explanation">Den markierten Bereich (bzw. die aktuelle Zeile, falls nichts markiert)
+                            nach oben/unten verschieben</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Shift + Alt + Pfeil oben/unten</td>
+                        <td class="jo_explanation">Den markierten Bereich (bzw. die aktuelle Zeile, falls nichts markiert)
+                            nach oben/unten verdoppeln</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Strg + Shift + K</td>
+                        <td class="jo_explanation">Die ganze Zeile löschen</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Strg + Enter</td>
+                        <td class="jo_explanation">Eine Zeile unterhalb des Cursors einfügen</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Strg + Shift + Enter</td>
+                        <td class="jo_explanation">Eine Zeile oberhalb des Cursors einfügen</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Strg + K</td>
+                        <td class="jo_explanation">Finde die korrespondierende Klammer</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Pos1 / Ende</td>
+                        <td class="jo_explanation">Gehe an den Beginn/ans Ende der Zeile</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Strg + Pos1 / Strg + Ende</td>
+                        <td class="jo_explanation">Gehe an den Beginn/ans Ende der Datei</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Strg + Pfeil auf/ab</td>
+                        <td class="jo_explanation">Scrolle rauf/runter ohne die Cursorposition zu ändern</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Alt + Bild auf/Bild ab</td>
+                        <td class="jo_explanation">Blättere eine Seite rauf/runter ohne die Cursorposition zu ändern</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Strg + # und Strg + ,</td>
+                        <td class="jo_explanation">Kommentiere den markierten Bereich/die Zeile ein/aus</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Shift + Alt + A</td>
+                        <td class="jo_explanation">Blockkommentar ein/aus</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Strg + G</td>
+                        <td class="jo_explanation">Gehe zu Zeile...</td>
+                    </tr>
+                </table>
+
+
+                <div class="jo_heading">Suchen/Ersetzen</div>
+                <table>
+                    <tr>
+                        <td class="jo_key">Strg + F</td>
+                        <td class="jo_explanation">Suchen ("find")</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Strg + H</td>
+                        <td class="jo_explanation">Suchen und Ersetzen</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">F3/Shift + F3</td>
+                        <td class="jo_explanation">Finde nächstes/vorhergehendes</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Alt + Enter</td>
+                        <td class="jo_explanation">Markiere alle Fundstellen und setze je einen Cursor rein</td>
+                    </tr>
+                </table>
+
+                <div class="jo_heading">Arbeiten mit mehreren Cursorn gleichzeitig</div>
+                <table>
+                    <tr>
+                        <td class="jo_key">Strg + D</td>
+                        <td class="jo_explanation">Markiere etwas -> Strg + D findet das nächste Vorkommen und setzt einen
+                            zusätzlichen Cursor rein</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Alt + Click</td>
+                        <td class="jo_explanation">Füge einen weiteren Cursor ein</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Strg + Alt + Pfeil rauf/runter</td>
+                        <td class="jo_explanation">Füge einen weiteren Cursor eine Zeile drüber/drunter ein</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Strg + U</td>
+                        <td class="jo_explanation">Mache die letzte Cursoraktion rückgängig</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Shift + Alt + I</td>
+                        <td class="jo_explanation">Füge je einen Cursor am Ende jeder markierten Zeile ein</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Wort selektieren, dann Strg + Shift + L</td>
+                        <td class="jo_explanation">Selektiere jedes Vorkommen dieses Wortes im ganzen Text und füge je
+                            einen Cursor ein</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Strg + F2</td>
+                        <td class="jo_explanation">Selektiere jedes Vorkommen des aktuellen Wortes im ganzen Text und füge
+                            je einen Cursor ein</td>
+                    </tr>
+                </table>
+
+                <div class="jo_heading">Text selektieren</div>
+                <table>
+                    <tr>
+                        <td class="jo_key">Shift + Pfeiltasten</td>
+                        <td class="jo_explanation">Selektiere zeichenweise</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Shift + Strg + Pfeiltasten</td>
+                        <td class="jo_explanation">Selektiere wortweise</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Strg + L</td>
+                        <td class="jo_explanation">Selektiere die aktuelle Zeile</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Shift + Alt + Pfeil rechts/links</td>
+                        <td class="jo_explanation">Aktuelle Selektion intelligent erweitern/verkleinern</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Shift + Alt + Mit der Maus selektieren</td>
+                        <td class="jo_explanation">Selektion eines rechteckigen Textbereiches</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Strg + Shift + Alt + Pfeiltasten</td>
+                        <td class="jo_explanation">Selektion eines rechteckigen Textbereiches</td>
+                    </tr>
+                </table>
+
+                <div class="jo_heading">Programmierhilfen</div>
+                <table>
+                    <tr>
+                        <td class="jo_key">Strg + Leertaste</td>
+                        <td class="jo_explanation">Vorschläge machen (kontextsensitive Hilfe)</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Strg + Shift + Leertaste</td>
+                        <td class="jo_explanation">Parametervorschläge machen</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Shift + Alt + F</td>
+                        <td class="jo_explanation">Programm schön formatieren</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">F12</td>
+                        <td class="jo_explanation">Geh zur Definition des Symbols, in dem der Cursor gerade steht</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">Alt + F12</td>
+                        <td class="jo_explanation">Öffne kleines "Peek-Fenster", in dem die Definition des aktuellen Symbols gezeigt wird</td>
+                    </tr>
+                    <tr>
+                        <td class="jo_key">F2</td>
+                        <td class="jo_explanation">Benenne das Symbol um, in dem der Cursor steht und berücksichtige dabei alle weiteren Vorkommen des Symbols.</td>
+                    </tr>
+                </table>
+
+
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>

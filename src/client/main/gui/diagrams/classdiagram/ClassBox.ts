@@ -7,6 +7,7 @@ import { ClassDiagram } from "./ClassDiagram.js";
 import { TextLine } from "../DiagramElement.js";
 import { hash } from "../../../../tools/StringTools.js";
 import { Method, Attribute } from "../../../../compiler/types/Types.js";
+import jQuery from 'jquery';
 
 export type SerializedClassBox = {
     className: string,

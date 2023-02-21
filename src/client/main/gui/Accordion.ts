@@ -1,3 +1,4 @@
+import jQuery from 'jquery';
 import { openContextMenu, makeEditable, ContextMenuItem, jo_mouseDetected, animateToTransparent } from "../../tools/HtmlTools.js";
 import { Helper } from "./Helper.js";
 import { escapeHtml } from "../../tools/StringTools.js";

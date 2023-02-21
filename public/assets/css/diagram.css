@@ -1,0 +1,125 @@
+@namespace svgns url(http://www.w3.org/2000/svg);
+
+svgns|g.svg_draggable {
+    cursor: move;
+    pointer-events: all;
+}
+
+svgns|text {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+     -ms-user-select: none;
+         user-select: none;
+}
+
+svgns|text.clickable:hover {
+    fill:#4020ff !important;
+}
+
+svgns|g.clickable:hover>text {
+    fill:#4020ff !important;
+}
+
+svgns|rect.dragging {
+    fill: #eceba1 !important
+}
+
+svgns|path.dropdown-triangle {
+    visibility: hidden;
+    fill: #0040ff;
+    pointer-events: all;
+    cursor: pointer;
+
+}
+
+svgns|g.svg_draggable:hover path.dropdown-triangle {
+    visibility: visible;
+}
+
+svgns|path.dropdown-triangle:hover {
+    stroke: #8297dd;
+    fill: #8297dd;
+}
+
+svgns|path.dropdown-triangle:active {
+    fill: #ffb451
+}
+
+
+/* Diagrams */
+.jo_diagram-canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    /* margin: 5px; */
+    background-color: #e4e4e4;
+    width: 10cm;
+    height: 10cm;
+    transform: scale(1.0);
+    transform-origin: top left;
+}
+
+.jo_diagram-svg {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.jo_diagram-svg:active {
+    cursor: move;
+}
+
+.jo_classdiagram-spinner {
+    display: none;
+    display: block;
+    z-index: 1;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    left: 30px;
+    top: 10px;
+}
+
+/* Object diagram */
+.jo_objectdiagram {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    background-color: var(--backgroundDark);
+}
+
+.jo_objectdiagram-header {
+    padding: 5px;
+    background-color: var(--backgroundLight);
+    border-bottom: 1px solid var(--slider);
+}
+
+.jo_objectdiagram-settings {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    padding-top: 5px;
+}
+
+.jo_objectdiagram-settings>div {
+    margin-right: 8px;
+}
+
+.jo_objectdiagram-canvas {
+    background-color: blue;
+    width: 100%;
+}
+
+.jo_objectDiagramError {
+    color: red;
+}
+
+.jo_classDiagram_Menubutton {
+    z-index: 10;
+    position: absolute;
+    left: 10px;
+    top: 10px;
+}

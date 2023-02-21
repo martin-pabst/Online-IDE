@@ -1,4 +1,7 @@
-function createDb(SQL, buffer) {
+/**
+ * BEWARE: Identical function in sqljsWorker.ts!!
+ */
+export function createDb(SQL, buffer) {
 
     db = new SQL.Database(buffer);
 

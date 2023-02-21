@@ -1,4 +1,4 @@
-var SpriteLibrary = [
+export var SpriteLibrary = [
     {filename: "ship_1.png", name: "Ship_1", index: 0, scale: 0.8},
     {filename: "ship_2.png", name: "Ship_1", index: 1, scale: 0.8},
     {filename: "ship_3.png", name: "Ship_1", index: 2, scale: 0.8},

@@ -1,3 +1,5 @@
+import {createDb} from './sqljsWorkerTools.js';
+
 export class WorkerSim {
 
     //@ts-ignore

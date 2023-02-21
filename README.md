@@ -1,10 +1,13 @@
+(**Bemerkung**: Dieses Repository unterscheidet sich vom Repository [Online-IDE](https://github.com/martin-pabst/Online-IDE) im Build-Prozess, den ich vollständig auf das Build-Tool [vite](https://vitejs.dev/) umgestellt habe. Sobald diese Lösung stabil ist, werde ich das alte Repository überschreiben.)
+
+
 # Online-IDE
 Java-ähnliche Programmiersprache (Compiler, Interpreter, Debugger) mit IDE, die **komplett im Browser** ausgeführt wird.
 
 Die IDE gibt es in zwei Varianten: als **[Online-IDE für Schulen](https://www.online-ide.de)** zur Verwendung im Unterricht und bei den Schüler/innen zuhause sowie als kleine **[Embedded-IDE](#2-embedded-ide)** (Open Source, GNU GPL v3), die in beliebige Webseiten eingebunden werden kann und mit der beispielsweise Informatiklehrkräfte begleitend zum Unterricht eine interaktive Dokumentation für die Schüler/innen erstellen können, [ähnlich wie LearnJ](https://www.learnj.de).
 
 ## 1. Online-IDE für Schulen
-![Online-IDE](images/Online-IDE.png)
+![Online-IDE](public/assets/graphics/Online-IDE.png)
 Mit der Online-IDE können Schüler/innen im Browser [in einer Java-ähnlichen Programmiersprache](https://www.learnj.de/doku.php?id=unterschiede_zu_java:start) programmieren. Die Programme werden auf dem Server gespeichert, so dass zuhause dieselbe Programmierumgebung bereitsteht wie in der Schule - ganz ohne Installation.
 
 Die Lehrkraft hat Zugriff auf die Workspaces der Schüler/innen, so dass sie Hausaufgaben bequem korrigieren und bei Programmfehlern schnell helfen kann.
@@ -24,13 +27,23 @@ Die Lehrkraft hat Zugriff auf die Workspaces der Schüler/innen, so dass sie Hau
 ## 2. Embedded-IDE
 Die Java-ähnliche Programmiersprache ist im [LearnJ-Wiki](https://www.learnj.de) ausführlich beschrieben und dort ist die IDE in Embedded-Form auch vielfach zu sehen. Hier [ein schönes Beispiel des vollen Funktionsumfangs!](https://www.learnj.de/doku.php?id=api:documentation:grafik:animation#beispiel_4feuerwerk)
 
+## Integration als <iframe> in Moodle
+Mehr dazu [auf dieser Seite.](https://www.embed.learnj.de/createwrapper.html) 
+
 ## Integration in eigene Webseiten
+Nach dem Checkout des Repository können Sie den dist-Ordner mit den fertigen Programmdateien erstellen mittels:
+```
+    npm install
+    npm run build
+```
+
 Benötigt werden
-  - htdocs/assets/*
-  - htdocs/js.webpack/javaOnlineEmbedded*
-  - htdocs/js.webpack/javaOnline-embedded*
-  - htdocs/lib/*
-  - src/client/runtimelibrary/graphics/Spritelibrary.js
+  - dist/assets/fonts
+  - dist/assets/graphics
+  - dist/assets/mp3
+  - dist/lib
+  - dist/online-ide-embedded.css
+  - dist/online-ide-embedded.js
 
 Im Header der Webseite müssen die verwendeten Bibliotheken geladen werden:
 ```html
@@ -42,17 +55,19 @@ Im Header der Webseite müssen die verwendeten Bibliotheken geladen werden:
     <link rel="preload" href="lib/monaco-editor/dev/vs/editor/editor.main.js" as="script">
     <link rel="preload" href="lib/monaco-editor/dev/vs/editor/editor.main.nls.de.js" as="script">
 
-    <script src="lib/pixijs/pixi.js"></script>
+    <link rel='stylesheet' type='text/css' media='screen' href='assets/fonts/fonts.css'>
+    
+    <script src="lib/p5.js/p5.js"></script>    
+    <script src="lib/pako/pako.js"></script>
+    <script src="lib/jszip/jszip.js"></script>
+    <script src="lib/upng/UPNG.js"></script>
 
-    <link rel='stylesheet' type='text/css' media='screen' href='js.webpack/javaOnlineEmbedded.css'>
-    <script src="lib/jquery/jquery-3.3.1.js"></script>
     <script src="lib/markdownit/markdownit.min.js"></script>
     <script src="lib/monaco-editor/dev/vs/loader.js"></script>
-    <script src="src/client/runtimelibrary/graphics/SpriteLibrary.js"></script>
     <script src="lib/howler/howler.core.min.js"></script>
-    <script src="lib/p5.js/p5.js"></script>
 
-    <script type="module" src="js.webpack/javaOnline-embedded.js"></script>
+    <script type="module" crossorigin src="/online-ide-embedded.js"></script>
+    <link rel="stylesheet" href="/online-ide-embedded.css">
 
 </head>
 ```
@@ -79,7 +94,7 @@ for(int i = 0; i < 10; i++){
 </div>
 ```
 Dieses Beispiel erscheint so im Browser:
-![Beispiel 1](images/Beispiel_1.png)
+![Beispiel 1](public/assets/graphics/Beispiel_1.png)
 
 ### Beispiel mit Dateiliste, Console, Fehlerliste und Tipp
 ```html
@@ -124,7 +139,7 @@ vy = v * Math.sin(w);
 </div>
 ```
 Dieses Beispiel erscheint so im Browser:
-![Beispiel 2](images/Beispiel_2.png)
+![Beispiel 2](public/assets/graphics/Beispiel_2.png)
 
 ### Das Attribut data-java-online
 Im Attribut `data-java-online` kann die Embedded-IDE konfiguriert werden:

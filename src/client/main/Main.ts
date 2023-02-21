@@ -1,3 +1,4 @@
+import jQuery from 'jquery';
 import { ClassData, UserData, Workspaces } from "../communication/Data.js";
 import { NetworkManager } from "../communication/NetworkManager.js";
 import { Compiler, CompilerStatus } from "../compiler/Compiler.js";
@@ -33,6 +34,7 @@ import { TextPositionWithModule } from "../compiler/types/Types.js";
 import { checkIfMousePresent } from "../tools/HtmlTools.js";
 import { InconsistencyFixer } from "../workspace/InconsistencyFixer.js";
 import { SpriteManager } from "../spritemanager/SpriteManager.js";
+import * as PIXI from 'pixi.js';
 
 export class Main implements MainBase {
 
@@ -202,7 +204,7 @@ export class Main implements MainBase {
 
         this.correctPIXITransform();
 
-        PIXI.utils.skipHello(); // don't show PIXI-Message in browser console
+        PIXI.settings.RENDER_OPTIONS.hello = false; // don't show PIXI-Message in browser console
 
         this.themeManager = new ThemeManager();
 
@@ -325,7 +327,7 @@ export class Main implements MainBase {
 
         this.startTimer();
 
-        $(window).on('unload', function() {
+        jQuery(window).on('unload', function() {
             
             if(navigator.sendBeacon && that.user != null){
                 that.networkManager.sendUpdates(null, false, true);

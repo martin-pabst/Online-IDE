@@ -10,6 +10,8 @@ import { FilledShapeDefaults } from "../FilledShapeDefaults.js";
 import { ShapeHelper } from "../Shape.js";
 import { Boxes3d } from "./Boxes3d.js";
 import { RobotBrick, RobotCubeFactory, RobotMarker } from "./RobotCubeFactory.js";
+import * as PIXI from 'pixi.js';
+import * as Pixi3d from 'pixi3d/pixi7';
 
 export class RobotClass extends Klass {
 
@@ -709,7 +711,7 @@ export class RobotWorldHelper {
 
 
     renderOrnamentsAndInitCamera() {
-        this.worldHelper.app.renderer.backgroundColor = 0x8080ff;
+        (<PIXI.Renderer>this.worldHelper.app.renderer).background.color = 0x8080ff;
 
         let gp = this.robotCubeFactory.getGrassPlane(this.worldX, this.worldY);
         this.container3D.addChild(gp);
@@ -733,7 +735,7 @@ export class RobotWorldHelper {
         northSprite.scale.set(257.0/40, 1, 1);
         northSprite.rotationQuaternion.setEulerAngles(0, 90, 0);
 
-        let control = new Pixi3d.CameraOrbitControl(this.worldHelper.app.view, this.camera);
+        let control = new Pixi3d.CameraOrbitControl(<any>this.worldHelper.app.view, this.camera);
         control.angles.x = 45;
         control.angles.y = -20;
         control.target = { x: this.worldX - 1, y: 0, z: this.worldY - 1 }
@@ -1031,7 +1033,7 @@ export class RobotHelper {
     render(): void {
 
         //@ts-ignore
-        let robot = Pixi3d.Model.from(PIXI.Loader.shared.resources["steve"].gltf);
+        let robot = Pixi3d.Model.from(PIXI.Assets.get("steve"));
         robot.scale.set(0.1);
         for (let mesh of robot.meshes) {
             let sm = <Pixi3d.StandardMaterial>mesh.material;

@@ -11,6 +11,7 @@ import { StaticClass } from "../compiler/types/Class.js";
 import { AdhocCompiler } from "../compiler/AdhocCompiler.js";
 import { WatcherElement } from "./WatcherElement.js";
 import { MainBase } from "../main/MainBase.js";
+import jQuery from "jquery";
 
 export class Debugger {
 

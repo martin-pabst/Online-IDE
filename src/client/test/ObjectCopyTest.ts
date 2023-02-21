@@ -1,3 +1,4 @@
+import jQuery from 'jquery';
 
 jQuery(() => {
     let t: Test = new Test();

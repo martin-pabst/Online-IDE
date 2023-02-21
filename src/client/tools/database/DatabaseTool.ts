@@ -77,7 +77,7 @@ export class DatabaseTool {
 
         // console.log("Starting worker...");
 
-        let url: string = "js/tools/database/sqljsWorker.js"
+        let url: string = "worker/sqljs-worker.js"
         if(this.main.isEmbedded()){
             //@ts-ignore
             url = window.javaOnlineDir + url;

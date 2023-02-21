@@ -1,9 +1,9 @@
+import jQuery from 'jquery';
 import { ajax } from "../communication/AjaxHelper.js";
 import { LoginRequest, LoginResponse, LogoutRequest, TicketLoginRequest, UserData } from "../communication/Data.js";
 import { Main } from "./Main.js";
 import { Helper } from "./gui/Helper.js";
 import { InterpreterState } from "../interpreter/Interpreter.js";
-import { userInfo } from "os";
 import { SoundTools } from "../tools/SoundTools.js";
 import { UserMenu } from "./gui/UserMenu.js";
 import { escapeHtml } from "../tools/StringTools.js";

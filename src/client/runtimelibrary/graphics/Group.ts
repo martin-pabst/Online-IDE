@@ -10,6 +10,7 @@ import { ShapeHelper, ShapeClass } from "./Shape.js";
 import { HitPolygonStore } from "./PolygonStore.js";
 import { ArrayType } from "../../compiler/types/Array.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
+import * as PIXI from 'pixi.js';
 
 export class CollisionPairClass extends Klass {
 

@@ -7,6 +7,7 @@ import { AccordionElement, AccordionPanel } from "../main/gui/Accordion.js";
 import {WorkspaceSettings } from "../communication/Data.js";
 import { NotifierClient } from "./NotifierClient.js";
 import { CacheManager } from "../tools/database/CacheManager.js";
+import jQuery from 'jquery';
 
 export class NetworkManager {
 
@@ -415,14 +416,16 @@ export class NetworkManager {
                     if (remoteFileData == null) {
                         this.main.projectExplorer.fileListPanel.removeElement(module);
                         this.main.currentWorkspace.moduleStore.removeModule(module);
-                    } else if (fileIdsSended.indexOf(fileId) < 0 && module.file.text != remoteFileData.text) {
-                        module.file.text = remoteFileData.text;
-                        module.model.setValue(remoteFileData.text);
-
-                        module.file.saved = true;
-                        module.lastSavedVersionId = module.model.getAlternativeVersionId()
-                    }
-                    module.file.version = remoteFileData.version;
+                    } else {
+                        if (fileIdsSended.indexOf(fileId) < 0 && module.file.text != remoteFileData.text) {
+                            module.file.text = remoteFileData.text;
+                            module.model.setValue(remoteFileData.text);
+    
+                            module.file.saved = true;
+                            module.lastSavedVersionId = module.model.getAlternativeVersionId()
+                        }
+                        module.file.version = remoteFileData.version;
+                    } 
                 }
 
 
@@ -613,7 +616,7 @@ export class NetworkManager {
             token: token
         }
 
-        $.ajax({
+        jQuery.ajax({
             type: 'POST',
             async: true,
             data: JSON.stringify(request),

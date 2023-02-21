@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Java-Online: API-Dokumentation</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <link rel='stylesheet' type='text/css' media='screen' href='assets/fonts/fonts.css'>
+
+    <link rel='stylesheet' type='text/css' media='screen' href='assets/css/apidoc.css'>
+
+    <link rel="preload" href="lib/monaco-editor/dev/vs/editor/editor.main.js" as="script">
+    <link rel="preload" href="lib/monaco-editor/dev/vs/editor/editor.main.nls.de.js" as="script">
+
+    <script src="lib/monaco-editor/dev/vs/loader.js"></script>
+    <!-- <script src="js/runtimelibrary/graphics/SpriteLibrary.js"></script> -->
+    <!-- <script src='js/help/ApiDoc.js' type="module"></script> -->
+    <script type="module" src="/src/client/help/ApiDoc.ts"></script>
+</head>
+
+<body>
+
+    <div id="outer">
+        <div id="outer-heading">
+            <div>Java-Online: API-Dokumentation</div>
+        </div>
+        <div id="outer-bottom">
+            <div id="menu">
+                <div>
+                    <div class="jo_menu-heading">Klassen:</div>
+                    <div id="classes"></div>
+                    <div class="jo_menu-heading">Interfaces:</div>
+                    <div id="interfaces"></div>
+                    <div class="jo_menu-heading">Enums:</div>
+                    <div id="enums"></div>
+                </div>
+            </div>
+            <div id="main"></div>
+        </div>
+    </div>
+    <div style="display: none;" id="editordiv"></div>
+
+
+</body>
+
+</html>

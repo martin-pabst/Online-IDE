@@ -1,5 +1,6 @@
 import { DiagramUnitCm, Diagram } from "./Diagram.js"; 
 import { Rectangle } from "./classdiagram/Router.js";
+import jQuery from 'jquery';
 
 export enum Alignment {
     left, center, right

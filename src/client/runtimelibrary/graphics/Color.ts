@@ -5,9 +5,6 @@ import { intPrimitiveType, doublePrimitiveType, voidPrimitiveType, stringPrimiti
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { ShapeHelper } from "./Shape.js";
 import { ColorHelper } from "./ColorHelper.js";
-import { FilledShapeHelper } from "./FilledShape.js";
-import { WorldHelper, WorldClass } from "./World.js";
-import { param } from "jquery";
 
 export type ColorClassIntrinsicData = {
     red: number,

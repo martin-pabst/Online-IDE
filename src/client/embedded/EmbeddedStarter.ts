@@ -2,8 +2,18 @@ import { booleanPrimitiveType, charPrimitiveType, doublePrimitiveType, floatPrim
 import { Formatter } from "../main/gui/Formatter.js";
 import { ThemeManager } from "../main/gui/ThemeManager.js";
 import { MainEmbedded } from "./MainEmbedded.js";
+import * as PIXI from 'pixi.js';
+import jQuery from 'jquery';
 
-// declare const require: any;
+// All css files for fullscreen online-ide:
+import "/css/editor.css";
+import "/css/bottomdiv.css";
+import "/css/run.css";
+import "/css/debugger.css";
+import "/css/helper.css";
+import "/css/icons.css";
+import "/css/embedded.css";
+
 
 export type ScriptType = "java" | "hint";
 
@@ -29,7 +39,7 @@ export class EmbeddedStarter {
 
         this.correctPIXITransform();
 
-        PIXI.utils.skipHello(); // don't show PIXI-Message in browser console
+        PIXI.settings.RENDER_OPTIONS.hello = false; // don't show PIXI-Message in browser console
 
         this.themeManager = new ThemeManager();
     }
@@ -107,17 +117,17 @@ export class EmbeddedStarter {
     }
 
     async initJavaOnlineDivs() {
-        
-        let divsWithScriptLists:[JQuery<HTMLElement>, JOScript[]][] = [];
+
+        let divsWithScriptLists: [JQuery<HTMLElement>, JOScript[]][] = [];
 
         jQuery('.java-online').addClass('notranslate').each((index: number, element: HTMLElement) => {
             let $div = jQuery(element);
             let scriptList: JOScript[] = [];
-            
+
             $div.find('script').each((index: number, element: HTMLElement) => {
                 let $script = jQuery(element);
                 let type: ScriptType = "java";
-                if($script.data('type') != null) type = <ScriptType>($script.data('type'));
+                if ($script.data('type') != null) type = <ScriptType>($script.data('type'));
                 let srcAttr = $script.attr('src');
                 let text = $script.text().trim();
                 let script: JOScript = {
@@ -125,7 +135,7 @@ export class EmbeddedStarter {
                     title: $script.attr('title'),
                     text: text
                 };
-                if(srcAttr != null) script.url = srcAttr;
+                if (srcAttr != null) script.url = srcAttr;
                 script.text = this.eraseDokuwikiSearchMarkup(script.text);
                 scriptList.push(script);
             });
@@ -134,7 +144,7 @@ export class EmbeddedStarter {
 
         });
 
-        for(let dws of divsWithScriptLists){
+        for (let dws of divsWithScriptLists) {
             await this.initDiv(dws[0], dws[1]);
         }
 
@@ -146,8 +156,8 @@ export class EmbeddedStarter {
 
     async initDiv($div: JQuery<HTMLElement>, scriptList: JOScript[]) {
 
-        for(let script of scriptList){
-            if(script.url != null){
+        for (let script of scriptList) {
+            if (script.url != null) {
                 const response = await fetch(script.url)
                 script.text = await response.text()
             }
@@ -166,13 +176,13 @@ jQuery(function () {
     let prefix = "";
     let editorPath = "lib/monaco-editor/dev/vs"
     //@ts-ignore
-    if(window.javaOnlineDir != null){
+    if (window.javaOnlineDir != null) {
         //@ts-ignore
         prefix = window.javaOnlineDir;
     }
 
     //@ts-ignore
-    if(window.monacoEditorPath != null){
+    if (window.monacoEditorPath != null) {
         //@ts-ignore
         editorPath = window.monacoEditorPath;
     }
@@ -196,12 +206,19 @@ jQuery(function () {
 
     });
 
-    PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
-    PIXI.Loader
-        .shared.add("spritesheet",  prefix + "assets/graphics/spritesheet.json")
-        .add("steve", prefix +"assets/graphics/robot/minecraft_steve/scene.gltf")
-        // .add('assets/graphics/robot/minecraft_grass.png')
-        .load(() => { });
+    //@ts-ignore
+    p5.disableFriendlyErrors = true
+    let pathPraefix: string = "";
+    //@ts-ignore
+    if(window.javaOnlineDir != null){
+        //@ts-ignore
+        pathPraefix = window.javaOnlineDir;
+    }
+
+    PIXI.Assets.add("spritesheet", pathPraefix + "assets/graphics/spritesheet.json", { scaleMode: PIXI.SCALE_MODES.NEAREST });
+    PIXI.Assets.add("steve", pathPraefix + "assets/graphics/robot/minecraft_steve/scene.gltf");
+
+    PIXI.Assets.load(["spritesheet", "steve"]);
 
 
 });

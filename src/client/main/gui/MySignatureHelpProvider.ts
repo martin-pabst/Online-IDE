@@ -1,7 +1,6 @@
 import { Main } from "../Main.js";
 import { Module, MethodCallPosition } from "../../compiler/parser/Module.js";
 import { Method } from "../../compiler/types/Types.js";
-import { sign } from "crypto";
 import { TextPosition } from "../../compiler/lexer/Token.js";
 import { MainBase } from "../MainBase.js";
 import { getTypeIdentifier } from "../../compiler/types/DeclarationHelper.js";

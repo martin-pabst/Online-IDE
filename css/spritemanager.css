@@ -1,0 +1,216 @@
+#spritemanager-div {
+    visibility: hidden;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    background-color: var(--backgroundDark);
+    top: 0;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+
+.jo_sm_mainHeading {
+    font-size: 20pt;
+    width: 100%;
+    color: var(--fontColorNormal);
+    user-select: none;
+    background-color: var(--backgroundLight);
+    padding: 2px;
+    border-bottom: 2px solid var(--slider);
+}
+
+
+.jo_sm_buttonDiv {
+    width: 100%;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.jo_sm_spritelistDiv {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+.jo_sm_spritelistOuter {
+    flex: 1;
+    overflow: auto;
+    width: 100%;
+    border-bottom: 2px solid var(--slider);
+}
+
+.jo_sm_spriteListLine {
+    display: flex;
+    padding: 3px 0;
+    flex-direction: row;
+    border-bottom: 1px solid var(--slider);
+}
+
+.jo_sm_spriteImage {
+    width: 40px;
+    max-height: 40px;
+}
+
+.jo_sm_button {
+    padding: 5px;
+    user-select: none;
+}
+
+.jo_sm_button.jo_active:hover {
+    filter: brightness(150%);
+    cursor: pointer;
+}
+
+.jo_sm_button.jo_active:active {
+    transform: scale(1.1);
+}
+
+.jo_sm_button:not(.jo_active) {
+    filter: grayscale();
+}
+
+.jo_sm_importExportArea {
+    display: flex;
+    flex-direction: row;
+    border-bottom: 2px solid var(--slider);
+}
+
+.jo_sm_importExportLeft {
+    display: flex;
+    flex-direction: column;
+    border-right: 2px solid var(--slider);
+    align-items: center;
+    padding: 10px;
+}
+
+.jo_sm_importExportCenter {
+    display: flex;
+    flex-direction: column;
+    border-right: 2px solid var(--slider);
+    align-items: left;
+    padding: 0;
+}
+
+.jo_sm_importExportMessages {
+    display: flex;
+    flex-direction: column;
+    width: 23em;
+    border-right: 2px solid var(--slider);
+    align-items: left;
+    padding: 10px 5px 5px 5px;
+}
+
+.jo_sm_messagesDiv {
+    width: 100%;
+}
+
+.jo_sm_messagesOuter {
+    width: 100%;
+    height: 8em;
+    margin-top: 5px;
+    overflow: auto;
+    background-color: var(--backgroundHeading);
+}
+
+.jo_sm_importExportRight {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    padding: 10px;
+}
+
+.jo_sm_importDropZone {
+    height: 100%;
+    border: 2px dotted lightgray;
+    border-radius: 0.5em;
+    text-align: center;
+    line-height: 2em;
+    padding: 5px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.jo_sm_importParameters {
+    display: flex;
+    flex-direction: row;
+    margin: 5px;
+}
+
+.jo_sm_parameterDiv {
+    display: flex;
+    flex-direction: row;
+}
+
+.jo_sm_parameterCaption {
+    margin-right: 5px;
+}
+
+.jo_sm_parameterInput {
+    margin-right: 10px;
+}
+
+.jo_sm_importButton {
+    margin: 5px 0;
+    background-color: var(--speedcontrol-grip);
+    color: var(--fontColorLight);
+    font-size: 10pt;
+    margin-left: 5px;
+}
+
+.jo_sm_buttonImportAll {
+    margin: 5px 0;
+    background-color: var(--speedcontrol-grip);
+    color: var(--fontColorLight);
+    font-size: 10pt;
+}
+
+.jo_sm_buttonExportAll {
+    margin: 5px 0;
+    background-color: var(--speedcontrol-grip);
+    color: var(--fontColorLight);
+    font-size: 10pt;
+}
+
+.jo_sm_buttonDeleteAll {
+    margin: 5px 0;
+    background-color: var(--error-position);
+    color: var(--fontColorLight);
+    font-size: 10pt;
+}
+
+.jo_sm_spritepreview {
+    position: relative;
+}
+
+.jo_spritepreview-innerbox {
+    background: url('/assets/graphics/checkerboard-background.png');
+    background-repeat: repeat;
+}
+
+.jo_sm_inputInfoDiv {
+    width: 25em;
+    display: flex;
+    flex-direction: column;
+}
+
+.jo_sm_inputDiv {
+    display: flex;
+    flex-direction: row;
+}
+
+.jo_sm_infoDiv {
+    color: lightgray;
+}
+
+.jo_sm_errorspan {
+    margin-left: 10px;
+    color: red;
+}

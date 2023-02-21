@@ -1,0 +1,45 @@
+
+import { resolve } from 'path'
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+    server:{
+      proxy:{
+        '/servlet': 'http://localhost:5500',
+        '/sprites': 'http://localhost:5500',
+        '/servlet/websocket': {target: 'ws://localhost:5500', ws: true},
+        '/servlet/subscriptionwebsocket': {target: 'ws://localhost:5500', ws: true},
+        '/worker': {
+          rewrite: (path) => path.replace('/worker', '/dist/worker'),
+          target: "http://localhost:4000"
+        }
+      }
+    },
+    build: {
+      sourcemap: true,
+      rollupOptions: {
+        input: {
+          main: resolve(__dirname, 'index.html'),
+          admin: resolve(__dirname, 'administration_mc.html'),
+          api: resolve(__dirname, 'api_documentation.html'),
+          spriteLibrary: resolve(__dirname, 'spriteLibrary.html'),
+          statistics: resolve(__dirname, 'statistics.html'),
+          shortcuts: resolve(__dirname, 'shortcuts.html'),
+          'diagram-worker': './src/client/main/gui/diagrams/classdiagram/Router.ts',
+          'sqljs-worker': './src/client/tools/database/sqljsWorker.ts'
+        },
+        output: {
+          entryFileNames: assetInfo => {
+            if(assetInfo.name.indexOf('worker') >= 0){
+              return 'worker/[name].js';
+            }
+            return '[name]-[hash].js';
+          },
+          assetFileNames: assetInfo => assetInfo.name.endsWith('css') ? '[name]-[hash][extname]' : 'assets/[name]-[hash][extname]',
+          chunkFileNames: 'assets/js/[name]-[hash].js',
+          manualChunks: {}
+        }
+      },
+      chunkSizeWarningLimit: 4912
+    }
+  });

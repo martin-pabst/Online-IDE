@@ -5,6 +5,7 @@ import { Klass, Visibility, StaticClass, Interface } from "../compiler/types/Cla
 import { Enum } from "../compiler/types/Enum.js";
 import { RuntimeObject } from "./RuntimeObject.js";
 import { ListHelper } from "../runtimelibrary/collections/ArrayList.js";
+import jQuery from "jquery";
 
 export class DebuggerElement {
 

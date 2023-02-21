@@ -11,6 +11,8 @@ import { GroupClass, GroupHelper } from "./Group.js";
 import { MouseListenerInterface } from "./MouseListener.js";
 import { ShapeClass, ShapeHelper } from "./Shape.js";
 import { SpriteHelper } from "./Sprite.js";
+import * as PIXI from 'pixi.js';
+import jQuery from 'jquery';
 
 export class WorldClass extends Klass {
 
@@ -483,9 +485,6 @@ export class WorldHelper {
 
     constructor(public width: number, public height: number, private module: Module, public world: RuntimeObject) {
 
-        PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
-        PIXI.settings.TARGET_FPMS = 30.0 / 1000.0;
-
         this.globalScale = 1;
 
         while (height > 1000 || width > 2000) {
@@ -557,8 +556,9 @@ export class WorldHelper {
 
         if (this.module.main.pixiApp) {
             this.app = this.module.main.pixiApp;
-            this.app.renderer.resize(width, height);
-            this.app.renderer.backgroundColor = 0x0;
+            let renderer = <PIXI.Renderer>this.app.renderer;
+            renderer.resize(width, height);
+            renderer.background.color = 0x0;
         } else {
             this.app = new PIXI.Application({
                 antialias: true,
@@ -576,6 +576,7 @@ export class WorldHelper {
 
         this.app.ticker.add(this.tickerFunction);
         this.app.ticker.maxFPS = 30;
+        this.app.ticker.minFPS = 30;
 
         this.interpreter.timerExtern = true;
 
@@ -586,7 +587,7 @@ export class WorldHelper {
 
         this.app.stage.addChild(this.stage);
 
-        this.$containerInner.append(this.app.view);
+        this.$containerInner.append(<any>this.app.view);
 
         this.interpreter.keyboardTool.keyPressedCallbacks.push((key) => {
             for (let kpa of that.keyPressedActors) {
@@ -816,12 +817,12 @@ export class WorldHelper {
     }
 
     setBackgroundColor(color: string | number) {
-
+        let renderer = (<PIXI.Renderer>(this.app.renderer));
         if (typeof color == "string") {
             let c = ColorHelper.parseColorToOpenGL(color);
-            this.app.renderer.backgroundColor = c.color;
+            renderer.background.color = c.color;
         } else {
-            this.app.renderer.backgroundColor = color;
+            renderer.background.color = color;
         }
 
     }

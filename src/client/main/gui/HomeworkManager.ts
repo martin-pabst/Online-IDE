@@ -1,3 +1,4 @@
+import jQuery from 'jquery';
 import { MainBase } from "../MainBase.js";
 import { makeDiv } from "../../tools/HtmlTools.js";
 import { Workspace } from "../../workspace/Workspace.js";

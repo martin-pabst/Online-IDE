@@ -14,6 +14,7 @@ import { SpriteLibraryPage } from "../../help/SpriteLibraryPage.js";
 import { RenderTexture } from "@pixi/core";
 import { convexhull } from "../../tools/ConvexHull.js";
 import { GroupHelper } from "./Group.js";
+import * as PIXI from 'pixi.js';
 
 export class SpriteClass extends Klass {
 
@@ -536,15 +537,9 @@ export class SpriteHelper extends ShapeHelper {
 
         this.textureName = name;
 
-        // let prefix = "";
-        // //@ts-ignore
-        // if (window.javaOnlineDir != null) {
-        //     //@ts-ignore
-        //     prefix = window.javaOnlineDir;
-        // }
-
-        // let sheet = PIXI.Loader.shared.resources[prefix + "assets/graphics/spritesheet.json"].spritesheet;
-        let sheet = PIXI.Loader.shared.resources["spritesheet"].spritesheet;
+        // let sheet = PIXI.Loader.shared.resources["spritesheet"].spritesheet;
+        let sheet = PIXI.Assets.get('spritesheet');
+        
         let nameWithIndex = name + "#" + index;
         let texture = sheet.textures[nameWithIndex];
         if(texture == null){

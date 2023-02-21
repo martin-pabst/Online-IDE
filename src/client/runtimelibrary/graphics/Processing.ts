@@ -5,6 +5,7 @@ import { charPrimitiveType, floatPrimitiveType, intPrimitiveType, stringPrimitiv
 import { Method, Parameterlist, Type, Value, Variable, Attribute } from "../../compiler/types/Types.js";
 import { Interpreter, InterpreterState } from "../../interpreter/Interpreter.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
+import jQuery from "jquery";
 
 // import * as p5 from "p5";
 type p5 = any;

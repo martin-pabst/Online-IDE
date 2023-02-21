@@ -1,8 +1,11 @@
+import * as PIXI from 'pixi.js';
+import * as Pixi3d from 'pixi3d/pixi7';
 import { WorldHelper } from "../World.js";
 import { Boxes3d } from "./Boxes3d.js";
 
 export function getSpritesheetTexture(identifier: string, copy: boolean = false, renderer: PIXI.Renderer = null) {
-    let sheet = PIXI.Loader.shared.resources["spritesheet"].spritesheet;
+    // let sheet = PIXI.Loader.shared.resources["spritesheet"].spritesheet;
+    let sheet = PIXI.Assets.get('spritesheet');
     let texture = sheet.textures[identifier];
 
     if (copy) {
@@ -254,13 +257,10 @@ export class RobotCubeFactory {
 
         let renderer = <PIXI.Renderer>worldHelper.app.renderer;
 
-        this.light1 = Object.assign(new Pixi3d.Light(), {
-            type: Pixi3d.LightType.ambient,
-            range: 100,
-            intensity: 30,
-            color: new Pixi3d.Color(1, 1, 1)
-        });
-        this.light1.position.set(-4, 4, 4);
+        let ibl = new Pixi3d.ImageBasedLighting(
+            Pixi3d.Cubemap.fromColors(new Pixi3d.Color(1,1,1)),
+            Pixi3d.Cubemap.fromColors(new Pixi3d.Color(1,1,1))
+        );
 
         this.light2 = Object.assign(new Pixi3d.Light(), {
             type: Pixi3d.LightType.directional,
@@ -271,8 +271,8 @@ export class RobotCubeFactory {
         this.light2.position.set(12, 16, -12);
         this.light2.rotationQuaternion.setEulerAngles(25, 45, 0);
 
-        this.lightingEnvironment = new Pixi3d.LightingEnvironment(<PIXI.Renderer>worldHelper.app.renderer);
-        this.lightingEnvironment.lights.push(this.light1, this.light2);
+        this.lightingEnvironment = new Pixi3d.LightingEnvironment(<PIXI.Renderer>worldHelper.app.renderer, ibl);
+        this.lightingEnvironment.lights.push(this.light2);
 
 
         this.grassBrickMaterial = new Pixi3d.StandardMaterial();

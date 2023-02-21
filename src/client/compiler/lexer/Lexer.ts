@@ -1,5 +1,4 @@
 import { TokenList, specialCharList, TokenType, Token, EscapeSequenceList, keywordList, TextPosition, TokenTypeReadable } from "./Token.js";
-import { text } from "express";
 import { ColorLexer } from "./ColorLexer.js";
 import { ColorHelper } from "../../runtimelibrary/graphics/ColorHelper.js";
 

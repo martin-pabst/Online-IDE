@@ -8,6 +8,7 @@ import { RoutingInput, RoutingOutput } from "./Router.js";
 import { MainBase } from "../../../MainBase.js";
 import { openContextMenu } from "../../../../tools/HtmlTools.js";
 import { TeachersWithClassesMI } from "../../../../administration/TeachersWithClasses.js";
+import jQuery from 'jquery';
 
 type ClassBoxes = {
     active: ClassBox[],
@@ -73,7 +74,7 @@ export class ClassDiagram extends Diagram {
     clearAfterLogout() {
         this.classBoxesRepository = {};
         this.arrows.forEach((arrow) => { arrow.remove(); });
-        $(this.svgElement).empty();
+        jQuery(this.svgElement).find(':not(.centerRectangle)').remove();
     }
 
     serialize(): SerializedClassDiagram {
@@ -275,7 +276,7 @@ export class ClassDiagram extends Diagram {
             this.routingWorker.terminate();
         }
 
-        this.routingWorker = new Worker('js/main/gui/diagrams/classdiagram/Router.js');
+        this.routingWorker = new Worker('worker/diagram-worker.js');
         let that = this;
         this.routingWorker.onmessage = function (e) {
             // when worker finished:

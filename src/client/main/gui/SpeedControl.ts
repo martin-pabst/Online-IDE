@@ -1,3 +1,4 @@
+import jQuery from 'jquery';
 import { convertPxToNumber } from "../../tools/HtmlTools.js";
 import { Interpreter, InterpreterState } from "../../interpreter/Interpreter.js";
 

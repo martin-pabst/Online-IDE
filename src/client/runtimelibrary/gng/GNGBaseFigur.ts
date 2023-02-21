@@ -7,6 +7,7 @@ import { Interpreter } from "../../interpreter/Interpreter.js";
 import { RectangleHelper } from "../graphics/Rectangle.js";
 import { FilledShapeHelper } from "../graphics/FilledShape.js";
 import { GNGFarben } from "./GNGFarben.js";
+import * as PIXI from 'pixi.js';
 
 export class GNGBaseFigurClass extends Klass {
 

@@ -2,6 +2,7 @@ import { Main } from "../Main.js";
 import { openContextMenu, ContextMenuItem } from "../../tools/HtmlTools.js";
 import { Dialog } from "./Dialog.js";
 import { ajax } from "../../communication/AjaxHelper.js";
+import jQuery from 'jquery';
 
 export class UserMenu {
 

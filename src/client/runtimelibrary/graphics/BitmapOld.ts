@@ -9,6 +9,7 @@ import { Interpreter } from "../../interpreter/Interpreter.js";
 import { ShapeHelper } from "./Shape.js";
 import { ColorHelper } from "./ColorHelper.js";
 import { ColorClassIntrinsicData } from "./Color.js";
+import * as PIXI from 'pixi.js';
 
 export class BitmapClassOld extends Klass {
 

@@ -1,7 +1,8 @@
-import { BaseTexture } from "pixi.js/index.js";
 import { MainBase } from "../main/MainBase.js";
 import { CacheManager } from "../tools/CacheManager.js";
 import { Workspace } from "../workspace/Workspace.js";
+import * as PIXI from 'pixi.js';
+import jQuery from 'jquery';
 
 
 export type PixiSpritesheetData = {
@@ -47,7 +48,7 @@ export class SpritesheetData {
             if(this.pngImageData != null && this.pixiSpritesheetData != null){
                 let baseTexture = PIXI.BaseTexture.fromBuffer(this.pngImageData, this.pixiSpritesheetData.meta.size.w, this.pixiSpritesheetData.meta.size.h);
                 main.userSpritesheet = new PIXI.Spritesheet(baseTexture, this.pixiSpritesheetData);
-                main.userSpritesheet.parse(() => {});
+                main.userSpritesheet.parse().then(() => {});
                 for(let identifier in this.pixiSpritesheetData.frames){
                     let hashIndex = identifier.indexOf('#');
                     spriteIdentifiers.add(identifier.substring(0, hashIndex));

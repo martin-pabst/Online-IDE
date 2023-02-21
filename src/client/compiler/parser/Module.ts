@@ -88,6 +88,7 @@ import { DatabaseStatementClass } from "../../runtimelibrary/database/DatabaseSt
 import { ConnectionClass } from "../../runtimelibrary/database/Connection.js";
 import { DatabaseManagerClass } from "../../runtimelibrary/database/DatabaseManager.js";
 import { DatabasePreparedStatementClass } from "../../runtimelibrary/database/DatabasePreparedStatement.js";
+import jQuery from 'jquery';
 
 export type ExportedWorkspace = {
     name: string;

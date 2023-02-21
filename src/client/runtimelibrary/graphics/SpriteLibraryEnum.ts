@@ -2,6 +2,7 @@ import { Enum } from "../../compiler/types/Enum.js";
 import { Module } from "../../compiler/parser/Module.js";
 import { TokenType } from "../../compiler/lexer/Token.js";
 import { EnumValueNode } from "../../compiler/parser/AST.js";
+import {SpriteLibrary} from  "./SpriteLibrary.js";
 
 type SpriteLibraryEntry = {
     filename: string,
@@ -9,7 +10,7 @@ type SpriteLibraryEntry = {
     index?: number
 }
 
-declare var SpriteLibrary: SpriteLibraryEntry[];
+// declare var SpriteLibrary: SpriteLibraryEntry[];
 
 export class SpriteLibraryClass extends Enum {
 

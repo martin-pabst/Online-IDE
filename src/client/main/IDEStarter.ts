@@ -4,6 +4,22 @@ import { RepositoryCreateManager } from "../repository/update/RepositoryCreateMa
 import { RepositorySettingsManager } from "../repository/update/RepositorySettingsManager.js";
 import { RepositoryCheckoutManager } from "../repository/update/RepositoryCheckoutManager.js";
 import { SpriteManager } from "../spritemanager/SpriteManager.js";
+import * as PIXI from 'pixi.js';
+import jQuery from 'jquery';
+
+// All css files for fullscreen online-ide:
+import "/css/editor.css";
+import "/css/editorStatic.css";
+import "/css/bottomdiv.css";
+import "/css/run.css";
+// import "/css/diagram.css";
+import "/css/debugger.css";
+import "/css/helper.css";
+import "/css/icons.css";
+import "/css/dialog.css";
+import "/css/synchronize-repo.css";
+import "/css/updatecreate-repo.css";
+import "/css/spritemanager.css";
 
 
 jQuery(function () {
@@ -47,14 +63,15 @@ jQuery(function () {
         main.spriteManager.initGUI();
         // main.loadWorkspace();
 
+        //@ts-ignore
+        p5.disableFriendlyErrors = true
         
     });
     
-    PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
-    PIXI.Loader
-    .shared.add("spritesheet", "assets/graphics/spritesheet.json")
-    .add("steve", "assets/graphics/robot/minecraft_steve/scene.gltf")
-    .load(() => { });
+    PIXI.Assets.add("spritesheet", "assets/graphics/spritesheet.json", {scaleMode: PIXI.SCALE_MODES.NEAREST});
+    PIXI.Assets.add("steve", "assets/graphics/robot/minecraft_steve/scene.gltf");
+
+    PIXI.Assets.load(["spritesheet", "steve"]);
     
     main.initGUI();
 

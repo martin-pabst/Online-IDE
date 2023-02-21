@@ -1,9 +1,12 @@
+import jQuery from 'jquery';
 import { Main } from "../main/Main.js";
 import { downloadFile, makeDiv, openContextMenu } from "../tools/HtmlTools.js";
 import { ImageFile, SpriteData } from "./ImageFile.js";
 import { EditableSpritesheet } from "./EditableSpritesheet.js";
 import { PixiSpritesheetData, SpritesheetData } from "./SpritesheetData.js";
 import { UploadSpriteResponse } from "../communication/Data.js";
+import {SpriteLibrary} from  "../runtimelibrary/graphics/SpriteLibrary.js";
+
 
 type SpriteLibraryEntry = {
     filename: string,
@@ -11,7 +14,7 @@ type SpriteLibraryEntry = {
     index?: number
 }
 
-declare var SpriteLibrary: SpriteLibraryEntry[];
+// declare var SpriteLibrary: SpriteLibraryEntry[];
 
 export class SpriteManager {
 
@@ -416,9 +419,9 @@ export class SpriteManager {
         let that = this;
 
         this.$spriteListDiv.children().each((nr, element) => {
-            let series = <string>$(element).find('.jo_sm_series').val();
-            let index = Number.parseInt(<string>($(element).find('.jo_sm_index').val()));
-            let $errordiv = $(element).find('.jo_sm_errorspan');
+            let series = <string>jQuery(element).find('.jo_sm_series').val();
+            let index = Number.parseInt(<string>(jQuery(element).find('.jo_sm_index').val()));
+            let $errordiv = jQuery(element).find('.jo_sm_errorspan');
             if (internalSeries[series]) {
                 $errordiv.text('Der Bezeichner ' + series + ' wird schon für interne Sprites verwendet.');
                 that.hasErrors = true;

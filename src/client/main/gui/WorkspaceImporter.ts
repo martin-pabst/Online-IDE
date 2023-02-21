@@ -2,6 +2,7 @@ import { ExportedWorkspace, File, Module } from "../../compiler/parser/Module.js
 import { Workspace } from "../../workspace/Workspace.js";
 import { Main } from "../Main.js";
 import { Dialog } from "./Dialog.js";
+import jQuery from "jquery";
 
 export class WorkspaceImporter {
 

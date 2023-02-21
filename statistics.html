@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head lang="de">
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Statistiken</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='lib/chart.js/Chart.css'>
+    <script src='lib/jquery/jquery-3.3.1.js'></script>
+    <script src='lib/jquery/jquery-color_2.1.2.js'></script>
+    <script src='lib/moment.js/moment-with-locales.js'></script>
+    <script src='lib/chart.js/Chart.js'></script>
+    
+    <script src='/src/client/administration/Statistics.ts' type="module"></script>
+</head>
+<body>
+    
+    <h1>Statistiken</h1>
+
+    <div><span>Aktuell: </span><span id="current"></span></div>
+    <div id="userlist" ></div>
+    <div id="chartdiv">
+
+        <canvas id="chart"></canvas>
+    </div>
+    <div id="updatetimer"></div>
+
+</body>
+</html>

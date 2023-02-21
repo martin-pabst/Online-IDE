@@ -9,9 +9,7 @@ import { Interpreter } from "../../interpreter/Interpreter.js";
 import { ShapeHelper } from "./Shape.js";
 import { ColorHelper } from "./ColorHelper.js";
 import { ColorClassIntrinsicData } from "./Color.js";
-import { isPrefixUnaryExpression } from "typescript";
-import { BufferResource } from "@pixi/core";
-import { FORMATS } from "@pixi/constants";
+import * as PIXI from 'pixi.js';
 
 export class BitmapClass extends Klass {
 

@@ -20,6 +20,7 @@ export class ImageFile {
         }
 
         let images: SpriteData[] = [];
+        //@ts-ignore
         for await(let file of files){
             if(file.name.endsWith(".png")){
                 try{

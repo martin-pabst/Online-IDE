@@ -15,7 +15,7 @@ export class GNGTurtleClass extends Klass {
 
     constructor(module: Module, moduleStore: ModuleStore) {
 
-        super("GTurtle", module, "Turtle-Klasse der Graphics'n Games-Bibliothek (Cornelsen-Verlag)");
+       super("GTurtle", module, "Turtle-Klasse der Graphics'n Games-Bibliothek (Cornelsen-Verlag)");
 
         let objectType = <Klass>moduleStore.getType("Object").type;
 

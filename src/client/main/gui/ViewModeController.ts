@@ -1,3 +1,4 @@
+import jQuery from 'jquery';
 import { ThemeManager } from "./ThemeManager";
 import { Main } from "../Main";
 import { ViewModes, ViewMode } from "../../communication/Data";

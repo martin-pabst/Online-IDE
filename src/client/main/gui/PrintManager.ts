@@ -1,3 +1,4 @@
+import jQuery from 'jquery';
 import { MainBase } from "../MainBase.js";
 
 type PrintCommand = {

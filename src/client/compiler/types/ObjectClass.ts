@@ -5,8 +5,6 @@ import { Module } from "../parser/Module.js";
 import { Interface, Klass } from "./Class.js";
 // neu:
 import { Enum, EnumRuntimeObject } from "./Enum.js";
-import { type } from "jquery";
-import { json } from "express";
 import { ArrayType } from "./Array.js";
 
 

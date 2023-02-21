@@ -1,10 +1,11 @@
-var fs = require('fs');
+// var fs = require('fs');
+import * as fs from 'fs';
 
 var quotes = getQuotes();
 var externalQuotesValue = 'single';
 var symbols = /[\r\n%#()<>?\[\\\]^`{|}]/g;
 
-let path = './htdocs/assets/projectexplorer';
+let path = './material/projectexplorer';
 
 let filenameToURLMap: { [filename: string]: string } = {};
 let filenames: string[] = [];
@@ -26,17 +27,17 @@ fs.readdir(path, function (err, items) {
         }
     }
 
-    fs.writeFile('./htdocs/css/icons.css', iconCss, () => {
+    fs.writeFile('./css/icons.css', iconCss, () => {
         console.log('Done!');
     });
 
-    replaceUrls(filenameToURLMap);
+    //replaceUrls(filenameToURLMap);
 
 });
 
 function replaceUrls(filenameToURLMap: { [filename: string]: string }) {
 
-    let path = './htdocs/css';
+    let path = './css';
 
     fs.readdir(path, function (err, items) {
 

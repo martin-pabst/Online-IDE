@@ -15,6 +15,7 @@ import { Enum } from "../../compiler/types/Enum.js";
 import { Workspace } from "../../workspace/Workspace.js";
 import { MySemanticTokenProvider } from "./MySemanticTokenProvider.js";
 import { MyColorProvider } from "./MyColorProvider.js";
+import jQuery from 'jquery';
 
 export type HistoryEntry = {
     module_id: number,

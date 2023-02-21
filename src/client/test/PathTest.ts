@@ -1,4 +1,4 @@
-function compareWithPath(name1: string, path1: string[], isFolder1: boolean, name2: string, path2: string[], isFolder2: boolean) {
+export function compareWithPath(name1: string, path1: string[], isFolder1: boolean, name2: string, path2: string[], isFolder2: boolean) {
 
     path1 = path1.slice();
     path1.push(name1);

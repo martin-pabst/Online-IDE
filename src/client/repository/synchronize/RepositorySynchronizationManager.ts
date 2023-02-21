@@ -1,3 +1,4 @@
+import jQuery from 'jquery';
 import { ajax } from "../../communication/AjaxHelper.js";
 import { GetRepositoryRequest, GetRepositoryResponse, Repository, GainRepositoryLockRequest, GainRepositoryLockResponse, LeaseRepositoryLockRequest, LeaseRepositoryLockResponse } from "../../communication/Data.js";
 import { EmbeddedSlider } from "../../embedded/EmbeddedSlider.js";

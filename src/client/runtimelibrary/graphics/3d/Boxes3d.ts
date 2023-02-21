@@ -1,3 +1,5 @@
+import * as Pixi3d from 'pixi3d/pixi7';
+
 export class Boxes3d {
     public static createCube3d(material: Pixi3d.Material = new Pixi3d.StandardMaterial()){
         return new Pixi3d.Mesh3D(this.createCube3dMesh(), material);

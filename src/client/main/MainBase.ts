@@ -11,6 +11,7 @@ import { ErrorManager } from "./gui/ErrorManager.js";
 import { SemicolonAngel } from "../compiler/parser/SemicolonAngel.js";
 import { TextPositionWithModule } from "../compiler/types/Types.js";
 import {GamepadTool} from "../tools/GamepadTool.js";
+import * as PIXI from 'pixi.js';
 
 export interface MainBase {
     printProgram();

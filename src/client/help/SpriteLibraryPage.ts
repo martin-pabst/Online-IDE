@@ -1,3 +1,8 @@
+import '/css/imagesprites.css';
+import '/css/spriteLibrary.css';
+import jQuery from 'jquery';
+import {SpriteLibrary} from '../runtimelibrary/graphics/SpriteLibrary.js';
+
 type SpriteLibraryEntry = {
     filename: string,
     name: string,

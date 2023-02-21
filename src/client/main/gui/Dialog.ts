@@ -1,3 +1,5 @@
+import jQuery from "jquery";
+
 export type DialogButton = {
     caption: string,
     color: string,

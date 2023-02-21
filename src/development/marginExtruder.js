@@ -1,14 +1,13 @@
+import Jimp from 'jimp';
+
 //let extrudeMarginInformation = [];
 // type { left: number, top: number, width: number, height: number, marginWidth: number}
 
 
 
-function extrudeMargin(extrudeMarginInformation, filename1){
+export function extrudeMargin(extrudeMarginInformation, filename1){
 
     if(extrudeMarginInformation.length > 0){
-
-        var Jimp = require('jimp');
-        
         Jimp.read(filename1, (err, image) => {
             if (err) throw err;
 
@@ -67,6 +66,3 @@ function copyPixelToRectangle(image, x, y, left, top, width, height){
     }
 
 }
-
-
-exports.extrudeMargin = extrudeMargin;

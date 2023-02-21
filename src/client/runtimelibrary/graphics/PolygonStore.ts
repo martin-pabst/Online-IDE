@@ -1,6 +1,7 @@
 import { Punkt, abstandPunktZuGerade, abstand } from "../../tools/MatheTools.js";
 import { WorldHelper } from "./World.js";
 import { SpriteHelper } from "./Sprite.js";
+import * as PIXI from 'pixi.js';
 
 export class HitPolygonStore {
 
@@ -28,8 +29,8 @@ export class HitPolygonStore {
     }
 
     private static getPolygon(sprite: PIXI.Sprite, worldHelper: WorldHelper): Punkt[] {
-
-        let pixels = worldHelper.app.renderer.plugins.extract.pixels(sprite);
+        let renderer = <PIXI.Renderer>worldHelper.app.renderer;
+        let pixels = renderer.extract.pixels(sprite);
         let w = sprite.width;
         let h = sprite.height;
 

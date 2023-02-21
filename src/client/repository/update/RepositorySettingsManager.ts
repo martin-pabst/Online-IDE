@@ -1,3 +1,4 @@
+import jQuery from 'jquery';
 import { Main } from "../../main/Main.js";
 import { Workspace } from "../../workspace/Workspace.js";
 import { makeDiv, SelectItem, setSelectItems, getSelectedObject, openContextMenu, copyTextToClipboard } from "../../tools/HtmlTools.js";

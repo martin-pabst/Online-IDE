@@ -1,18 +1,28 @@
-/node_modules
-/htdocs/js
-/htdocs/sql
-# /htdocs/js.webpack
-/*.7z
-/*.zip
-/material
-/upload.cmd
-/upload_csg.cmd
-/package-lock.json
-/babel.config.js
-/htdocs/assets/mp3
-/htdocs/js.webpack/javaOnline-apiDoc*
-/htdocs/js.webpack/javaOnline.css
-/htdocs/js.webpack/javaOnline.css.map
-/htdocs/js.webpack/javaOnline.js
-/htdocs/js.webpack/javaOnline.js.map
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
 .DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+material
+upload.cmd
+package-lock.json

@@ -1,5 +1,5 @@
 import { LoginRequest, PerformanceData } from "./Data.js";
-
+import jQuery from 'jquery';
 // export var credentials: { username: string, password: string } = { username: null, password: null };
 
 export class PerformanceCollector {
@@ -52,7 +52,7 @@ export function ajax(url: string, request: any, successCallback: (response: any)
     showNetworkBusy(true);
     let time = performance.now();
 
-    $.ajax({
+    jQuery.ajax({
         type: 'POST',
         async: true,
         data: JSON.stringify(request),

@@ -14,6 +14,7 @@
 // <div id="buttonStepOut" title="Step out" class="img_step-out-dark button"></div>
 // <div id="buttonRestart" title="Restart" class="img_restart-dark button"></div>
 // </div>
+import jQuery from 'jquery';
 
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { SpeedControl } from "./SpeedControl.js";

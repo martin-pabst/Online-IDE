@@ -2,6 +2,7 @@ import { DatabaseLongPollingListenerRequest, JMessageFromServer, JWebSocketMessa
 import { NetworkManager } from "../../communication/NetworkManager.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { ConnectionHelper } from "../../runtimelibrary/database/Connection.js";
+import jQuery from 'jquery';
 
 export class DatabaseLongPollingListener {
 
@@ -21,7 +22,7 @@ export class DatabaseLongPollingListener {
             listenerIdentifier: this.identifier
         }
 
-        $.ajax({
+        jQuery.ajax({
             type: 'POST',
             async: true,
             data: JSON.stringify(request),

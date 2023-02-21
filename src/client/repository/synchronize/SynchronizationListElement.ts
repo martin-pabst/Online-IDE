@@ -1,3 +1,4 @@
+import jQuery from 'jquery';
 import { TeachersWithClassesMI } from "../../administration/TeachersWithClasses.js";
 import { RepositoryFileEntry } from "../../communication/Data.js";
 import { File } from "../../compiler/parser/Module.js";

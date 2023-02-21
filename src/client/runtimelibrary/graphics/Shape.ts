@@ -12,6 +12,7 @@ import { Interpreter } from "../../interpreter/Interpreter.js";
 import { GroupHelper, GroupClass } from "./Group.js";
 import { Enum, EnumInfo } from "../../compiler/types/Enum.js";
 import { FilledShapeDefaults } from "./FilledShapeDefaults.js";
+import * as PIXI from 'pixi.js';
 
 export class ShapeClass extends Klass {
 

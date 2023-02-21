@@ -5,6 +5,7 @@ import { Method, Type } from "../compiler/types/Types.js";
 import { Enum } from "../compiler/types/Enum.js";
 import { getDeclarationAsString } from "../compiler/types/DeclarationHelper.js";
 import { defineMyJava } from "../main/gui/MyJava.js";
+import jQuery from 'jquery';
 
 export class ApiDoc {
     start() {

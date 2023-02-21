@@ -6,6 +6,7 @@ import { Klass } from "../types/Class.js";
 import { Workspace } from "../../workspace/Workspace.js";
 import { Main } from "../../main/Main.js";
 import { MainBase } from "../../main/MainBase.js";
+import jQuery from "jquery";
 
 type Label = {
     number: number;

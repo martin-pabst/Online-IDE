@@ -4,6 +4,7 @@ import { Evaluator } from "../interpreter/Evaluator.js";
 import { AccordionElement } from "../main/gui/Accordion.js";
 import { Main } from "../main/Main.js";
 import { MainBase } from "../main/MainBase.js";
+import jQuery from 'jquery';
 
 
 export class Workspace {

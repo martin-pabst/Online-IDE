@@ -1,3 +1,4 @@
+import jQuery from 'jquery';
 import { ZoomControl } from "./ZoomControl.js";
 import { ClassBox } from "./classdiagram/ClassBox.js";
 import { Rectangle, Point } from "./classdiagram/Router.js";
@@ -58,6 +59,7 @@ export class Diagram {
         this.$canvas[0].appendChild(this.svgElement);
 
         this.$centerRectangle = <any>jQuery(this.createElement("rect", this.svgElement));
+        this.$centerRectangle.addClass('centerRectangle');
 
         this.$centerRectangle.css({fill: "#ffffff", "stroke": "none"});
 

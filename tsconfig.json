@@ -1,42 +1,21 @@
 {
   "compilerOptions": {
-    "moduleResolution": "node", // for pixijs 6.0
-    // Loaders needs this to use the more strict mini-signal types
-    "paths": {
-      "mini-signals": [
-        "node_modules/resource-loader/typings/mini-signals.d.ts" // for pixijs 6.0
-      ],
-      // "resource-loader": [
-      //   "node_modules/resource-loader/typings/resource-loader.d.ts" // for pixijs 6.0
-      // ],
-      // "pixi.js": [
-      //   "node_modules/pixi.js/index.d.ts"  // for pixijs 6.0
-      // ],
-      // "*": ["*", "node_modules/*/index.d.ts", "node_modules/*/types/index.d.ts"]  // for pixijs 6.0
-    },
-    "allowSyntheticDefaultImports": true, // for pixijs 6.0
-    "allowUmdGlobalAccess": true,         // for pixijs 6.0
-    "baseUrl": "./",
-    "outDir": "./htdocs/js",
-    "allowJs": true,
-    "target": "es6",
-    //     "sourceMap": true,
-    "inlineSourceMap": true,
-    "inlineSources": true,
-    /* jsx */
-    "jsx": "react",
-    "jsxFactory": "DOMCreateElement",
-    "typeRoots": [
-      "./node_modules/@types"
-    ],
-    "strict": false
-  },
-  "include": [
-    "./src/client/**/*"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
-}
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "lib": ["ESNext", "DOM"],
+    "moduleResolution": "Node",
+    "strict": false,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "noEmit": true,
+    "skipLibCheck": true,
 
-//https://codesandbox.io/s/app-architecture-3-t6cfv?file=/src/phys.js
+    "noUnusedLocals": false,
+    "noImplicitReturns": false,
+    "noUnusedParameters": false
+  },
+  "include": ["src"],
+  "exclude": ["src/development"]
+}

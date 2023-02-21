@@ -1,6 +1,7 @@
 import { DiagramUnitCm, Diagram } from "../Diagram.js";
 import { RoutingArrow, Point } from "./Router.js";
 import { ArrowHead } from "./ArrowHead.js";
+import jQuery from 'jquery';
 
 export class DiagramArrow {
 

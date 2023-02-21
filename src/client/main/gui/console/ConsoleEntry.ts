@@ -4,6 +4,7 @@ import { Klass, Visibility, StaticClass, Interface } from "../../../compiler/typ
 import { Enum } from "../../../compiler/types/Enum.js";
 import { RuntimeObject } from "../../../interpreter/RuntimeObject.js";
 import { stringPrimitiveType } from "../../../compiler/types/PrimitiveTypes.js";
+import jQuery from 'jquery';
 
 export class ConsoleEntry {
 

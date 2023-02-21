@@ -1,13 +1,18 @@
+import * as fs from 'fs';
+import Spritesmith from 'spritesmith';
+import {SpriteLibrary} from '../client/runtimelibrary/graphics/SpriteLibrary.js';
+import * as marginExtruder from './marginExtruder.js';
+
 // Load in dependencies
-var fs = require('fs');
-var Spritesmith = require('spritesmith');
-var SpriteLibrary = require('../../htdocs/js/runtimelibrary/graphics/SpriteLibrary.js');
-var marginExtruder = require('./marginExtruder.js');
+// var fs = require('fs');
+// var Spritesmith = require('spritesmith');
+// var SpriteLibrary = require('../client/runtimelibrary/graphics/SpriteLibrary.js');
+// var marginExtruder = require('./marginExtruder.js');
 
 let dir = "./material/spritesheet-files/"
-let output_dir = "./htdocs/assets/graphics/"
+let output_dir = "./public/assets/graphics/"
 let cssGraphicURL = "../assets/graphics/spritesheet.png"
-let cssFilename = "./htdocs/css/imagesprites.css"
+let cssFilename = "./css/imagesprites.css"
 
 // Generate our spritesheet
 
@@ -18,7 +23,6 @@ let filenameToTilesMap = {};
 let filenameToCssInfoMap = {};
 let filenameToExtrudeMarginWidthMap = {};
 let extrudeMarginInformation = [];
-
 for (let sle of SpriteLibrary) {
     src.push(dir + sle.filename);
     let name = sle.name;
@@ -172,7 +176,7 @@ Spritesmith.run({
     console.log("Extrude margins...");
     // Avoid tile-bleeding by extruding sprite margins
     marginExtruder.extrudeMargin(extrudeMarginInformation, filename1);
-    console.log("\u001b[1;32m Done!");
+    console.log("\u001b[1;32m Done!\u001b[0m");
 
 
 

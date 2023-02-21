@@ -1,3 +1,4 @@
+import jQuery from 'jquery';
 import { TextPosition, TokenType } from "../compiler/lexer/Token.js";
 import { Module, ModuleStore } from "../compiler/parser/Module.js";
 import { Program, Statement, ReturnStatement } from "../compiler/parser/Program.js";

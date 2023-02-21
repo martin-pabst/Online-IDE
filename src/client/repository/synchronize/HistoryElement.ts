@@ -2,6 +2,7 @@ import { RepositoryHistoryEntry, Repository, RepositoryHistoryFileEntry, Reposit
 import { SynchronizationManager } from "./RepositorySynchronizationManager.js";
 import { makeDiv, openContextMenu } from "../../tools/HtmlTools.js";
 import { SynchroWorkspace } from "./SynchroWorkspace.js";
+import jQuery from "jquery";
 
 export class HistoryElement {
 

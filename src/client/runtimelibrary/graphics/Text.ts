@@ -7,6 +7,7 @@ import { FilledShapeHelper } from "./FilledShape.js";
 import { WorldHelper } from "./World.js";
 import { EnumRuntimeObject } from "../../compiler/types/Enum.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
+import * as PIXI from 'pixi.js';
 
 export class TextClass extends Klass {
 
@@ -197,12 +198,12 @@ export class TextHelper extends FilledShapeHelper {
     textStyle: PIXI.TextStyle =
         new PIXI.TextStyle({
             fontFamily: 'Arial',
-            fontSize: this.fontsize,
+            fontSize: 10,
             fontStyle: 'normal',
             fontWeight: 'normal',
-            fill: [this.fillColor], // gradient possible...
-            stroke: this.borderColor,
-            strokeThickness: this.borderWidth,
+            fill: this.fillColor == null ? 0x000000 : this.fillColor, // gradient possible...
+            stroke: this.borderColor == null ? 0x000000 : this.borderColor,
+            strokeThickness: this.borderColor == null ? 0 : this.borderWidth,
             dropShadow: false,
             wordWrap: false,
             align: "left",
@@ -219,7 +220,7 @@ export class TextHelper extends FilledShapeHelper {
         if (this.fontsize == 0) this.fontsize = 10;
 
         this.borderColor = null;
-        this.textStyle.stroke = null;
+        this.textStyle.stroke = 0x000000;
         if (fontFamily != null) {
             this.textStyle.fontFamily = fontFamily;
         }
@@ -254,9 +255,9 @@ export class TextHelper extends FilledShapeHelper {
     render(): void {
 
         let g: PIXI.Text = <any>this.displayObject;
-        this.textStyle.fill = this.fillColor;
-        this.textStyle.stroke = this.borderColor;
-        this.textStyle.strokeThickness = this.borderWidth;
+        this.textStyle.fill = this.fillColor == null ? 0x000000 : this.fillColor;
+        this.textStyle.stroke = this.borderColor == null ? 0x000000 : this.borderColor;
+        this.textStyle.strokeThickness = this.borderColor == null ? 0 : this.borderWidth;
         this.textStyle.fontSize = this.fontsize;
 
         if (this.displayObject == null) {

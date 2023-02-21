@@ -3,6 +3,7 @@ import { Error } from "../../compiler/lexer/Lexer.js";
 import { Module } from "../../compiler/parser/Module.js";
 import { Main } from "../Main.js";
 import { MainBase } from "../MainBase.js";
+import jQuery from 'jquery';
 
 export class ErrorManager {
 

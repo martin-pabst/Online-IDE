@@ -1,4 +1,4 @@
-(**Bemerkung**: Dieses Repository unterscheidet sich vom Repository [Online-IDE](https://github.com/martin-pabst/Online-IDE) im Build-Prozess, den ich vollständig auf das Build-Tool [vite](https://vitejs.dev/) umgestellt habe. Sobald diese Lösung stabil ist, werde ich das alte Repository überschreiben.)
+(**Bemerkung**: Ich habe den Build-Prozess am 21.02.2023 vollständig auf das Build-Tool [vite](https://vitejs.dev/) umgestellt, daher hat sich die komplette Struktur dieses Repositorys geändert.)
 
 
 # Online-IDE

@@ -25,11 +25,23 @@ export class GNGBaseFigurClass extends Klass {
 
         this.addAttribute(new Attribute("x", intPrimitiveType, (value: Value) => { 
             let sh = value.object.intrinsicData["Actor"];
-            value.value = Math.round(sh.getCenterX()); 
+
+            let moveAnchor: {x: number, y: number} = value.object.intrinsicData["moveAnchor"];
+            let p: PIXI.Point = new PIXI.Point(moveAnchor.x, moveAnchor.y);
+            sh.displayObject.updateTransform();
+            sh.displayObject.transform.worldTransform.apply(p, p);
+
+            value.value = Math.round(p.x); 
         }, false, Visibility.protected, false, "x-Position des Grafikobjekts"));
         this.addAttribute(new Attribute("y", intPrimitiveType, (value: Value) => { 
             let sh = value.object.intrinsicData["Actor"];
-            value.value = Math.round(sh.getCenterY()); 
+
+            let moveAnchor: {x: number, y: number} = value.object.intrinsicData["moveAnchor"];
+            let p: PIXI.Point = new PIXI.Point(moveAnchor.x, moveAnchor.y);
+            sh.displayObject.updateTransform();
+            sh.displayObject.transform.worldTransform.apply(p, p);
+
+            value.value = Math.round(p.y); 
         }, false, Visibility.protected, false, "y-Position des Grafikobjekts"));
 
         this.addAttribute(new Attribute("winkel", intPrimitiveType, (value: Value) => { 

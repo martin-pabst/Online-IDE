@@ -11,10 +11,10 @@ type ASTNodes = ASTNode[];
 
 export class Parser {
 
-    static assignmentOperators = [TokenType.assignment, TokenType.plusAssignment, TokenType.minusAssignment, 
-        TokenType.multiplicationAssignment, TokenType.divisionAssignment, TokenType.moduloAssignment, 
-        TokenType.ANDAssigment, TokenType.XORAssigment, TokenType.ORAssigment, 
-        TokenType.shiftLeftAssigment, TokenType.shiftRightAssigment, TokenType.shiftRightUnsignedAssigment];
+    static assignmentOperators = [TokenType.assignment, TokenType.plusAssignment, TokenType.minusAssignment,
+    TokenType.multiplicationAssignment, TokenType.divisionAssignment, TokenType.moduloAssignment,
+    TokenType.ANDAssigment, TokenType.XORAssigment, TokenType.ORAssigment,
+    TokenType.shiftLeftAssigment, TokenType.shiftRightAssigment, TokenType.shiftRightUnsignedAssigment];
 
     static operatorPrecedence: TokenType[][] = [Parser.assignmentOperators,
     [TokenType.ternaryOperator], [TokenType.colon],
@@ -26,7 +26,7 @@ export class Parser {
 
     // [TokenType.or], [TokenType.and],
     // [TokenType.keywordInstanceof, TokenType.lower, TokenType.lowerOrEqual, TokenType.greater, TokenType.greaterOrEqual, TokenType.equal, TokenType.notEqual],
-    
+
     [TokenType.plus, TokenType.minus], [TokenType.multiplication, TokenType.division, TokenType.modulo]
     ];
 
@@ -63,7 +63,7 @@ export class Parser {
     };
 
 
-    constructor(private isInConsoleMode: boolean){
+    constructor(private isInConsoleMode: boolean) {
 
     }
 
@@ -113,13 +113,13 @@ export class Parser {
                 if (this.pos >= this.tokenList.length) break;
 
                 let token1 = this.tokenList[this.pos]
-                if(token1.tt == TokenType.comment){
+                if (token1.tt == TokenType.comment) {
                     this.lastComment = token1;
-                } 
+                }
 
                 if (token1.tt != TokenType.newline && token1.tt != TokenType.space && token1.tt != TokenType.comment) {
                     token = token1;
-                    if(this.lastComment != null){
+                    if (this.lastComment != null) {
                         token.commentBefore = this.lastComment;
                         this.lastComment = null;
                     }
@@ -159,9 +159,9 @@ export class Parser {
             }
 
             token = this.tokenList[this.pos]
-            if(token.tt == TokenType.comment){
+            if (token.tt == TokenType.comment) {
                 this.lastComment = token;
-            } 
+            }
 
             if (token.tt != TokenType.newline && token.tt != TokenType.space && token.tt != TokenType.comment) {
                 token.commentBefore = this.lastComment;
@@ -213,7 +213,7 @@ export class Parser {
 
             let quickFix: QuickFix = null;
             if (tt == TokenType.semicolon && this.lastToken.position.line < this.cct.position.line &&
-                !this.isOperatorOrDot(this.lastToken.tt) 
+                !this.isOperatorOrDot(this.lastToken.tt)
             ) {
                 quickFix = {
                     title: 'Strichpunkt hier einfügen',
@@ -288,7 +288,7 @@ export class Parser {
     static ClassTokens: TokenType[] = [TokenType.keywordClass, TokenType.keywordEnum, TokenType.keywordInterface];
     static VisibilityTokens: TokenType[] = [TokenType.keywordPrivate, TokenType.keywordProtected, TokenType.keywordPublic];
     static BeforeClassDefinitionTokens: TokenType[] = Parser.ClassTokens.concat(Parser.VisibilityTokens)
-            .concat(TokenType.keywordAbstract).concat(Parser.ClassTokens).concat([TokenType.keywordFinal]);
+        .concat(TokenType.keywordAbstract).concat(Parser.ClassTokens).concat([TokenType.keywordFinal]);
 
     parseMain(): { mainProgramAST: ASTNodes, mainProgramEnd: TextPosition, classDefinitionAST: ASTNodes } {
 
@@ -335,8 +335,8 @@ export class Parser {
 
 
     checkIfStatementHasNoEffekt(st: ASTNode) {
-        
-        if(this.isInConsoleMode) return;
+
+        if (this.isInConsoleMode) return;
 
         if ((st.type == TokenType.binaryOp && Parser.assignmentOperators.indexOf(st.operator) < 0)) {
             let s = "dieses Terms";
@@ -452,16 +452,16 @@ export class Parser {
                 break;
         }
 
-        if(retStatements == null){
+        if (retStatements == null) {
             // skip additional semicolons if present...
             while (this.tt == TokenType.semicolon && expectSemicolon) {
                 this.nextToken();
             }
         }
 
-        if(retStatements != null && retStatements.length > 0){
+        if (retStatements != null && retStatements.length > 0) {
             let retStmt = retStatements[retStatements.length - 1];
-            if(retStmt != null){
+            if (retStmt != null) {
                 this.checkIfStatementHasNoEffekt(retStatements[retStatements.length - 1]);
             } else {
                 retStatements = null;
@@ -502,7 +502,7 @@ export class Parser {
 
         if (this.expect(TokenType.leftBracket, true)) {
             let condition = this.parseTerm();
-            let rightBracketPosition  = this.getCurrentPosition();
+            let rightBracketPosition = this.getCurrentPosition();
 
             this.module.pushMethodCallPosition(position, [], "while", rightBracketPosition);
 
@@ -737,7 +737,7 @@ export class Parser {
                     if (statement != null) {
                         statements = statements.concat(statement);
                     }
-                    if(oldPos == this.pos){
+                    if (oldPos == this.pos) {
                         this.pushError(this.cct.value + " wird hier nicht erwartet.");
                         this.nextToken();
                     }
@@ -858,7 +858,7 @@ export class Parser {
     comesGenericType(): boolean {
         if (this.ct[1].tt != TokenType.lower) return false;
         if (this.ct[2].tt != TokenType.identifier) return false;
-        return this.ct[3].tt == TokenType.greater || this.ct[3].tt == TokenType.comma;
+        return [TokenType.greater, TokenType.lower, TokenType.comma].indexOf(this.ct[3].tt) >= 0;
 
     }
 
@@ -869,7 +869,7 @@ export class Parser {
             (this.tt == TokenType.identifier || this.tt == TokenType.keywordFinal) &&
             (this.ct[1].tt == TokenType.identifier
                 || this.ct[1].tt == TokenType.leftRightSquareBracket ||
-                this.comesGenericType() 
+                this.comesGenericType()
             )
         ) {
             let ret: ASTNode[] = [];
@@ -930,8 +930,8 @@ export class Parser {
 
             this.nextToken();
 
-            for (let opData of [{ op: TokenType.lower, wrong: "=<", right: "<=", correctOp: TokenType.lowerOrEqual }, 
-                                { op: TokenType.greater, wrong: "=>", right: ">=", correctOp: TokenType.greaterOrEqual }]) {
+            for (let opData of [{ op: TokenType.lower, wrong: "=<", right: "<=", correctOp: TokenType.lowerOrEqual },
+            { op: TokenType.greater, wrong: "=>", right: ">=", correctOp: TokenType.greaterOrEqual }]) {
                 if (operator == TokenType.assignment && this.tt == opData.op) {
                     let position2 = this.getCurrentPosition();
                     this.pushError(`Den Operator ${opData.wrong} gibt es nicht. Du meintest sicher: ${opData.right}`, "error",
@@ -973,10 +973,10 @@ export class Parser {
                     if (resultType != null) {
                         constantFolding = true;
 
-                        if(typeLeft == charPrimitiveType && typeRight == intPrimitiveType){
+                        if (typeLeft == charPrimitiveType && typeRight == intPrimitiveType) {
                             pcLeft.constant = (<string>pcLeft.constant).charCodeAt(0);
                         }
-                        if(typeRight == charPrimitiveType && typeLeft == intPrimitiveType){
+                        if (typeRight == charPrimitiveType && typeLeft == intPrimitiveType) {
                             pcRight.constant = (<string>pcRight.constant).charCodeAt(0);
                         }
 
@@ -1011,15 +1011,15 @@ export class Parser {
     }
 
     considerIntDivisionWarning(operator: TokenType, typeLeft: Type, leftConstant: any, typeRight: Type, rightConstant: any, position: TextPosition) {
-    
-        if(operator == TokenType.division){
-            if(this.isIntegerType(typeLeft) && this.isIntegerType(typeRight)){
-                if(rightConstant != 0 && leftConstant/rightConstant != Math.floor(leftConstant/rightConstant)){
-                    this.pushError("Da " + leftConstant + " und " + rightConstant + " ganzzahlige Werte sind, wird diese Division als Ganzzahldivision ausgeführt und ergibt den Wert " + Math.floor(leftConstant/rightConstant) + ". Falls das nicht gewünscht ist, hänge '.0' an einen der Operanden.", "info", position);
+
+        if (operator == TokenType.division) {
+            if (this.isIntegerType(typeLeft) && this.isIntegerType(typeRight)) {
+                if (rightConstant != 0 && leftConstant / rightConstant != Math.floor(leftConstant / rightConstant)) {
+                    this.pushError("Da " + leftConstant + " und " + rightConstant + " ganzzahlige Werte sind, wird diese Division als Ganzzahldivision ausgeführt und ergibt den Wert " + Math.floor(leftConstant / rightConstant) + ". Falls das nicht gewünscht ist, hänge '.0' an einen der Operanden.", "info", position);
                 }
             }
         }
-    
+
     }
 
     isIntegerType(type: Type): boolean {
@@ -1290,7 +1290,20 @@ export class Parser {
 
                 }
 
-                this.expect(TokenType.greater);
+                //@ts-ignore
+                if (this.tt == TokenType.greater) {
+                    this.nextToken();
+                    //@ts-ignore
+                } else if (this.tt == TokenType.shiftRight) {
+                    this.tt = TokenType.greater;   // one shiftRight is two >
+                    //@ts-ignore
+                } else if (this.tt == TokenType.shiftRightUnsigned) {
+                    this.tt = TokenType.shiftRight;   // one shiftRightUnsigned is three >
+                } else {
+                    this.pushError("Erwartet wird >, gefunden wurde " + this.cct.value + ".");
+                    this.nextToken();
+                }
+
                 if (genericParameterTypes.length == 0) genericParameterTypes = null;
             }
 
@@ -1546,7 +1559,7 @@ export class Parser {
             type = this.parseType();
         }
 
-        if(this.tt != TokenType.identifier){
+        if (this.tt != TokenType.identifier) {
             this.pushError("Hier wird ein Bezeichner (Name) einer Variable erwartet.", "error", this.getCurrentPosition());
             return null;
         }
@@ -1584,13 +1597,13 @@ export class Parser {
 
     }
 
-    parseArrayBracketsAfterVariableIdentifier(type: TypeNode){
+    parseArrayBracketsAfterVariableIdentifier(type: TypeNode) {
         //@ts-ignore
-        if(this.tt == TokenType.leftRightSquareBracket && type != null){
-            if(type.arrayDimension > 0){
+        if (this.tt == TokenType.leftRightSquareBracket && type != null) {
+            if (type.arrayDimension > 0) {
                 this.pushError("Sowohl vor als auch hinter dem Bezeichner der Variablendeklaration steht []. Eines davon ist zuviel.");
-            } 
-            while(this.tt == TokenType.leftRightSquareBracket){
+            }
+            while (this.tt == TokenType.leftRightSquareBracket) {
                 type.arrayDimension++;
                 this.nextToken();
             }
@@ -1605,9 +1618,9 @@ export class Parser {
          */
 
 
-        if(this.tt != TokenType.identifier && this.tt != TokenType.keywordVoid){
+        if (this.tt != TokenType.identifier && this.tt != TokenType.keywordVoid) {
             this.pushError("Erwartet wird ein Datentyp. Dieser muss mit einem Bezeichner beginnen. Gefunden wurde: " + this.cct.value, "error", this.getCurrentPosition());
-                this.nextToken();
+            this.nextToken();
             return {
                 type: TokenType.type,
                 position: this.getCurrentPosition(),
@@ -1641,7 +1654,19 @@ export class Parser {
 
             }
 
-            this.expect(TokenType.greater);
+            //@ts-ignore
+            if (this.tt == TokenType.greater) {
+                this.nextToken();
+                //@ts-ignore
+            } else if (this.tt == TokenType.shiftRight) {
+                this.tt = TokenType.greater;   // one shiftRight is two >
+                //@ts-ignore
+            } else if (this.tt == TokenType.shiftRightUnsigned) {
+                this.tt = TokenType.shiftRight;   // one shiftRightUnsigned is three >
+            } else {
+                this.pushError("Erwartet wird >, gefunden wurde " + this.cct.value + ".");
+                this.nextToken();
+            }
 
         }
 
@@ -1912,7 +1937,7 @@ export class Parser {
             let commentBefore: Token = this.cct.commentBefore;
 
             let annotation = null;
-            if(this.tt == TokenType.at){
+            if (this.tt == TokenType.at) {
                 annotation = this.cct.value;
                 this.nextToken();
             }
@@ -1927,7 +1952,7 @@ export class Parser {
 
             let type = this.parseType();
 
-            if(isConstructor) {
+            if (isConstructor) {
                 type = {
                     identifier: "void",
                     arrayDimension: 0,
@@ -2110,9 +2135,9 @@ export class Parser {
         let sextends: TypeNode = null;
         let simplements: TypeNode[] = [];
 
-        while(this.comesToken([TokenType.keywordExtends, TokenType.keywordImplements])){
+        while (this.comesToken([TokenType.keywordExtends, TokenType.keywordImplements])) {
             if (this.comesToken(TokenType.keywordExtends) && !isInterface) {
-                if(sextends != null){
+                if (sextends != null) {
                     this.pushError("Eine Klasse kann nicht Unterklasse von zwei anderen Klassen sein, es darf also hier nur ein Mal 'extends...' stehen.", "error", sextends.position);
                 }
                 this.nextToken(); // skip extends
@@ -2121,9 +2146,9 @@ export class Parser {
                     this.pushError("Der Datentyp der Basisklasse darf kein Array sein.", "error", sextends.position);
                 }
             }
-    
+
             if ((!isInterface && this.comesToken(TokenType.keywordImplements)) || (isInterface && this.comesToken(TokenType.keywordExtends))) {
-                if(simplements.length > 0){
+                if (simplements.length > 0) {
                     this.pushError("Es darf hier nur ein Mal 'implements' stehen, hinter 'implements' ist aber eine kommaseparierte Liste von Interfaces erlaubt.", "warning");
                 }
                 this.nextToken(); // Skip implements/extends
@@ -2196,7 +2221,7 @@ export class Parser {
                     break;
                 case TokenType.keywordStatic:
                     isStatic = true;
-                    if(isAbstract && !asError){
+                    if (isAbstract && !asError) {
                         this.pushError("Die Modifier 'abstract' und 'static' können nicht kombiniert werden.");
                         asError = true;
                     }
@@ -2204,7 +2229,7 @@ export class Parser {
                     break;
                 case TokenType.keywordAbstract:
                     isAbstract = true;
-                    if(isStatic && !asError){
+                    if (isStatic && !asError) {
                         this.pushError("Die Modifier 'abstract' und 'static' können nicht kombiniert werden.");
                         asError = true;
                     }

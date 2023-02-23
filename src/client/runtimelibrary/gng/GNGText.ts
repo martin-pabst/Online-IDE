@@ -32,9 +32,9 @@ export class GNGTextClass extends Klass {
                 let o: RuntimeObject = parameters[0].value;
                 o.intrinsicData["isGNG"] = true;
 
-                let rh = new TextHelper(2, -8, 12, "Text", module.main.getInterpreter(), o);
+                let rh = new TextHelper(10, -3, 12, "Text", module.main.getInterpreter(), o);
 
-                o.intrinsicData["moveAnchor"] = {x: 6, y: 16};
+                o.intrinsicData["moveAnchor"] = {x: 0, y: 13};
 
                 rh.setFillColor(0);
                 o.intrinsicData["Actor"] = rh;
@@ -65,8 +65,11 @@ export class GNGTextClass extends Klass {
                 let sh: TextHelper = o.intrinsicData["Actor"];
                 let größe: number = parameters[1].value;
 
-                if (sh.testdestroyed("TextGrößeSetzen")) return;
+                let moveAnchor: {x: number, y: number} = o.intrinsicData["moveAnchor"];
 
+                if (sh.testdestroyed("TextGrößeSetzen")) return;
+                sh.move(0, sh.fontsize - größe);
+                moveAnchor.y -= sh.fontsize - größe;
                 sh.setFontsize(größe);
 
             }, false, false, "Setzt die Schriftgröße des Text-Objekts.", false));

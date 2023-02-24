@@ -19,10 +19,10 @@ export class JavaKaraWorldClass extends Klass {
         this.setBaseClass(<Klass>module.typeStore.getType("Group"));
         let positionKlass = <Klass>module.typeStore.getType("Position");
 
-        let directions: string[] = ["NORTH", "WEST", "SOUTH", "EAST"];
-        for (let i = 0; i < directions.length; i++) {
-            this.addAttribute(new Attribute(directions[i], intPrimitiveType, (object) => { return i }, true, Visibility.public, true, "Direction " + directions[i]));
-        }
+        this.addAttribute(new Attribute("NORTH", intPrimitiveType, (value) => { value.value = 0 }, true, Visibility.public, true, "Direction NORTH"));
+        this.addAttribute(new Attribute("WEST", intPrimitiveType, (value) => { value.value = 1 }, true, Visibility.public, true, "Direction WEST"));
+        this.addAttribute(new Attribute("SOUTH", intPrimitiveType, (value) => { value.value = 2 }, true, Visibility.public, true, "Direction SOUTH"));
+        this.addAttribute(new Attribute("EAST", intPrimitiveType, (value) => { value.value = 3 }, true, Visibility.public, true, "Direction EAST"));
 
         this.staticClass.setupAttributeIndicesRecursive();
         this.staticClass.classObject = new RuntimeObject(this.staticClass);

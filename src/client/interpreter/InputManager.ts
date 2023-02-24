@@ -2,6 +2,7 @@ import { Type, Method, Value } from "../compiler/types/Types.js";
 import { stringPrimitiveType, charPrimitiveType, intPrimitiveType, booleanPrimitiveType } from "../compiler/types/PrimitiveTypes.js";
 import { MainBase } from "../main/MainBase.js";
 import { PrintManager } from "../main/gui/PrintManager.js";
+import jQuery from "jquery";
 
 export class InputManager {
 

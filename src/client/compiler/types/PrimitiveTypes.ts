@@ -971,6 +971,7 @@ export class CharPrimitiveType extends PrimitiveType {
 
         this.operationTable = {
             [TokenType.plus]: { "String": stringPrimitiveType, "char": stringPrimitiveType, "int": intPrimitiveType },
+            [TokenType.minus]: { "char": stringPrimitiveType, "int": intPrimitiveType },
             [TokenType.equal]: { "char": booleanPrimitiveType },
             [TokenType.notEqual]: { "char": booleanPrimitiveType },
             [TokenType.lower]: { "char": booleanPrimitiveType },
@@ -1017,6 +1018,9 @@ export class CharPrimitiveType extends PrimitiveType {
 
         switch (operation) {
             case TokenType.plus:
+                return value + <string>(secondOperand.value);
+
+            case TokenType.minus:
                 return value + <string>(secondOperand.value);
 
             case TokenType.lower:

@@ -24,6 +24,9 @@ export class JavaKaraWorldClass extends Klass {
             this.addAttribute(new Attribute(directions[i], intPrimitiveType, (object) => { return i }, true, Visibility.public, true, "Direction " + directions[i]));
         }
 
+        this.staticClass.setupAttributeIndicesRecursive();
+        this.staticClass.classObject = new RuntimeObject(this.staticClass);
+
         this.addMethod(new Method("JavaKaraWorld", new Parameterlist([
             { identifier: "sizeX", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "sizeY", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
@@ -148,7 +151,23 @@ export class JavaKaraWorldClass extends Klass {
             }, false, false, 'Baut die Welt mithilfe eines mehrzeiligen Strings. Dabei bedeutet \\n einen Zeilenumbruch, l ein Kleeblatt, t einen Baumstumpf und m einen Pilz.', false));
 
 
-    }
+            this.addMethod(new Method("scale", new Parameterlist([
+                { identifier: "factor", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            ]), voidPrimitiveType,
+                (parameters) => {
+        
+                    let o: RuntimeObject = parameters[0].value;
+                    let factor: number = parameters[1].value;
+                    let sh: JavaKaraWorldHelper = o.intrinsicData["Actor"];
+        
+                    if (sh.testdestroyed("scale")) return;
+        
+                    sh.scaleNew(factor);
+        
+                }, false, false, "Streckt das Grafikobjekt um den angegebenen Faktor. Das Zentrum der Streckung ist der 'Mittelpunkt' des Objekts.", false));
+
+    }        
+
 
 
 }
@@ -197,6 +216,13 @@ export class JavaKaraWorldHelper extends FilledShapeHelper {
 
         this.render();
 
+    }
+
+    scaleNew(factor: number){
+        this.displayObject.updateTransform();
+        let p = new PIXI.Point(this.left, this.top);
+      this.displayObject.transform.worldTransform.apply(p, p);
+        this.scale(factor, p.x, p.y);
     }
 
     isMushroom(x: number, y: number) {
@@ -392,7 +418,7 @@ export class JavaKaraWorldHelper extends FilledShapeHelper {
             if (y >= this.sizeY) break;
             let line = lines[y];
             for (let x = 0; x < line.length; x++) {
-                if (x > this.sizeX) break;
+                if (x >= this.sizeX) break;
                 let c = line.charAt(x).toLocaleLowerCase();
                 switch (c) {
                     case 'l':

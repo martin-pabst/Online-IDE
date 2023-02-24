@@ -202,7 +202,13 @@ export var SpriteLibrary = [
     {filename: "little_figure/Animation_Run/Run2.png", name: "Sneaker", index: 2},
     {filename: "little_figure/Animation_Sneak/Sneak0.png", name: "Sneaker", index: 3},
     {filename: "little_figure/Animation_Sneak/Sneak1.png", name: "Sneaker", index: 4},
-    {filename: "little_figure/Animation_Sneak/Sneak2.png", name: "Sneaker", index: 5}
+    {filename: "little_figure/Animation_Sneak/Sneak2.png", name: "Sneaker", index: 5},
+
+    // Kara
+    {filename: "javakara/bugeast_r.gif", name: "Kara", index: 0},
+    {filename: "javakara/object_leaf.gif", name: "Kara", index: 1},
+    {filename: "javakara/object_mushroom.gif", name: "Kara", index: 2},
+    {filename: "javakara/object_tree.gif", name: "Kara", index: 3}
 ]
 
 function expandDigits(n, digits){

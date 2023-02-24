@@ -548,7 +548,7 @@ export class SpriteHelper extends ShapeHelper {
         }
 
         if (texture != null) {
-
+            texture.baseTexture.scaleMode = 0;
             if (this.scaleMode == "linear") {
 
                 let t = this.worldHelper.scaledTextures[nameWithIndex];

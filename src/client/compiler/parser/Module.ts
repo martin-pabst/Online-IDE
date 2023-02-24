@@ -89,6 +89,8 @@ import { ConnectionClass } from "../../runtimelibrary/database/Connection.js";
 import { DatabaseManagerClass } from "../../runtimelibrary/database/DatabaseManager.js";
 import { DatabasePreparedStatementClass } from "../../runtimelibrary/database/DatabasePreparedStatement.js";
 import jQuery from 'jquery';
+import { JavaKaraWorldClass, KaraClass } from "../../runtimelibrary/graphics/JavaKaraWorld.js";
+import { PositionClass } from "../../runtimelibrary/graphics/Position.js";
 
 export type ExportedWorkspace = {
     name: string;
@@ -804,6 +806,9 @@ export class BaseModule extends Module {
         this.typeStore.addType(CharacterType);
         this.typeStore.addType(BooleanType);
 
+
+        this.typeStore.addType(new PositionClass(this));
+
         // Collections Framework
         this.typeStore.addType(new IteratorClass(this));
         this.typeStore.addType(new IterableClass(this));
@@ -858,6 +863,9 @@ export class BaseModule extends Module {
         this.typeStore.addType(new LineClass(this));
         this.typeStore.addType(new TriangleClass(this));
         this.typeStore.addType(new TurtleClass(this));
+
+        this.typeStore.addType(new JavaKaraWorldClass(this));
+        this.typeStore.addType(new KaraClass(this));
 
         this.typeStore.addType(new MouseListenerInterface(this));
         this.typeStore.addType(new MouseAdapterClass(this));

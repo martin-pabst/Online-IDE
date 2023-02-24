@@ -5633,6 +5633,34 @@
    background-image: url(../assets/graphics/spritesheet.png);
 }
 
+.Kara_0{
+   width: 28px;
+   height: 28px;
+   background-position: -2601px -1132px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Kara_1{
+   width: 28px;
+   height: 28px;
+   background-position: -2111px -1886px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Kara_2{
+   width: 28px;
+   height: 28px;
+   background-position: -2141px -1886px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
+.Kara_3{
+   width: 28px;
+   height: 28px;
+   background-position: -2171px -1886px;
+   background-image: url(../assets/graphics/spritesheet.png);
+}
+
 .Explosion_1_0{
    width: 96px;
    height: 96px;

@@ -1021,7 +1021,7 @@ export class CharPrimitiveType extends PrimitiveType {
                 return value + <string>(secondOperand.value);
 
             case TokenType.minus:
-                return value + <string>(secondOperand.value);
+                return <any>value - <number>secondOperand.value;
 
             case TokenType.lower:
                 return value < (<string>(secondOperand.value));

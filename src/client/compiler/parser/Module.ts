@@ -89,8 +89,9 @@ import { ConnectionClass } from "../../runtimelibrary/database/Connection.js";
 import { DatabaseManagerClass } from "../../runtimelibrary/database/DatabaseManager.js";
 import { DatabasePreparedStatementClass } from "../../runtimelibrary/database/DatabasePreparedStatement.js";
 import jQuery from 'jquery';
-import { JavaKaraWorldClass, KaraClass } from "../../runtimelibrary/graphics/JavaKaraWorld.js";
+import { JavaKaraWorldClass, KaraClass } from "../../runtimelibrary/graphics/JavaKara.js";
 import { PositionClass } from "../../runtimelibrary/graphics/Position.js";
+import { HamsterClass, JavaHamsterWorldClass } from "../../runtimelibrary/graphics/JavaHamster.js";
 
 export type ExportedWorkspace = {
     name: string;
@@ -866,6 +867,8 @@ export class BaseModule extends Module {
 
         this.typeStore.addType(new JavaKaraWorldClass(this));
         this.typeStore.addType(new KaraClass(this));
+        this.typeStore.addType(new JavaHamsterWorldClass(this));
+        this.typeStore.addType(new HamsterClass(this));
 
         this.typeStore.addType(new MouseListenerInterface(this));
         this.typeStore.addType(new MouseAdapterClass(this));

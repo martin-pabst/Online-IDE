@@ -16,7 +16,7 @@ export class JavaKaraWorldClass extends Klass {
 
         super("JavaKaraWorld", module, "JavaKara-Welt");
 
-        this.setBaseClass(<Klass>module.typeStore.getType("Group"));
+        this.setBaseClass(<Klass>module.typeStore.getType("FilledShape"));
         let positionKlass = <Klass>module.typeStore.getType("Position");
 
         this.addAttribute(new Attribute("NORTH", intPrimitiveType, (value) => { value.value = 0 }, true, Visibility.public, true, "Direction NORTH"));
@@ -53,6 +53,19 @@ export class JavaKaraWorldClass extends Klass {
                 return sh.sizeX;
 
             }, false, false, "Gibt zurück, wie viele Felder breit die Welt ist.", false));
+
+        this.addMethod(new Method("getSizeY", new Parameterlist([]
+        ), intPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: JavaKaraWorldHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("getSizeY")) return;
+
+                return sh.sizeY;
+
+            }, false, false, "Gibt zurück, wie viele Felder hoch die Welt ist.", false));
 
         this.addMethod(new Method("clearAll", new Parameterlist([]
         ), voidPrimitiveType,
@@ -181,7 +194,7 @@ export class JavaKaraWorldHelper extends FilledShapeHelper {
 
     cellWidth: number = 28;
     backgroundGraphics: PIXI.Graphics;
-    rows: KaraSpriteHelper[][][];
+    columns: KaraSpriteHelper[][][];
 
     karas: KaraSpriteHelper[] = [];
 
@@ -189,11 +202,11 @@ export class JavaKaraWorldHelper extends FilledShapeHelper {
         interpreter: Interpreter, public runtimeObject: RuntimeObject, public positionKlass: Klass) {
         super(interpreter, runtimeObject);
 
-        this.rows = [];
+        this.columns = [];
         for (let i = 0; i < sizeX; i++) {
-            let row = [];
-            this.rows.push(row);
-            for (let j = 0; j < sizeY; j++) row.push([]);
+            let columnArray = [];
+            this.columns.push(columnArray);
+            for (let j = 0; j < sizeY; j++) columnArray.push([]);
         }
 
         this.borderWidth = 2;
@@ -226,21 +239,21 @@ export class JavaKaraWorldHelper extends FilledShapeHelper {
     }
 
     isMushroom(x: number, y: number) {
-        for (let sprite of this.rows[x][y]) {
+        for (let sprite of this.columns[x][y]) {
             if (sprite.isMushroom()) return true;
         }
         return false;
     }
 
     isTree(x: number, y: number) {
-        for (let sprite of this.rows[x][y]) {
+        for (let sprite of this.columns[x][y]) {
             if (sprite.isTree()) return true;
         }
         return false;
     }
 
     isLeaf(x: number, y: number) {
-        for (let sprite of this.rows[x][y]) {
+        for (let sprite of this.columns[x][y]) {
             if (sprite.isLeaf()) return true;
         }
         return false;
@@ -304,13 +317,13 @@ export class JavaKaraWorldHelper extends FilledShapeHelper {
     };
 
     removeSprite(sprite: KaraSpriteHelper) {
-        let array = this.rows[sprite.x][sprite.y];
+        let array = this.columns[sprite.x][sprite.y];
         let index = array.indexOf(sprite);
         if (index > 0) array.splice(index, 1);
     }
 
     addSprite(x: number, y: number, sprite: KaraSpriteHelper) {
-        let array = this.rows[x][y];
+        let array = this.columns[x][y];
         array.push(sprite);
     }
 
@@ -320,7 +333,7 @@ export class JavaKaraWorldHelper extends FilledShapeHelper {
     }
 
     getMushroom(x: number, y: number): KaraSpriteHelper {
-        let array = this.rows[x][y];
+        let array = this.columns[x][y];
         return array.find((s) => s.isMushroom());
     }
 
@@ -333,7 +346,7 @@ export class JavaKaraWorldHelper extends FilledShapeHelper {
         if (y < 0) y = - y + this.sizeY - 1;
         x = x % this.sizeX;
         y = y % this.sizeY;
-        this.rows[x][y].push(sprite);
+        this.columns[x][y].push(sprite);
         if (sprite.isKara()) {
             this.karas.push(sprite);
         } else {
@@ -348,28 +361,28 @@ export class JavaKaraWorldHelper extends FilledShapeHelper {
     }
 
     removeLeaf(x: number, y: number) {
-        let array = this.rows[x][y];
+        let array = this.columns[x][y];
         let leaf = array.find((s) => s.isLeaf());
         this.removeSprite(leaf);
         leaf.sprite.destroy();
     }
 
     removeTree(x: number, y: number) {
-        let array = this.rows[x][y];
+        let array = this.columns[x][y];
         let tree = array.find((s) => s.isTree());
         this.removeSprite(tree);
         tree.sprite.destroy();
     }
 
     removeMushroom(x: number, y: number) {
-        let array = this.rows[x][y];
+        let array = this.columns[x][y];
         let mushroom = array.find((s) => s.isMushroom());
         this.removeSprite(mushroom);
         mushroom.sprite.destroy();
     }
 
     clearAll() {
-        for (let column of this.rows) {
+        for (let column of this.columns) {
             for (let cellArray of column) {
                 this.emptyCellArray(cellArray);
             }
@@ -408,7 +421,7 @@ export class JavaKaraWorldHelper extends FilledShapeHelper {
     }
 
     isEmpty(x: number, y: number) {
-        let a = this.rows[x][y];
+        let a = this.columns[x][y];
         return a.length == 0;
     }
 
@@ -439,7 +452,7 @@ export class JavaKaraWorldHelper extends FilledShapeHelper {
     }
 
     public destroy(): void {
-        for (let row of this.rows) {
+        for (let row of this.columns) {
             for (let a of row) {
                 for (let sprite of a) {
                     sprite.sprite.destroy();

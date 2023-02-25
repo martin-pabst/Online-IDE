@@ -208,7 +208,12 @@ export var SpriteLibrary = [
     {filename: "javakara/bugeast_r.gif", name: "Kara", index: 0},
     {filename: "javakara/object_leaf.gif", name: "Kara", index: 1},
     {filename: "javakara/object_mushroom.gif", name: "Kara", index: 2},
-    {filename: "javakara/object_tree.gif", name: "Kara", index: 3}
+    {filename: "javakara/object_tree.gif", name: "Kara", index: 3},
+
+    // Java Hamster
+    {filename: "javahamster/hamster_bottom.png", name: "Hamster", index: 0},
+    {filename: "javahamster/grain.png", name: "Hamster", index: 1},
+    {filename: "javahamster/wall.png", name: "Hamster", index: 2},
 ]
 
 function expandDigits(n, digits){

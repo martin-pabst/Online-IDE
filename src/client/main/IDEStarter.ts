@@ -8,18 +8,23 @@ import * as PIXI from 'pixi.js';
 import jQuery from 'jquery';
 
 // All css files for fullscreen online-ide:
-import "/css/editor.css";
-import "/css/editorStatic.css";
-import "/css/bottomdiv.css";
-import "/css/run.css";
-// import "/css/diagram.css";
-import "/css/debugger.css";
-import "/css/helper.css";
-import "/css/icons.css";
-import "/css/dialog.css";
-import "/css/synchronize-repo.css";
-import "/css/updatecreate-repo.css";
-import "/css/spritemanager.css";
+import "/include/css/editor.css";
+import "/include/css/editorStatic.css";
+import "/include/css/bottomdiv.css";
+import "/include/css/run.css";
+// import "/include/css/diagram.css";
+import "/include/css/debugger.css";
+import "/include/css/helper.css";
+import "/include/css/icons.css";
+import "/include/css/dialog.css";
+import "/include/css/synchronize-repo.css";
+import "/include/css/updatecreate-repo.css";
+import "/include/css/spritemanager.css";
+
+import spritesheetjson from '/include/graphics/spritesheet.json.txt';
+import spritesheetpng from '/include/graphics/spritesheet.png';
+import { PixiSpritesheetData } from "../spritemanager/PixiSpritesheetData.js";
+
 
 
 jQuery(function () {
@@ -68,7 +73,20 @@ jQuery(function () {
         
     });
     
-    PIXI.Assets.add("spritesheet", "assets/graphics/spritesheet.json", {scaleMode: PIXI.SCALE_MODES.NEAREST});
+    fetch(`${spritesheetjson}`)
+    .then((response) => response.json())
+    .then((spritesheetData: PixiSpritesheetData) => {
+        PIXI.Assets.load(`${spritesheetpng}`).then((texture: PIXI.Texture) => {
+            spritesheetData.meta.size.w = texture.width;
+            spritesheetData.meta.size.h = texture.height;
+            let spritesheet = new PIXI.Spritesheet(texture, spritesheetData);
+            spritesheet.parse().then(() => {
+                PIXI.Assets.cache.set('spritesheet', spritesheet);
+            });
+        })
+    });
+
+    // PIXI.Assets.add("spritesheet", "assets/graphics/spritesheet.json", {scaleMode: PIXI.SCALE_MODES.NEAREST});
     PIXI.Assets.add("steve", "assets/graphics/robot/minecraft_steve/scene.gltf");
 
     PIXI.Assets.load(["spritesheet", "steve"]);

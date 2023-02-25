@@ -1,7 +1,7 @@
 import { ajax } from "../communication/AjaxHelper.js";
 import { GetStatisticsRequest, GetStatisticsResponse, StatisticData } from "../communication/Data.js";
 
-import '/css/statistics.css';
+import '/include/css/statistics.css';
 
 class Statistics {
 

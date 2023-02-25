@@ -1,6 +1,6 @@
 import { SpriteData } from "./ImageFile.js";
 import { potpack } from "./RectanglePacker.js";
-import { PixiSpritesheetData, SpritesheetData } from "./SpritesheetData.js";
+import { SpritesheetData } from "./SpritesheetData.js";
 
 
 export class EditableSpritesheet {

@@ -3,7 +3,7 @@ import { Main } from "../main/Main.js";
 import { downloadFile, makeDiv, openContextMenu } from "../tools/HtmlTools.js";
 import { ImageFile, SpriteData } from "./ImageFile.js";
 import { EditableSpritesheet } from "./EditableSpritesheet.js";
-import { PixiSpritesheetData, SpritesheetData } from "./SpritesheetData.js";
+import { SpritesheetData } from "./SpritesheetData.js";
 import { UploadSpriteResponse } from "../communication/Data.js";
 import {SpriteLibrary} from  "../runtimelibrary/graphics/SpriteLibrary.js";
 

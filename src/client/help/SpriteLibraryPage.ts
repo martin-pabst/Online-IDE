@@ -1,5 +1,5 @@
-import '/css/imagesprites.css';
-import '/css/spriteLibrary.css';
+import '/include/css/imagesprites.css';
+import '/include/css/spriteLibrary.css';
 import jQuery from 'jquery';
 import {SpriteLibrary} from '../runtimelibrary/graphics/SpriteLibrary.js';
 

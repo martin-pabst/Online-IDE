@@ -6,14 +6,18 @@ import * as PIXI from 'pixi.js';
 import jQuery from 'jquery';
 
 // All css files for fullscreen online-ide:
-import "/css/editor.css";
-import "/css/bottomdiv.css";
-import "/css/run.css";
-import "/css/debugger.css";
-import "/css/helper.css";
-import "/css/icons.css";
-import "/css/embedded.css";
+import "/include/css/editor.css";
+import "/include/css/bottomdiv.css";
+import "/include/css/run.css";
+import "/include/css/debugger.css";
+import "/include/css/helper.css";
+import "/include/css/icons.css";
+import "/include/css/embedded.css";
 
+import spritesheetjson from '/include/graphics/spritesheet.json.txt';
+import spritesheetpng from '/include/graphics/spritesheet.png';
+
+import { PixiSpritesheetData } from "../spritemanager/PixiSpritesheetData.js";
 
 export type ScriptType = "java" | "hint";
 
@@ -215,10 +219,23 @@ jQuery(function () {
         pathPraefix = window.javaOnlineDir;
     }
 
-    PIXI.Assets.add("spritesheet", pathPraefix + "assets/graphics/spritesheet.json", { scaleMode: PIXI.SCALE_MODES.NEAREST });
+    fetch(`${spritesheetjson}`)
+    .then((response) => response.json())
+    .then((spritesheetData: PixiSpritesheetData) => {
+        PIXI.Assets.load(`${spritesheetpng}`).then((texture: PIXI.Texture) => {
+            spritesheetData.meta.size.w = texture.width;
+            spritesheetData.meta.size.h = texture.height;
+            let spritesheet = new PIXI.Spritesheet(texture, spritesheetData);
+            spritesheet.parse().then(() => {
+                PIXI.Assets.cache.set('spritesheet', spritesheet);
+            });
+        })
+    });
+
+    // PIXI.Assets.add("spritesheet", pathPraefix + "assets/graphics/spritesheet.json", { scaleMode: PIXI.SCALE_MODES.NEAREST });
     PIXI.Assets.add("steve", pathPraefix + "assets/graphics/robot/minecraft_steve/scene.gltf");
 
-    PIXI.Assets.load(["spritesheet", "steve"]);
+    PIXI.Assets.load(["steve"]);
 
 
 });

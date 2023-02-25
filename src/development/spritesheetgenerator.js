@@ -10,9 +10,9 @@ import * as marginExtruder from './marginExtruder.js';
 // var marginExtruder = require('./marginExtruder.js');
 
 let dir = "./material/spritesheet-files/"
-let output_dir = "./public/assets/graphics/"
-let cssGraphicURL = "../assets/graphics/spritesheet.png"
-let cssFilename = "./css/imagesprites.css"
+let output_dir = "./include/graphics/"
+let cssGraphicURL = "../graphics/spritesheet.png"
+let cssFilename = "./include/css/imagesprites.css"
 
 // Generate our spritesheet
 
@@ -168,7 +168,7 @@ Spritesmith.run({
     }
 
 
-    fs.writeFileSync(output_dir + 'spritesheet.json', JSON.stringify(pixi, null, 2), 'utf-8');
+    fs.writeFileSync(output_dir + 'spritesheet.json.txt', JSON.stringify(pixi, null, 2), 'utf-8');
     fs.writeFileSync(cssFilename, cssFile, 'utf-8');
 
     result.coordinates, result.properties; // Coordinates and properties

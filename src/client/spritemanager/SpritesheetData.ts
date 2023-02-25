@@ -1,30 +1,10 @@
 import { MainBase } from "../main/MainBase.js";
 import { CacheManager } from "../tools/CacheManager.js";
 import { Workspace } from "../workspace/Workspace.js";
+import { PixiSpritesheetData } from "./PixiSpritesheetData.js";
 import * as PIXI from 'pixi.js';
 import jQuery from 'jquery';
 
-
-export type PixiSpritesheetData = {
-    frames: {
-        [name: string]: {
-            frame: { x: number, y: number, w: number, h: number },
-            rotated: boolean,
-            trimmed: boolean,
-            spriteSourceSize: { x: number, y: number, w: number, h: number },
-            sourceSize: { w: number, h: number },
-            pivot: { x: number, y: number }
-        }
-    },
-    meta: {
-        app: string,
-        version: string,
-        image: string,
-        format: "RGBA8888",
-        size: { w: number, h: number },
-        scale: string
-    }
-}
 
 export class SpritesheetData {
 

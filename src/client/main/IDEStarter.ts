@@ -89,7 +89,7 @@ jQuery(function () {
     // PIXI.Assets.add("spritesheet", "assets/graphics/spritesheet.json", {scaleMode: PIXI.SCALE_MODES.NEAREST});
     PIXI.Assets.add("steve", "assets/graphics/robot/minecraft_steve/scene.gltf");
 
-    PIXI.Assets.load(["spritesheet", "steve"]);
+    PIXI.Assets.load(["steve"]);
     
     main.initGUI();
 

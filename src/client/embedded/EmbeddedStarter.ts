@@ -19,6 +19,9 @@ import spritesheetpng from '/include/graphics/spritesheet.png';
 
 import { PixiSpritesheetData } from "../spritemanager/PixiSpritesheetData.js";
 
+declare var APP_VERSION: string;
+
+
 export type ScriptType = "java" | "hint";
 
 export type JOScript = {
@@ -219,10 +222,14 @@ jQuery(function () {
         pathPraefix = window.javaOnlineDir;
     }
 
-    fetch(`${spritesheetjson}`)
+    if(pathPraefix.endsWith("/")){
+        pathPraefix = pathPraefix.substring(0, pathPraefix.length - 1);
+    }
+
+    fetch(pathPraefix + `${spritesheetjson}`)
     .then((response) => response.json())
     .then((spritesheetData: PixiSpritesheetData) => {
-        PIXI.Assets.load(`${spritesheetpng}`).then((texture: PIXI.Texture) => {
+        PIXI.Assets.load(pathPraefix + `${spritesheetpng}`).then((texture: PIXI.Texture) => {
             spritesheetData.meta.size.w = texture.width;
             spritesheetData.meta.size.h = texture.height;
             let spritesheet = new PIXI.Spritesheet(texture, spritesheetData);
@@ -232,10 +239,12 @@ jQuery(function () {
         })
     });
 
-    // PIXI.Assets.add("spritesheet", pathPraefix + "assets/graphics/spritesheet.json", { scaleMode: PIXI.SCALE_MODES.NEAREST });
-    PIXI.Assets.add("steve", pathPraefix + "assets/graphics/robot/minecraft_steve/scene.gltf");
+    // PIXI.Assets.add("spritesheet", pathPraefix + "/assets/graphics/spritesheet.json", { scaleMode: PIXI.SCALE_MODES.NEAREST });
+    PIXI.Assets.add("steve", pathPraefix + "/assets/graphics/robot/minecraft_steve/scene.gltf");
 
     PIXI.Assets.load(["steve"]);
 
+    //@ts-ignore
+    console.log(APP_VERSION);
 
 });

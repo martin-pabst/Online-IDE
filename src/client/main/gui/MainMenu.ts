@@ -5,6 +5,10 @@ import { ajax } from "../../communication/AjaxHelper.js";
 import { WorkspaceImporter } from "./WorkspaceImporter.js";
 import jQuery from 'jquery';
 
+declare var BUILD_DATE: string;
+declare var APP_VERSION: string;
+
+
 export type Action = (identifier: string) => void;
 
 type Menu = {
@@ -19,6 +23,7 @@ type MenuItem = {
     action?: Action;
     link?: string;
     subMenu?: Menu;
+    noHoverAnimation?: boolean
 }
 
 export class MainMenu {
@@ -225,6 +230,10 @@ export class MainMenu {
                             {
                                 identifier: "Über die Online-IDE...",
                                 link: "https://www.learnj.de/doku.php?id=javaonline:ueber"
+                            },
+                            {
+                                identifier: "<div class='jo_menu_version'>Version " + APP_VERSION + " vom " + BUILD_DATE + "</div>",
+                                noHoverAnimation: true
                             }
 
                         ]
@@ -299,7 +308,8 @@ export class MainMenu {
             if (mi.identifier == '-') {
                 mi.$element = jQuery('<div class="jo_menuitemdivider"></div>');
             } else {
-                mi.$element = jQuery('<div>' + mi.identifier + '</div>');
+                let noHoverKlass = mi.noHoverAnimation ? ' class="jo_menuitem_nohover"': '';
+                mi.$element = jQuery(`<div${noHoverKlass}>${mi.identifier}</div>`);
                 if (mi.link != null) {
                     let $link = jQuery('<a href="' + mi.link + '" target="_blank" class="jo_menulink"></a>');
                     $link.on("mousedown", (event) => {

@@ -605,6 +605,14 @@ body .monaco-editor-hover .monaco-tokenized-source {
     padding: 0 !important;
 }
 
+.jo_menu_version {
+    color: #808080;
+}
+
+.jo_menuitem_nohover{
+    background-color: unset !important;
+}
+
 .jo_filelist {
     position: relative;
     width: 100%;

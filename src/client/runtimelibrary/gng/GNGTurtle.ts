@@ -78,6 +78,7 @@ export class GNGTurtleClass extends Klass {
 
                 if (sh.testdestroyed("größeSetzen")) return;
                 sh.turtleSize = größe;
+                sh.borderWidth = größe/100;
                 sh.moveTurtleTo(0,0, 0);
                 sh.initTurtle(0, 0, sh.angle);
                 sh.moveTurtleTo(sh.lineElements[sh.lineElements.length - 1].x, sh.lineElements[sh.lineElements.length - 1].y, sh.angle)

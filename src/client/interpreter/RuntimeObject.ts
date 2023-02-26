@@ -1,5 +1,6 @@
 import { Klass, StaticClass, Visibility } from "../compiler/types/Class.js";
 import { PrimitiveType, Value } from "../compiler/types/Types.js";
+import { GNGAttributes } from "../runtimelibrary/gng/GNGConstants.js";
 
 
 
@@ -13,6 +14,8 @@ export class RuntimeObject {
     // Map class-identifier to Map <attribute-identifier, attribute-value>
     // attributeValues: Map<string, Map<string, Value>> = new Map();
     attributes: Value[];
+
+    gngAttributes?: GNGAttributes;
 
     constructor(klass: Klass | StaticClass ) {
 

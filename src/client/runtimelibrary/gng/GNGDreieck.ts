@@ -6,6 +6,8 @@ import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { CircleHelper } from "../graphics/Circle.js";
 import { PolygonHelper } from "../graphics/Polygon.js";
 import { RectangleHelper } from "../graphics/Rectangle.js";
+import { ShapeHelper } from "../graphics/Shape.js";
+import { GNGHelper } from "./GNGConstants.js";
 
 export class GNGDreieckClass extends Klass {
 
@@ -16,13 +18,11 @@ export class GNGDreieckClass extends Klass {
         this.setBaseClass(<Klass>module.typeStore.getType("GNGBaseFigur"));
 
         this.addAttribute(new Attribute("breite", intPrimitiveType, (value: Value) => { 
-            let breite = value.object.intrinsicData["Breite"];
-            value.value = Math.round(breite); 
+            value.value = Math.round(value.object.gngAttributes.width); 
         }, false, Visibility.protected, false, "Breite des Dreiecks"));
 
         this.addAttribute(new Attribute("höhe", intPrimitiveType, (value: Value) => { 
-            let höhe = value.object.intrinsicData["Höhe"];
-            value.value = Math.round(höhe); 
+            value.value = Math.round(value.object.gngAttributes.height); 
         }, false, Visibility.protected, false, "Höhe des Dreiecks"));
 
         this.setupAttributeIndicesRecursive();
@@ -34,17 +34,19 @@ export class GNGDreieckClass extends Klass {
                 o.intrinsicData["isGNG"] = true;
 
 
-                let rh = new PolygonHelper([60, 10, 110,110, 10, 110],true, module.main.getInterpreter(), o);
+                let rh = new GNGDreieckHelper([60, 10, 110,110, 10, 110],true, module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = rh;
 
-                o.intrinsicData["moveAnchor"] = {x: 60, y: 10};
+                o.gngAttributes = {
+                    moveAnchor: {x: 60, y: 10},
+                    width: 100,
+                    height: 100,
+                    colorString: "rot"
+                }
+
                 rh.centerXInitial = 60;
                 rh.centerYInitial = 60;
 
-                o.intrinsicData["Breite"] = 100;
-                o.intrinsicData["Höhe"] = 100;
-
-                o.intrinsicData["Farbe"] = "rot";
                 rh.setFillColor(0xff0000);
 
 
@@ -57,24 +59,18 @@ export class GNGDreieckClass extends Klass {
                 (parameters) => {
     
                     let o: RuntimeObject = parameters[0].value;
-                    let sh: PolygonHelper = o.intrinsicData["Actor"];
+                    let sh: GNGDreieckHelper = o.intrinsicData["Actor"];
                     let breite: number = parameters[1].value;
                     let höhe: number = parameters[2].value;
 
-                    o.intrinsicData["Breite"] = breite;
-                    o.intrinsicData["Höhe"] = höhe;    
-
-                    breite /= sh.scaleFactor;
-                    höhe /= sh.scaleFactor;
-
                     if (sh.testdestroyed("GrößeSetzen")) return;
-    
-                    sh.setAllPointsUntransformed([60, 10, 60 - breite/2, 10 + höhe, 60 + breite/2, 10 + höhe ]);
-                    sh.centerXInitial = 60;
-                    sh.centerYInitial = 10 + höhe/2;
+
+                    o.gngAttributes.width = breite;
+                    o.gngAttributes.height = höhe;
+
+                    sh.renderGNG(o);
+
                     
-                    // sh.setAllPointsUntransformed([60, 60 - höhe/2, 60 - breite/2, 60 + höhe/2, 60 + breite/2, 60 + höhe/2 ]);
-    
                 }, false, false, "Setzt die Breite und Höhe des Dreiecks.", false));
     
 
@@ -84,3 +80,27 @@ export class GNGDreieckClass extends Klass {
 
 }
 
+class GNGDreieckHelper extends PolygonHelper implements GNGHelper {
+    renderGNG(ro: RuntimeObject): void {
+        let att = ro.gngAttributes;
+        let max = att.moveAnchor.x;
+        let may = att.moveAnchor.y;
+
+        let rotationCenterX = max;
+        let rotationCenterY = may + att.height/2;
+
+        this.hitPolygonInitial = [{x: max, y: may}, {x: max + att.width/2, y: may + att.height}, {x: max - att.width/2, y: att.height}];
+
+        this.render();
+
+        this.displayObject.localTransform.identity();
+        this.displayObject.localTransform.translate(-rotationCenterX, -rotationCenterY);
+        this.displayObject.localTransform.rotate(-this.angle / 180 * Math.PI);
+        this.displayObject.localTransform.translate(rotationCenterX, rotationCenterY);
+        //@ts-ignore
+        this.displayObject.transform.onChange();
+        this.displayObject.updateTransform();
+        this.setHitPolygonDirty(true);
+    }
+
+}

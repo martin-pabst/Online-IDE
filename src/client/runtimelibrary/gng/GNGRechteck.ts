@@ -5,6 +5,8 @@ import { Attribute, Method, Parameterlist, Value } from "../../compiler/types/Ty
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { RectangleHelper } from "../graphics/Rectangle.js";
+import { GNGHelper } from "./GNGConstants.js";
+import { ShapeHelper } from "../graphics/Shape.js";
 
 export class GNGRechteckClass extends Klass {
 
@@ -34,12 +36,16 @@ export class GNGRechteckClass extends Klass {
                 let o: RuntimeObject = parameters[0].value;
                 o.intrinsicData["isGNG"] = true;
 
-                let rh = new RectangleHelper(10, 10, 100, 100, module.main.getInterpreter(), o);
+                let rh = new GNGRechteckHelper(10, 10, 100, 100, module.main.getInterpreter(), o);
                 o.intrinsicData["Actor"] = rh;
 
-                o.intrinsicData["moveAnchor"] = {x: 10, y: 10};
+                o.gngAttributes = {
+                    moveAnchor: {x: 10, y: 10},
+                    width: 100,
+                    height: 100,
+                    colorString: "rot"
+                }
 
-                o.intrinsicData["Farbe"] = "rot";
                 rh.setFillColor(0xff0000);
 
             }, false, false, 'Instanziert ein neues, achsenparalleles Rechteck-Objekt.', true));
@@ -51,19 +57,15 @@ export class GNGRechteckClass extends Klass {
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
-                let sh: RectangleHelper = o.intrinsicData["Actor"];
+                let sh: GNGRechteckHelper = o.intrinsicData["Actor"];
                 let breite: number = parameters[1].value;
                 let höhe: number = parameters[2].value;
 
                 if (sh.testdestroyed("GrößeSetzen")) return;
 
-                sh.height = höhe / sh.displayObject.scale.y;
-                sh.width = breite / sh.displayObject.scale.x;
-
-                sh.centerXInitial = sh.left + sh.width/2;
-                sh.centerYInitial = sh.top + sh.height/2;
-
-                sh.render();
+                o.gngAttributes.width = breite;
+                o.gngAttributes.height = höhe;
+                sh.renderGNG(o);
 
             }, false, false, "Setzt die Breite und Höhe des Rechtecks.", false));
 
@@ -72,3 +74,29 @@ export class GNGRechteckClass extends Klass {
 
 }
 
+
+class GNGRechteckHelper extends RectangleHelper implements GNGHelper {
+    renderGNG(ro: RuntimeObject): void {
+        let att = ro.gngAttributes;
+        let rotationCenterX = att.moveAnchor.x + att.width/2;
+        let rotationCenterY = att.moveAnchor.y + att.height/2;
+
+        this.left = att.moveAnchor.x;
+        this.top = att.moveAnchor.y;
+        this.width = att.width;
+        this.height = att.height;
+
+        this.render();
+
+        this.displayObject.localTransform.identity();
+        this.displayObject.localTransform.translate(-rotationCenterX, -rotationCenterY);
+        this.displayObject.localTransform.rotate(-this.angle / 180 * Math.PI);
+        this.displayObject.localTransform.translate(rotationCenterX, rotationCenterY);
+        //@ts-ignore
+        this.displayObject.transform.onChange();
+        this.displayObject.updateTransform();
+        this.setHitPolygonDirty(true);
+
+    }
+
+}

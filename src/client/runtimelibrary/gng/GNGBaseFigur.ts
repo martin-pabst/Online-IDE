@@ -8,6 +8,7 @@ import { RectangleHelper } from "../graphics/Rectangle.js";
 import { FilledShapeHelper } from "../graphics/FilledShape.js";
 import { GNGFarben } from "./GNGFarben.js";
 import * as PIXI from 'pixi.js';
+import { GNGHelper } from "./GNGConstants.js";
 
 export class GNGBaseFigurClass extends Klass {
 
@@ -19,29 +20,15 @@ export class GNGBaseFigurClass extends Klass {
         this.setBaseClass(objectType);
 
         this.addAttribute(new Attribute("farbe", stringPrimitiveType, (value: Value) => { 
-            let farbe = value.object.intrinsicData["Farbe"];
+            let farbe = value.object.gngAttributes.colorString;
             value.value = farbe == null ? "schwarz" : farbe;
         }, false, Visibility.protected, false, "Farbe des Grafikobjekts"));
 
         this.addAttribute(new Attribute("x", intPrimitiveType, (value: Value) => { 
-            let sh = value.object.intrinsicData["Actor"];
-
-            let moveAnchor: {x: number, y: number} = value.object.intrinsicData["moveAnchor"];
-            let p: PIXI.Point = new PIXI.Point(moveAnchor.x, moveAnchor.y);
-            sh.displayObject.updateTransform();
-            sh.displayObject.transform.worldTransform.apply(p, p);
-
-            value.value = Math.round(p.x); 
+            value.value = Math.round(value.object.gngAttributes.moveAnchor.x); 
         }, false, Visibility.protected, false, "x-Position des Grafikobjekts"));
         this.addAttribute(new Attribute("y", intPrimitiveType, (value: Value) => { 
-            let sh = value.object.intrinsicData["Actor"];
-
-            let moveAnchor: {x: number, y: number} = value.object.intrinsicData["moveAnchor"];
-            let p: PIXI.Point = new PIXI.Point(moveAnchor.x, moveAnchor.y);
-            sh.displayObject.updateTransform();
-            sh.displayObject.transform.worldTransform.apply(p, p);
-
-            value.value = Math.round(p.y); 
+            value.value = Math.round(value.object.gngAttributes.moveAnchor.y); 
         }, false, Visibility.protected, false, "y-Position des Grafikobjekts"));
 
         this.addAttribute(new Attribute("winkel", intPrimitiveType, (value: Value) => { 
@@ -49,7 +36,7 @@ export class GNGBaseFigurClass extends Klass {
         }, false, Visibility.protected, false, "Blickrichtung des Grafikobjekts in Grad"));
 
         this.addAttribute(new Attribute("größe", intPrimitiveType, (value: Value) => { 
-            value.value = Math.round(value.object.intrinsicData["Actor"].scaleFactor*100) 
+            value.value = Math.round(value.object.gngAttributes.width); 
         }, false, Visibility.protected, false, "Größe des Grafikobjekts (100 entspricht 'normalgroß')"));
 
         this.addAttribute(new Attribute("sichtbar", booleanPrimitiveType, (value: Value) => { 
@@ -71,13 +58,9 @@ export class GNGBaseFigurClass extends Klass {
 
                 if (sh.testdestroyed("PositionSetzen")) return;
 
-                let moveAnchor: {x: number, y: number} = o.intrinsicData["moveAnchor"];
-
-                let p: PIXI.Point = new PIXI.Point(moveAnchor.x, moveAnchor.y);
-                sh.displayObject.updateTransform();
-                sh.displayObject.transform.worldTransform.apply(p, p);
-        
-                sh.move(x - p.x, y - p.y);
+                o.gngAttributes.moveAnchor.x = x;
+                o.gngAttributes.moveAnchor.y = y;
+                (<GNGHelper><any>sh).renderGNG(o);
 
             }, false, false, "Verschiebt das Rechteck so, dass seine linke obere Ecke bei (x,y) zu liegen kommt.", false));
 
@@ -95,7 +78,9 @@ export class GNGBaseFigurClass extends Klass {
 
                 if (sh.testdestroyed("Verschieben")) return;
 
-                sh.move(x, y);
+                o.gngAttributes.moveAnchor.x += x;
+                o.gngAttributes.moveAnchor.y += y;
+                (<GNGHelper><any>sh).renderGNG(o);
 
             }, false, false, "Verschiebt die Figur um (x, y)", false));
 
@@ -109,8 +94,9 @@ export class GNGBaseFigurClass extends Klass {
                 let grad: number = parameters[1].value;
 
                 if (sh.testdestroyed("Drehen")) return;
-
-                sh.rotate(grad);
+                sh.angle += grad;
+                sh.directionRad += grad / 180 * Math.PI;
+                (<GNGHelper><any>sh).renderGNG(o);
 
             }, false, false, "Dreht die Figur um den angegebenen Winkel. Drehpunkt ist der Diagonalenschnittpunkt der kleinsten achsenparallelen Bounding Box um die Figur.", false));
 
@@ -124,7 +110,7 @@ export class GNGBaseFigurClass extends Klass {
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
                 let farbe: string = parameters[1].value;
 
-                o.intrinsicData["Farbe"] = farbe;
+                o.gngAttributes.colorString = farbe;
 
                 let color: number = GNGFarben[farbe.toLocaleLowerCase()];
                 if (color == null) color = 0x000000; // default: schwarz
@@ -143,11 +129,14 @@ export class GNGBaseFigurClass extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
                 let sh: FilledShapeHelper = o.intrinsicData["Actor"];
-                let winkel: number = parameters[1].value;
+                let grad: number = parameters[1].value;
 
                 if (sh.testdestroyed("WinkelSetzen")) return;
 
-                sh.rotate(winkel - sh.angle);
+                sh.angle = grad;
+                sh.directionRad = grad / 180 * Math.PI;
+                (<GNGHelper><any>sh).renderGNG(o);
+
 
             }, false, false, "Setzt den Drehwinkel der Figur. Der Winkel wird in Grad angegebenen, positive Werte bedeuten eine Drehung gegen den Uhrzeigersinn.", false));
 

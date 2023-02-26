@@ -4,7 +4,9 @@ import { intPrimitiveType, stringPrimitiveType } from "../../compiler/types/Prim
 import { Attribute, Method, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { CircleHelper } from "../graphics/Circle.js";
+import { ShapeHelper } from "../graphics/Shape.js";
 import { TextHelper } from "../graphics/Text.js";
+import { GNGHelper } from "./GNGConstants.js";
 
 export class GNGTextClass extends Klass {
 
@@ -15,13 +17,11 @@ export class GNGTextClass extends Klass {
         this.setBaseClass(<Klass>module.typeStore.getType("GNGBaseFigur"));
 
         this.addAttribute(new Attribute("text", stringPrimitiveType, (value: Value) => { 
-            let text = value.object.intrinsicData["Actor"].text;
-            value.value = text; 
+            value.value = (<GNGTextHelper>value.object.intrinsicData["Actor"]).text; 
         }, false, Visibility.private, false, "Angezeigter Text"));
 
         this.addAttribute(new Attribute("textgröße", intPrimitiveType, (value: Value) => { 
-            let fontsize = value.object.intrinsicData["Actor"].fontsize;
-            value.value = Math.round(fontsize); 
+            value.value = (<GNGTextHelper>value.object.intrinsicData["Actor"]).fontsize; 
         }, false, Visibility.private, false, "Textgröße"));
 
         this.setupAttributeIndicesRecursive();
@@ -32,9 +32,17 @@ export class GNGTextClass extends Klass {
                 let o: RuntimeObject = parameters[0].value;
                 o.intrinsicData["isGNG"] = true;
 
-                let rh = new TextHelper(10, -3, 12, "Text", module.main.getInterpreter(), o);
+                let rh = new GNGTextHelper(10, -3, 12, "Text", module.main.getInterpreter(), o);
 
-                o.intrinsicData["moveAnchor"] = {x: 0, y: 13};
+                o.gngAttributes = {
+                    moveAnchor: {x: 10, y: 10},
+                    width: 100,
+                    height: 100,
+                    colorString: "schwarz"
+                }
+
+                rh.centerXInitial = 60;
+                rh.centerYInitial = 60;
 
                 rh.setFillColor(0);
                 o.intrinsicData["Actor"] = rh;
@@ -47,12 +55,13 @@ export class GNGTextClass extends Klass {
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
-                let sh: TextHelper = o.intrinsicData["Actor"];
+                let sh: GNGTextHelper = o.intrinsicData["Actor"];
                 let text: string = parameters[1].value;
 
                 if (sh.testdestroyed("TextSetzen")) return;
 
-                sh.setText(text);
+                sh.text = text;
+                sh.renderGNG(o);
 
             }, false, false, "Ändert den Text des Text-Objekts.", false));
 
@@ -62,15 +71,11 @@ export class GNGTextClass extends Klass {
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
-                let sh: TextHelper = o.intrinsicData["Actor"];
+                let sh: GNGTextHelper = o.intrinsicData["Actor"];
                 let größe: number = parameters[1].value;
 
-                let moveAnchor: {x: number, y: number} = o.intrinsicData["moveAnchor"];
-
-                if (sh.testdestroyed("TextGrößeSetzen")) return;
-                sh.move(0, sh.fontsize - größe);
-                moveAnchor.y -= sh.fontsize - größe;
-                sh.setFontsize(größe);
+                sh.fontsize = größe;
+                sh.renderGNG(o);
 
             }, false, false, "Setzt die Schriftgröße des Text-Objekts.", false));
 
@@ -79,7 +84,7 @@ export class GNGTextClass extends Klass {
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
-                let sh: TextHelper = o.intrinsicData["Actor"];
+                let sh: GNGTextHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("TextVergrößern")) return;
 
@@ -94,7 +99,8 @@ export class GNGTextClass extends Klass {
                     size += 4;
                 }
 
-                sh.setFontsize(size);
+                sh.fontsize = size;
+                sh.renderGNG(o);
 
             }, false, false, "Vergrößert die Schriftgröße des Text-Objekts.", false));
 
@@ -103,7 +109,7 @@ export class GNGTextClass extends Klass {
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
-                let sh: TextHelper = o.intrinsicData["Actor"];
+                let sh: GNGTextHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("TextVerkleinern")) return;
 
@@ -121,8 +127,8 @@ export class GNGTextClass extends Klass {
                     size = 1;
                 }
 
-
-                sh.setFontsize(size);
+                sh.fontsize = size;
+                sh.renderGNG(o);
 
             }, false, false, "Verkleinert die Schriftgröße des Text-Objekts.", false));
 
@@ -132,3 +138,29 @@ export class GNGTextClass extends Klass {
 
 }
 
+class GNGTextHelper extends TextHelper implements GNGHelper {
+    renderGNG(ro: RuntimeObject): void {
+        let att = ro.gngAttributes;
+
+        this.x = att.moveAnchor.x;
+        this.y = att.moveAnchor.y - this.fontsize;
+
+        this.render();
+
+        // after this.render() is executed this.centerXInitial is textHeight/2 and this.centerYInitial is textWidth/2
+
+        let rotationCenterX = this.x + this.centerXInitial;
+        let rotationCenterY = this.y + this.centerYInitial;
+
+        this.displayObject.localTransform.identity();
+        // top-left edge of text now is at (0/0)
+        this.displayObject.localTransform.translate(-this.centerXInitial, -this.centerYInitial);
+        this.displayObject.localTransform.rotate(-this.angle / 180 * Math.PI);
+        this.displayObject.localTransform.translate(rotationCenterX, rotationCenterY);
+        //@ts-ignore
+        this.displayObject.transform.onChange();
+        this.displayObject.updateTransform();
+        this.setHitPolygonDirty(true);
+    }
+
+}

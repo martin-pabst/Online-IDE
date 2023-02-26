@@ -154,6 +154,9 @@ export class JavaHamsterWorldHelper extends FilledShapeHelper {
 
     hamsters: HamsterSpriteHelper[] = [];
 
+    // Below World
+    belowWorldText: PIXI.Text;
+
     constructor(public left: number, public top: number, public sizeX: number, public sizeY: number,
         interpreter: Interpreter, public runtimeObject: RuntimeObject) {
         super(interpreter, runtimeObject);
@@ -173,6 +176,8 @@ export class JavaHamsterWorldHelper extends FilledShapeHelper {
         this.addToDefaultGroupAndSetDefaultVisibility();
 
         this.render();
+
+        this.renderBelowWorld();
 
         this.columns = [];
         for (let column = 0; column < sizeX; column++) {
@@ -220,6 +225,26 @@ export class JavaHamsterWorldHelper extends FilledShapeHelper {
         jwh.render();
 
         return ro;
+    }
+
+    renderBelowWorld(){
+        let textstyle = new PIXI.TextStyle({
+            fontFamily: "sans-serif",
+            fontSize: 28,
+            fontStyle: 'normal',
+            fontWeight: 'normal',
+            fill: 0xffffff,
+            stroke: '#00000040',
+            strokeThickness: 2,
+            align: "center",
+        })
+
+        this.belowWorldText = new PIXI.Text("Hamster: 0, Feld: 0", textstyle);
+        this.belowWorldText.localTransform.translate(this.left, this.top + this.sizeY * this.cellWidth + 5);
+        //@ts-ignore
+        this.belowWorldText.transform.onChange();
+        let container = <PIXI.Container>this.displayObject;
+        container.addChild(this.belowWorldText);
     }
 
     render(): void {
@@ -319,6 +344,7 @@ export class JavaHamsterWorldHelper extends FilledShapeHelper {
 
         this.backgroundGraphics.destroy();
         this.hamsters.forEach((h) => h.destroy());
+        this.belowWorldText.destroy();
 
         super.destroy();
 
@@ -579,6 +605,12 @@ class HamsterSpriteHelper {
 
     }
 
+    writeBelowWorldText(){
+        if(this.world.hamsters.length == 1){
+            this.world.belowWorldText.text = `Hamster: ${this.grainCount}, Zelle: ${this.world.getGrainCount(this.x, this.y)}`;    
+        }
+    }
+
     testDestroyed(method: string): boolean {
         if (this.sprite.destroyed) {
             this.throwException("Die Methode " + method + " eines schon zerstörten Hamsters wurde aufgerufen.");
@@ -607,6 +639,7 @@ class HamsterSpriteHelper {
         }
 
         this.moveToCell(newX, newY);
+        this.writeBelowWorldText();
     }
 
     turn(angle: number) {
@@ -663,6 +696,7 @@ class HamsterSpriteHelper {
         }
         this.grainCount--;
         this.world.setGrain(this.x, this.y, this.world.getGrainCount(this.x, this.y) + 1);
+        this.writeBelowWorldText();
     }
 
     take() {
@@ -672,6 +706,7 @@ class HamsterSpriteHelper {
         }
         this.grainCount++;
         this.world.setGrain(this.x, this.y, this.world.getGrainCount(this.x, this.y) - 1);
+        this.writeBelowWorldText();
     }
 
     nextCellFree(): boolean {
@@ -724,13 +759,14 @@ class WallGrainSprite {
         container.addChild(this.wallSprite);
 
         this.grainText = new PIXI.Text("0", new PIXI.TextStyle({
-            fontFamily: "Arial",
+            fontFamily: "sans-serif",
             fontSize: 24,
             fontStyle: 'normal',
             fontWeight: 'normal',
             fill: 0x000000,
+            stroke: '#ffffff40',
+            strokeThickness: 2,
             align: "center",
-            stroke: 0x000000
         }));
 
         this.grainText.anchor.x = 0.5;

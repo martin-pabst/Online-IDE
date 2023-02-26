@@ -221,10 +221,6 @@ export class JavaKaraWorldHelper extends FilledShapeHelper {
         this.displayObject = new PIXI.Container();
         this.worldHelper.stage.addChild(this.displayObject);
 
-        this.backgroundGraphics = new PIXI.Graphics();
-        (<PIXI.Container>this.displayObject).addChild(this.backgroundGraphics);
-
-
         this.addToDefaultGroupAndSetDefaultVisibility();
 
         this.render();
@@ -272,6 +268,13 @@ export class JavaKaraWorldHelper extends FilledShapeHelper {
     }
 
     render(): void {
+
+        if(this.backgroundGraphics != null) this.backgroundGraphics.destroy();
+
+        let container = <PIXI.Container>this.displayObject;
+        this.backgroundGraphics = new PIXI.Graphics();
+        container.addChild(this.backgroundGraphics);
+        container.setChildIndex(this.backgroundGraphics, 0);
 
         let width = this.sizeX * this.cellWidth;
         let height = this.sizeY * this.cellWidth;
@@ -460,6 +463,7 @@ export class JavaKaraWorldHelper extends FilledShapeHelper {
                 while (a.length > 0) a.pop();
             }
         }
+
         super.destroy();
     }
 }
@@ -514,6 +518,9 @@ export class KaraClass extends Klass {
                 let x: number = parameters[1].value;
                 let y: number = parameters[2].value;
                 let sh: KaraSpriteHelper = o.intrinsicData["Helper"];
+                
+                if(sh.testDestroyed("setPosition")) return true;
+
                 sh.setPosition(x, y);
 
                 return;
@@ -526,103 +533,113 @@ export class KaraClass extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
                 let sh: KaraSpriteHelper = o.intrinsicData["Helper"];
+                if(sh.testDestroyed("getPosition")) return true;
+                
                 return sh.getPosition();
-
+                
             }, false, false, "Gibt Karas Position zurück. Dabei ist (0/0) die Position der linken oberen Ecke.", false));
-
+            
         this.addMethod(new Method("move", new Parameterlist([]
-        ), voidPrimitiveType,
+            ), voidPrimitiveType,
             (parameters) => {
-
+                
                 let o: RuntimeObject = parameters[0].value;
                 let sh: KaraSpriteHelper = o.intrinsicData["Helper"];
+                if(sh.testDestroyed("move")) return true;
                 sh.forward();
-
+                
                 return;
-
+                
             }, false, false, "Bewegt Kara um ein Feld nach vorne.", false));
-
-        this.addMethod(new Method("getWorld", new Parameterlist([]
+            
+            this.addMethod(new Method("getWorld", new Parameterlist([]
         ), karaWorldClass,
-            (parameters) => {
+        (parameters) => {
 
-                let o: RuntimeObject = parameters[0].value;
-                let sh: KaraSpriteHelper = o.intrinsicData["Helper"];
-
-                return sh.world.runtimeObject;
-
-            }, false, false, "Gibt das JavaKaraWorld-Objekt zurück, in dem sich Kara befindet.", false));
-
+            let o: RuntimeObject = parameters[0].value;
+            let sh: KaraSpriteHelper = o.intrinsicData["Helper"];
+            if(sh.testDestroyed("getWorld")) return true;
+            
+            return sh.world.runtimeObject;
+            
+        }, false, false, "Gibt das JavaKaraWorld-Objekt zurück, in dem sich Kara befindet.", false));
+        
         this.addMethod(new Method("getDirection", new Parameterlist([]
-        ), intPrimitiveType,
+            ), intPrimitiveType,
             (parameters) => {
-
+                
                 let o: RuntimeObject = parameters[0].value;
                 let sh: KaraSpriteHelper = o.intrinsicData["Helper"];
-
+                if(sh.testDestroyed("getDirection")) return true;
+                
                 return sh.direction;
 
             }, false, false, "Gibt die Blickrichtung von Kara zurück: 0 == Norden, 1 == Westen, 2 == Süden, 3 == Osten", false));
 
-        this.addMethod(new Method("onLeaf", new Parameterlist([]
-        ), booleanPrimitiveType,
-            (parameters) => {
-
-                let o: RuntimeObject = parameters[0].value;
+            this.addMethod(new Method("onLeaf", new Parameterlist([]
+                ), booleanPrimitiveType,
+                (parameters) => {
+                    
+                    let o: RuntimeObject = parameters[0].value;
                 let sh: KaraSpriteHelper = o.intrinsicData["Helper"];
-
+                if(sh.testDestroyed("onLeaf")) return true;
+                
                 return sh.world.isLeaf(sh.x, sh.y);
-
+                
             }, false, false, "Gibt genau dann true zurück, wenn sich Kara auf einem Kleeblatt befindet.", false));
-
-        this.addMethod(new Method("treeFront", new Parameterlist([]
-        ), booleanPrimitiveType,
-            (parameters) => {
-
-                let o: RuntimeObject = parameters[0].value;
+            
+            this.addMethod(new Method("treeFront", new Parameterlist([]
+                ), booleanPrimitiveType,
+                (parameters) => {
+                    
+                    let o: RuntimeObject = parameters[0].value;
                 let sh: KaraSpriteHelper = o.intrinsicData["Helper"];
-
-                let front = sh.getPositionFront();
-
+                    if(sh.testDestroyed("treeFront")) return true;
+                    
+                    let front = sh.getPositionFront();
+                    
                 return sh.world.isTree(front.x, front.y);
 
             }, false, false, "Gibt genau dann true zurück, wenn sich vor Kara ein Baumstumpf befindet.", false));
 
-        this.addMethod(new Method("mushroomFront", new Parameterlist([]
+            this.addMethod(new Method("mushroomFront", new Parameterlist([]
         ), booleanPrimitiveType,
-            (parameters) => {
-
-                let o: RuntimeObject = parameters[0].value;
-                let sh: KaraSpriteHelper = o.intrinsicData["Helper"];
-
-                let front = sh.getPositionFront();
-
-                return sh.world.isMushroom(front.x, front.y);
-
-            }, false, false, "Gibt genau dann true zurück, wenn sich vor Kara ein Pilz befindet.", false));
+        (parameters) => {
+            
+            let o: RuntimeObject = parameters[0].value;
+            let sh: KaraSpriteHelper = o.intrinsicData["Helper"];
+            if(sh.testDestroyed("mushroomFront")) return true;
+            
+            let front = sh.getPositionFront();
+            
+            return sh.world.isMushroom(front.x, front.y);
+            
+        }, false, false, "Gibt genau dann true zurück, wenn sich vor Kara ein Pilz befindet.", false));
 
         this.addMethod(new Method("treeLeft", new Parameterlist([]
-        ), booleanPrimitiveType,
+            ), booleanPrimitiveType,
             (parameters) => {
-
+                
                 let o: RuntimeObject = parameters[0].value;
                 let sh: KaraSpriteHelper = o.intrinsicData["Helper"];
-
+                if(sh.testDestroyed("treeLeft")) return true;
+                
                 let front = sh.getPositionLeft();
 
                 return sh.world.isTree(front.x, front.y);
 
             }, false, false, "Gibt genau dann true zurück, wenn sich links von Kara ein Baumstumpf befindet.", false));
-
+            
         this.addMethod(new Method("treeRight", new Parameterlist([]
-        ), booleanPrimitiveType,
+            ), booleanPrimitiveType,
             (parameters) => {
-
+                
                 let o: RuntimeObject = parameters[0].value;
                 let sh: KaraSpriteHelper = o.intrinsicData["Helper"];
-
+                if(sh.testDestroyed("treeRight")) return true;
+                
                 let front = sh.getPositionRight();
-
+                
                 return sh.world.isTree(front.x, front.y);
 
             }, false, false, "Gibt genau dann true zurück, wenn sich rechts von Kara ein Baumstumpf befindet.", false));
@@ -635,50 +652,52 @@ export class KaraClass extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
                 let sh: KaraSpriteHelper = o.intrinsicData["Helper"];
+                if(sh.testDestroyed("turnLeft")) return true;
                 sh.turn(1);
-
+                
                 return;
 
             }, false, false, "Dreht Kara um 90° nach links", false));
 
         this.addMethod(new Method("turnRight", new Parameterlist([]
         ), voidPrimitiveType,
-            (parameters) => {
-
-                let o: RuntimeObject = parameters[0].value;
-                let sh: KaraSpriteHelper = o.intrinsicData["Helper"];
-                sh.turn(-1);
-
+        (parameters) => {
+            
+            let o: RuntimeObject = parameters[0].value;
+            let sh: KaraSpriteHelper = o.intrinsicData["Helper"];
+            if(sh.testDestroyed("turnRight")) return true;
+            sh.turn(-1);
+            
                 return;
-
+                
             }, false, false, "Dreht Kara um 90° nach rechts", false));
-
-        this.addMethod(new Method("putLeaf", new Parameterlist([]
+            
+            this.addMethod(new Method("putLeaf", new Parameterlist([]
         ), voidPrimitiveType,
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
                 let sh: KaraSpriteHelper = o.intrinsicData["Helper"];
+                if(sh.testDestroyed("putLeaf")) return true;
                 sh.putLeaf();
-
+                
                 return;
-
+                
             }, false, false, "Legt ein Kleeblatt auf die Position, an der Kara gerade steht.", false));
-
-        this.addMethod(new Method("removeLeaf", new Parameterlist([]
-        ), voidPrimitiveType,
-            (parameters) => {
-
-                let o: RuntimeObject = parameters[0].value;
-                let sh: KaraSpriteHelper = o.intrinsicData["Helper"];
-                sh.removeLeaf();
-
-                return;
-
+            
+            this.addMethod(new Method("removeLeaf", new Parameterlist([]
+                ), voidPrimitiveType,
+        (parameters) => {
+            
+            let o: RuntimeObject = parameters[0].value;
+            let sh: KaraSpriteHelper = o.intrinsicData["Helper"];
+            if(sh.testDestroyed("removeLeaf")) return true;
+            sh.removeLeaf();
+            
+            return;
+            
             }, false, false, "Kara nimmt das Kleeblatt, das sich auf seiner aktuellen Position befindet.", false));
     }
-
-
 
 }
 
@@ -691,7 +710,7 @@ type KaraDirection = {
 class KaraSpriteHelper {
 
     static directions: KaraDirection[] = [{ index: 0, dx: 0, dy: -1 }, { index: 1, dx: -1, dy: 0 }, { index: 2, dx: 0, dy: 1 }, { index: 3, dx: 1, dy: 0 }];
-
+    
     sprite: PIXI.Sprite;
 
     constructor(public world: JavaKaraWorldHelper, public x: number, public y: number, public direction: number, public imageIndex: number) {
@@ -843,6 +862,14 @@ class KaraSpriteHelper {
         rto.attributes[xIndex] = { value: this.x, type: intPrimitiveType };
         rto.attributes[yIndex] = { value: this.y, type: intPrimitiveType };
         return rto;
+    }
+
+    testDestroyed(method: string): boolean {
+        if (this.sprite.destroyed) {
+            this.throwException("Die Methode " + method + " eines schon zerstörten Marienkäfers wurde aufgerufen.");
+            return true;
+        }
+        return false;
     }
 
 }

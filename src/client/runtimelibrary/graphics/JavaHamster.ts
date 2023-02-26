@@ -170,10 +170,6 @@ export class JavaHamsterWorldHelper extends FilledShapeHelper {
         this.displayObject = new PIXI.Container();
         this.worldHelper.stage.addChild(this.displayObject);
 
-        this.backgroundGraphics = new PIXI.Graphics();
-        (<PIXI.Container>this.displayObject).addChild(this.backgroundGraphics);
-
-
         this.addToDefaultGroupAndSetDefaultVisibility();
 
         this.render();
@@ -227,6 +223,13 @@ export class JavaHamsterWorldHelper extends FilledShapeHelper {
     }
 
     render(): void {
+
+        if (this.backgroundGraphics != null) this.backgroundGraphics.destroy();
+
+        let container = <PIXI.Container>this.displayObject;
+        this.backgroundGraphics = new PIXI.Graphics();
+        container.addChild(this.backgroundGraphics);
+        container.setChildIndex(this.backgroundGraphics, 0);
 
         let width = this.sizeX * this.cellWidth;
         let height = this.sizeY * this.cellWidth;
@@ -310,10 +313,15 @@ export class JavaHamsterWorldHelper extends FilledShapeHelper {
     public destroy(): void {
         for (let columnArray of this.columns) {
             for (let sprite of columnArray) {
-                // TODO
+                sprite.destroy();
             }
         }
+
+        this.backgroundGraphics.destroy();
+        this.hamsters.forEach((h) => h.destroy());
+
         super.destroy();
+
     }
 }
 
@@ -369,6 +377,8 @@ export class HamsterClass extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
                 let sh: HamsterSpriteHelper = o.intrinsicData["Helper"];
+
+                if (sh.testDestroyed("vor")) return;
                 sh.forward();
 
                 return;
@@ -381,6 +391,7 @@ export class HamsterClass extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
                 let sh: HamsterSpriteHelper = o.intrinsicData["Helper"];
+                if (sh.testDestroyed("getWorld")) return;
 
                 return sh.world.runtimeObject;
 
@@ -392,6 +403,7 @@ export class HamsterClass extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
                 let sh: HamsterSpriteHelper = o.intrinsicData["Helper"];
+                if (sh.testDestroyed("getBlickrichtung")) return;
 
                 return sh.direction;
 
@@ -403,6 +415,7 @@ export class HamsterClass extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
                 let sh: HamsterSpriteHelper = o.intrinsicData["Helper"];
+                if (sh.testDestroyed("getReihe")) return;
 
                 return sh.y;
 
@@ -414,6 +427,7 @@ export class HamsterClass extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
                 let sh: HamsterSpriteHelper = o.intrinsicData["Helper"];
+                if (sh.testDestroyed("getSpalte")) return;
 
                 return sh.y;
 
@@ -425,6 +439,7 @@ export class HamsterClass extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
                 let sh: HamsterSpriteHelper = o.intrinsicData["Helper"];
+                if (sh.testDestroyed("getAnzahlKörner")) return;
 
                 return sh.grainCount;
 
@@ -436,6 +451,8 @@ export class HamsterClass extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
                 let sh: HamsterSpriteHelper = o.intrinsicData["Helper"];
+                if (sh.testDestroyed("linksUm")) return;
+
                 sh.turn(-1);
 
                 return;
@@ -448,6 +465,8 @@ export class HamsterClass extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
                 let sh: HamsterSpriteHelper = o.intrinsicData["Helper"];
+                if (sh.testDestroyed("gib")) return;
+
                 sh.give();
 
                 return;
@@ -460,6 +479,8 @@ export class HamsterClass extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
                 let sh: HamsterSpriteHelper = o.intrinsicData["Helper"];
+                if (sh.testDestroyed("nimm")) return;
+
                 sh.take();
 
                 return;
@@ -472,7 +493,8 @@ export class HamsterClass extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
                 let sh: HamsterSpriteHelper = o.intrinsicData["Helper"];
-                
+                if (sh.testDestroyed("vornFrei")) return;
+
                 return sh.nextCellFree();
 
 
@@ -484,37 +506,40 @@ export class HamsterClass extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
                 let sh: HamsterSpriteHelper = o.intrinsicData["Helper"];
+                if (sh.testDestroyed("maulLeer")) return;
 
                 return sh.grainCount == 0;
 
             }, false, false, "Liefert genau dann true, wenn der Hamster keine Körner im Mund hat.", false));
 
-            this.addMethod(new Method("kornDa", new Parameterlist([]
+        this.addMethod(new Method("kornDa", new Parameterlist([]
         ), booleanPrimitiveType,
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
                 let sh: HamsterSpriteHelper = o.intrinsicData["Helper"];
+                if (sh.testDestroyed("kornDa")) return;
 
                 return sh.sitsOnGrain();
 
-            }, false, false, "Liefert genau dann true, wenn sich in der Zelle, auf der der Hamster sich befindet, mindestens ein Korn befindet.",false));
+            }, false, false, "Liefert genau dann true, wenn sich in der Zelle, auf der der Hamster sich befindet, mindestens ein Korn befindet.", false));
 
-            this.addMethod(new Method("schreib", new Parameterlist([
-                { identifier: "text", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
-            ]
+        this.addMethod(new Method("schreib", new Parameterlist([
+            { identifier: "text", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+        ]
         ), voidPrimitiveType,
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
                 let text: string = parameters[1].value;
                 let sh: HamsterSpriteHelper = o.intrinsicData["Helper"];
+                if (sh.testDestroyed("schreib")) return;
 
-                if(!text.endsWith("\\n")) text += "\n";
+                if (!text.endsWith("\\n")) text += "\n";
 
                 module.main.getInterpreter().printManager.print(text);
 
-            }, false, false, "Gibt den Text auf dem Bildschirm aus.",false));
+            }, false, false, "Gibt den Text auf dem Bildschirm aus.", false));
 
 
 
@@ -552,6 +577,18 @@ class HamsterSpriteHelper {
 
         world.hamsters.push(this);
 
+    }
+
+    testDestroyed(method: string): boolean {
+        if (this.sprite.destroyed) {
+            this.throwException("Die Methode " + method + " eines schon zerstörten Hamsters wurde aufgerufen.");
+            return true;
+        }
+        return false;
+    }
+
+    destroy(): void {
+        this.sprite.destroy();
     }
 
     forward() {
@@ -619,8 +656,8 @@ class HamsterSpriteHelper {
         this.moveToCell(x % this.world.sizeX, y % this.world.sizeY);
     }
 
-    give(){
-        if(this.grainCount <= 0){
+    give() {
+        if (this.grainCount <= 0) {
             this.throwException("Der Hamster hat kein Korn mehr, das er ablegen könnte.");
             return;
         }
@@ -628,8 +665,8 @@ class HamsterSpriteHelper {
         this.world.setGrain(this.x, this.y, this.world.getGrainCount(this.x, this.y) + 1);
     }
 
-    take(){
-        if(this.world.getGrainCount(this.x, this.y) <= 0){
+    take() {
+        if (this.world.getGrainCount(this.x, this.y) <= 0) {
             this.throwException("In der Zelle, in der sich der Hamster befindet, liegt kein Korn. Der Hamster kann daher keines nehmen.");
             return;
         }
@@ -641,7 +678,7 @@ class HamsterSpriteHelper {
         let direction = HamsterSpriteHelper.directions[this.direction];
         let newX = (this.x + direction.dx + this.world.sizeX) % this.world.sizeX;
         let newY = (this.y + direction.dy + this.world.sizeY) % this.world.sizeY;
-        if(this.world.isOutside(newX, newY)) return false;
+        if (this.world.isOutside(newX, newY)) return false;
         return !this.world.isWall(newX, newY);
     }
 
@@ -730,5 +767,10 @@ class WallGrainSprite {
         this.wallSprite.visible = isWall;
     }
 
+    destroy() {
+        this.wallSprite.destroy();
+        this.grainSprite.destroy();
+        this.grainText.destroy();
+    }
 }
 

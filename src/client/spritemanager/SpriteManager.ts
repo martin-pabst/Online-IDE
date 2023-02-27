@@ -7,7 +7,6 @@ import { SpritesheetData } from "./SpritesheetData.js";
 import { UploadSpriteResponse } from "../communication/Data.js";
 import {SpriteLibrary} from  "../runtimelibrary/graphics/SpriteLibrary.js";
 
-
 type SpriteLibraryEntry = {
     filename: string,
     name: string,
@@ -361,7 +360,7 @@ export class SpriteManager {
 
         let deleteSpritesheet: boolean = this.userSpritesheet.spriteDataList.length == 0;
 
-        $.ajax({
+        jQuery.ajax({
             type: 'POST',
             async: true,
             contentType: 'application/octet-stream',

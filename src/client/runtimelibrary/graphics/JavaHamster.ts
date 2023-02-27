@@ -369,7 +369,6 @@ export class HamsterClass extends Klass {
         this.staticClass.classObject = new RuntimeObject(this.staticClass);
 
         let HamsterWorldClass = <Klass>module.typeStore.getType("JavaHamsterWorld");
-        let interpreter = module.main.getInterpreter();
 
         this.addMethod(new Method("Hamster", new Parameterlist([
             { identifier: "javaHamsterWorld", type: HamsterWorldClass, declaration: null, usagePositions: null, isFinal: true },
@@ -387,7 +386,7 @@ export class HamsterClass extends Klass {
                 let grainCount: number = parameters[5].value;
 
                 if (world == null) {
-                    interpreter.throwException("Der Parameter javaHamsterWorld darf nicht null sein.");
+                    module.main.getInterpreter().throwException("Der Parameter javaHamsterWorld darf nicht null sein.");
                     return;
                 }
 

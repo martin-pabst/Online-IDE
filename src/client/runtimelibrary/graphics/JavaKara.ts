@@ -479,7 +479,6 @@ export class KaraClass extends Klass {
 
         let karaWorldClass = <Klass>module.typeStore.getType("JavaKaraWorld");
         let positionClass = <Klass>module.typeStore.getType("Position");
-        let interpreter = module.main.getInterpreter();
 
         // this.addAttribute(new Attribute("PI", doublePrimitiveType, (object) => { return Math.PI }, true, Visibility.public, true, "Die Kreiszahl Pi (3.1415...)"));
 
@@ -497,7 +496,7 @@ export class KaraClass extends Klass {
                 let direction: number = parameters[4].value;
 
                 if (world == null) {
-                    interpreter.throwException("Der Parameter javaKaraWorld darf nicht null sein.");
+                    module.main.getInterpreter().throwException("Der Parameter javaKaraWorld darf nicht null sein.");
                     return;
                 }
 

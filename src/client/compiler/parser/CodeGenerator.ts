@@ -517,13 +517,13 @@ export class CodeGenerator {
     getSuperconstructorCalls(nodes: ASTNode[], superconstructorCallsFound: ASTNode[], isFirstStatement: boolean): boolean {
         for (let node of nodes) {
             if (node == null) continue;
-            if (node.type == TokenType.superConstructorCall) {
+            if (node.type == TokenType.superConstructorCall || node.type == TokenType.constructorCall) {
 
                 if (!isFirstStatement) {
                     if (superconstructorCallsFound.length > 0) {
-                        this.pushError("Ein Konstruktor darf nur einen einzigen Aufruf des Superkonstruktors enthalten.", node.position, "error");
+                        this.pushError("Ein Konstruktor darf nur einen einzigen Aufruf des Superkonstruktors oder eines anderen Konstruktors enthalten.", node.position, "error");
                     } else {
-                        this.pushError("Vor dem Aufruf des Superkonstruktors darf keine andere Anweisung stehen.", node.position, "error");
+                        this.pushError("Vor dem Aufruf des Superkonstruktors oder eines anderen Konstruktors darf keine andere Anweisung stehen.", node.position, "error");
                     }
                 }
 

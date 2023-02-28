@@ -19,6 +19,8 @@ export class GNGEreignisbehandlung extends Klass {
 
         super("Ereignisbehandlung", module, "Zugriff auf Ereignisse einschließlich Taktgeber (Graphics'n Games-Bibliothek (Cornelsen-Verlag))");
 
+        let objectType = <Klass>moduleStore.getType("Object").type;
+        this.setBaseClass(objectType);
 
         this.addMethod(new Method("Ereignisbehandlung", new Parameterlist([]), null,
             (parameters) => {

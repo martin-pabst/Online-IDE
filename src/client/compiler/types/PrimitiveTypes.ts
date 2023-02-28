@@ -85,12 +85,12 @@ export class IntPrimitiveType extends PrimitiveType {
             [TokenType.doubleMinus]: { "none": intPrimitiveType },
             [TokenType.negation]: { "none": intPrimitiveType },
             [TokenType.tilde]: { "none": intPrimitiveType },
-            [TokenType.lower]: { "long": booleanPrimitiveType, "int": booleanPrimitiveType, "float": booleanPrimitiveType, "double": booleanPrimitiveType, "Integer": booleanPrimitiveType, "Float": booleanPrimitiveType, "Double": booleanPrimitiveType },
-            [TokenType.greater]: { "long": booleanPrimitiveType, "int": booleanPrimitiveType, "float": booleanPrimitiveType, "double": booleanPrimitiveType, "Integer": booleanPrimitiveType, "Float": booleanPrimitiveType, "Double": booleanPrimitiveType },
-            [TokenType.lowerOrEqual]: { "long": booleanPrimitiveType, "int": booleanPrimitiveType, "float": booleanPrimitiveType, "double": booleanPrimitiveType, "Integer": booleanPrimitiveType, "Float": booleanPrimitiveType, "Double": booleanPrimitiveType },
-            [TokenType.greaterOrEqual]: { "long": booleanPrimitiveType, "int": booleanPrimitiveType, "float": booleanPrimitiveType, "double": booleanPrimitiveType, "Integer": booleanPrimitiveType, "Float": booleanPrimitiveType, "Double": booleanPrimitiveType },
-            [TokenType.equal]: { "long": booleanPrimitiveType, "int": booleanPrimitiveType, "float": booleanPrimitiveType, "double": booleanPrimitiveType, "Integer": booleanPrimitiveType, "Float": booleanPrimitiveType, "Double": booleanPrimitiveType },
-            [TokenType.notEqual]: { "long": booleanPrimitiveType, "int": booleanPrimitiveType, "float": booleanPrimitiveType, "double": booleanPrimitiveType, "Integer": booleanPrimitiveType, "Float": booleanPrimitiveType, "Double": booleanPrimitiveType },
+            [TokenType.lower]: { "long": booleanPrimitiveType, "int": booleanPrimitiveType, "float": booleanPrimitiveType, "double": booleanPrimitiveType, "Integer": booleanPrimitiveType, "Float": booleanPrimitiveType, "Double": booleanPrimitiveType, "char": booleanPrimitiveType },
+            [TokenType.greater]: { "long": booleanPrimitiveType, "int": booleanPrimitiveType, "float": booleanPrimitiveType, "double": booleanPrimitiveType, "Integer": booleanPrimitiveType, "Float": booleanPrimitiveType, "Double": booleanPrimitiveType, "char": booleanPrimitiveType },
+            [TokenType.lowerOrEqual]: { "long": booleanPrimitiveType, "int": booleanPrimitiveType, "float": booleanPrimitiveType, "double": booleanPrimitiveType, "Integer": booleanPrimitiveType, "Float": booleanPrimitiveType, "Double": booleanPrimitiveType, "char": booleanPrimitiveType },
+            [TokenType.greaterOrEqual]: { "long": booleanPrimitiveType, "int": booleanPrimitiveType, "float": booleanPrimitiveType, "double": booleanPrimitiveType, "Integer": booleanPrimitiveType, "Float": booleanPrimitiveType, "Double": booleanPrimitiveType, "char": booleanPrimitiveType },
+            [TokenType.equal]: { "long": booleanPrimitiveType, "int": booleanPrimitiveType, "float": booleanPrimitiveType, "double": booleanPrimitiveType, "Integer": booleanPrimitiveType, "Float": booleanPrimitiveType, "Double": booleanPrimitiveType, "char": booleanPrimitiveType },
+            [TokenType.notEqual]: { "long": booleanPrimitiveType, "int": booleanPrimitiveType, "float": booleanPrimitiveType, "double": booleanPrimitiveType, "Integer": booleanPrimitiveType, "Float": booleanPrimitiveType, "Double": booleanPrimitiveType, "char": booleanPrimitiveType },
 
             // binary ops
             [TokenType.OR]: { "long": longPrimitiveType, "short": intPrimitiveType, "Short": intPrimitiveType, "Long": longPrimitiveType, "int": intPrimitiveType, "Integer": intPrimitiveType },
@@ -972,12 +972,12 @@ export class CharPrimitiveType extends PrimitiveType {
         this.operationTable = {
             [TokenType.plus]: { "String": stringPrimitiveType, "char": stringPrimitiveType, "int": intPrimitiveType },
             [TokenType.minus]: { "char": stringPrimitiveType, "int": intPrimitiveType },
-            [TokenType.equal]: { "char": booleanPrimitiveType },
-            [TokenType.notEqual]: { "char": booleanPrimitiveType },
-            [TokenType.lower]: { "char": booleanPrimitiveType },
-            [TokenType.greater]: { "char": booleanPrimitiveType },
-            [TokenType.lowerOrEqual]: { "char": booleanPrimitiveType },
-            [TokenType.greaterOrEqual]: { "char": booleanPrimitiveType }
+            [TokenType.equal]: { "char": booleanPrimitiveType, "int": booleanPrimitiveType },
+            [TokenType.notEqual]: { "char": booleanPrimitiveType , "int": booleanPrimitiveType},
+            [TokenType.lower]: { "char": booleanPrimitiveType, "int": booleanPrimitiveType },
+            [TokenType.greater]: { "char": booleanPrimitiveType , "int": booleanPrimitiveType},
+            [TokenType.lowerOrEqual]: { "char": booleanPrimitiveType, "int": booleanPrimitiveType },
+            [TokenType.greaterOrEqual]: { "char": booleanPrimitiveType , "int": booleanPrimitiveType}
 
         };
 

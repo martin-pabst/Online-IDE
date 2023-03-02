@@ -507,6 +507,19 @@ export class ShapeClass extends Klass {
 
             }, false, false, "Macht das Grafikobjekt sichtbar (visible == true) bzw. unsichtbar (visible == false).", false));
 
+        this.addMethod(new Method("isVisible", new Parameterlist([
+        ]), booleanPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: ShapeHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("isVisible")) return;
+
+                return sh.displayObject.visible;
+
+            }, false, false, "Gibt den Wert der Eigenschaft 'visible' des Grafikobjekts zurück.", false));
+
         this.addMethod(new Method("setStatic", new Parameterlist([
             { identifier: "isStatic", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), voidPrimitiveType,

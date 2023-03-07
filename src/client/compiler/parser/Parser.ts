@@ -1611,6 +1611,7 @@ export class Parser {
 
     }
 
+
     parseType(): TypeNode {
 
         /**
@@ -2024,6 +2025,8 @@ export class Parser {
                 } else {
                     let firstIdentifier: boolean = true;
                     do {
+                        let typeNodeCopy: TypeNode = {...type };
+
                         if(!firstIdentifier){
                             if(!this.comesToken(TokenType.identifier)){
                                 this.pushError("Hier wird ein weiterer Attributbezeichner erwartet.");
@@ -2041,15 +2044,15 @@ export class Parser {
                             this.pushError("Das Attribut " + className + " darf nicht denselben Bezeichner haben wie die Klasse.", "error", position);
                         }
     
-                        this.parseArrayBracketsAfterVariableIdentifier(type);
+                        this.parseArrayBracketsAfterVariableIdentifier(typeNodeCopy);
     
                         let initialization: TermNode = null;
     
                         if (this.tt == TokenType.assignment) {
                             this.nextToken();
                             //@ts-ignore
-                            if (type.arrayDimension > 0 && this.tt == TokenType.leftCurlyBracket) {
-                                initialization = this.parseArrayLiteral(type);
+                            if (typeNodeCopy.arrayDimension > 0 && this.tt == TokenType.leftCurlyBracket) {
+                                initialization = this.parseArrayLiteral(typeNodeCopy);
                             } else {
                                 initialization = this.parseTerm();
                             }
@@ -2060,7 +2063,7 @@ export class Parser {
                             type: TokenType.attributeDeclaration,
                             identifier: identifier,
                             position: position,
-                            attributeType: type,
+                            attributeType: typeNodeCopy,
                             isStatic: modifiers.isStatic,
                             isFinal: modifiers.isFinal,
                             visibility: modifiers.visibility,

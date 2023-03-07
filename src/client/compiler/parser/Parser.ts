@@ -2022,45 +2022,61 @@ export class Parser {
                     });
 
                 } else {
+                    let firstIdentifier: boolean = true;
+                    do {
+                        if(!firstIdentifier){
+                            if(!this.comesToken(TokenType.identifier)){
+                                this.pushError("Hier wird ein weiterer Attributbezeichner erwartet.");
+                                this.nextToken();
+                            } else {
+                                position = this.getCurrentPosition();
+                                identifier = <string>this.cct.value;
+                                this.nextToken();
+                            }
+                        } 
+                        
+                        firstIdentifier = false;
 
-                    if (identifier == className) {
-                        this.pushError("Das Attribut " + className + " darf nicht denselben Bezeichner haben wie die Klasse.", "error", position);
-                    }
-
-                    this.parseArrayBracketsAfterVariableIdentifier(type);
-
-                    let initialization: TermNode = null;
-
-                    if (this.tt == TokenType.assignment) {
-                        this.nextToken();
-                        //@ts-ignore
-                        if (type.arrayDimension > 0 && this.tt == TokenType.leftCurlyBracket) {
-                            initialization = this.parseArrayLiteral(type);
-                        } else {
-                            initialization = this.parseTerm();
+                        if (identifier == className) {
+                            this.pushError("Das Attribut " + className + " darf nicht denselben Bezeichner haben wie die Klasse.", "error", position);
                         }
-                    }
-
+    
+                        this.parseArrayBracketsAfterVariableIdentifier(type);
+    
+                        let initialization: TermNode = null;
+    
+                        if (this.tt == TokenType.assignment) {
+                            this.nextToken();
+                            //@ts-ignore
+                            if (type.arrayDimension > 0 && this.tt == TokenType.leftCurlyBracket) {
+                                initialization = this.parseArrayLiteral(type);
+                            } else {
+                                initialization = this.parseTerm();
+                            }
+                        }
+    
+                        
+                        attributes.push({
+                            type: TokenType.attributeDeclaration,
+                            identifier: identifier,
+                            position: position,
+                            attributeType: type,
+                            isStatic: modifiers.isStatic,
+                            isFinal: modifiers.isFinal,
+                            visibility: modifiers.visibility,
+                            initialization: initialization,
+                            annotation: annotation,
+                            isTransient: modifiers.isTransient,
+                            commentBefore: commentBefore
+                        });
+                        
+                        if (classType == TokenType.keywordInterface) {
+                            this.pushError("Interfaces dürfen keine Attribute enthalten.", "error", position);
+                        }
+                        
+                    } while (this.expectAndSkipComma());
+                    
                     this.expect(TokenType.semicolon);
-
-                    attributes.push({
-                        type: TokenType.attributeDeclaration,
-                        identifier: identifier,
-                        position: position,
-                        attributeType: type,
-                        isStatic: modifiers.isStatic,
-                        isFinal: modifiers.isFinal,
-                        visibility: modifiers.visibility,
-                        initialization: initialization,
-                        annotation: annotation,
-                        isTransient: modifiers.isTransient,
-                        commentBefore: commentBefore
-                    });
-
-                    if (classType == TokenType.keywordInterface) {
-                        this.pushError("Interfaces dürfen keine Attribute enthalten.", "error", position);
-                    }
-
                 }
 
             }
@@ -2071,6 +2087,14 @@ export class Parser {
 
         return { methods: methods, attributes: attributes }
 
+    }
+
+    expectAndSkipComma(): boolean {
+        if(this.comesToken(TokenType.comma)){
+            this.nextToken();
+            return true;
+        }
+        return false;
     }
 
     parseMethodDeclarationParameters(): ParameterNode[] {

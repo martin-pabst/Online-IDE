@@ -108,7 +108,7 @@ export class IntPrimitiveType extends PrimitiveType {
             "float": { automatic: true, needsStatement: false },
             "double": { automatic: true, needsStatement: false },
             "String": { automatic: true, needsStatement: true },
-            "char": { automatic: true, needsStatement: true },
+            "char": { automatic: false, needsStatement: true },
             "int": { automatic: true, needsStatement: false },
             "short": { automatic: true, needsStatement: false },
             "long": { automatic: true, needsStatement: false },

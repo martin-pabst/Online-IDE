@@ -872,17 +872,7 @@ export class Parser {
                 this.comesGenericType()
             )
         ) {
-            let ret: ASTNode[] = [];
-            let type: TypeNode = null;
-            do {
-                if (type != null) this.expect(TokenType.comma, true);
-                let vd = this.parseVariableDeclaration(type);
-                ret.push(vd);
-                type = vd?.variableType;
-                //@ts-ignore
-            } while (this.tt == TokenType.comma);
-
-            return ret;
+            return this.parseVariableDeclaration();
         } else {
             return [this.parseTerm()];
         }
@@ -1547,7 +1537,9 @@ export class Parser {
         return term;
     }
 
-    parseVariableDeclaration(type: TypeNode): LocalVariableDeclarationNode {
+    parseVariableDeclaration(): LocalVariableDeclarationNode[] {
+
+        let ret: LocalVariableDeclarationNode[] = [];
 
         let isFinal = false;
         if (this.tt == TokenType.keywordFinal) {
@@ -1555,45 +1547,48 @@ export class Parser {
             this.nextToken();
         }
 
-        if (type == null) {
-            type = this.parseType();
-        }
+        let type: TypeNode = this.parseType();
+        do {
+            let typeCopy: TypeNode = { ...type };
+            this.typeNodes.push(typeCopy);
 
-        if (this.tt != TokenType.identifier) {
-            this.pushError("Hier wird ein Bezeichner (Name) einer Variable erwartet.", "error", this.getCurrentPosition());
-            return null;
-        }
-
-        let identifier = <string>this.cct.value;
-        let position = this.getCurrentPosition();
-        this.nextToken();
-
-        this.parseArrayBracketsAfterVariableIdentifier(type);
-
-        let initialization: TermNode = null;
-
-        //@ts-ignore
-        if (this.tt == TokenType.assignment) {
-            this.nextToken();
-            //@ts-ignore
-            if (type.arrayDimension > 0 && this.tt == TokenType.leftCurlyBracket) {
-                initialization = this.parseArrayLiteral(type);
-            } else {
-                initialization = this.parseTerm();
+            if (this.tt != TokenType.identifier) {
+                this.pushError("Hier wird ein Bezeichner (Name) einer Variable erwartet.", "error", this.getCurrentPosition());
+                return [];
             }
-        }
 
-        //@ts-ignore
-        if (this.tt == TokenType.endofSourcecode && type == null && identifier == null) return null;
+            let identifier = <string>this.cct.value;
+            let position = this.getCurrentPosition();
+            this.nextToken();
 
-        return {
-            type: TokenType.localVariableDeclaration,
-            position: position,
-            identifier: identifier,
-            variableType: type,
-            initialization: initialization,
-            isFinal: isFinal
-        }
+            this.parseArrayBracketsAfterVariableIdentifier(typeCopy);
+            let initialization: TermNode = null;
+
+            //@ts-ignore
+            if (this.tt == TokenType.assignment) {
+                this.nextToken();
+                //@ts-ignore
+                if (typeCopy.arrayDimension > 0 && this.tt == TokenType.leftCurlyBracket) {
+                    initialization = this.parseArrayLiteral(typeCopy);
+                } else {
+                    initialization = this.parseTerm();
+                }
+            }
+
+            //@ts-ignore
+            if (this.tt == TokenType.endofSourcecode && typeCopy == null && identifier == null) return [];
+            ret.push({
+                type: TokenType.localVariableDeclaration,
+                position: position,
+                identifier: identifier,
+                variableType: typeCopy,
+                initialization: initialization,
+                isFinal: isFinal
+            })
+
+        } while (this.expectAndSkipComma());
+
+        return ret;
 
     }
 
@@ -2025,10 +2020,11 @@ export class Parser {
                 } else {
                     let firstIdentifier: boolean = true;
                     do {
-                        let typeNodeCopy: TypeNode = {...type };
+                        let typeNodeCopy: TypeNode = { ...type };
+                        this.typeNodes.push(typeNodeCopy);
 
-                        if(!firstIdentifier){
-                            if(!this.comesToken(TokenType.identifier)){
+                        if (!firstIdentifier) {
+                            if (!this.comesToken(TokenType.identifier)) {
                                 this.pushError("Hier wird ein weiterer Attributbezeichner erwartet.");
                                 this.nextToken();
                             } else {
@@ -2036,18 +2032,18 @@ export class Parser {
                                 identifier = <string>this.cct.value;
                                 this.nextToken();
                             }
-                        } 
-                        
+                        }
+
                         firstIdentifier = false;
 
                         if (identifier == className) {
                             this.pushError("Das Attribut " + className + " darf nicht denselben Bezeichner haben wie die Klasse.", "error", position);
                         }
-    
+
                         this.parseArrayBracketsAfterVariableIdentifier(typeNodeCopy);
-    
+
                         let initialization: TermNode = null;
-    
+
                         if (this.tt == TokenType.assignment) {
                             this.nextToken();
                             //@ts-ignore
@@ -2057,8 +2053,8 @@ export class Parser {
                                 initialization = this.parseTerm();
                             }
                         }
-    
-                        
+
+
                         attributes.push({
                             type: TokenType.attributeDeclaration,
                             identifier: identifier,
@@ -2072,13 +2068,13 @@ export class Parser {
                             isTransient: modifiers.isTransient,
                             commentBefore: commentBefore
                         });
-                        
+
                         if (classType == TokenType.keywordInterface) {
                             this.pushError("Interfaces dürfen keine Attribute enthalten.", "error", position);
                         }
-                        
+
                     } while (this.expectAndSkipComma());
-                    
+
                     this.expect(TokenType.semicolon);
                 }
 
@@ -2093,7 +2089,7 @@ export class Parser {
     }
 
     expectAndSkipComma(): boolean {
-        if(this.comesToken(TokenType.comma)){
+        if (this.comesToken(TokenType.comma)) {
             this.nextToken();
             return true;
         }

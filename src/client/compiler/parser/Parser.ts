@@ -1989,7 +1989,14 @@ export class Parser {
                     } else {
                         scopeFrom = this.getCurrentPosition();
                         statements = this.parseStatement();
+
+                        if(this.comesToken(TokenType.leftCurlyBracket)){
+                            this.pushError("Der Strichpunkt direkt hinter der Methodendeklaration ist für sich genommen die einzige (leere!) Anweisung der Methode. Das ist nicht sinnvoll.", "error", scopeFrom);
+                            statements = this.parseStatement();
+                        }
+
                         scopeTo = this.getEndOfCurrentToken();
+
                         if (statements != null && statements.length > 0 && statements[0].type == TokenType.scopeNode) {
                             let scopeNode = <ScopeNode>statements[0];
                             scopeFrom = scopeNode.position;

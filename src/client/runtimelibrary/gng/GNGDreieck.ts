@@ -89,7 +89,7 @@ class GNGDreieckHelper extends PolygonHelper implements GNGHelper {
         let rotationCenterX = max;
         let rotationCenterY = may + att.height/2;
 
-        this.hitPolygonInitial = [{x: max, y: may}, {x: max + att.width/2, y: may + att.height}, {x: max - att.width/2, y: att.height}];
+        this.hitPolygonInitial = [{x: max, y: may}, {x: max + att.width/2, y: may + att.height}, {x: max - att.width/2, y: may + att.height}];
 
         this.render();
 

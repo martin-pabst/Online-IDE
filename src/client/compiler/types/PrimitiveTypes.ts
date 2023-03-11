@@ -793,7 +793,12 @@ export class StringPrimitiveType extends Klass {
         this.addMethod(new Method("length", new Parameterlist([]), intPrimitiveType,
             (parameters) => { return (<string>parameters[0].value).length; }, false, false, "Länge der Zeichenkette, d.h. Anzahl der Zeichen in der Zeichenkette."));
         this.addMethod(new Method("charAt", new Parameterlist([{ identifier: "Position", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: false }]), charPrimitiveType,
-            (parameters) => { return (<string>parameters[0].value).charAt(<number>(parameters[1].value)); }, false, false, "Zeichen an der gegebenen Position.\n**Bem.: ** Position == 0 bedeutet das erste Zeichen in der Zeichenkette, Position == 1 das zweite usw. ."));
+            (parameters) => { 
+                let pos = <number>parameters[1].value;
+                let str = <string>parameters[0].value;
+                if(pos < 0 || pos >= str.length){this.module.main.getInterpreter().throwException("Die Zeichenkette hat kein Zeichen an der Position " + pos + ".")}
+                return str.charAt(pos); 
+            }, false, false, "Zeichen an der gegebenen Position.\n**Bem.: ** Position == 0 bedeutet das erste Zeichen in der Zeichenkette, Position == 1 das zweite usw. ."));
         this.addMethod(new Method("equals", new Parameterlist([{ identifier: "otherString", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false }]), booleanPrimitiveType,
             (parameters) => { return <string>parameters[0].value == <string>(parameters[1].value); }, false, false, "Gibt genau dann **wahr** zurück, wenn die zwei Zeichenketten übereinstimmen (unter Berücksichtigung von Klein-/Großschreibung)."));
         this.addMethod(new Method("compareTo", new Parameterlist([{ identifier: "otherString", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: false }]), intPrimitiveType,

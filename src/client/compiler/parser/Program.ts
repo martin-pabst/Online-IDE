@@ -26,8 +26,9 @@ export type Statement = PushValueStatement | PopAndStoreIntoLocalVariableStateme
     | CastValueStatement | CheckCastStatement | SelectArrayElementStatement | CallMethodStatement | CallMainMethodStatement | CallInputMethodStatement |
     MakeEllipsisArrayStatement | PopFromStackStatement | InitStackframeStatement |
     CloseStackframeStatement | ReturnStatement | NewObjectStatement |
-    JumpIfFalseStatement | JumpIfTrueStatement | JumpAlwaysStatement | NoOpStatement | IncrementDecrementBeforeStatement |
-    IncrementDecrementAfterStatement | ProgramEndStatement | BeginArrayStatement | AddToArrayStatement |
+    JumpIfFalseStatement | JumpIfTrueStatement | JumpAlwaysStatement | NoOpStatement | 
+    IncrementDecrementBeforeStatement | IncrementDecrementAfterStatement | IncrementDecrementCharBeforeStatement | IncrementDecrementCharAfterStatement 
+    | ProgramEndStatement | BeginArrayStatement | AddToArrayStatement |
     PushEmptyArrayStatement | PrintStatement | PushEnumValueStatement | InitializeEnumValueStatement |
     JumpOnSwitchStatement | JumpIfTrueAndLeaveOnStackStatement | JumpIfFalseAndLeaveOnStackStatement |
     DeclareHeapVariableStatement | PushFromHeapToStackStatement | ProcessPostConstructorCallbacksStatement |
@@ -319,6 +320,22 @@ export type IncrementDecrementBeforeStatement = {
 
 export type IncrementDecrementAfterStatement = {
     type: TokenType.incrementDecrementAfter,
+    position: TextPosition,
+    breakpoint?: Breakpoint
+    stepFinished?: boolean,
+    incrementDecrementBy: number
+}
+
+export type IncrementDecrementCharBeforeStatement = {
+    type: TokenType.incrementDecrementCharBefore,
+    position: TextPosition,
+    breakpoint?: Breakpoint
+    stepFinished?: boolean,
+    incrementDecrementBy: number
+}
+
+export type IncrementDecrementCharAfterStatement = {
+    type: TokenType.incrementDecrementCharAfter,
     position: TextPosition,
     breakpoint?: Breakpoint
     stepFinished?: boolean,

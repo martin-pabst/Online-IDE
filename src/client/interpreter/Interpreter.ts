@@ -1258,6 +1258,22 @@ export class Interpreter {
                         break;
                 }
                 break;
+            case TokenType.incrementDecrementCharBefore:
+                value = stack[stackTop];
+                let numberValue = (<string>value.value).charCodeAt(0) + node.incrementDecrementBy;
+                value.value = String.fromCharCode(numberValue);
+                break;
+            case TokenType.incrementDecrementCharAfter:
+                value = stack[stackTop];
+                // replace value by copy:
+                stack[stackTop] = {
+                    value: value.value,
+                    type: value.type
+                };
+                let numberValue1 = (<string>value.value).charCodeAt(0) + node.incrementDecrementBy;
+                // increment value which is not involved in subsequent 
+                value.value = String.fromCharCode(numberValue1);
+                break;
             case TokenType.incrementDecrementBefore:
                 value = stack[stackTop];
                 value.value += node.incrementDecrementBy;

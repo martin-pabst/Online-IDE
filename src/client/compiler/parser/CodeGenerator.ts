@@ -2,7 +2,7 @@ import { Error, QuickFix, ErrorLevel } from "../lexer/Lexer.js";
 import { TextPosition, TokenType, TokenTypeReadable } from "../lexer/Token.js";
 import { ArrayType } from "../types/Array.js";
 import { Klass, Interface, StaticClass, Visibility, getVisibilityUpTo } from "../types/Class.js";
-import { booleanPrimitiveType, charPrimitiveType, floatPrimitiveType, intPrimitiveType, stringPrimitiveType, objectType, nullType, voidPrimitiveType, varType, doublePrimitiveType, longPrimitiveType, shortPrimitiveType } from "../types/PrimitiveTypes.js";
+import { booleanPrimitiveType, charPrimitiveType, floatPrimitiveType, intPrimitiveType, stringPrimitiveType, objectType, nullType, voidPrimitiveType, varType, doublePrimitiveType, longPrimitiveType, shortPrimitiveType, CharacterType } from "../types/PrimitiveTypes.js";
 import { Attribute, Type, Variable, Value, PrimitiveType, UsagePositions, Method, Heap, getTypeIdentifier, Parameterlist } from "../types/Types.js";
 import { ASTNode, AttributeDeclarationNode, BinaryOpNode, ClassDeclarationNode, ConstantNode, DoWhileNode, ForNode, IdentifierNode, IfNode, IncrementDecrementNode, MethodcallNode, MethodDeclarationNode, NewObjectNode, ReturnNode, SelectArrayElementNode, SelectArributeNode, SuperconstructorCallNode, SuperNode, ThisNode, UnaryOpNode, WhileNode, LocalVariableDeclarationNode, ArrayInitializationNode, NewArrayNode, PrintNode, CastManuallyNode, EnumDeclarationNode, TermNode, SwitchNode, ScopeNode, ParameterNode, ForNodeOverCollecion, ConstructorCallNode } from "./AST.js";
 import { LabelManager } from "./LabelManager.js";
@@ -2659,12 +2659,22 @@ export class CodeGenerator {
             return type;
         }
 
-        this.pushStatements({
-            type: node.type,
-            position: node.position,
-            incrementDecrementBy: node.operator == TokenType.doubleMinus ? - 1 : 1
+        if(type.type == charPrimitiveType){
+            this.pushStatements({
+                type: node.type == TokenType.incrementDecrementBefore ? TokenType.incrementDecrementCharBefore : TokenType.incrementDecrementCharAfter,
+                position: node.position,
+                incrementDecrementBy: node.operator == TokenType.doubleMinus ? - 1 : 1
+    
+            });
+        } else {
+            this.pushStatements({
+                type: node.type,
+                position: node.position,
+                incrementDecrementBy: node.operator == TokenType.doubleMinus ? - 1 : 1
+    
+            });
+        }
 
-        });
 
         return type;
 

@@ -170,6 +170,8 @@ export enum TokenType {
     noOp, // acts as jump destination
     incrementDecrementBefore, // ++i, --i
     incrementDecrementAfter, // i++, i--
+    incrementDecrementCharBefore, // ++i, --i
+    incrementDecrementCharAfter, // i++, i--
     programEnd,
     beginArray, // push empty array to stack
     addToArray, // pop element form stack and add it to array (on second stack position)

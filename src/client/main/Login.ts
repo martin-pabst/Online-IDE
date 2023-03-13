@@ -268,7 +268,7 @@ export class Login {
         this.main.bottomDiv?.console?.clear();
         this.main.interpreter.printManager.clear();
 
-        if (this.main.user.is_teacher) {
+        if (this.main.teacherExplorer != null) {
             this.main.teacherExplorer.removePanels();
             this.main.teacherExplorer = null;
         }

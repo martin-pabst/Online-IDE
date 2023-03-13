@@ -272,6 +272,9 @@ export class Main implements MainBase {
     }
 
     initTeacherExplorer(classdata: ClassData[]) {
+        if(this.teacherExplorer != null){
+            this.teacherExplorer.removePanels();
+        }
         this.teacherExplorer = new TeacherExplorer(this, classdata);
         this.teacherExplorer.initGUI();
     }

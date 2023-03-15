@@ -5,6 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Debug Edge Embedded",
+            "request": "launch",
+            "type": "msedge",
+            "url": "http://localhost:4000/embedded.html",
+            "webRoot": "${workspaceFolder}",
+            "version": "dev"
+        },
+
+        {
             "type": "chrome",
             "request": "launch",
             "name": "Debug IDE Version",

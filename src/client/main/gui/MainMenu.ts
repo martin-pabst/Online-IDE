@@ -179,10 +179,10 @@ export class MainMenu {
                                 identifier: "Interaktives Java-Tutorial mit vielen Beispielen",
                                 link: "https://www.learnj.de/doku.php"
                             },
-                            {
-                                identifier: "Materialien für Lehrkräfte",
-                                link: "servlet/teachers/index.html"
-                            },
+                            // {
+                            //     identifier: "Materialien für Lehrkräfte",
+                            //     link: "servlet/teachers/index.html"
+                            // },
                             { identifier: "-" },
                             {
                                 identifier: "API-Dokumentation",

@@ -226,7 +226,7 @@ export abstract class DiagramElement {
         this.heightCm = (Math.trunc(textPosYCm/DiagramUnitCm) + 1)*DiagramUnitCm;
 
         let textLeft = 0.05 + 0.2;
-        let textCenter = width/2;
+        let textCenter = width/2 + 0.1;
         let textRight = width - textLeft;
 
         $rect.css({

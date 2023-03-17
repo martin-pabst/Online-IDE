@@ -282,13 +282,30 @@ export class TextHelper extends FilledShapeHelper {
 
         this.centerXInitial = 0;
         this.centerYInitial = 0;
+
+        let width = 0;
+        let height = 0;
+
         if (this.text != null) {
             let tm = PIXI.TextMetrics.measureText(this.text, this.textStyle);
 
-            this.centerXInitial = tm.width / 2;
-            this.centerYInitial = tm.height / 2;
+            width = tm.width;
+            height = tm.height;
+            tm.fontProperties.ascent
+
+            this.centerXInitial = width / 2;
+            this.centerYInitial = height / 2;
         }
 
+        let left = 0 - g.anchor.x * width;
+        let top = 0 - g.anchor.y * height;
+
+        this.hitPolygonInitial = [
+            { x: left , y: top }, { x: left, y: top + height },
+            { x: left + width, y: top + height }, { x: left + width, y: top }
+        ];
+
+        this.hitPolygonDirty = true;
 
     };
 

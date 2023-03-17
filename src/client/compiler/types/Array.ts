@@ -1,6 +1,6 @@
 import { Method, Attribute, Value, Type, Parameterlist, PrimitiveType } from "./Types.js";
 import { TokenType } from "../lexer/Token.js";
-import { intPrimitiveType } from "./PrimitiveTypes.js";
+import { booleanPrimitiveType, intPrimitiveType, nullType } from "./PrimitiveTypes.js";
 import { Visibility } from "./Class.js";
 
 export class ArrayType extends Type {
@@ -35,6 +35,8 @@ export class ArrayType extends Type {
             return this.arrayOfType;
         }
 
+        if([TokenType.equal, TokenType.notEqual].indexOf(operation) >= 0 && secondOperandType == nullType) return booleanPrimitiveType;
+
         return null;
 
     }
@@ -44,6 +46,13 @@ export class ArrayType extends Type {
         if(operation == TokenType.referenceElement){
             return <any[]>firstOperand.value[<number>secondOperand.value];
         }
+
+        if(operation == TokenType.equal ) 
+        return firstOperand.value == secondOperand.value;
+
+        if(operation == TokenType.notEqual ) 
+        return firstOperand.value != secondOperand.value;
+
 
     }
 

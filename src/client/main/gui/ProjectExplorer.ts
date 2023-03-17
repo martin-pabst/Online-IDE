@@ -75,6 +75,7 @@ export class ProjectExplorer {
                 let modulStore = that.main.currentWorkspace.moduleStore;
                 modulStore.putModule(m);
                 that.setModuleActive(m);
+                that.fileListPanel.setCaption(that.main.currentWorkspace.name);
                 that.main.networkManager.sendCreateFile(m, that.main.currentWorkspace, that.main.workspacesOwnerId,
                     (error: string) => {
                         if (error == null) {
@@ -103,6 +104,9 @@ export class ProjectExplorer {
                 that.main.networkManager.sendDeleteWorkspaceOrFile("file", module.file.id, (error: string) => {
                     if (error == null) {
                         that.main.currentWorkspace.moduleStore.removeModule(module);
+                        if(that.main.currentWorkspace.moduleStore.getModules(false).length == 0){
+                            that.fileListPanel.setCaption("Keine Datei vorhanden");
+                        }
                         callbackIfSuccessful();
                     } else {
                         alert('Der Server ist nicht erreichbar!');

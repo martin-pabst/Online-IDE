@@ -5,16 +5,30 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Debug IDE Edge",
+            "request": "launch",
+            "type": "msedge",
+            "url": "http://localhost:4000",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
+            "name": "Debug Embedded Edge",
+            "request": "launch",
+            "type": "msedge",
+            "url": "http://localhost:4000/embedded.html",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
             "type": "chrome",
             "request": "launch",
-            "name": "Debug IDE Version",
+            "name": "Debug IDE Chrome",
             "url": "http://localhost:4000",
             "webRoot": "${workspaceFolder}"
         },
         {
             "type": "chrome",
             "request": "launch",
-            "name": "Debug Embedded Version",
+            "name": "Debug Embedded Chrome",
             "url": "http://localhost:4000/embedded.html",
             "webRoot": "${workspaceFolder}"
         },

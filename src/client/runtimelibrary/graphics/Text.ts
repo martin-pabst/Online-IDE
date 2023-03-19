@@ -150,7 +150,20 @@ export class TextClass extends Klass {
 
             }, false, false, 'Gibt die Schriftgröße zurück.', false));
 
-        this.addMethod(new Method("setStyle", new Parameterlist([
+            this.addMethod(new Method("getText", new Parameterlist([
+            ]), stringPrimitiveType,
+                (parameters) => {
+    
+                    let o: RuntimeObject = parameters[0].value;
+                    let sh: TextHelper = o.intrinsicData["Actor"];
+    
+                    if (sh.testdestroyed("getText")) return;
+    
+                    return sh.text;
+    
+                }, false, false, 'Gibt den Textinhalt zurück.', false));
+
+                this.addMethod(new Method("setStyle", new Parameterlist([
             { identifier: "isBold", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "isItalic", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), voidPrimitiveType,
@@ -167,7 +180,7 @@ export class TextClass extends Klass {
 
                 return;
 
-            }, false, false, 'Gibt die Höhe des Textes zurück.', false));
+            }, false, false, 'Gibt die Eigenschaften Fettdruck (bold) und Schrägschrift (italic) zurück.', false));
 
             this.addMethod(new Method("moveTo", new Parameterlist([
                 { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },

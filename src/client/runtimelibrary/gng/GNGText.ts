@@ -16,12 +16,12 @@ export class GNGTextClass extends Klass {
 
         this.setBaseClass(<Klass>module.typeStore.getType("GNGBaseFigur"));
 
-        this.addAttribute(new Attribute("text", stringPrimitiveType, (value: Value) => { 
-            value.value = (<GNGTextHelper>value.object.intrinsicData["Actor"]).text; 
+        this.addAttribute(new Attribute("text", stringPrimitiveType, (value: Value) => {
+            value.value = (<GNGTextHelper>value.object.intrinsicData["Actor"]).text;
         }, false, Visibility.private, false, "Angezeigter Text"));
 
-        this.addAttribute(new Attribute("textgröße", intPrimitiveType, (value: Value) => { 
-            value.value = (<GNGTextHelper>value.object.intrinsicData["Actor"]).fontsize; 
+        this.addAttribute(new Attribute("textgröße", intPrimitiveType, (value: Value) => {
+            value.value = (<GNGTextHelper>value.object.intrinsicData["Actor"]).fontsize;
         }, false, Visibility.private, false, "Textgröße"));
 
         this.setupAttributeIndicesRecursive();
@@ -35,7 +35,7 @@ export class GNGTextClass extends Klass {
                 let rh = new GNGTextHelper(10, -3, 12, "Text", module.main.getInterpreter(), o);
 
                 o.gngAttributes = {
-                    moveAnchor: {x: 10, y: 10},
+                    moveAnchor: { x: 10, y: 10 },
                     width: 100,
                     height: 100,
                     colorString: "schwarz"
@@ -64,6 +64,21 @@ export class GNGTextClass extends Klass {
                 sh.renderGNG(o);
 
             }, false, false, "Ändert den Text des Text-Objekts.", false));
+
+        this.addMethod(new Method("getText", new Parameterlist([
+        ]), stringPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: GNGTextHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("getText")) return;
+
+                return sh.text;
+
+            }, false, false, 'Gibt den Textinhalt zurück.', false));
+
+
 
         this.addMethod(new Method("TextGrößeSetzen", new Parameterlist([
             { identifier: "textGröße", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }

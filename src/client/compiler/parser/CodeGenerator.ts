@@ -22,7 +22,7 @@ type StackType = {
 export class CodeGenerator {
 
     static assignmentOperators = [TokenType.assignment, TokenType.plusAssignment, TokenType.minusAssignment,
-    TokenType.multiplicationAssignment, TokenType.divisionAssignment, TokenType.ANDAssigment, TokenType.ORAssigment,
+    TokenType.multiplicationAssignment, TokenType.divisionAssignment, TokenType.moduloAssignment, TokenType.ANDAssigment, TokenType.ORAssigment,
     TokenType.XORAssigment, TokenType.shiftLeftAssigment, TokenType.shiftRightAssigment, TokenType.shiftRightUnsignedAssigment];
 
     moduleStore: ModuleStore;

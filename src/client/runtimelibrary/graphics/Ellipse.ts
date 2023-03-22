@@ -20,6 +20,17 @@ export class EllipseClass extends Klass {
         // this.addAttribute(new Attribute("PI", doublePrimitiveType, (object) => { return Math.PI }, true, Visibility.public, true, "Die Kreiszahl Pi (3.1415...)"));
 
         this.addMethod(new Method("Ellipse", new Parameterlist([
+        ]), null,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+
+                let rh = new EllipseHelper(100, 50, 50, 100, module.main.getInterpreter(), o);
+                o.intrinsicData["Actor"] = rh;
+
+            }, false, false, 'Instanziert eine neue Ellipse. (100, 50) ist der Mittelpunt, 100 und 50 sind ihre Radien.', true));
+
+        this.addMethod(new Method("Ellipse", new Parameterlist([
             { identifier: "mx", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "my", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "rx", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },

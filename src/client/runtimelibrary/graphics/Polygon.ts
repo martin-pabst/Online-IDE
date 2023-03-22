@@ -25,6 +25,25 @@ export class PolygonClass extends Klass {
         // this.addAttribute(new Attribute("PI", doublePrimitiveType, (object) => { return Math.PI }, true, Visibility.public, true, "Die Kreiszahl Pi (3.1415...)"));
 
         this.addMethod(new Method("Polygon", new Parameterlist([
+        ]), null,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+
+                let pointsNumber: number[] = [];
+                for(let i: number = 0; i < 6; i++){
+                    let angle: number = Math.PI/3 * i;
+                    let x: number = 100 + 50*Math.cos(angle);
+                    let y: number = 100 - 50*Math.sin(angle);
+                    pointsNumber.push(x, y);
+                }
+
+                let ph = new PolygonHelper(pointsNumber, true, module.main.getInterpreter(), o);
+                o.intrinsicData["Actor"] = ph;
+
+            }, false, false, 'Instanziert ein neues Polygon. Der Standardkonstruktor ohne Parameter instanziert ein regelmäßiges Sechseck. \nTipp: Es gibt auch Konstruktoren, denen man ein Array von Koordinaten bzw. einzelne Koordinaten übergeben kann!', true));
+
+        this.addMethod(new Method("Polygon", new Parameterlist([
             { identifier: "closeAndFill", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "points", type: new ArrayType(doublePrimitiveType), declaration: null, usagePositions: null, isFinal: true },
         ]), null,

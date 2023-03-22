@@ -18,6 +18,17 @@ export class TurtleClass extends Klass {
         this.setBaseClass(<Klass>module.typeStore.getType("FilledShape"));
 
         this.addMethod(new Method("Turtle", new Parameterlist([
+        ]), null,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+
+                let ph = new TurtleHelper(100, 200, true, module.main.getInterpreter(), o);
+                o.intrinsicData["Actor"] = ph;
+
+            }, false, false, 'Instanziert ein neues Turtle-Objekt ohne Punkte. Die Turtle blickt anfangs nach rechts. Am Ende des Streckenzugs wird eine "Schildkröte" (kleines Dreieck) gezeichnet.', true));
+
+        this.addMethod(new Method("Turtle", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), null,

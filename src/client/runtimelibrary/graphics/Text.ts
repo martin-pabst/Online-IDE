@@ -20,6 +20,17 @@ export class TextClass extends Klass {
         // this.addAttribute(new Attribute("PI", doublePrimitiveType, (object) => { return Math.PI }, true, Visibility.public, true, "Die Kreiszahl Pi (3.1415...)"));
 
         this.addMethod(new Method("Text", new Parameterlist([
+        ]), null,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+
+                let sh = new TextHelper(0, 0, 24, "Text", module.main.getInterpreter(), o);
+                o.intrinsicData["Actor"] = sh;
+
+            }, false, false, 'Instanziert ein neues Textobjekt. Der Textanker (default: links oben) liegt bei (0, 0).', true));
+
+        this.addMethod(new Method("Text", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "fontsize", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },

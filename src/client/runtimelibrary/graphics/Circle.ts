@@ -20,6 +20,17 @@ export class CircleClass extends Klass {
         // this.addAttribute(new Attribute("PI", doublePrimitiveType, (object) => { return Math.PI }, true, Visibility.public, true, "Die Kreiszahl Pi (3.1415...)"));
 
         this.addMethod(new Method("Circle", new Parameterlist([
+        ]), null,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+
+                let rh = new CircleHelper(50, 50, 50, module.main.getInterpreter(), o);
+                o.intrinsicData["Actor"] = rh;
+
+            }, false, false, 'Instanziert einen neuen Kreis mit Mittelpunkt (50, 50) und Radius 50.', true));
+
+        this.addMethod(new Method("Circle", new Parameterlist([
             { identifier: "mx", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "my", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "r", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },

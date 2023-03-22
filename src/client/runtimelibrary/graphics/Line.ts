@@ -14,6 +14,19 @@ export class LineClass extends Klass {
         this.setBaseClass(<Klass>module.typeStore.getType("FilledShape"));
 
         this.addMethod(new Method("Line", new Parameterlist([
+        ]), null,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+
+                let pointsNumber: number[] = [0, 0, 100, 100];
+
+                let ph = new PolygonHelper(pointsNumber, false, module.main.getInterpreter(), o);
+                o.intrinsicData["Actor"] = ph;
+
+            }, false, false, 'Instanziert eine Strecke mit Anfangspunkt (0, 0) und Endpunkt (100, 100).\nTipp: Es gibt auch einen Konstruktor, dem man die Koordinaten der Endpunkte übergeben kann.', true));
+
+        this.addMethod(new Method("Line", new Parameterlist([
             { identifier: "x1", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y1", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "x2", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },

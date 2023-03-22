@@ -19,6 +19,17 @@ export class RectangleClass extends Klass {
         // this.addAttribute(new Attribute("PI", doublePrimitiveType, (object) => { return Math.PI }, true, Visibility.public, true, "Die Kreiszahl Pi (3.1415...)"));
 
         this.addMethod(new Method("Rectangle", new Parameterlist([
+        ]), null,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+
+                let rh = new RectangleHelper(0, 0, 100, 100, module.main.getInterpreter(), o);
+                o.intrinsicData["Actor"] = rh;
+
+            }, false, false, 'Instanziert ein neues, achsenparalleles Rechteck-Objekt.', true));
+
+        this.addMethod(new Method("Rectangle", new Parameterlist([
             { identifier: "left", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "top", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "width", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },

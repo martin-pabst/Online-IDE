@@ -14,6 +14,18 @@ export class TriangleClass extends Klass {
         this.setBaseClass(<Klass>module.typeStore.getType("Polygon"));
 
         this.addMethod(new Method("Triangle", new Parameterlist([
+        ]), null,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+
+
+                let ph = new PolygonHelper([0, 100, 100, 100, 50, 0], true, module.main.getInterpreter(), o);
+                o.intrinsicData["Actor"] = ph;
+
+            }, false, false, 'Instanziert ein neues Dreieck.', true));
+
+            this.addMethod(new Method("Triangle", new Parameterlist([
             { identifier: "x1", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y1", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "x2", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },

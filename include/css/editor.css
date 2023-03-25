@@ -1192,10 +1192,12 @@ body .monaco-editor-hover .monaco-tokenized-source {
     align-items: center;
     margin: 10px;
     cursor: pointer;
+    box-shadow: 0px 0px 16px 4px rgba(255,255,255,0.27);
 }
 
 .jo_infodiv_box:hover {
     filter:brightness(110%);
+    box-shadow: 0px 0px 16px 4px rgba(255,255,255,0.4);
 }
 
 .jo_infodiv_box:active {

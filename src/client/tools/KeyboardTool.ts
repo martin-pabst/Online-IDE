@@ -9,7 +9,7 @@ export class KeyboardTool {
 
     keyPressedCallbacks: ((key: string) => void)[] = [];
     keyUpCallbacks: ((key: string) => void)[] = [];
-    keyDownCallbacks: ((key: string) => void)[] = [];
+    keyDownCallbacks: ((key: string, isShift: boolean, isCtrl: boolean, isAlt: boolean) => void)[] = [];
 
     constructor(element: JQuery<any>, private main: MainBase){
         this.registerListeners(element);
@@ -33,7 +33,7 @@ export class KeyboardTool {
             that.pressedKeys[key.toLowerCase()] = true;
 
             for(let kpc of that.keyDownCallbacks){
-                kpc(key);
+                kpc(key, e.shiftKey, e.ctrlKey, e.altKey);
             }
 
             // prevent <html>-Element from scrolling in embedded mode

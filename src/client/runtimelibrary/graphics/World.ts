@@ -404,7 +404,7 @@ export interface InternalMouseListener {
 }
 
 export interface InternalKeyboardListener {
-    onKeyDown(key: string): void;
+    onKeyDown(key: string, isShift: boolean, isCtrl: boolean, isAlt: boolean): void;
     looseKeyboardFocus(): void;
 }
 
@@ -628,7 +628,7 @@ export class WorldHelper {
             }
         });
 
-        this.interpreter.keyboardTool.keyDownCallbacks.push((key) => {
+        this.interpreter.keyboardTool.keyDownCallbacks.push((key, isShift, isCtrl, isAlt) => {
             for (let kpa of that.keyDownActors) {
 
                 that.runActorWhenKeyEvent(kpa, key);
@@ -636,7 +636,7 @@ export class WorldHelper {
             }
 
             for(let ikl of that.internalKeyboardListeners){
-                ikl.onKeyDown(key);
+                ikl.onKeyDown(key, isShift, isCtrl, isAlt);
             }
         });
 
@@ -707,8 +707,6 @@ export class WorldHelper {
     }
 
     computeCurrentWorldBounds() {
-
-        console.log(this.stage.projectionTransform);
 
         let p1: PIXI.Point = new PIXI.Point(0, 0);
         this.stage.projectionTransform.applyInverse(p1, p1);

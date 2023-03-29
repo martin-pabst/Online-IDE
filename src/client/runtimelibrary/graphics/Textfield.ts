@@ -4,8 +4,7 @@ import { booleanPrimitiveType, doublePrimitiveType, stringPrimitiveType, voidPri
 import { Method, Parameterlist } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { FilledShapeHelper } from "./FilledShape.js";
-import { InternalKeyboardListener, InternalMouseListener, MouseEvent as JOMouseEvent, WorldHelper } from "./World.js";
-import { EnumRuntimeObject } from "../../compiler/types/Enum.js";
+import { InternalKeyboardListener, InternalMouseListener, MouseEvent as JOMouseEvent } from "./World.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import * as PIXI from 'pixi.js';
 
@@ -208,6 +207,8 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
     selectionStart: number = 0;
     selectionEnd: number = 0;
 
+    renderFromCharacterPosition: number = 0;
+
     timerId: any;
 
     height: number = 0;
@@ -315,7 +316,7 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
 
             this.mask = new PIXI.Graphics();
 
-            this.pixiText = new PIXI.Text(this.text, this.textStyle);
+            this.pixiText = new PIXI.Text(this.text.substring(this.renderFromCharacterPosition), this.textStyle);
 
             this.displayObject = new PIXI.Container();
             this.displayObject.localTransform.translate(this.x + this.padding, this.y + this.padding);
@@ -333,13 +334,13 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
 
             this.pixiText.mask = this.mask;
         } else {
+            this.pixiText.text = this.text.substring(this.renderFromCharacterPosition);
             this.backgroundGraphics.clear();
             this.mask.clear();
             this.keyboardFocusRect.clear();
             this.selectionRectangle.clear();
             this.cursor.clear();
 
-            this.pixiText.text = this.text;
             this.pixiText.alpha = this.fillAlpha;
             this.pixiText.anchor.x = 0;
             //@ts-ignore
@@ -395,8 +396,8 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
 
         if(this.isSelecting){
             this.selectionRectangle.beginFill(0x8080ff, 0.5);
-            let xFrom = this.getCharacterPosition(this.selectionStart);
-            let xTo = this.getCharacterPosition(this.selectionEnd);
+            let xFrom = this.characterStops[this.selectionStart] - this.characterStops[this.renderFromCharacterPosition];
+            let xTo = this.characterStops[this.selectionEnd] - this.characterStops[this.renderFromCharacterPosition];
             this.makeRectangle(this.selectionRectangle, xFrom, 0, xTo-xFrom, this.height);
             this.selectionRectangle.endFill();
         }
@@ -415,20 +416,16 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
         this.cursor.clear();
         let cursorWidth = Math.min(2, this.fontsize/10);
         this.cursor.lineStyle(cursorWidth, 0x0, 1.0, 0.5);
-        let cx = this.characterStops[this.selectionEnd] * this.scaleFactor;
+        let cx = this.characterStops[this.selectionEnd] - this.characterStops[this.renderFromCharacterPosition];
 
         let start = new PIXI.Point(cx, 0);
         let end = new PIXI.Point(cx, this.height);
-
-        // this.displayObject.updateTransform();
-        // start = this.displayObject.worldTransform.apply(start);
-        // end = this.displayObject.worldTransform.apply(end);
 
         this.cursor.moveTo(start.x, start.y).lineTo(end.x, end.y);
         this.cursor.visible = this.hasKeyboardFocus;        
     }
     
-    makeRectangle(g: PIXI.Graphics, top: number, left: number, width: number, height: number){
+    makeRectangle(g: PIXI.Graphics, left: number, top: number, width: number, height: number){
         g.moveTo(left, top);
         g.lineTo(left + width, top);
         g.lineTo(left + width, top + height);
@@ -495,8 +492,6 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
         }
 
 
-        console.log("Kind: " + kind + ", x: " + x + ", y: " + y);
-        console.log(this.getLocalCoordinates(x, y));
     }
 
     generateCharacterStops(){
@@ -525,9 +520,64 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
         this.isSelecting = false;
     }
 
-    onKeyDown(key: string): void {
-        throw new Error("Method not implemented.");
+    onKeyDown(key: string, isShift: boolean, isCtrl: boolean, isAlt: boolean): void {
+        
+        if(key.length == 1){
+            if(this.isSelecting){
+                this.text = this.text.substring(0, this.selectionStart) + this.text.substring(this.selectionEnd);
+                this.selectionEnd = this.selectionStart;
+                this.isSelecting = false;
+            }
+            this.text = this.text.substring(0, this.selectionEnd) + key + this.text.substring(this.selectionEnd);
+            this.selectionEnd++;
+            this.generateCharacterStops();
+            this.scrollIfNecessary();
+            this.render();
+        } else {
+            switch(key){
+                case "ArrowRight":{
+                    this.selectionEnd = Math.min(this.selectionEnd + 1, this.text.length);
+                    this.isSelecting = isShift;
+                    if(!this.isSelecting) this.selectionStart = this.selectionEnd;
+                    this.scrollIfNecessary();
+                    this.render();
+                }
+                break;
+                case "ArrowLeft":{
+                    this.selectionEnd = Math.max(this.selectionEnd - 1, 0);
+                    this.isSelecting = isShift;
+                    if(!this.isSelecting) this.selectionStart = this.selectionEnd;
+                    this.scrollIfNecessary();
+                    this.render();
+                }
+                break;
+            }
+        }
+        
+        
     }
+
+    scrollIfNecessary(): boolean {
+        let x = this.getCursorXFromCharacterPos(this.selectionEnd);
+        let hasScrolled: boolean = false;
+        while(x < 0 && this.renderFromCharacterPosition > 0){
+            this.renderFromCharacterPosition--;
+            x = this.getCursorXFromCharacterPos(this.selectionEnd);
+            hasScrolled = true;
+        }
+        
+        while(x > this.width - 2*this.padding && this.renderFromCharacterPosition < this.text.length){
+            this.renderFromCharacterPosition++;
+            x = this.getCursorXFromCharacterPos(this.selectionEnd);
+            hasScrolled = true;
+        }        
+        return hasScrolled;
+    }
+
+    getCursorXFromCharacterPos(pos: number){
+        return this.characterStops[pos] - this.characterStops[this.renderFromCharacterPosition]
+    }
+
 
     gainKeyboardFocus(): void {
         for(let ikl of this.worldHelper.internalKeyboardListeners){
@@ -561,7 +611,7 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
     getCharacterPosition(x: number): number {
         if(this.characterCenterList.length == 0) return 0;
         for(let i = 0; i < this.characterCenterList.length; i++){
-            if(x <= this.characterCenterList[i] * this.scaleFactor) return i;
+            if(x <= this.characterCenterList[i] - this.characterStops[this.renderFromCharacterPosition] ) return i;
         }
 
         return this.characterCenterList.length;

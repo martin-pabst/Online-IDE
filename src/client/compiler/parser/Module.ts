@@ -92,6 +92,7 @@ import jQuery from 'jquery';
 import { JavaKaraWorldClass, KaraClass } from "../../runtimelibrary/graphics/JavaKara.js";
 import { PositionClass } from "../../runtimelibrary/graphics/Position.js";
 import { HamsterClass, JavaHamsterWorldClass } from "../../runtimelibrary/graphics/JavaHamster.js";
+import { TextFieldClass } from "../../runtimelibrary/graphics/Textfield.js";
 
 export type ExportedWorkspace = {
     name: string;
@@ -864,6 +865,8 @@ export class BaseModule extends Module {
         this.typeStore.addType(new LineClass(this));
         this.typeStore.addType(new TriangleClass(this));
         this.typeStore.addType(new TurtleClass(this));
+
+        this.typeStore.addType(new TextFieldClass(this));
 
         this.typeStore.addType(new JavaKaraWorldClass(this));
         this.typeStore.addType(new KaraClass(this));

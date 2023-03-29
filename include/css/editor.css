@@ -1262,3 +1262,10 @@ body .monaco-editor-hover .monaco-tokenized-source {
     padding: 25px;
     text-align: center;
 }
+
+/* graphical controls */
+.graphical_controls {
+    overflow: visible;
+    width: 0;
+    height: 0;
+}

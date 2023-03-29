@@ -95,6 +95,7 @@ export class WorldClass extends Klass {
                 wh.stage.projectionTransform.prepend(matrix);
 
                 wh.computeCurrentWorldBounds();
+                wh.computeGraphicalControlsMatrix();
                 wh.shapesNotAffectedByWorldTransforms.forEach((shape) => shape.move(-x, -y));
 
             }, false, false, 'Verschiebt alle Objekte der Welt um x nach rechts und y nach unten.', false));
@@ -153,6 +154,7 @@ export class WorldClass extends Klass {
                     wh.stage.projectionTransform.prepend(matrix);
 
                     wh.computeCurrentWorldBounds();
+                    wh.computeGraphicalControlsMatrix();
                     wh.shapesNotAffectedByWorldTransforms.forEach((shape) => shape.move(-moveX, -moveY));
                 }
 
@@ -183,6 +185,7 @@ export class WorldClass extends Klass {
                 wh.stage.projectionTransform.prepend(matrix);
 
                 wh.computeCurrentWorldBounds();
+                wh.computeGraphicalControlsMatrix();
                 wh.shapesNotAffectedByWorldTransforms.forEach(
                     (shape) => {
                         shape.rotate(-angle, x, y);
@@ -211,6 +214,7 @@ export class WorldClass extends Klass {
                 wh.stage.projectionTransform.translate(x, y);
                 wh.stage.projectionTransform.prepend(matrix);
                 wh.computeCurrentWorldBounds();
+                wh.computeGraphicalControlsMatrix();
                 wh.shapesNotAffectedByWorldTransforms.forEach((shape) => shape.scale(1 / factor, x, y));
 
             }, false, false, 'Streckt die Welt um den angegebenen Faktor. Zentrum der Streckung ist (x/y).', false));
@@ -235,6 +239,7 @@ export class WorldClass extends Klass {
                 wh.stage.projectionTransform.translate(-left, -top);
                 wh.stage.projectionTransform.scale(wh.initialWidth / width, wh.initialHeight / height);
                 wh.computeCurrentWorldBounds();
+                wh.computeGraphicalControlsMatrix();
                 wh.shapesNotAffectedByWorldTransforms.forEach((shape) => {
                     shape.scale(width / wh.initialWidth, left, top);
                     shape.move(left, top);
@@ -394,6 +399,17 @@ export type MouseListenerData = {
     methods: { [type: string]: Method }
 }
 
+export interface InternalMouseListener {
+   onMouseEvent(kind: MouseEvent, x: number, y: number):void;
+}
+
+export interface InternalKeyboardListener {
+    onKeyDown(key: string): void;
+    looseKeyboardFocus(): void;
+}
+
+export type MouseEvent = "mouseup"| "mousedown"| "mousemove"| "mouseenter"| "mouseleave";
+
 export type ActorData = {
     actorHelper: ActorHelper,
     method: Method
@@ -423,7 +439,7 @@ class WorldContainer extends PIXI.Container {
         super.render(renderer);
         renderer.batch.flush();
 
-        renderer.batch.flush();
+        // renderer.batch.flush();
         renderer.projection.projectionMatrix.identity();
         renderer.projection.transform = null;
         renderer.renderTexture.bind(null);
@@ -435,6 +451,7 @@ export class WorldHelper {
 
     $containerOuter: JQuery<HTMLElement>;
     $containerInner: JQuery<HTMLElement>;
+    $controlsContainer: JQuery<HTMLElement>;
     app: PIXI.Application;
     stage: WorldContainer;
 
@@ -446,6 +463,9 @@ export class WorldHelper {
 
     mouseListenerShapes: MouseListenerShapeData[] = [];
     mouseListeners: MouseListenerData[] = [];
+    
+    internalMouseListeners: InternalMouseListener[] = [];
+    internalKeyboardListeners: InternalKeyboardListener[] = [];
 
     interpreter: Interpreter;
     actorsFinished: boolean = true;
@@ -544,7 +564,10 @@ export class WorldHelper {
 
         this.$containerOuter = jQuery('<div></div>');
         this.$containerInner = jQuery('<div></div>');
-        this.$containerOuter.append(this.$containerInner);
+        this.$controlsContainer = jQuery('<div class="graphical_controls"></div>');
+        this.$containerOuter.append(this.$containerInner, this.$controlsContainer);
+
+        new ResizeObserver(() => {that.computeGraphicalControlsMatrix()}).observe(this.$containerInner[0]);
 
         $graphicsDiv.append(this.$containerOuter);
 
@@ -611,6 +634,10 @@ export class WorldHelper {
                 that.runActorWhenKeyEvent(kpa, key);
 
             }
+
+            for(let ikl of that.internalKeyboardListeners){
+                ikl.onKeyDown(key);
+            }
         });
 
 
@@ -631,6 +658,10 @@ export class WorldHelper {
                 y = p.y;
 
                 that.onMouseEvent(listenerType, x, y, e.button);
+
+                for(let internalListener of this.internalMouseListeners){
+                    internalListener.onMouseEvent(<MouseEvent>listenerType, x, y);
+                }
 
                 for (let listener of this.mouseListeners) {
                     if (listener.types[listenerType] != null) {
@@ -677,6 +708,8 @@ export class WorldHelper {
 
     computeCurrentWorldBounds() {
 
+        console.log(this.stage.projectionTransform);
+
         let p1: PIXI.Point = new PIXI.Point(0, 0);
         this.stage.projectionTransform.applyInverse(p1, p1);
 
@@ -687,6 +720,19 @@ export class WorldHelper {
         this.currentTop = p1.y;
         this.currentWidth = Math.abs(p2.x - p1.x);
         this.currentHeight = Math.abs(p2.y - p1.y);
+
+    }
+
+    computeGraphicalControlsMatrix(){
+        let ccWidth = this.$containerInner.width();
+        let ccHeight = this.$containerInner.height();
+
+        let ccm = new PIXI.Matrix();
+        ccm.scale(ccWidth/this.width, ccHeight/this.height);
+        let inv = this.stage.projectionTransform.clone().invert();
+        ccm.append(this.stage.projectionTransform);
+
+        this.$controlsContainer.css('transform', `matrix(${ccm.a}, ${ccm.b}, ${ccm.c}, ${ccm.d}, ${ccm.tx}, ${ccm.ty})`);
     }
 
 
@@ -894,6 +940,7 @@ export class WorldHelper {
         let hasRobot = this.robotWorldHelper != null;
 
         this.mouseListenerShapes = [];
+        this.internalMouseListeners = [];
 
         let scaleMin = 1.0;
         if (this.currentWidth * this.currentHeight > 2500000) scaleMin = Math.sqrt(2500000 / (this.currentWidth * this.currentHeight));

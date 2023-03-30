@@ -7,6 +7,7 @@ import { FilledShapeHelper } from "./FilledShape.js";
 import { InternalKeyboardListener, InternalMouseListener, MouseEvent as JOMouseEvent } from "./World.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import * as PIXI from 'pixi.js';
+import { copyTextToClipboard } from "../../tools/HtmlTools.js";
 
 export class TextFieldClass extends Klass {
 
@@ -149,20 +150,20 @@ export class TextFieldClass extends Klass {
 
             }, false, false, 'Gibt die Schriftgröße zurück.', false));
 
-            this.addMethod(new Method("getText", new Parameterlist([
-            ]), stringPrimitiveType,
-                (parameters) => {
-    
-                    let o: RuntimeObject = parameters[0].value;
-                    let sh: TextFieldHelper = o.intrinsicData["Actor"];
-    
-                    if (sh.testdestroyed("getText")) return;
-    
-                    return sh.text;
-    
-                }, false, false, 'Gibt den Textinhalt zurück.', false));
+        this.addMethod(new Method("getText", new Parameterlist([
+        ]), stringPrimitiveType,
+            (parameters) => {
 
-                this.addMethod(new Method("setStyle", new Parameterlist([
+                let o: RuntimeObject = parameters[0].value;
+                let sh: TextFieldHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("getText")) return;
+
+                return sh.text;
+
+            }, false, false, 'Gibt den Textinhalt zurück.', false));
+
+        this.addMethod(new Method("setStyle", new Parameterlist([
             { identifier: "isBold", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "isItalic", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), voidPrimitiveType,
@@ -180,7 +181,7 @@ export class TextFieldClass extends Klass {
                 return;
 
             }, false, false, 'Gibt die Eigenschaften Fettdruck (bold) und Schrägschrift (italic) zurück.', false));
-    
+
 
     }
 
@@ -260,21 +261,21 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
 
     }
 
-    registerAsListener(){
-        if(this.worldHelper.internalMouseListeners.indexOf(this) >= 0) return;
+    registerAsListener() {
+        if (this.worldHelper.internalMouseListeners.indexOf(this) >= 0) return;
         this.worldHelper.internalMouseListeners.push(this);
         this.worldHelper.internalKeyboardListeners.push(this);
 
         let that = this;
         this.timerId = setInterval(() => {
-            if(that.cursor != null && !that.cursor.destroyed && that.hasKeyboardFocus){
+            if (that.cursor != null && !that.cursor.destroyed && that.hasKeyboardFocus) {
                 that.cursor.visible = !that.cursor.visible;
             }
         }, 500);
 
     }
 
-    unregisterAsListener(){
+    unregisterAsListener() {
         let index = this.worldHelper.internalMouseListeners.indexOf(this);
         this.worldHelper.internalMouseListeners.splice(index, 1);
         let index1 = this.worldHelper.internalKeyboardListeners.indexOf(this);
@@ -333,6 +334,8 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
             container.addChild(this.cursor);
 
             this.pixiText.mask = this.mask;
+            this.selectionRectangle.mask = this.mask;
+
         } else {
             this.pixiText.text = this.text.substring(this.renderFromCharacterPosition);
             this.backgroundGraphics.clear();
@@ -368,7 +371,7 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
         let top = 0 - this.pixiText.anchor.y * this.height;
 
         this.hitPolygonInitial = [
-            { x: left , y: top }, { x: left, y: top + this.height },
+            { x: left, y: top }, { x: left, y: top + this.height },
             { x: left + width, y: top + this.height }, { x: left + width, y: top }
         ];
         this.hitPolygonDirty = true;
@@ -377,7 +380,7 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
         let rTop = -this.padding;
 
         this.mask.beginFill(0x0);
-        this.makeRectangle(this.mask, 0, 0, this.width - 2*this.padding, this.height);
+        this.makeRectangle(this.mask, 0, 0, this.width - 2 * this.padding, this.height);
         this.mask.endFill();
 
         if (this.fillColor != null) {
@@ -387,34 +390,34 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
             this.backgroundGraphics.lineStyle(this.borderWidth, this.borderColor, this.borderAlpha, 0.5)
         }
 
-        this.makeRectangle(this.backgroundGraphics, -this.padding, -this.padding, this.width, this.height + 2*this.padding);
+        this.makeRectangle(this.backgroundGraphics, -this.padding, -this.padding, this.width, this.height + 2 * this.padding);
         this.backgroundGraphics.closePath();
 
         if (this.fillColor != null) {
             this.backgroundGraphics.endFill();
         }
 
-        if(this.isSelecting){
+        if (this.selectionEnd != this.selectionStart) {
             this.selectionRectangle.beginFill(0x8080ff, 0.5);
             let xFrom = this.characterStops[this.selectionStart] - this.characterStops[this.renderFromCharacterPosition];
             let xTo = this.characterStops[this.selectionEnd] - this.characterStops[this.renderFromCharacterPosition];
-            this.makeRectangle(this.selectionRectangle, xFrom, 0, xTo-xFrom, this.height);
+            this.makeRectangle(this.selectionRectangle, xFrom, 0, xTo - xFrom, this.height);
             this.selectionRectangle.endFill();
         }
 
         this.renderCursor();
 
         this.keyboardFocusRect.lineStyle(this.borderWidth, 0xff0000, 1.0, 0.5);
-        this.makeRectangle(this.keyboardFocusRect, -this.padding, -this.padding, this.width, this.height + 2*this.padding);
+        this.makeRectangle(this.keyboardFocusRect, -this.padding, -this.padding, this.width, this.height + 2 * this.padding);
         this.keyboardFocusRect.closePath();
 
         this.keyboardFocusRect.visible = this.hasKeyboardFocus;
 
     }
 
-    renderCursor(){
+    renderCursor() {
         this.cursor.clear();
-        let cursorWidth = Math.min(2, this.fontsize/10);
+        let cursorWidth = Math.min(2, this.fontsize / 10);
         this.cursor.lineStyle(cursorWidth, 0x0, 1.0, 0.5);
         let cx = this.characterStops[this.selectionEnd] - this.characterStops[this.renderFromCharacterPosition];
 
@@ -422,10 +425,10 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
         let end = new PIXI.Point(cx, this.height);
 
         this.cursor.moveTo(start.x, start.y).lineTo(end.x, end.y);
-        this.cursor.visible = this.hasKeyboardFocus;        
+        this.cursor.visible = this.hasKeyboardFocus;
     }
-    
-    makeRectangle(g: PIXI.Graphics, left: number, top: number, width: number, height: number){
+
+    makeRectangle(g: PIXI.Graphics, left: number, top: number, width: number, height: number) {
         g.moveTo(left, top);
         g.lineTo(left + width, top);
         g.lineTo(left + width, top + height);
@@ -433,13 +436,13 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
         g.closePath();
     }
 
-    getLocalCoordinates(x: number, y: number){
+    getLocalCoordinates(x: number, y: number) {
         let p = new PIXI.Point(x * this.worldHelper.globalScale, y * this.worldHelper.globalScale);
         this.displayObject.worldTransform.applyInverse(p, p);
         return p;
     }
 
-    moveTo(newX: number, newY: number){
+    moveTo(newX: number, newY: number) {
         let p = new PIXI.Point(0, 0);
         this.displayObject.updateTransform();
         this.displayObject.localTransform.apply(p, p);
@@ -470,124 +473,198 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
 
     onMouseEvent(kind: JOMouseEvent, x: number, y: number): void {
         let containsPointer = this.containsPoint(x, y);
-        
-        switch(kind){
+
+        switch (kind) {
             case "mousedown": {
-                if(containsPointer){
+                if (containsPointer) {
                     this.gainKeyboardFocus();
                     this.startSelecting(x, y);
                 } else {
                     this.looseKeyboardFocus();
                 }
             }
+                break;
             case "mouseup": {
                 this.stopSelecting();
             }
+                break;
             case "mouseleave": {
                 this.stopSelecting();
             }
+                break;
             case "mousemove": {
-
+                if (this.isSelecting) {
+                    let pos = this.getLocalCoordinates(x, y);
+                    this.selectionEnd = this.getCharacterPosition(pos.x);
+                    this.scrollIfNecessary();
+                    this.render();
+                }
             }
+                break;
         }
 
 
     }
 
-    generateCharacterStops(){
+    generateCharacterStops() {
         this.characterStops = [0];
-        for(let i = 1; i <= this.text.length; i++){
+        for (let i = 1; i <= this.text.length; i++) {
             let subtext = this.text.substring(0, i);
             let tm = PIXI.TextMetrics.measureText(subtext, this.textStyle);
             this.characterStops.push(tm.width);
         }
 
         this.characterCenterList = [];
-        for(let i = 0; i < this.characterStops.length - 1; i++){
-            this.characterCenterList.push((this.characterStops[i] + this.characterStops[i+1])/2);
+        for (let i = 0; i < this.characterStops.length - 1; i++) {
+            this.characterCenterList.push((this.characterStops[i] + this.characterStops[i + 1]) / 2);
         }
     }
 
-    startSelecting(x: number, y: number){
+    startSelecting(x: number, y: number) {
         this.isSelecting = true;
         let pos = this.getLocalCoordinates(x, y);
         this.selectionStart = this.getCharacterPosition(pos.x);
         this.selectionEnd = this.selectionStart;
-        this.renderCursor();
+        this.render();
     }
 
-    stopSelecting(){
+    stopSelecting() {
         this.isSelecting = false;
     }
 
+    deleteSelected() {
+        if (this.selectionEnd != this.selectionStart) {
+            this.adjustSelectStartLowerSelectEnd();
+            this.text = this.text.substring(0, this.selectionStart) + this.text.substring(this.selectionEnd);
+            this.selectionEnd = this.selectionStart;
+            this.isSelecting = false;
+        }
+    }
+    adjustSelectStartLowerSelectEnd() {
+        if (this.selectionEnd < this.selectionStart) {
+            let z = this.selectionEnd;
+            this.selectionEnd = this.selectionStart;
+            this.selectionStart = z;
+        }
+    }
+
     onKeyDown(key: string, isShift: boolean, isCtrl: boolean, isAlt: boolean): void {
-        
-        if(key.length == 1){
-            if(this.isSelecting){
-                this.text = this.text.substring(0, this.selectionStart) + this.text.substring(this.selectionEnd);
-                this.selectionEnd = this.selectionStart;
-                this.isSelecting = false;
-            }
+        if (!this.hasKeyboardFocus) return;
+        this.isSelecting = false;
+
+        let that = this;
+        if (isCtrl && key == "c") {
+            this.adjustSelectStartLowerSelectEnd();
+            copyTextToClipboard(this.text.substring(this.selectionStart, this.selectionEnd));
+        } else if (isCtrl && key == "v") {
+            navigator.clipboard.readText().then(
+                clipText => {
+                    that.deleteSelected();
+                    that.text = that.text.substring(0, that.selectionEnd) + clipText + that.text.substring(that.selectionEnd);
+                    that.selectionEnd += clipText.length;
+                    that.selectionStart = that.selectionEnd;
+                    that.generateCharacterStops();
+                    that.scrollIfNecessary();
+                    that.render();
+                });
+        } else if (key.length == 1) {
+            this.deleteSelected();
             this.text = this.text.substring(0, this.selectionEnd) + key + this.text.substring(this.selectionEnd);
             this.selectionEnd++;
+            this.selectionStart = this.selectionEnd;
             this.generateCharacterStops();
             this.scrollIfNecessary();
             this.render();
         } else {
-            switch(key){
-                case "ArrowRight":{
+            switch (key) {
+                case "ArrowRight":
                     this.selectionEnd = Math.min(this.selectionEnd + 1, this.text.length);
-                    this.isSelecting = isShift;
-                    if(!this.isSelecting) this.selectionStart = this.selectionEnd;
+                    if (!isShift) this.selectionStart = this.selectionEnd;
                     this.scrollIfNecessary();
                     this.render();
-                }
-                break;
-                case "ArrowLeft":{
+                    break;
+                case "ArrowLeft":
                     this.selectionEnd = Math.max(this.selectionEnd - 1, 0);
-                    this.isSelecting = isShift;
-                    if(!this.isSelecting) this.selectionStart = this.selectionEnd;
+                    if (!isShift) this.selectionStart = this.selectionEnd;
                     this.scrollIfNecessary();
                     this.render();
-                }
-                break;
+                    break;
+                case "Delete":
+                    if (this.selectionStart != this.selectionEnd) {
+                        this.deleteSelected();
+                    } else {
+                        if (this.selectionEnd < this.text.length) {
+                            this.text = this.text.substring(0, this.selectionEnd) + this.text.substring(this.selectionEnd + 1);
+                        }
+                    }
+                    this.generateCharacterStops();
+                    this.render();
+                    break;
+                case "Backspace":
+                    if (this.selectionStart != this.selectionEnd) {
+                        this.deleteSelected();
+                    } else {
+                        if (this.selectionEnd > 0) {
+                            this.text = this.text.substring(0, this.selectionEnd - 1) + this.text.substring(this.selectionEnd);
+                            this.selectionEnd--;
+                            this.selectionStart = this.selectionEnd;
+                        }
+                    }
+                    this.generateCharacterStops();
+                    this.render();
+                    break;
+                case "Insert":
+                    break;
+                case "Home":
+                    this.selectionStart = 0;
+                    this.selectionEnd = 0;
+                    this.render();
+                    break;
+                case "End":
+                    this.selectionStart = this.text.length;
+                    this.selectionEnd = this.text.length;
+                    this.render();
+                    break;
+                default:
+                    console.log(key);
+                    break;
             }
         }
-        
-        
+
+
     }
 
     scrollIfNecessary(): boolean {
         let x = this.getCursorXFromCharacterPos(this.selectionEnd);
         let hasScrolled: boolean = false;
-        while(x < 0 && this.renderFromCharacterPosition > 0){
+        while (x < 0 && this.renderFromCharacterPosition > 0) {
             this.renderFromCharacterPosition--;
             x = this.getCursorXFromCharacterPos(this.selectionEnd);
             hasScrolled = true;
         }
-        
-        while(x > this.width - 2*this.padding && this.renderFromCharacterPosition < this.text.length){
+
+        while (x > this.width - 2 * this.padding && this.renderFromCharacterPosition < this.text.length) {
             this.renderFromCharacterPosition++;
             x = this.getCursorXFromCharacterPos(this.selectionEnd);
             hasScrolled = true;
-        }        
+        }
         return hasScrolled;
     }
 
-    getCursorXFromCharacterPos(pos: number){
+    getCursorXFromCharacterPos(pos: number) {
         return this.characterStops[pos] - this.characterStops[this.renderFromCharacterPosition]
     }
 
 
     gainKeyboardFocus(): void {
-        for(let ikl of this.worldHelper.internalKeyboardListeners){
-            if(ikl != this) ikl.looseKeyboardFocus();
+        for (let ikl of this.worldHelper.internalKeyboardListeners) {
+            if (ikl != this) ikl.looseKeyboardFocus();
         }
         this.hasKeyboardFocus = true;
         this.keyboardFocusRect.visible = true;
         this.cursor.visible = true;
     }
-    
+
     looseKeyboardFocus(): void {
         this.hasKeyboardFocus = false;
         this.keyboardFocusRect.visible = false;
@@ -596,12 +673,12 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
 
     destroy(): void {
         this.unregisterAsListener();
-        super.destroy();    
+        super.destroy();
     }
 
     setVisible(visible: boolean) {
         super.setVisible(visible);
-        if(visible){
+        if (visible) {
             this.registerAsListener();
         } else {
             this.unregisterAsListener();
@@ -609,9 +686,9 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
     }
 
     getCharacterPosition(x: number): number {
-        if(this.characterCenterList.length == 0) return 0;
-        for(let i = 0; i < this.characterCenterList.length; i++){
-            if(x <= this.characterCenterList[i] - this.characterStops[this.renderFromCharacterPosition] ) return i;
+        if (this.characterCenterList.length == 0) return 0;
+        for (let i = 0; i < this.characterCenterList.length; i++) {
+            if (x <= this.characterCenterList[i] - this.characterStops[this.renderFromCharacterPosition]) return i;
         }
 
         return this.characterCenterList.length;

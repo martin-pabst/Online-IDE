@@ -1,6 +1,6 @@
 import { Module } from "../../compiler/parser/Module.js";
 import { Klass } from "../../compiler/types/Class.js";
-import { booleanPrimitiveType, doublePrimitiveType, stringPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
+import { booleanPrimitiveType, doublePrimitiveType, intPrimitiveType, stringPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
 import { Method, Parameterlist } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { FilledShapeHelper } from "./FilledShape.js";
@@ -183,7 +183,25 @@ export class TextFieldClass extends Klass {
             }, false, false, 'Gibt die Eigenschaften Fettdruck (bold) und Schrägschrift (italic) zurück.', false));
 
 
+            this.addMethod(new Method("setTextColor", new Parameterlist([
+                { identifier: "color", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+            ]), voidPrimitiveType,
+                (parameters) => {
+    
+                    let o: RuntimeObject = parameters[0].value;
+                    let color: number = parameters[1].value;
+                    let sh: TextFieldHelper = o.intrinsicData["Actor"];
+    
+                    if (sh.testdestroyed("setTextColor")) return;
+    
+                    sh.setTextColor(color);
+    
+                }, false, false, 'Setzt die Textfarbe. Die Farbe wird als int-Wert gegeben, wobei farbe == 256*256*rot + 256*grün + blau', false));
+    
+
     }
+
+    
 
 }
 
@@ -694,5 +712,9 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
         return this.characterCenterList.length;
     }
 
+    setTextColor(color: number){
+        this.textColor = color;
+        this.render();
+    }
 
 }

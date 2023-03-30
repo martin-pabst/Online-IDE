@@ -93,6 +93,7 @@ import { JavaKaraWorldClass, KaraClass } from "../../runtimelibrary/graphics/Jav
 import { PositionClass } from "../../runtimelibrary/graphics/Position.js";
 import { HamsterClass, JavaHamsterWorldClass } from "../../runtimelibrary/graphics/JavaHamster.js";
 import { TextFieldClass } from "../../runtimelibrary/graphics/Textfield.js";
+import { CheckBoxClass } from "../../runtimelibrary/graphics/Checkbox.js";
 
 export type ExportedWorkspace = {
     name: string;
@@ -867,6 +868,7 @@ export class BaseModule extends Module {
         this.typeStore.addType(new TurtleClass(this));
 
         this.typeStore.addType(new TextFieldClass(this));
+        this.typeStore.addType(new CheckBoxClass(this));
 
         this.typeStore.addType(new JavaKaraWorldClass(this));
         this.typeStore.addType(new KaraClass(this));

@@ -94,6 +94,7 @@ import { PositionClass } from "../../runtimelibrary/graphics/Position.js";
 import { HamsterClass, JavaHamsterWorldClass } from "../../runtimelibrary/graphics/JavaHamster.js";
 import { TextFieldClass } from "../../runtimelibrary/graphics/Textfield.js";
 import { CheckBoxClass } from "../../runtimelibrary/graphics/Checkbox.js";
+import { RadioButtonClass } from "../../runtimelibrary/graphics/Radiubutton.js";
 
 export type ExportedWorkspace = {
     name: string;
@@ -869,6 +870,7 @@ export class BaseModule extends Module {
 
         this.typeStore.addType(new TextFieldClass(this));
         this.typeStore.addType(new CheckBoxClass(this));
+        this.typeStore.addType(new RadioButtonClass(this));
 
         this.typeStore.addType(new JavaKaraWorldClass(this));
         this.typeStore.addType(new KaraClass(this));

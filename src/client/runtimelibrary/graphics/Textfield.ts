@@ -198,6 +198,22 @@ export class TextFieldClass extends Klass {
     
                 }, false, false, 'Setzt die Textfarbe. Die Farbe wird als int-Wert gegeben, wobei farbe == 256*256*rot + 256*grün + blau', false));
     
+            this.addMethod(new Method("setPadding", new Parameterlist([
+                { identifier: "padding", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+            ]), voidPrimitiveType,
+                (parameters) => {
+    
+                    let o: RuntimeObject = parameters[0].value;
+                    let padding: number = parameters[1].value;
+                    let sh: TextFieldHelper = o.intrinsicData["Actor"];
+    
+                    if (sh.testdestroyed("setPadding")) return;
+    
+                    sh.padding = padding;
+                    sh.render();
+    
+                }, false, false, 'Setzt den Innenabstand (padding) des Textes zum umgebenden Rechteck.', false));
+    
 
     }
 
@@ -231,6 +247,9 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
     timerId: any;
 
     height: number = 0;
+
+    isMouseOver: boolean = false;
+
 
     textStyle: PIXI.TextStyle =
         new PIXI.TextStyle({
@@ -488,7 +507,7 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
         return g.height;
     }
 
-
+    
     onMouseEvent(kind: JOMouseEvent, x: number, y: number): void {
         let containsPointer = this.containsPoint(x, y);
 
@@ -508,6 +527,8 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
                 break;
             case "mouseleave": {
                 this.stopSelecting();
+                this.isMouseOver = false;
+                this.worldHelper.setCursor('default');
             }
                 break;
             case "mousemove": {
@@ -517,6 +538,12 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
                     this.scrollIfNecessary();
                     this.render();
                 }
+
+                if(this.isMouseOver != containsPointer){
+                    this.isMouseOver = containsPointer;
+                    this.worldHelper.setCursor(containsPointer ? "pointer" : "default");
+                }
+                
             }
                 break;
         }

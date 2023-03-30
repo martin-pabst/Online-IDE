@@ -1,85 +1,79 @@
 import { Module } from "../../compiler/parser/Module.js";
 import { Klass } from "../../compiler/types/Class.js";
 import { booleanPrimitiveType, doublePrimitiveType, intPrimitiveType, stringPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
-import { Method, Parameterlist } from "../../compiler/types/Types.js";
+import { Method, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { FilledShapeHelper } from "./FilledShape.js";
 import { InternalKeyboardListener, InternalMouseListener, MouseEvent as JOMouseEvent } from "./World.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import * as PIXI from 'pixi.js';
 import { copyTextToClipboard } from "../../tools/HtmlTools.js";
+import { ArrayType } from "../../compiler/types/Array.js";
 
-export class CheckBoxClass extends Klass {
+export class RadioButtonClass extends Klass {
 
     constructor(module: Module) {
 
-        super("CheckBox", module, "Checkbox, die innerhalb der Grafikausgabe dargestellt werden kann");
+        super("RadioButton", module, "RadioButton, der innerhalb der Grafikausgabe dargestellt werden kann");
 
         this.setBaseClass(<Klass>module.typeStore.getType("FilledShape"));
 
-        this.addMethod(new Method("CheckBox", new Parameterlist([
-        ]), null,
-            (parameters) => {
-
-                let o: RuntimeObject = parameters[0].value;
-
-                let sh = new CheckBoxHelper(0, 0, 300, 24, "Text", module.main.getInterpreter(), o);
-                o.intrinsicData["Actor"] = sh;
-
-            }, false, false, 'Instanziert ein neues CheckBox-Objekt.', true));
-
-        this.addMethod(new Method("CheckBox", new Parameterlist([
+        this.addMethod(new Method("RadioButton", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "width", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "fontsize", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "text", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "index", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), null,
-            (parameters) => {
-
-                let o: RuntimeObject = parameters[0].value;
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
-                let width: number = parameters[3].value;
-                let fontsize: number = parameters[4].value;
-                let text: string = parameters[5].value;
-
-                let sh = new CheckBoxHelper(x, y, width, fontsize, text, module.main.getInterpreter(), o);
-                o.intrinsicData["Actor"] = sh;
-
-            }, false, false, 'Instanziert ein neues CheckBox-Objekt. (x, y) sind die Koordinaten der linken oberen Ecke, fontsize die Höhe des Textes in Pixeln.', true));
-
-        this.addMethod(new Method("CheckBox", new Parameterlist([
+        (parameters) => {
+            
+            let o: RuntimeObject = parameters[0].value;
+            let x: number = parameters[1].value;
+            let y: number = parameters[2].value;
+            let width: number = parameters[3].value;
+            let fontsize: number = parameters[4].value;
+            let text: string = parameters[5].value;
+            let index: number = parameters[6].value;
+            
+            let sh = new RadioButtonHelper(x, y, width, fontsize, text, index, module.main.getInterpreter(), o);
+            o.intrinsicData["Actor"] = sh;
+            
+        }, false, false, 'Instanziert ein neues RadioButton-Objekt. (x, y) sind die Koordinaten der linken oberen Ecke, fontsize die Höhe des Textes in Pixeln.', true));
+        
+        this.addMethod(new Method("RadioButton", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "width", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "fontsize", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "text", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-            { identifier: "font-family", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+            { identifier: "font-family", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "index", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), null,
-            (parameters) => {
-
-                let o: RuntimeObject = parameters[0].value;
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
-                let width: number = parameters[3].value;
-                let fontsize: number = parameters[4].value;
-                let text: string = parameters[5].value;
-                let fontFamily: string = parameters[6].value;
-
-                let sh = new CheckBoxHelper(x, y, width, fontsize, text, module.main.getInterpreter(), o, fontFamily);
-                o.intrinsicData["Actor"] = sh;
-
+        (parameters) => {
+            
+            let o: RuntimeObject = parameters[0].value;
+            let x: number = parameters[1].value;
+            let y: number = parameters[2].value;
+            let width: number = parameters[3].value;
+            let fontsize: number = parameters[4].value;
+            let text: string = parameters[5].value;
+            let fontFamily: string = parameters[6].value;
+            let index: number = parameters[7].value;
+            
+            let sh = new RadioButtonHelper(x, y, width, fontsize, text, index, module.main.getInterpreter(), o, fontFamily);
+            o.intrinsicData["Actor"] = sh;
+            
             }, false, false, 'Instanziert ein neues Textobjekt. (x, y) sind die Koordinaten der linken oberen Ecke, fontsize die Höhe des Textes in Pixeln.', true));
 
-        this.addMethod(new Method("setFontsize", new Parameterlist([
-            { identifier: "fontsize", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-        ]), null,
+            this.addMethod(new Method("setFontsize", new Parameterlist([
+                { identifier: "fontsize", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            ]), null,
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
                 let fontsize: number = parameters[1].value;
-                let sh: CheckBoxHelper = o.intrinsicData["Actor"];
+                let sh: RadioButtonHelper = o.intrinsicData["Actor"];
 
                 sh.setFontsize(fontsize);
 
@@ -92,7 +86,7 @@ export class CheckBoxClass extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
                 let text: string = parameters[1].value;
-                let sh: CheckBoxHelper = o.intrinsicData["Actor"];
+                let sh: RadioButtonHelper = o.intrinsicData["Actor"];
 
                 sh.setText(text);
 
@@ -103,20 +97,20 @@ export class CheckBoxClass extends Klass {
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
-                let sh: CheckBoxHelper = o.intrinsicData["Actor"];
+                let sh: RadioButtonHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("copy")) return;
 
                 return sh.getCopy(<Klass>o.class);
 
-            }, false, false, 'Erstellt eine Kopie des CheckBox-Objekts und git sie zurück.', false));
+            }, false, false, 'Erstellt eine Kopie des RadioButton-Objekts und git sie zurück.', false));
 
         this.addMethod(new Method("getWidth", new Parameterlist([
         ]), doublePrimitiveType,
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
-                let sh: CheckBoxHelper = o.intrinsicData["Actor"];
+                let sh: RadioButtonHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getWidth")) return;
 
@@ -129,7 +123,7 @@ export class CheckBoxClass extends Klass {
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
-                let sh: CheckBoxHelper = o.intrinsicData["Actor"];
+                let sh: RadioButtonHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getHeight")) return;
 
@@ -137,12 +131,51 @@ export class CheckBoxClass extends Klass {
 
             }, false, false, 'Gibt die Höhe des Textes zurück.', false));
 
+        this.addMethod(new Method("getIndex", new Parameterlist([
+        ]), intPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: RadioButtonHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("getIndex")) return;
+
+                return sh.index;
+
+            }, false, false, 'Gibt den Index des Radiobuttons zurück.', false));
+
+        this.addMethod(new Method("getIndexOfSelectedRadiobutton", new Parameterlist([
+        ]), intPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: RadioButtonHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("getIndexOfSelectedRadiobutton")) return;
+
+                return sh.getIndexOfSelectedRadiobutton();
+
+            }, false, false, 'Sind mehrere Radiobuttons mittels connectTo mit dieserm logisch verbunden, so ist genau einer davon selektiert. Diese Methode gibt den Index dieses selektierten Radiobuttons zurück.', false));
+
+        this.addMethod(new Method("getTextOfSelectedRadiobutton", new Parameterlist([
+        ]), stringPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: RadioButtonHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("getTextOfSelectedRadiobutton")) return;
+
+                return sh.getTextOfSelectedRadiobutton();
+
+            }, false, false, 'Sind mehrere Radiobuttons mittels connectTo mit dieserm logisch verbunden, so ist genau einer davon selektiert. Diese Methode gibt den Text dieses selektierten Radiobuttons zurück.', false));
+
         this.addMethod(new Method("getFontSize", new Parameterlist([
         ]), doublePrimitiveType,
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
-                let sh: CheckBoxHelper = o.intrinsicData["Actor"];
+                let sh: RadioButtonHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getFontSize")) return;
 
@@ -155,7 +188,7 @@ export class CheckBoxClass extends Klass {
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
-                let sh: CheckBoxHelper = o.intrinsicData["Actor"];
+                let sh: RadioButtonHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getText")) return;
 
@@ -172,7 +205,7 @@ export class CheckBoxClass extends Klass {
                 let o: RuntimeObject = parameters[0].value;
                 let isBold: boolean = parameters[1].value;
                 let isItalic: boolean = parameters[2].value;
-                let sh: CheckBoxHelper = o.intrinsicData["Actor"];
+                let sh: RadioButtonHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("setStyle")) return;
 
@@ -190,7 +223,7 @@ export class CheckBoxClass extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
                 let color: number = parameters[1].value;
-                let sh: CheckBoxHelper = o.intrinsicData["Actor"];
+                let sh: RadioButtonHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("setTextColor")) return;
 
@@ -198,33 +231,74 @@ export class CheckBoxClass extends Klass {
 
             }, false, false, 'Setzt die Textfarbe. Die Farbe wird als int-Wert gegeben, wobei farbe == 256*256*rot + 256*grün + blau', false));
 
-        this.addMethod(new Method("setCrossColor", new Parameterlist([
+        this.addMethod(new Method("setIndex", new Parameterlist([
+            { identifier: "index", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let index: number = parameters[1].value;
+                let sh: RadioButtonHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("setIndex")) return;
+
+                sh.index = index;
+
+            }, false, false, 'Setzt den Index des Radiobuttons.', false));
+
+        this.addMethod(new Method("setDotColor", new Parameterlist([
             { identifier: "color", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), voidPrimitiveType,
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
                 let color: number = parameters[1].value;
-                let sh: CheckBoxHelper = o.intrinsicData["Actor"];
+                let sh: RadioButtonHelper = o.intrinsicData["Actor"];
 
-                if (sh.testdestroyed("setCrossColor")) return;
+                if (sh.testdestroyed("setDotColor")) return;
 
-                sh.setCrossColor(color);
+                sh.setDotColor(color);
 
             }, false, false, 'Setzt die Farbe des Kreuzchens. Die Farbe wird als int-Wert gegeben, wobei farbe == 256*256*rot + 256*grün + blau', false));
 
-        this.addMethod(new Method("isChecked", new Parameterlist([
+        this.addMethod(new Method("connectTo", new Parameterlist([
+            { identifier: "other_radiobuttons", type: new ArrayType(this), declaration: null, usagePositions: null, isFinal: true, isEllipsis: true }
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let otherButtons: Value[] = parameters[1].value;
+                let sh: RadioButtonHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("connectTo")) return;
+
+                let otherHelpers: RadioButtonHelper[] = otherButtons.map(v => (<RuntimeObject>v.value).intrinsicData["Actor"]);
+                otherHelpers.push(sh);
+
+                otherHelpers = otherHelpers.concat(sh.otherButtons);
+
+                for(let oh of otherHelpers){
+                    oh.connectTo(otherHelpers);
+                }
+
+                sh.setSelected();
+                sh.render();
+                for(let rb of sh.otherButtons) rb.render();
+                
+            }, false, false, 'Verbindet diesen Radiobutton logisch mit den anderen Radiobuttons. Wird anschließend auf einen davon geklickt, so wird dieser selektiert, die anderen deselektiert.', false));
+
+        this.addMethod(new Method("isSelected", new Parameterlist([
         ]), booleanPrimitiveType,
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
-                let sh: CheckBoxHelper = o.intrinsicData["Actor"];
+                let sh: RadioButtonHelper = o.intrinsicData["Actor"];
 
-                if (sh.testdestroyed("isChecked")) return;
+                if (sh.testdestroyed("isSelected")) return;
 
-                return sh.isChecked;
+                return sh.isSelected;
 
-            }, false, false, 'Gibt genau dann true zurück, falls die Checkbox angekreuzt ist.', false));
+            }, false, false, 'Gibt genau dann true zurück, falls die RadioButton selektiert ist.', false));
 
     }
 
@@ -232,18 +306,18 @@ export class CheckBoxClass extends Klass {
 
 }
 
-export class CheckBoxHelper extends FilledShapeHelper implements InternalMouseListener {
+export class RadioButtonHelper extends FilledShapeHelper implements InternalMouseListener {
 
     pixiText: PIXI.Text;
     backgroundGraphics: PIXI.Graphics;
-    cross: PIXI.Graphics;
+    dot: PIXI.Graphics;
 
     textColor: number = 0x808080;
     distanceToText: number = 4;
 
-    crossColor: number = 0x000000;
+    dotColor: number = 0x000000;
 
-    isChecked: boolean = true;
+    isSelected: boolean = true;
 
     textHeight: number = 10;
     textWidth: number = 10;
@@ -252,6 +326,7 @@ export class CheckBoxHelper extends FilledShapeHelper implements InternalMouseLi
 
     isMouseOver: boolean = false;
 
+    otherButtons: RadioButtonHelper[] = [];
 
     textStyle: PIXI.TextStyle =
         new PIXI.TextStyle({
@@ -268,8 +343,8 @@ export class CheckBoxHelper extends FilledShapeHelper implements InternalMouseLi
             lineJoin: 'round'
         });
 
-    constructor(public x: number, public y: number, public checkboxWidth: number, public fontsize: number,
-        public text: string,
+    constructor(public x: number, public y: number, public radiobuttonWidth: number, public fontsize: number,
+        public text: string, public index: number,
         interpreter: Interpreter, runtimeObject: RuntimeObject, public fontFamily?: string) {
         super(interpreter, runtimeObject);
         this.centerXInitial = x;
@@ -298,8 +373,47 @@ export class CheckBoxHelper extends FilledShapeHelper implements InternalMouseLi
 
     }
 
-    setCrossColor(color: number){
-        this.crossColor = color;
+    getIndexOfSelectedRadiobutton(): number {
+        if(this.isSelected){
+            return this.index;
+        }
+        for(let rb of this.otherButtons){
+            if(rb.isSelected) return rb.index;
+        }
+
+        return -1;
+    }
+
+    getTextOfSelectedRadiobutton(): string {
+        if(this.isSelected){
+            return this.text;
+        }
+        for(let rb of this.otherButtons){
+            if(rb.isSelected) return rb.text;
+        }
+
+        return "";
+    }
+
+    setSelected(){
+        this.isSelected = true;
+        this.render();
+        for(let ob of this.otherButtons){
+            ob.isSelected = false;
+            ob.render();
+        }
+    }
+
+    connectTo(otherButtons: RadioButtonHelper[]){
+        for(let rb of otherButtons){
+            if(this.otherButtons.indexOf(rb) <= 0 && rb != this){
+                this.otherButtons.push(rb);
+            }
+        }
+    }
+
+    setDotColor(color: number){
+        this.dotColor = color;
         this.render();
     }
 
@@ -326,8 +440,14 @@ export class CheckBoxHelper extends FilledShapeHelper implements InternalMouseLi
     getCopy(klass: Klass): RuntimeObject {
 
         let ro: RuntimeObject = new RuntimeObject(klass);
-        let rh: CheckBoxHelper = new CheckBoxHelper(this.x, this.y, this.checkboxWidth, this.fontsize, this.text, this.worldHelper.interpreter, ro);
+        let rh: RadioButtonHelper = new RadioButtonHelper(this.x, this.y, this.radiobuttonWidth, this.fontsize, this.text, this.index, this.worldHelper.interpreter, ro);
         ro.intrinsicData["Actor"] = rh;
+        rh.dotColor = this.dotColor;
+        rh.textColor = this.textColor;
+        rh.distanceToText = this.distanceToText;
+        rh.isSelected = this.isSelected;
+        rh.text = this.text;
+        rh.index = this.index++;
 
         rh.copyFrom(this);
         rh.render();
@@ -345,10 +465,10 @@ export class CheckBoxHelper extends FilledShapeHelper implements InternalMouseLi
 
         if (this.displayObject == null) {
             this.backgroundGraphics = new PIXI.Graphics();
-            this.cross = new PIXI.Graphics();
+            this.dot = new PIXI.Graphics();
 
             this.pixiText = new PIXI.Text(this.text, this.textStyle);
-            this.pixiText.x = this.checkboxWidth + this.distanceToText;
+            this.pixiText.x = this.radiobuttonWidth + this.distanceToText;
             this.pixiText.y = 0;
 
             this.displayObject = new PIXI.Container();
@@ -360,12 +480,12 @@ export class CheckBoxHelper extends FilledShapeHelper implements InternalMouseLi
 
             container.addChild(this.backgroundGraphics);
             container.addChild(this.pixiText);
-            container.addChild(this.cross);
+            container.addChild(this.dot);
 
         } else {
             this.pixiText.text = this.text;
             this.backgroundGraphics.clear();
-            this.cross.clear();
+            this.dot.clear();
 
             this.pixiText.alpha = this.fillAlpha;
             this.pixiText.anchor.x = 0;
@@ -386,30 +506,30 @@ export class CheckBoxHelper extends FilledShapeHelper implements InternalMouseLi
             this.textHeight = tm.height;
             let ascent = tm.fontProperties.ascent
 
-            textTop = (this.checkboxWidth - this.textHeight)/2;
+            textTop = (this.radiobuttonWidth - this.textHeight)/2;
             this.distanceToText = tm.fontProperties.descent * 3;
 
             this.pixiText.localTransform.identity();
-            this.pixiText.localTransform.translate(this.checkboxWidth + this.distanceToText, textTop);
+            this.pixiText.localTransform.translate(this.radiobuttonWidth + this.distanceToText, textTop);
             // @ts-ignore
             this.pixiText.transform.onChange();
 
-            this.centerXInitial = (this.checkboxWidth + this.textWidth + this.distanceToText) / 2;
-            this.centerYInitial = this.checkboxWidth / 2;
+            this.centerXInitial = (this.radiobuttonWidth + this.textWidth + this.distanceToText) / 2;
+            this.centerYInitial = this.radiobuttonWidth / 2;
         }
 
         let left = 0;
         let top = 0;
-        let textBottom = top + this.checkboxWidth - textTop;
-        let overallWidth = this.textWidth + this.checkboxWidth + this.distanceToText;
+        let textBottom = top + this.radiobuttonWidth - textTop;
+        let overallWidth = this.textWidth + this.radiobuttonWidth + this.distanceToText;
 
         this.hitPolygonInitial = [
-            { x: left, y: top }, { x: left + this.checkboxWidth, y: top }, { x: left + this.checkboxWidth + this.distanceToText, y: textTop }, 
+            { x: left, y: top }, { x: left + this.radiobuttonWidth, y: top }, { x: left + this.radiobuttonWidth + this.distanceToText, y: textTop }, 
             { x: left + overallWidth, y: textTop }, 
             { x: left + overallWidth, y: textBottom }, 
-            { x: left + this.checkboxWidth + this.distanceToText, y: textBottom }, 
-            { x: left + this.checkboxWidth, y: top + this.checkboxWidth },
-            { x: left, y: top + this.checkboxWidth }
+            { x: left + this.radiobuttonWidth + this.distanceToText, y: textBottom }, 
+            { x: left + this.radiobuttonWidth, y: top + this.radiobuttonWidth },
+            { x: left, y: top + this.radiobuttonWidth }
         ];
         this.hitPolygonDirty = true;
 
@@ -420,31 +540,16 @@ export class CheckBoxHelper extends FilledShapeHelper implements InternalMouseLi
             this.backgroundGraphics.lineStyle(this.borderWidth, this.borderColor, this.borderAlpha, 1.0)
         }
 
-        this.makeRectangle(this.backgroundGraphics, 0, 0, this.checkboxWidth, this.checkboxWidth);
-        this.backgroundGraphics.closePath();
+        this.backgroundGraphics.drawCircle(this.radiobuttonWidth/2, this.radiobuttonWidth/2, this.radiobuttonWidth/2);
 
         if (this.fillColor != null) {
             this.backgroundGraphics.endFill();
         }
 
-        let df = 2.0;
-        let bwdf = this.borderWidth * df;
+        this.dot.beginFill(this.dotColor, this.fillAlpha);
+        this.dot.drawCircle(this.radiobuttonWidth/2, this.radiobuttonWidth/2, this.radiobuttonWidth/6);
 
-        this.cross.lineStyle(this.borderWidth * 2, this.crossColor, this.fillAlpha, 0.5);
-        this.cross.moveTo(bwdf, bwdf);
-        this.cross.lineTo(this.checkboxWidth - bwdf, this.checkboxWidth - bwdf);
-        this.cross.moveTo(this.checkboxWidth - bwdf, bwdf);
-        this.cross.lineTo(bwdf, this.checkboxWidth - bwdf);
-
-        this.cross.visible = this.isChecked;
-    }
-
-    makeRectangle(g: PIXI.Graphics, left: number, top: number, width: number, height: number) {
-        g.moveTo(left, top);
-        g.lineTo(left + width, top);
-        g.lineTo(left + width, top + height);
-        g.lineTo(left, top + height);
-        g.closePath();
+        this.dot.visible = this.isSelected;
     }
 
     getLocalCoordinates(x: number, y: number) {
@@ -493,8 +598,7 @@ export class CheckBoxHelper extends FilledShapeHelper implements InternalMouseLi
                 break;
             case "mouseup": {
                 if (containsPointer && this.mouseIsDown) {
-                    this.isChecked = !this.isChecked;
-                    this.render();
+                    this.setSelected();
                 }
                 this.mouseIsDown = false;
             }

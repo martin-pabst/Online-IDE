@@ -341,6 +341,9 @@ export class RadioButtonHelper extends FilledShapeHelper implements InternalMous
 
     otherButtons: RadioButtonHelper[] = [];
 
+    width: number = 0;
+    height: number = 0;
+
     textStyle: PIXI.TextStyle =
         new PIXI.TextStyle({
             fontFamily: 'Arial',
@@ -365,8 +368,9 @@ export class RadioButtonHelper extends FilledShapeHelper implements InternalMous
 
         if (this.fontsize == 0) this.fontsize = 10;
 
+
         this.borderColor = 0x808080;
-        this.borderWidth = 4;
+        this.borderWidth = fontsize/8;
         this.fillColor = 0xffffff;
 
         this.textStyle.stroke = 0x000000;
@@ -502,8 +506,6 @@ export class RadioButtonHelper extends FilledShapeHelper implements InternalMous
 
             this.pixiText.alpha = this.fillAlpha;
             this.pixiText.anchor.x = 0;
-            //@ts-ignore
-            this.textStyle.align = this.alignment;
             this.pixiText.style = this.textStyle;
         }
 
@@ -535,6 +537,8 @@ export class RadioButtonHelper extends FilledShapeHelper implements InternalMous
         let top = 0;
         let textBottom = top + this.radiobuttonWidth - textTop;
         let overallWidth = this.textWidth + this.radiobuttonWidth + this.distanceToText;
+        this.width = overallWidth;
+        this.height = Math.max(this.textHeight, this.radiobuttonWidth);
 
         this.hitPolygonInitial = [
             { x: left, y: top }, { x: left + this.radiobuttonWidth, y: top }, { x: left + this.radiobuttonWidth + this.distanceToText, y: textTop }, 
@@ -590,15 +594,12 @@ export class RadioButtonHelper extends FilledShapeHelper implements InternalMous
     }
 
     getWidth(): number {
-        let g: PIXI.Text = <any>this.displayObject;
-        return g.width;
+        return this.width;
     }
 
     getHeight(): number {
-        let g: PIXI.Text = <any>this.displayObject;
-        return g.height;
+        return this.height;
     }
-
 
     onMouseEvent(kind: JOMouseEvent, x: number, y: number): void {
         let containsPointer = this.containsPoint(x, y);

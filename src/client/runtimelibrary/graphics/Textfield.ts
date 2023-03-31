@@ -275,8 +275,8 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
 
         if (this.fontsize == 0) this.fontsize = 10;
 
-        this.borderColor = 0x202020;
-        this.borderWidth = 4;
+        this.borderColor = 0x808080;
+        this.borderWidth = fontsize/10;
         this.fillColor = 0xffffff;
 
         this.textStyle.stroke = 0x000000;
@@ -417,7 +417,7 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
         let rTop = -this.padding;
 
         this.mask.beginFill(0x0);
-        this.makeRectangle(this.mask, 0, 0, this.width - 2 * this.padding, this.height);
+        this.mask.drawRect(0, 0, this.width - 2 * this.padding, this.height);
         this.mask.endFill();
 
         if (this.fillColor != null) {
@@ -427,8 +427,7 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
             this.backgroundGraphics.lineStyle(this.borderWidth, this.borderColor, this.borderAlpha, 0.5)
         }
 
-        this.makeRectangle(this.backgroundGraphics, -this.padding, -this.padding, this.width, this.height + 2 * this.padding);
-        this.backgroundGraphics.closePath();
+        this.backgroundGraphics.drawRoundedRect(-this.padding, -this.padding, this.width, this.height + 2 * this.padding, this.fontsize/8);
 
         if (this.fillColor != null) {
             this.backgroundGraphics.endFill();
@@ -438,14 +437,19 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
             this.selectionRectangle.beginFill(0x8080ff, 0.5);
             let xFrom = this.characterStops[this.selectionStart] - this.characterStops[this.renderFromCharacterPosition];
             let xTo = this.characterStops[this.selectionEnd] - this.characterStops[this.renderFromCharacterPosition];
-            this.makeRectangle(this.selectionRectangle, xFrom, 0, xTo - xFrom, this.height);
+            if(xTo < xFrom){
+                let z = xTo;
+                xTo = xFrom;
+                xFrom = z;
+            }
+            this.selectionRectangle.drawRoundedRect(xFrom, 0, xTo - xFrom, this.height, this.fontsize/8);
             this.selectionRectangle.endFill();
         }
 
         this.renderCursor();
 
-        this.keyboardFocusRect.lineStyle(this.borderWidth, 0xff0000, 1.0, 0.5);
-        this.makeRectangle(this.keyboardFocusRect, -this.padding, -this.padding, this.width, this.height + 2 * this.padding);
+        this.keyboardFocusRect.lineStyle(this.borderWidth, 0x800000, 1.0, 0.5);
+        this.keyboardFocusRect.drawRect(-this.padding, -this.padding, this.width, this.height + 2 * this.padding);
         this.keyboardFocusRect.closePath();
 
         this.keyboardFocusRect.visible = this.hasKeyboardFocus;
@@ -498,15 +502,12 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
     }
 
     getWidth(): number {
-        let g: PIXI.Text = <any>this.displayObject;
-        return g.width;
+        return this.width;
     }
 
     getHeight(): number {
-        let g: PIXI.Text = <any>this.displayObject;
-        return g.height;
+        return this.height;
     }
-
     
     onMouseEvent(kind: JOMouseEvent, x: number, y: number): void {
         let containsPointer = this.containsPoint(x, y);

@@ -1,85 +1,71 @@
 import { Module } from "../../compiler/parser/Module.js";
 import { Klass } from "../../compiler/types/Class.js";
 import { booleanPrimitiveType, doublePrimitiveType, intPrimitiveType, stringPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
-import { Method, Parameterlist } from "../../compiler/types/Types.js";
+import { Method, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { FilledShapeHelper } from "./FilledShape.js";
 import { InternalKeyboardListener, InternalMouseListener, MouseEvent as JOMouseEvent } from "./World.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import * as PIXI from 'pixi.js';
-import { copyTextToClipboard } from "../../tools/HtmlTools.js";
+import { copyTextToClipboard, lightenDarkenIntColor } from "../../tools/HtmlTools.js";
+import { ArrayType } from "../../compiler/types/Array.js";
 
-export class CheckBoxClass extends Klass {
+export class ButtonClass extends Klass {
 
     constructor(module: Module) {
 
-        super("CheckBox", module, "Checkbox, die innerhalb der Grafikausgabe dargestellt werden kann");
+        super("Button", module, "Button, der innerhalb der Grafikausgabe dargestellt werden kann");
 
         this.setBaseClass(<Klass>module.typeStore.getType("FilledShape"));
 
-        this.addMethod(new Method("CheckBox", new Parameterlist([
-        ]), null,
-            (parameters) => {
-
-                let o: RuntimeObject = parameters[0].value;
-
-                let sh = new CheckBoxHelper(0, 0, 300, 24, "Text", module.main.getInterpreter(), o);
-                o.intrinsicData["Actor"] = sh;
-
-            }, false, false, 'Instanziert ein neues CheckBox-Objekt.', true));
-
-        this.addMethod(new Method("CheckBox", new Parameterlist([
+        this.addMethod(new Method("Button", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-            { identifier: "width", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "fontsize", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-            { identifier: "text", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "text", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), null,
-            (parameters) => {
-
-                let o: RuntimeObject = parameters[0].value;
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
-                let width: number = parameters[3].value;
-                let fontsize: number = parameters[4].value;
-                let text: string = parameters[5].value;
-
-                let sh = new CheckBoxHelper(x, y, width, fontsize, text, module.main.getInterpreter(), o);
-                o.intrinsicData["Actor"] = sh;
-
-            }, false, false, 'Instanziert ein neues CheckBox-Objekt. (x, y) sind die Koordinaten der linken oberen Ecke, fontsize die Höhe des Textes in Pixeln.', true));
-
-        this.addMethod(new Method("CheckBox", new Parameterlist([
+        (parameters) => {
+            
+            let o: RuntimeObject = parameters[0].value;
+            let x: number = parameters[1].value;
+            let y: number = parameters[2].value;
+            let fontsize: number = parameters[3].value;
+            let text: string = parameters[4].value;
+            
+            let sh = new ButtonHelper(x, y, fontsize, text, module.main.getInterpreter(), o);
+            o.intrinsicData["Actor"] = sh;
+            
+        }, false, false, 'Instanziert ein neues Button-Objekt. (x, y) sind die Koordinaten der linken oberen Ecke, fontsize die Höhe des Textes in Pixeln.', true));
+        
+        this.addMethod(new Method("Button", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-            { identifier: "width", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "fontsize", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "text", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "font-family", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), null,
-            (parameters) => {
+        (parameters) => {
+            
+            let o: RuntimeObject = parameters[0].value;
+            let x: number = parameters[1].value;
+            let y: number = parameters[2].value;
+            let fontsize: number = parameters[3].value;
+            let text: string = parameters[4].value;
+            let fontFamily: string = parameters[5].value;
+            
+            let sh = new ButtonHelper(x, y, fontsize, text, module.main.getInterpreter(), o, fontFamily);
+            o.intrinsicData["Actor"] = sh;
+            
+            }, false, false, 'Instanziert ein neues Button-Objekt. (x, y) sind die Koordinaten der linken oberen Ecke, fontsize die Höhe des Textes in Pixeln.', true));
 
-                let o: RuntimeObject = parameters[0].value;
-                let x: number = parameters[1].value;
-                let y: number = parameters[2].value;
-                let width: number = parameters[3].value;
-                let fontsize: number = parameters[4].value;
-                let text: string = parameters[5].value;
-                let fontFamily: string = parameters[6].value;
-
-                let sh = new CheckBoxHelper(x, y, width, fontsize, text, module.main.getInterpreter(), o, fontFamily);
-                o.intrinsicData["Actor"] = sh;
-
-            }, false, false, 'Instanziert ein neues Textobjekt. (x, y) sind die Koordinaten der linken oberen Ecke, fontsize die Höhe des Textes in Pixeln.', true));
-
-        this.addMethod(new Method("setFontsize", new Parameterlist([
-            { identifier: "fontsize", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-        ]), null,
+            this.addMethod(new Method("setFontsize", new Parameterlist([
+                { identifier: "fontsize", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            ]), null,
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
                 let fontsize: number = parameters[1].value;
-                let sh: CheckBoxHelper = o.intrinsicData["Actor"];
+                let sh: ButtonHelper = o.intrinsicData["Actor"];
 
                 sh.setFontsize(fontsize);
 
@@ -92,7 +78,7 @@ export class CheckBoxClass extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
                 let text: string = parameters[1].value;
-                let sh: CheckBoxHelper = o.intrinsicData["Actor"];
+                let sh: ButtonHelper = o.intrinsicData["Actor"];
 
                 sh.setText(text);
 
@@ -103,46 +89,46 @@ export class CheckBoxClass extends Klass {
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
-                let sh: CheckBoxHelper = o.intrinsicData["Actor"];
+                let sh: ButtonHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("copy")) return;
 
                 return sh.getCopy(<Klass>o.class);
 
-            }, false, false, 'Erstellt eine Kopie des CheckBox-Objekts und git sie zurück.', false));
+            }, false, false, 'Erstellt eine Kopie des Button-Objekts und git sie zurück.', false));
 
         this.addMethod(new Method("getWidth", new Parameterlist([
         ]), doublePrimitiveType,
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
-                let sh: CheckBoxHelper = o.intrinsicData["Actor"];
+                let sh: ButtonHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getWidth")) return;
 
                 return sh.getWidth();
 
-            }, false, false, 'Gibt die Breite des Textes zurück.', false));
+            }, false, false, 'Gibt die Breite des Buttons zurück.', false));
 
         this.addMethod(new Method("getHeight", new Parameterlist([
         ]), doublePrimitiveType,
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
-                let sh: CheckBoxHelper = o.intrinsicData["Actor"];
+                let sh: ButtonHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getHeight")) return;
 
                 return sh.getHeight();
 
-            }, false, false, 'Gibt die Höhe des Textes zurück.', false));
+            }, false, false, 'Gibt die Höhe des Buttons zurück.', false));
 
         this.addMethod(new Method("getFontSize", new Parameterlist([
         ]), doublePrimitiveType,
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
-                let sh: CheckBoxHelper = o.intrinsicData["Actor"];
+                let sh: ButtonHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getFontSize")) return;
 
@@ -155,7 +141,7 @@ export class CheckBoxClass extends Klass {
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
-                let sh: CheckBoxHelper = o.intrinsicData["Actor"];
+                let sh: ButtonHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("getText")) return;
 
@@ -172,7 +158,7 @@ export class CheckBoxClass extends Klass {
                 let o: RuntimeObject = parameters[0].value;
                 let isBold: boolean = parameters[1].value;
                 let isItalic: boolean = parameters[2].value;
-                let sh: CheckBoxHelper = o.intrinsicData["Actor"];
+                let sh: ButtonHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("setStyle")) return;
 
@@ -190,7 +176,7 @@ export class CheckBoxClass extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
                 let color: number = parameters[1].value;
-                let sh: CheckBoxHelper = o.intrinsicData["Actor"];
+                let sh: ButtonHelper = o.intrinsicData["Actor"];
 
                 if (sh.testdestroyed("setTextColor")) return;
 
@@ -198,52 +184,17 @@ export class CheckBoxClass extends Klass {
 
             }, false, false, 'Setzt die Textfarbe. Die Farbe wird als int-Wert gegeben, wobei farbe == 256*256*rot + 256*grün + blau', false));
 
-        this.addMethod(new Method("setCrossColor", new Parameterlist([
-            { identifier: "color", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
-        ]), voidPrimitiveType,
-            (parameters) => {
-
-                let o: RuntimeObject = parameters[0].value;
-                let color: number = parameters[1].value;
-                let sh: CheckBoxHelper = o.intrinsicData["Actor"];
-
-                if (sh.testdestroyed("setCrossColor")) return;
-
-                sh.setCrossColor(color);
-
-            }, false, false, 'Setzt die Farbe des Kreuzchens. Die Farbe wird als int-Wert gegeben, wobei farbe == 256*256*rot + 256*grün + blau', false));
-
-        this.addMethod(new Method("isChecked", new Parameterlist([
-        ]), booleanPrimitiveType,
-            (parameters) => {
-
-                let o: RuntimeObject = parameters[0].value;
-                let sh: CheckBoxHelper = o.intrinsicData["Actor"];
-
-                if (sh.testdestroyed("isChecked")) return;
-
-                return sh.isChecked;
-
-            }, false, false, 'Gibt genau dann true zurück, falls die Checkbox angekreuzt ist.', false));
-
     }
-
-
 
 }
 
-export class CheckBoxHelper extends FilledShapeHelper implements InternalMouseListener {
+export class ButtonHelper extends FilledShapeHelper implements InternalMouseListener {
 
     pixiText: PIXI.Text;
     backgroundGraphics: PIXI.Graphics;
-    cross: PIXI.Graphics;
+    higlightGraphics: PIXI.Graphics;
 
-    textColor: number = 0x808080;
-    distanceToText: number = 4;
-
-    crossColor: number = 0x000000;
-
-    isChecked: boolean = true;
+    textColor: number = 0xffffff;
 
     textHeight: number = 10;
     textWidth: number = 10;
@@ -252,9 +203,8 @@ export class CheckBoxHelper extends FilledShapeHelper implements InternalMouseLi
 
     isMouseOver: boolean = false;
 
-    width: number = 0;
     height: number = 0;
-
+    width: number = 0;
 
     textStyle: PIXI.TextStyle =
         new PIXI.TextStyle({
@@ -267,12 +217,12 @@ export class CheckBoxHelper extends FilledShapeHelper implements InternalMouseLi
             strokeThickness: 0,
             dropShadow: false,
             wordWrap: false,
-            align: "left",
+            align: "center",
             lineJoin: 'round'
         });
 
-    constructor(public x: number, public y: number, public checkboxWidth: number, public fontsize: number,
-        public text: string,
+    constructor(public x: number, public y: number, public fontsize: number,
+        public text: string, 
         interpreter: Interpreter, runtimeObject: RuntimeObject, public fontFamily?: string) {
         super(interpreter, runtimeObject);
         this.centerXInitial = x;
@@ -280,9 +230,10 @@ export class CheckBoxHelper extends FilledShapeHelper implements InternalMouseLi
 
         if (this.fontsize == 0) this.fontsize = 10;
 
+
         this.borderColor = 0x808080;
-        this.borderWidth = checkboxWidth/10;
-        this.fillColor = 0xffffff;
+        this.borderWidth = fontsize/8;
+        this.fillColor = 0x0000ff;
 
         this.textStyle.stroke = 0x000000;
         this.textStyle.fontSize = fontsize;
@@ -301,10 +252,6 @@ export class CheckBoxHelper extends FilledShapeHelper implements InternalMouseLi
 
     }
 
-    setCrossColor(color: number){
-        this.crossColor = color;
-        this.render();
-    }
 
     registerAsListener() {
         if (this.worldHelper.internalMouseListeners.indexOf(this) >= 0) return;
@@ -329,8 +276,10 @@ export class CheckBoxHelper extends FilledShapeHelper implements InternalMouseLi
     getCopy(klass: Klass): RuntimeObject {
 
         let ro: RuntimeObject = new RuntimeObject(klass);
-        let rh: CheckBoxHelper = new CheckBoxHelper(this.x, this.y, this.checkboxWidth, this.fontsize, this.text, this.worldHelper.interpreter, ro);
+        let rh: ButtonHelper = new ButtonHelper(this.x, this.y, this.fontsize, this.text, this.worldHelper.interpreter, ro);
         ro.intrinsicData["Actor"] = rh;
+        rh.textColor = this.textColor;
+        rh.text = this.text;
 
         rh.copyFrom(this);
         rh.render();
@@ -346,13 +295,13 @@ export class CheckBoxHelper extends FilledShapeHelper implements InternalMouseLi
         this.textStyle.strokeThickness = 0;
         this.textStyle.fontSize = this.fontsize;
 
+        let padding = this.fontsize/5;
+
         if (this.displayObject == null) {
             this.backgroundGraphics = new PIXI.Graphics();
-            this.cross = new PIXI.Graphics();
+            this.higlightGraphics = new PIXI.Graphics();
 
             this.pixiText = new PIXI.Text(this.text, this.textStyle);
-            this.pixiText.x = this.checkboxWidth + this.distanceToText;
-            this.pixiText.y = 0;
 
             this.displayObject = new PIXI.Container();
             this.displayObject.localTransform.translate(this.x, this.y);
@@ -361,60 +310,47 @@ export class CheckBoxHelper extends FilledShapeHelper implements InternalMouseLi
             this.worldHelper.stage.addChild(this.displayObject);
             let container = <PIXI.Container>this.displayObject;
 
+            container.addChild(this.higlightGraphics);
             container.addChild(this.backgroundGraphics);
             container.addChild(this.pixiText);
-            container.addChild(this.cross);
 
         } else {
             this.pixiText.text = this.text;
             this.backgroundGraphics.clear();
-            this.cross.clear();
+            this.higlightGraphics.clear();
 
             this.pixiText.alpha = this.fillAlpha;
             this.pixiText.anchor.x = 0;
-            //@ts-ignore
-            this.textStyle.align = this.alignment;
             this.pixiText.style = this.textStyle;
         }
 
         this.centerXInitial = 0;
         this.centerYInitial = 0;
 
-        let textTop = 0;
 
         if (this.text != null) {
             let tm = PIXI.TextMetrics.measureText(this.text, this.textStyle);
 
             this.textWidth = tm.width;
             this.textHeight = tm.height;
-            let ascent = tm.fontProperties.ascent
-
-            textTop = (this.checkboxWidth - this.textHeight)/2;
-            this.distanceToText = tm.fontProperties.descent * 3;
 
             this.pixiText.localTransform.identity();
-            this.pixiText.localTransform.translate(this.checkboxWidth + this.distanceToText, textTop);
+            this.pixiText.localTransform.translate(padding, padding);
             // @ts-ignore
             this.pixiText.transform.onChange();
 
-            this.centerXInitial = (this.checkboxWidth + this.textWidth + this.distanceToText) / 2;
-            this.centerYInitial = this.checkboxWidth / 2;
+            this.centerXInitial = this.textWidth/2 + padding;
+            this.centerYInitial = this.textHeight/2 + padding;
         }
 
         let left = 0;
         let top = 0;
-        let textBottom = top + this.checkboxWidth - textTop;
-        let overallWidth = this.textWidth + this.checkboxWidth + this.distanceToText;
-        this.width = overallWidth;
-        this.height = Math.max(this.checkboxWidth, this.textHeight);
+        this.width = this.textWidth + 2*padding;
+        this.height = this.textHeight + 2*padding;
 
         this.hitPolygonInitial = [
-            { x: left, y: top }, { x: left + this.checkboxWidth, y: top }, { x: left + this.checkboxWidth + this.distanceToText, y: textTop }, 
-            { x: left + overallWidth, y: textTop }, 
-            { x: left + overallWidth, y: textBottom }, 
-            { x: left + this.checkboxWidth + this.distanceToText, y: textBottom }, 
-            { x: left + this.checkboxWidth, y: top + this.checkboxWidth },
-            { x: left, y: top + this.checkboxWidth }
+            { x: left, y: top }, { x: left + this.width, y: top}, { x: left + this.width, y: top + this.height }, 
+            { x: left , y: top+this.height }
         ];
         this.hitPolygonDirty = true;
 
@@ -425,39 +361,22 @@ export class CheckBoxHelper extends FilledShapeHelper implements InternalMouseLi
             this.backgroundGraphics.lineStyle(this.borderWidth, this.borderColor, this.borderAlpha, 1.0)
         }
 
-        this.backgroundGraphics.drawRoundedRect(0, 0, this.checkboxWidth, this.checkboxWidth, this.checkboxWidth/8);
-
-        // this.makeRectangle(this.backgroundGraphics, 0, 0, this.checkboxWidth, this.checkboxWidth);
-        // this.backgroundGraphics.closePath();
+        this.backgroundGraphics.drawRoundedRect(0, 0, this.width, this.height, this.height/8);
 
         if (this.fillColor != null) {
             this.backgroundGraphics.endFill();
         }
+        
+        let highlightWidth = this.height/10 + this.borderWidth;
+        this.higlightGraphics.beginFill(lightenDarkenIntColor(this.fillColor, 0.4), 1.0);
+        this.higlightGraphics.drawRoundedRect(-highlightWidth, -highlightWidth, this.width + 2*highlightWidth, this.height + 2*highlightWidth, this.height/4);
+        if (this.fillColor != null) {
+            this.higlightGraphics.endFill();
+        }
 
-        let df = 3.0;
-        let bwdf = this.borderWidth * df;
-
-        // this.cross.lineStyle(this.borderWidth * 2, this.crossColor, this.fillAlpha, 0.5);
-        this.cross.lineStyle({
-            width: this.borderWidth * 2,
-            color: this.crossColor,
-            alpha: this.fillAlpha,
-            alignment: 0.5,
-            cap: PIXI.LINE_CAP.ROUND
-        });
-        this.cross.moveTo(bwdf, bwdf);
-        this.cross.lineTo(this.checkboxWidth - bwdf, this.checkboxWidth - bwdf);
-        this.cross.moveTo(this.checkboxWidth - bwdf, bwdf);
-        this.cross.lineTo(bwdf, this.checkboxWidth - bwdf);
-
-        this.cross.visible = this.isChecked;
+        this.higlightGraphics.visible = this.mouseIsDown;
     }
 
-    getLocalCoordinates(x: number, y: number) {
-        let p = new PIXI.Point(x * this.worldHelper.globalScale, y * this.worldHelper.globalScale);
-        this.displayObject.worldTransform.applyInverse(p, p);
-        return p;
-    }
 
     moveTo(newX: number, newY: number) {
         let p = new PIXI.Point(0, 0);
@@ -493,12 +412,12 @@ export class CheckBoxHelper extends FilledShapeHelper implements InternalMouseLi
             case "mousedown":
                 if (containsPointer) {
                     this.mouseIsDown = true;
+                    this.higlightGraphics.visible = true;
                 }
                 break;
             case "mouseup": {
                 if (containsPointer && this.mouseIsDown) {
-                    this.isChecked = !this.isChecked;
-                    this.render();
+                    this.higlightGraphics.visible = false;
                 }
                 this.mouseIsDown = false;
             }

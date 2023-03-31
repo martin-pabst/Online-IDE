@@ -315,4 +315,22 @@ export function copyTextToClipboard(text) {
     });
 }
 
+export function lightenDarkenHexColor(col: string, amount: number) {
+    var num = parseInt(col, 16);
+    var r = (num >> 16) + amount;
+    var g = ((num >> 8) & 0x00FF) + amount;
+    var b = (num & 0x0000FF) + amount;
+    var newColor = b | (g << 8) | (r << 16);
+    return newColor.toString(16);
+  }
 
+  export function lightenDarkenIntColor(color: number, amount: number) {
+    var r = (color >> 16);
+    var g = ((color >> 8) & 0x00FF);
+    var b = (color & 0x0000FF);
+    r = (Math.round((0xff - r) * amount) + r) & 0xff;
+    g = (Math.round((0xff - g) * amount) + g) & 0xff;
+    b = (Math.round((0xff - b) * amount) + b) & 0xff;
+    var newColor = b | (g << 8) | (r << 16);
+    return newColor;
+  }

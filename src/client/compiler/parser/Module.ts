@@ -94,7 +94,7 @@ import { PositionClass } from "../../runtimelibrary/graphics/Position.js";
 import { HamsterClass, JavaHamsterWorldClass } from "../../runtimelibrary/graphics/JavaHamster.js";
 import { TextFieldClass } from "../../runtimelibrary/graphics/Textfield.js";
 import { CheckBoxClass } from "../../runtimelibrary/graphics/Checkbox.js";
-import { RadioButtonClass } from "../../runtimelibrary/graphics/Radiubutton.js";
+import { RadioButtonClass } from "../../runtimelibrary/graphics/Radiobutton.js";
 
 export type ExportedWorkspace = {
     name: string;

@@ -288,7 +288,7 @@ export class RadioButtonClass extends Klass {
             }, false, false, 'Verbindet diesen Radiobutton logisch mit den anderen Radiobuttons. Wird anschließend auf einen davon geklickt, so wird dieser selektiert, die anderen deselektiert.', false));
 
         this.addMethod(new Method("isSelected", new Parameterlist([
-        ]), booleanPrimitiveType,
+        ]), voidPrimitiveType,
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
@@ -299,6 +299,19 @@ export class RadioButtonClass extends Klass {
                 return sh.isSelected;
 
             }, false, false, 'Gibt genau dann true zurück, falls die RadioButton selektiert ist.', false));
+
+        this.addMethod(new Method("select", new Parameterlist([
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: RadioButtonHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("select")) return;
+
+                return sh.setSelected();
+
+            }, false, false, 'Selektiert diesen Radiobutton und deselektiert alle via connectTo mit ihm verbundenen Radiobuttons.', false));
 
     }
 

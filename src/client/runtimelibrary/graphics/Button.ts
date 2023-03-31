@@ -1,14 +1,13 @@
+import * as PIXI from 'pixi.js';
 import { Module } from "../../compiler/parser/Module.js";
 import { Klass } from "../../compiler/types/Class.js";
 import { booleanPrimitiveType, doublePrimitiveType, intPrimitiveType, stringPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
-import { Method, Parameterlist, Value } from "../../compiler/types/Types.js";
-import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
-import { FilledShapeHelper } from "./FilledShape.js";
-import { InternalKeyboardListener, InternalMouseListener, MouseEvent as JOMouseEvent } from "./World.js";
+import { Method, Parameterlist } from "../../compiler/types/Types.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
-import * as PIXI from 'pixi.js';
-import { copyTextToClipboard, lightenDarkenIntColor } from "../../tools/HtmlTools.js";
-import { ArrayType } from "../../compiler/types/Array.js";
+import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
+import { lightenDarkenIntColor } from "../../tools/HtmlTools.js";
+import { FilledShapeHelper } from "./FilledShape.js";
+import { InternalMouseListener, MouseEvent as JOMouseEvent } from "./World.js";
 
 export class ButtonClass extends Klass {
 
@@ -17,6 +16,18 @@ export class ButtonClass extends Klass {
         super("Button", module, "Button, der innerhalb der Grafikausgabe dargestellt werden kann");
 
         this.setBaseClass(<Klass>module.typeStore.getType("FilledShape"));
+
+        this.postConstructorCallbacks = [
+            (r: RuntimeObject) => {
+
+                let method: Method = (<Klass>r.class).getMethodBySignature("onClicked()");
+
+                    if (method?.program != null ) {
+                        r.intrinsicData["onClicked"] = method;
+                    }
+                }
+        ];
+
 
         this.addMethod(new Method("Button", new Parameterlist([
             { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -183,6 +194,14 @@ export class ButtonClass extends Klass {
                 sh.setTextColor(color);
 
             }, false, false, 'Setzt die Textfarbe. Die Farbe wird als int-Wert gegeben, wobei farbe == 256*256*rot + 256*grün + blau', false));
+
+            this.addMethod(new Method("onClicked", new Parameterlist([
+            ]), voidPrimitiveType,
+                () => {
+                    
+                },
+                false, false, "Wird aufgerufen, wenn der Benutzer auf den Button geklickt hat. Überschreibe diese Methode in einer Unterklasse, damit dein Button auf Clicks reagiert.", false));
+    
 
     }
 
@@ -418,6 +437,9 @@ export class ButtonHelper extends FilledShapeHelper implements InternalMouseList
             case "mouseup": {
                 if (containsPointer && this.mouseIsDown) {
                     this.higlightGraphics.visible = false;
+                    let m: Method = this.runtimeObject.intrinsicData["onClicked"];
+                    if(m != null){
+                        this.worldHelper.module.main.getInterpreter().runTimer(m, [], () => { }, true);                                    }
                 }
                 this.mouseIsDown = false;
             }

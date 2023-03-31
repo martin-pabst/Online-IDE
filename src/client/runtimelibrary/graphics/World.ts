@@ -503,7 +503,7 @@ export class WorldHelper {
         this.keyDownActors = [];
     }
 
-    constructor(public width: number, public height: number, private module: Module, public world: RuntimeObject) {
+    constructor(public width: number, public height: number, public module: Module, public world: RuntimeObject) {
 
         this.globalScale = 1;
 

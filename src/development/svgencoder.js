@@ -3,7 +3,7 @@ import * as fs from 'fs';
 var quotes = getQuotes();
 var externalQuotesValue = 'single';
 var symbols = /[\r\n%#()<>?\[\\\]^`{|}]/g;
-let path = './material/projectexplorer';
+let path = './include/icons';
 let filenameToURLMap = {};
 let filenames = [];
 fs.readdir(path, function (err, items) {

@@ -5,7 +5,7 @@ var quotes = getQuotes();
 var externalQuotesValue = 'single';
 var symbols = /[\r\n%#()<>?\[\\\]^`{|}]/g;
 
-let path = './material/projectexplorer';
+let path = './include/icons';
 
 let filenameToURLMap: { [filename: string]: string } = {};
 let filenames: string[] = [];

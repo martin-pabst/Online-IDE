@@ -98,6 +98,13 @@ import { RadioButtonClass } from "../../runtimelibrary/graphics/Radiobutton.js";
 import { ButtonClass } from "../../runtimelibrary/graphics/Button.js";
 import { FileTypeManager } from "../../main/gui/FileTypeManager.js";
 import { FilesClass } from "../../runtimelibrary/Files.js";
+import { HttpHeaderType } from "../../runtimelibrary/network/HttpHeader.js";
+import { HttpRequestClass } from "../../runtimelibrary/network/HttpRequest.js";
+import { HttpResponseClass } from "../../runtimelibrary/network/HttpResponse.js";
+import { HttpClientClass } from "../../runtimelibrary/network/HttpClient.js";
+import { URLEncoderClass } from "../../runtimelibrary/network/URLEncoder.js";
+import { JsonElementClass } from "../../runtimelibrary/network/JsonElement.js";
+import { JsonParserClass } from "../../runtimelibrary/network/JsonParser.js";
 
 export type ExportedWorkspace = {
     name: string;
@@ -879,6 +886,15 @@ export class BaseModule extends Module {
         this.typeStore.addType(new TriangleClass(this));
         this.typeStore.addType(new TurtleClass(this));
 
+        this.typeStore.addType(new JsonElementClass(this));
+        this.typeStore.addType(new JsonParserClass(this));
+
+        this.typeStore.addType(new HttpHeaderType(this));
+        this.typeStore.addType(new HttpRequestClass(this));
+        this.typeStore.addType(new HttpResponseClass(this));
+        this.typeStore.addType(new HttpClientClass(this));
+        this.typeStore.addType(new URLEncoderClass(this));
+       
         this.typeStore.addType(new TextFieldClass(this));
         this.typeStore.addType(new CheckBoxClass(this));
         this.typeStore.addType(new RadioButtonClass(this));

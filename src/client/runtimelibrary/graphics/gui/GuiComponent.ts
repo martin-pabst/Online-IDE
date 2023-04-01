@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { Module } from "../../../compiler/parser/Module.js";
 import { Klass } from "../../../compiler/types/Class.js";
-import { doublePrimitiveType, stringPrimitiveType, voidPrimitiveType } from "../../../compiler/types/PrimitiveTypes.js";
+import { doublePrimitiveType, objectType, stringPrimitiveType, voidPrimitiveType } from "../../../compiler/types/PrimitiveTypes.js";
 import { Method, Parameterlist } from "../../../compiler/types/Types.js";
 import { Interpreter } from "../../../interpreter/Interpreter.js";
 import { RuntimeObject } from "../../../interpreter/RuntimeObject.js";
@@ -29,7 +29,7 @@ export class GuiComponentClass extends Klass {
         this.postConstructorCallbacks = [
             (r: RuntimeObject) => {
 
-                let method: Method = (<Klass>r.class).getMethodBySignature("onChange(Object, String)");
+                let method: Method = (<Klass>r.class).getMethodBySignature("onChange(String)");
 
                 if (method?.program != null) {
                     r.intrinsicData["onChange"] = method;
@@ -79,7 +79,7 @@ export class GuiComponentClass extends Klass {
 
             }, false, false, 'Fügt einen ChangeListener hinzu, dessen onChange-Methode immer dann aufgerufen wird, wenn sich der Wert der GUI-Komponente aufgrund von Benutzeraktionen ändert.', false));
 
-        this.addMethod(new Method("onChanged", new Parameterlist([
+        this.addMethod(new Method("onChange", new Parameterlist([
             { identifier: "newValue", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), voidPrimitiveType,
             () => {
@@ -88,6 +88,7 @@ export class GuiComponentClass extends Klass {
             false, false, "Wird aufgerufen, wenn sich der Wert der GUI-Komponente aufgrund von Benutzeraktionen ändert.", false));
 
     }
+    
 }
 
 export abstract class GuiComponentHelper extends FilledShapeHelper implements InternalMouseListener, InternalKeyboardListener {
@@ -178,9 +179,15 @@ export abstract class GuiComponentHelper extends FilledShapeHelper implements In
         let worker = () => {
 
             let info = infoList.pop();
-            this.worldHelper.module.main.getInterpreter().runTimer(info.method, [{ value: info.rto, type: this.runtimeObject.class }, {value: this.runtimeObject, type: this.runtimeObject.class}, { value: newValue, type: stringPrimitiveType }], () => {
-                if(infoList.length > 0) worker();
-            }, true);
+            if(info.method.parameterlist.parameters.length == 2){
+                this.worldHelper.module.main.getInterpreter().runTimer(info.method, [{ value: info.rto, type: this.runtimeObject.class }, {value: this.runtimeObject, type: this.runtimeObject.class}, { value: newValue, type: stringPrimitiveType }], () => {
+                    if(infoList.length > 0) worker();
+                }, true);
+            } else {
+                this.worldHelper.module.main.getInterpreter().runTimer(info.method, [{ value: info.rto, type: this.runtimeObject.class }, { value: newValue, type: stringPrimitiveType }], () => {
+                    if(infoList.length > 0) worker();
+                }, true);
+            }
         }
 
         if(infoList.length > 0) worker();

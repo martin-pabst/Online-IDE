@@ -105,14 +105,6 @@ export class GuiTextComponentClass extends Klass {
 
             }, false, false, 'Setzt die Textfarbe. Die Farbe wird als int-Wert gegeben, wobei farbe == 256*256*rot + 256*grün + blau', false));
 
-        this.addMethod(new Method("onClicked", new Parameterlist([
-        ]), voidPrimitiveType,
-            () => {
-
-            },
-            false, false, "Wird aufgerufen, wenn der Benutzer auf den GuiTextComponent geklickt hat. Überschreibe diese Methode in einer Unterklasse, damit dein GuiTextComponent auf Clicks reagiert.", false));
-
-
     }
 
 }

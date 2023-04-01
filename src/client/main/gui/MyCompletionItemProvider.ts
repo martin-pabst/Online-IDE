@@ -629,7 +629,7 @@ export class MyCompletionItemProvider implements monaco.languages.CompletionItem
         while (c != null) {
             methods = methods.concat(c.methods.filter((m) => {
                 if (m.isAbstract || (m.program == null && m.invoke == null) || m.identifier.startsWith('onMouse') || m.identifier.startsWith('onKey')
-                || m.identifier.startsWith('onClicked')) {
+                || m.identifier.startsWith('onChange')) {
                     return true;
                 }
                 return false;

@@ -937,8 +937,10 @@ export class WorldHelper {
 
         let hasRobot = this.robotWorldHelper != null;
 
+        this.mouseListeners = [];
         this.mouseListenerShapes = [];
         this.internalMouseListeners = [];
+        this.internalKeyboardListeners = [];
 
         let scaleMin = 1.0;
         if (this.currentWidth * this.currentHeight > 2500000) scaleMin = Math.sqrt(2500000 / (this.currentWidth * this.currentHeight));

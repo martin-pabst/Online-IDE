@@ -1,13 +1,14 @@
-import { Module } from "../../compiler/parser/Module.js";
-import { Klass } from "../../compiler/types/Class.js";
-import { booleanPrimitiveType, doublePrimitiveType, intPrimitiveType, stringPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
-import { Method, Parameterlist } from "../../compiler/types/Types.js";
-import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
-import { FilledShapeHelper } from "./FilledShape.js";
-import { InternalKeyboardListener, InternalMouseListener, MouseEvent as JOMouseEvent } from "./World.js";
-import { Interpreter } from "../../interpreter/Interpreter.js";
+import { Module } from "../../../compiler/parser/Module.js";
+import { Klass } from "../../../compiler/types/Class.js";
+import { booleanPrimitiveType, doublePrimitiveType, intPrimitiveType, stringPrimitiveType, voidPrimitiveType } from "../../../compiler/types/PrimitiveTypes.js";
+import { Method, Parameterlist } from "../../../compiler/types/Types.js";
+import { RuntimeObject } from "../../../interpreter/RuntimeObject.js";
+import { FilledShapeHelper } from "../FilledShape.js";
+import { InternalKeyboardListener, InternalMouseListener, MouseEvent as JOMouseEvent } from "../World.js";
+import { Interpreter } from "../../../interpreter/Interpreter.js";
 import * as PIXI from 'pixi.js';
-import { copyTextToClipboard } from "../../tools/HtmlTools.js";
+import { copyTextToClipboard } from "../../../tools/HtmlTools.js";
+import { GuiTextComponentHelper } from "./GuiTextComponent.js";
 
 export class TextFieldClass extends Klass {
 
@@ -15,7 +16,7 @@ export class TextFieldClass extends Klass {
 
         super("TextField", module, "Text, der innerhalb der Grafikausgabe dargestellt werden kann");
 
-        this.setBaseClass(<Klass>module.typeStore.getType("FilledShape"));
+        this.setBaseClass(<Klass>module.typeStore.getType("GuiTextComponent"));
 
         this.addMethod(new Method("TextField", new Parameterlist([
         ]), null,
@@ -33,7 +34,7 @@ export class TextFieldClass extends Klass {
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "width", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "fontsize", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-            { identifier: "text", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "caption", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
         ]), null,
             (parameters) => {
 
@@ -54,7 +55,7 @@ export class TextFieldClass extends Klass {
             { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "width", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "fontsize", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-            { identifier: "text", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "caption", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "font-family", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
         ]), null,
             (parameters) => {
@@ -72,32 +73,6 @@ export class TextFieldClass extends Klass {
 
             }, false, false, 'Instanziert ein neues Textobjekt. (x, y) sind die Koordinaten der linken oberen Ecke, fontsize die Höhe des Textes in Pixeln.', true));
 
-        this.addMethod(new Method("setFontsize", new Parameterlist([
-            { identifier: "fontsize", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-        ]), null,
-            (parameters) => {
-
-                let o: RuntimeObject = parameters[0].value;
-                let fontsize: number = parameters[1].value;
-                let sh: TextFieldHelper = o.intrinsicData["Actor"];
-
-                sh.setFontsize(fontsize);
-
-            }, false, false, 'Setzt die Schriftgröße des Textes (Einheit: Pixel).', false));
-
-        this.addMethod(new Method("setText", new Parameterlist([
-            { identifier: "text", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-        ]), null,
-            (parameters) => {
-
-                let o: RuntimeObject = parameters[0].value;
-                let text: string = parameters[1].value;
-                let sh: TextFieldHelper = o.intrinsicData["Actor"];
-
-                sh.setText(text);
-
-            }, false, false, 'Setzt den Text.', false));
-
         this.addMethod(new Method("copy", new Parameterlist([
         ]), this,
             (parameters) => {
@@ -111,93 +86,6 @@ export class TextFieldClass extends Klass {
 
             }, false, false, 'Erstellt eine Kopie des TextField-Objekts und git sie zurück.', false));
 
-        this.addMethod(new Method("getWidth", new Parameterlist([
-        ]), doublePrimitiveType,
-            (parameters) => {
-
-                let o: RuntimeObject = parameters[0].value;
-                let sh: TextFieldHelper = o.intrinsicData["Actor"];
-
-                if (sh.testdestroyed("getWidth")) return;
-
-                return sh.getWidth();
-
-            }, false, false, 'Gibt die Breite des Textes zurück.', false));
-
-        this.addMethod(new Method("getHeight", new Parameterlist([
-        ]), doublePrimitiveType,
-            (parameters) => {
-
-                let o: RuntimeObject = parameters[0].value;
-                let sh: TextFieldHelper = o.intrinsicData["Actor"];
-
-                if (sh.testdestroyed("getHeight")) return;
-
-                return sh.getHeight();
-
-            }, false, false, 'Gibt die Höhe des Textes zurück.', false));
-
-        this.addMethod(new Method("getFontSize", new Parameterlist([
-        ]), doublePrimitiveType,
-            (parameters) => {
-
-                let o: RuntimeObject = parameters[0].value;
-                let sh: TextFieldHelper = o.intrinsicData["Actor"];
-
-                if (sh.testdestroyed("getFontSize")) return;
-
-                return sh.fontsize;
-
-            }, false, false, 'Gibt die Schriftgröße zurück.', false));
-
-        this.addMethod(new Method("getText", new Parameterlist([
-        ]), stringPrimitiveType,
-            (parameters) => {
-
-                let o: RuntimeObject = parameters[0].value;
-                let sh: TextFieldHelper = o.intrinsicData["Actor"];
-
-                if (sh.testdestroyed("getText")) return;
-
-                return sh.text;
-
-            }, false, false, 'Gibt den Textinhalt zurück.', false));
-
-        this.addMethod(new Method("setStyle", new Parameterlist([
-            { identifier: "isBold", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-            { identifier: "isItalic", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
-        ]), voidPrimitiveType,
-            (parameters) => {
-
-                let o: RuntimeObject = parameters[0].value;
-                let isBold: boolean = parameters[1].value;
-                let isItalic: boolean = parameters[2].value;
-                let sh: TextFieldHelper = o.intrinsicData["Actor"];
-
-                if (sh.testdestroyed("setStyle")) return;
-
-                sh.setStyle(isBold, isItalic);
-
-                return;
-
-            }, false, false, 'Gibt die Eigenschaften Fettdruck (bold) und Schrägschrift (italic) zurück.', false));
-
-
-            this.addMethod(new Method("setTextColor", new Parameterlist([
-                { identifier: "color", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
-            ]), voidPrimitiveType,
-                (parameters) => {
-    
-                    let o: RuntimeObject = parameters[0].value;
-                    let color: number = parameters[1].value;
-                    let sh: TextFieldHelper = o.intrinsicData["Actor"];
-    
-                    if (sh.testdestroyed("setTextColor")) return;
-    
-                    sh.setTextColor(color);
-    
-                }, false, false, 'Setzt die Textfarbe. Die Farbe wird als int-Wert gegeben, wobei farbe == 256*256*rot + 256*grün + blau', false));
-    
             this.addMethod(new Method("setPadding", new Parameterlist([
                 { identifier: "padding", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
             ]), voidPrimitiveType,
@@ -213,24 +101,19 @@ export class TextFieldClass extends Klass {
                     sh.render();
     
                 }, false, false, 'Setzt den Innenabstand (padding) des Textes zum umgebenden Rechteck.', false));
-    
 
     }
 
-    
-
 }
 
-export class TextFieldHelper extends FilledShapeHelper implements InternalMouseListener, InternalKeyboardListener {
+export class TextFieldHelper extends GuiTextComponentHelper {
 
-    pixiText: PIXI.Text;
     backgroundGraphics: PIXI.Graphics;
     mask: PIXI.Graphics;
     keyboardFocusRect: PIXI.Graphics;
     cursor: PIXI.Graphics;
     selectionRectangle: PIXI.Graphics;
 
-    textColor: number = 0x000000;
     padding: number = 8;
 
     hasKeyboardFocus: boolean = false;
@@ -246,63 +129,34 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
 
     timerId: any;
 
-    height: number = 0;
-
     isMouseOver: boolean = false;
 
-
-    textStyle: PIXI.TextStyle =
-        new PIXI.TextStyle({
-            fontFamily: 'Arial',
-            fontSize: 10,
-            fontStyle: 'normal',
-            fontWeight: 'normal',
-            fill: 0xffffff, // gradient possible...
-            stroke: 0x000000,
-            strokeThickness: 0,
-            dropShadow: false,
-            wordWrap: false,
-            align: "left",
-            lineJoin: 'round'
-        });
-
     constructor(public x: number, public y: number, public width: number, public fontsize: number,
-        public text: string,
+        public caption: string,
         interpreter: Interpreter, runtimeObject: RuntimeObject, public fontFamily?: string) {
-        super(interpreter, runtimeObject);
+
+        super(interpreter, runtimeObject, true, true, fontsize, "", fontFamily);
+
         this.centerXInitial = x;
         this.centerYInitial = y;
-
-        if (this.fontsize == 0) this.fontsize = 10;
 
         this.borderColor = 0x808080;
         this.borderWidth = fontsize/10;
         this.fillColor = 0xffffff;
-
-        this.textStyle.stroke = 0x000000;
-        this.textStyle.fontSize = fontsize;
-
-        if (fontFamily != null) {
-            this.textStyle.fontFamily = fontFamily;
-        }
+        this.textColor = 0x000000;
 
         this.hitPolygonInitial = [];
 
         this.generateCharacterStops();
 
         this.render();
+
         this.addToDefaultGroupAndSetDefaultVisibility();
 
-        this.registerAsListener();
-
-
+        this.initTimer();
     }
 
-    registerAsListener() {
-        if (this.worldHelper.internalMouseListeners.indexOf(this) >= 0) return;
-        this.worldHelper.internalMouseListeners.push(this);
-        this.worldHelper.internalKeyboardListeners.push(this);
-
+    initTimer() {
         let that = this;
         this.timerId = setInterval(() => {
             if (that.cursor != null && !that.cursor.destroyed && that.hasKeyboardFocus) {
@@ -313,17 +167,8 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
     }
 
     unregisterAsListener() {
-        let index = this.worldHelper.internalMouseListeners.indexOf(this);
-        this.worldHelper.internalMouseListeners.splice(index, 1);
-        let index1 = this.worldHelper.internalKeyboardListeners.indexOf(this);
-        this.worldHelper.internalKeyboardListeners.splice(index1, 1);
+        super.unregisterAsListener();
         clearInterval(this.timerId);
-    }
-
-    setStyle(isBold: boolean, isItalic: boolean) {
-        this.textStyle.fontWeight = isBold ? "bold" : "normal";
-        this.textStyle.fontStyle = isItalic ? "italic" : "normal";
-        this.render();
     }
 
     getCopy(klass: Klass): RuntimeObject {
@@ -341,10 +186,16 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
 
     render(): void {
 
-        this.textStyle.fill = this.textColor == null ? 0x000000 : this.textColor;
-        this.textStyle.stroke = 0x000000;
-        this.textStyle.strokeThickness = 0;
-        this.textStyle.fontSize = this.fontsize;
+        this.scrollIfNecessary();
+        this.textCompomentPrerender();
+
+        let t = this.text;
+        if(t.length == 0){
+            t = this.caption;
+            this.textStyle.fill = 0x404040;
+        } else {
+            t = this.text.substring(this.renderFromCharacterPosition);
+        }
 
         if (this.displayObject == null) {
             this.backgroundGraphics = new PIXI.Graphics();
@@ -354,7 +205,7 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
 
             this.mask = new PIXI.Graphics();
 
-            this.pixiText = new PIXI.Text(this.text.substring(this.renderFromCharacterPosition), this.textStyle);
+            this.pixiText = new PIXI.Text(t, this.textStyle);
 
             this.displayObject = new PIXI.Container();
             this.displayObject.localTransform.translate(this.x + this.padding, this.y + this.padding);
@@ -374,7 +225,7 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
             this.selectionRectangle.mask = this.mask;
 
         } else {
-            this.pixiText.text = this.text.substring(this.renderFromCharacterPosition);
+            this.pixiText.text = t;
             this.backgroundGraphics.clear();
             this.mask.clear();
             this.keyboardFocusRect.clear();
@@ -469,46 +320,12 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
         this.cursor.visible = this.hasKeyboardFocus;
     }
 
-    makeRectangle(g: PIXI.Graphics, left: number, top: number, width: number, height: number) {
-        g.moveTo(left, top);
-        g.lineTo(left + width, top);
-        g.lineTo(left + width, top + height);
-        g.lineTo(left, top + height);
-        g.closePath();
-    }
-
     getLocalCoordinates(x: number, y: number) {
         let p = new PIXI.Point(x * this.worldHelper.globalScale, y * this.worldHelper.globalScale);
         this.displayObject.worldTransform.applyInverse(p, p);
         return p;
     }
 
-    moveTo(newX: number, newY: number) {
-        let p = new PIXI.Point(0, 0);
-        this.displayObject.updateTransform();
-        this.displayObject.localTransform.apply(p, p);
-        this.move(newX - p.x, newY - p.y);
-    }
-
-    setFontsize(fontsize: number) {
-        this.fontsize = fontsize;
-        if (this.fontsize == 0) this.fontsize = 10;
-        this.render();
-    }
-
-    setText(text: string) {
-        this.text = text;
-        this.render();
-    }
-
-    getWidth(): number {
-        return this.width;
-    }
-
-    getHeight(): number {
-        return this.height;
-    }
-    
     onMouseEvent(kind: JOMouseEvent, x: number, y: number): void {
         let containsPointer = this.containsPoint(x, y);
 
@@ -536,7 +353,6 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
                 if (this.isSelecting) {
                     let pos = this.getLocalCoordinates(x, y);
                     this.selectionEnd = this.getCharacterPosition(pos.x);
-                    this.scrollIfNecessary();
                     this.render();
                 }
 
@@ -610,8 +426,8 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
                     that.selectionEnd += clipText.length;
                     that.selectionStart = that.selectionEnd;
                     that.generateCharacterStops();
-                    that.scrollIfNecessary();
                     that.render();
+                    this.onChange(this.text);
                 });
         } else if (key.length == 1) {
             this.deleteSelected();
@@ -619,20 +435,18 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
             this.selectionEnd++;
             this.selectionStart = this.selectionEnd;
             this.generateCharacterStops();
-            this.scrollIfNecessary();
             this.render();
+            this.onChange(this.text);
         } else {
             switch (key) {
                 case "ArrowRight":
                     this.selectionEnd = Math.min(this.selectionEnd + 1, this.text.length);
                     if (!isShift) this.selectionStart = this.selectionEnd;
-                    this.scrollIfNecessary();
                     this.render();
                     break;
                 case "ArrowLeft":
                     this.selectionEnd = Math.max(this.selectionEnd - 1, 0);
                     if (!isShift) this.selectionStart = this.selectionEnd;
-                    this.scrollIfNecessary();
                     this.render();
                     break;
                 case "Delete":
@@ -645,6 +459,7 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
                     }
                     this.generateCharacterStops();
                     this.render();
+                    this.onChange(this.text);
                     break;
                 case "Backspace":
                     if (this.selectionStart != this.selectionEnd) {
@@ -658,6 +473,7 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
                     }
                     this.generateCharacterStops();
                     this.render();
+                    this.onChange(this.text);
                     break;
                 case "Insert":
                     break;
@@ -717,20 +533,6 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
         this.cursor.visible = false;
     }
 
-    destroy(): void {
-        this.unregisterAsListener();
-        super.destroy();
-    }
-
-    setVisible(visible: boolean) {
-        super.setVisible(visible);
-        if (visible) {
-            this.registerAsListener();
-        } else {
-            this.unregisterAsListener();
-        }
-    }
-
     getCharacterPosition(x: number): number {
         if (this.characterCenterList.length == 0) return 0;
         for (let i = 0; i < this.characterCenterList.length; i++) {
@@ -738,11 +540,6 @@ export class TextFieldHelper extends FilledShapeHelper implements InternalMouseL
         }
 
         return this.characterCenterList.length;
-    }
-
-    setTextColor(color: number){
-        this.textColor = color;
-        this.render();
     }
 
 }

@@ -92,10 +92,10 @@ import jQuery from 'jquery';
 import { JavaKaraWorldClass, KaraClass } from "../../runtimelibrary/graphics/JavaKara.js";
 import { PositionClass } from "../../runtimelibrary/graphics/Position.js";
 import { HamsterClass, JavaHamsterWorldClass } from "../../runtimelibrary/graphics/JavaHamster.js";
-import { TextFieldClass } from "../../runtimelibrary/graphics/Textfield.js";
-import { CheckBoxClass } from "../../runtimelibrary/graphics/Checkbox.js";
-import { RadioButtonClass } from "../../runtimelibrary/graphics/Radiobutton.js";
-import { ButtonClass } from "../../runtimelibrary/graphics/Button.js";
+import { TextFieldClass } from "../../runtimelibrary/graphics/gui/Textfield.js";
+import { CheckBoxClass } from "../../runtimelibrary/graphics/gui/Checkbox.js";
+import { RadioButtonClass } from "../../runtimelibrary/graphics/gui/Radiobutton.js";
+import { ButtonClass } from "../../runtimelibrary/graphics/gui/Button.js";
 import { FileTypeManager } from "../../main/gui/FileTypeManager.js";
 import { FilesClass } from "../../runtimelibrary/Files.js";
 import { HttpHeaderType } from "../../runtimelibrary/network/HttpHeader.js";
@@ -105,6 +105,9 @@ import { HttpClientClass } from "../../runtimelibrary/network/HttpClient.js";
 import { URLEncoderClass } from "../../runtimelibrary/network/URLEncoder.js";
 import { JsonElementClass } from "../../runtimelibrary/network/JsonElement.js";
 import { JsonParserClass } from "../../runtimelibrary/network/JsonParser.js";
+import { ChangeListenerClass } from "../../runtimelibrary/graphics/gui/ChangeListener.js";
+import { GuiComponentClass } from "../../runtimelibrary/graphics/gui/GuiComponent.js";
+import { GuiTextComponentClass } from "../../runtimelibrary/graphics/gui/GuiTextComponent.js";
 
 export type ExportedWorkspace = {
     name: string;
@@ -895,6 +898,11 @@ export class BaseModule extends Module {
         this.typeStore.addType(new HttpClientClass(this));
         this.typeStore.addType(new URLEncoderClass(this));
        
+        
+        this.typeStore.addType(new ChangeListenerClass(this));
+        this.typeStore.addType(new GuiComponentClass(this));
+        this.typeStore.addType(new GuiTextComponentClass(this));
+        
         this.typeStore.addType(new TextFieldClass(this));
         this.typeStore.addType(new CheckBoxClass(this));
         this.typeStore.addType(new RadioButtonClass(this));

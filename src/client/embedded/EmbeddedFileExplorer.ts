@@ -3,6 +3,7 @@ import { MainEmbedded } from "./MainEmbedded.js";
 import { openContextMenu, makeEditable } from "../tools/HtmlTools.js";
 import { JOScript, ScriptType } from "./EmbeddedStarter.js";
 import jQuery from "jquery";
+import { FileTypeManager } from "../main/gui/FileTypeManager.js";
 
 type FileData = {
     type: ScriptType,
@@ -76,7 +77,8 @@ export class EmbeddedFileExplorer {
 
     addModule(module: Module): FileData {
         let that = this;
-        let $fileDiv = jQuery(`<div class="jo_file jo_java" >
+        let cssClass = "jo_" + FileTypeManager.filenameToFileType(module.file.name).iconclass;
+        let $fileDiv = jQuery(`<div class="jo_file ${cssClass}" >
         <div class="jo_fileimage"></div>
         <div class="jo_filename" style="line-height: 22px">${module.file.name}</div>
         <div class="jo_additionalButtonStart"></div>
@@ -97,7 +99,8 @@ export class EmbeddedFileExplorer {
             name: module.file.name,
             $htmlFirstLine: $fileDiv,
             isFolder: false,
-            path: []
+            path: [],
+            iconClass: FileTypeManager.filenameToFileType(module.file.name).iconclass
         }
 
         $fileDiv.find('.jo_delete').on("mousedown", (e: JQuery.MouseDownEvent) => {
@@ -179,6 +182,10 @@ export class EmbeddedFileExplorer {
         makeEditable($div, $div, (newText: string) => {
             fileData.module.file.name = newText;
             $div.html(newText);
+            fileData.$fileDiv.removeClass('jo_java jo_emptyFile jo_xml jo_json jo_text');
+            let fileType = FileTypeManager.filenameToFileType(newText);
+            fileData.$fileDiv.addClass("jo_" + fileType.iconclass);
+            monaco.editor.setModelLanguage(fileData.module.model, fileType.language);
             if (callback != null) callback();
         }, selection);
 

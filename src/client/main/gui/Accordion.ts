@@ -43,7 +43,7 @@ export class AccordionPanel {
 
     newElementCallback: (ae: AccordionElement, callbackIfSuccessful: (externalElement: any) => void) => void;
     newFolderCallback: (ae: AccordionElement, callbackIfSuccessful: (externalElement: any) => void) => void;
-    renameCallback: (externalElement: any, newName: string) => string;
+    renameCallback: (externalElement: any, newName: string, ae: AccordionElement) => string;
     deleteCallback: (externalElement: any, callbackIfSuccessful: () => void) => void;
     selectCallback: (externalElement: any) => void;
     addElementActionCallback: (accordionElement: AccordionElement) => JQuery<HTMLElement>;
@@ -780,7 +780,7 @@ export class AccordionPanel {
         let selection = pointPos == null ? null : { start: 0, end: pointPos };
         this.dontSortElements = true;
         makeEditable($div, $div, (newText: string) => {
-            if (element.externalElement != null) newText = that.renameCallback(element.externalElement, newText);
+            if (element.externalElement != null) newText = that.renameCallback(element.externalElement, newText, element);
             element.name = newText;
             $div.html(element.name);
             if (callback != null) callback();

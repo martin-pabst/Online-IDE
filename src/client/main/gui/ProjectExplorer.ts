@@ -14,6 +14,7 @@ import { dateToString } from "../../tools/StringTools.js";
 import { DistributeToStudentsDialog } from "./DistributeToStudentsDialog.js";
 import { WorkspaceSettingsDialog } from "./WorkspaceSettingsDialog.js";
 import { SpritesheetData } from "../../spritemanager/SpritesheetData.js";
+import { FileTypeManager } from './FileTypeManager.js';
 
 
 export class ProjectExplorer {
@@ -48,7 +49,7 @@ export class ProjectExplorer {
         let that = this;
 
         this.fileListPanel = new AccordionPanel(this.accordion, "Kein Workspace gewählt", "3",
-            "img_add-file-dark", "Neue Datei...", "java", true, false, "file", true, []);
+            "img_add-file-dark", "Neue Datei...", "emptyFile", true, false, "file", true, []);
 
         this.fileListPanel.newElementCallback =
 
@@ -69,8 +70,10 @@ export class ProjectExplorer {
                     student_edited_after_revision: false,
                     version: 1,
                     panelElement: accordionElement,
-                    identical_to_repository_version: false
+                    identical_to_repository_version: false, 
+                    file_type: 0
                 };
+                that.fileListPanel.setElementClass(accordionElement, FileTypeManager.filenameToFileType(accordionElement.name).iconclass)
                 let m = new Module(f, that.main);
                 let modulStore = that.main.currentWorkspace.moduleStore;
                 modulStore.putModule(m);
@@ -89,12 +92,16 @@ export class ProjectExplorer {
             };
 
         this.fileListPanel.renameCallback =
-            (module: Module, newName: string) => {
+            (module: Module, newName: string, ae: AccordionElement) => {
                 newName = newName.substr(0, 80);
                 let file = module.file;
 
                 file.name = newName;
                 file.saved = false;
+                let fileType = FileTypeManager.filenameToFileType(newName);
+                that.fileListPanel.setElementClass(ae, fileType.iconclass)
+                monaco.editor.setModelLanguage(module.model, fileType.language);
+
                 that.main.networkManager.sendUpdates();
                 return newName;
             }
@@ -120,6 +127,22 @@ export class ProjectExplorer {
         this.fileListPanel.contextMenuProvider = (accordionElement: AccordionElement) => {
 
             let cmiList: AccordionContextMenuItem[] = [];
+            let that = this;
+
+            // cmiList.push({
+            //     caption: "Dateityp",
+            //     callback: (element: AccordionElement) => { },
+            //     subMenu: FileTypeManager.filetypes.map((ft) => { return {
+            //         caption: ft.name,
+            //         callback: (element: AccordionElement) => {
+            //             that.fileListPanel.setElementClass(element, ft.iconclass);
+            //             let m: Module = element.externalElement;
+            //             m.file.file_type = ft.file_type;
+            //             m.file.saved = false;
+            //             that.main.networkManager.sendUpdates()
+            //         }
+            //     } })
+            // })
 
             cmiList.push({
                 caption: "Duplizieren",
@@ -137,7 +160,8 @@ export class ProjectExplorer {
                         student_edited_after_revision: false,
                         version: module.file.version,
                         panelElement: null,
-                        identical_to_repository_version: false
+                        identical_to_repository_version: false,
+                        file_type: module.file.file_type
                     };
 
                     let m = new Module(f, that.main);
@@ -151,7 +175,8 @@ export class ProjectExplorer {
                                     isFolder: false,
                                     name: f.name,
                                     path: [],
-                                    externalElement: m
+                                    externalElement: m,
+                                    iconClass: FileTypeManager.filenameToFileType(f.name).iconclass
                                 }
                                 f.panelElement = element;
                                 that.fileListPanel.addElement(element, true);
@@ -384,7 +409,8 @@ export class ProjectExplorer {
                 student_edited_after_revision: false,
                 version: module.file.version,
                 panelElement: null,
-                identical_to_repository_version: false
+                identical_to_repository_version: false,
+                file_type: module.file.file_type
             };
 
             if (dropEffekt == "move") {
@@ -609,7 +635,8 @@ export class ProjectExplorer {
                     name: m.file.name,
                     externalElement: m,
                     isFolder: false,
-                    path: []
+                    path: [],
+                    iconClass: FileTypeManager.filenameToFileType(m.file.name).iconclass
                 };
 
                 this.fileListPanel.addElement(m.file.panelElement, true);
@@ -885,5 +912,6 @@ export class ProjectExplorer {
     getNewModule(file: File): Module {
         return new Module(file, this.main);
     }
+
 
 }

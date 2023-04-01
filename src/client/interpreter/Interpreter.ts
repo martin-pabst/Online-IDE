@@ -26,6 +26,7 @@ import { ProcessingHelper } from "../runtimelibrary/graphics/Processing.js";
 import { GNGEreignisbehandlungHelper } from "../runtimelibrary/gng/GNGEreignisbehandlung.js";
 import { GamepadTool } from "../tools/GamepadTool.js";
 import { ConnectionHelper } from "../runtimelibrary/database/Connection.js";
+import { FileTypeManager } from '../main/gui/FileTypeManager.js';
 
 export enum InterpreterState {
     not_initialized, running, paused, error, done, waitingForDB, waitingForInput, waitingForTimersToEnd
@@ -242,7 +243,7 @@ export class Interpreter {
         // first attempt: is currently edited Module startable?
         if (cem != null) {
             let currentlyEditedModule = moduleStore.findModuleByFile(cem.file);
-            if (currentlyEditedModule != null) {
+            if (currentlyEditedModule != null ) {
                 currentlyEditedModuleIsClassOnly = !cem.hasErrors()
                     && !currentlyEditedModule.isStartable;
                 if (currentlyEditedModule.isStartable) {
@@ -261,7 +262,7 @@ export class Interpreter {
 
         // third attempt: pick first startable module of current workspace
         if (currentlyEditedModuleIsClassOnly) {
-            for (let m of moduleStore.getModules(false)) {
+            for (let m of moduleStore.getJavaModules(false)) {
                 if (m.isStartable) {
                     return m;
                 }
@@ -330,7 +331,7 @@ export class Interpreter {
 
         })
 
-        for (let m of this.moduleStore.getModules(false)) {
+        for (let m of this.moduleStore.getJavaModules(false)) {
             this.initializeEnums(m);
             this.initializeClasses(m);
         }

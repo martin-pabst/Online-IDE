@@ -19,7 +19,7 @@ fs.readdir(path, function (err, items) {
             iconCss += getCss(filename, url);
         }
     }
-    fs.writeFile('./css/icons.css', iconCss, () => {
+    fs.writeFile('./include/css/icons.css', iconCss, () => {
         console.log('Done!');
     });
     //replaceUrls(filenameToURLMap);

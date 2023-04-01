@@ -16,6 +16,7 @@ import { Workspace } from "../../workspace/Workspace.js";
 import { MySemanticTokenProvider } from "./MySemanticTokenProvider.js";
 import { MyColorProvider } from "./MyColorProvider.js";
 import jQuery from 'jquery';
+import { FileTypeManager } from "./FileTypeManager.js";
 
 export type HistoryEntry = {
     module_id: number,
@@ -35,6 +36,11 @@ export class Editor implements monaco.languages.RenameProvider {
     dontPushNextCursorMove: number = 0;
 
     constructor(public main: MainBase, private showMinimap: boolean, private isEmbedded: boolean) {
+    }
+
+    currentlyEditedModuleIsJava(): boolean {
+        let name = this.getCurrentlyEditedModule().file.name;
+        return FileTypeManager.filenameToFileType(name).file_type == 0;
     }
 
     initGUI($element: JQuery<HTMLElement>) {
@@ -416,7 +422,7 @@ export class Editor implements monaco.languages.RenameProvider {
                     }
                 }
             }
-        } else if(text == '"') {
+        } else if(text == '"' && this.currentlyEditedModuleIsJava()) {
             //a: x| -> x"|"
             //d: "|x -> ""|x
             //c: "|" -> """\n|\n"""
@@ -652,6 +658,7 @@ export class Editor implements monaco.languages.RenameProvider {
     }
 
     onMarginMouseDown(lineNumber: number) {
+        if(!this.currentlyEditedModuleIsJava()) return;
         let module = this.getCurrentlyEditedModule();
         if (module == null) {
             return;

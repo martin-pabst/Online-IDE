@@ -47,7 +47,7 @@ export type FileData = {
     is_copy_of_id?: number,
     repository_file_version?: number,
     identical_to_repository_version: boolean,
-    file_type: number // 0 == Java, 11 == SQL
+    file_type: number // 0 == Java, 1 == Textfile
 }
 
 export type WorkspaceData = {

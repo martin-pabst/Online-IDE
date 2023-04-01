@@ -8,6 +8,7 @@ import { MainBase } from "../main/MainBase.js";
 import { MainEmbedded } from "../embedded/MainEmbedded.js";
 import { Klass, Interface } from "./types/Class.js";
 import { SemicolonAngel } from "./parser/SemicolonAngel.js";
+import { FileTypeManager } from "../main/gui/FileTypeManager.js";
 
 export enum CompilerStatus {
     compiling, error, compiledButNothingToRun, readyToRun
@@ -32,8 +33,11 @@ export class Compiler {
 
         let lexer = new Lexer();
 
+        let modules: Module[] = moduleStore.getModules(false).filter((m => FileTypeManager.filenameToFileType(m.file.name).file_type == 0));
+        moduleStore.getModules(false).filter((m => FileTypeManager.filenameToFileType(m.file.name).file_type != 0)).forEach((m) => {m.isStartable = false; m.errors = []; m.file.dirty = false});
+
         // 1st pass: lexing
-        for (let m of moduleStore.getModules(false)) {
+        for (let m of modules) {
             m.file.dirty = false;
             m.clear();
 
@@ -55,7 +59,7 @@ export class Compiler {
 
         let parser: Parser = new Parser(false);
 
-        for (let m of moduleStore.getModules(false)) {
+        for (let m of modules) {
             parser.parse(m);
         }
 
@@ -72,12 +76,12 @@ export class Compiler {
 
         let codeGenerator = new CodeGenerator();
 
-        for (let m of moduleStore.getModules(false)) {
+        for (let m of modules) {
             codeGenerator.start(m, moduleStore);
         }
 
         let errorfree = true;
-        for (let m of moduleStore.getModules(false)) {
+        for (let m of modules) {
             m.dependsOnModulesWithErrors = m.hasErrors();
             if(m.dependsOnModulesWithErrors) errorfree = false;
         }
@@ -85,9 +89,9 @@ export class Compiler {
         let done = false;
         while(!done){
             done = true;
-            for (let m of moduleStore.getModules(false)) {
+            for (let m of modules) {
                 if(!m.dependsOnModulesWithErrors)
-                for (let m1 of moduleStore.getModules(false)) {
+                for (let m1 of modules) {
                     if(m.dependsOnModules.get(m1) && m1.dependsOnModulesWithErrors){
                         m.dependsOnModulesWithErrors = true;
                         done = false;
@@ -98,7 +102,7 @@ export class Compiler {
         }
         
         this.atLeastOneModuleIsStartable = false;        
-        for (let m of moduleStore.getModules(false)) {
+        for (let m of modules) {
             m.isStartable = m.hasMainProgram() && !m.dependsOnModulesWithErrors;
             if(m.isStartable){
                 this.atLeastOneModuleIsStartable = true;

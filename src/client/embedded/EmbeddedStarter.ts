@@ -22,7 +22,7 @@ import { PixiSpritesheetData } from "../spritemanager/PixiSpritesheetData.js";
 declare var APP_VERSION: string;
 
 
-export type ScriptType = "java" | "hint";
+export type ScriptType = "java" | "hint" | "txt" | "json" | "xml";
 
 export type JOScript = {
     type: ScriptType;

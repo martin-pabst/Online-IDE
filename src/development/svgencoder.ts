@@ -27,7 +27,7 @@ fs.readdir(path, function (err, items) {
         }
     }
 
-    fs.writeFile('./css/icons.css', iconCss, () => {
+    fs.writeFile('./include/css/icons.css', iconCss, () => {
         console.log('Done!');
     });
 

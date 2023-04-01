@@ -354,7 +354,8 @@ export class SynchroWorkspace {
                     version: 1,
                     is_copy_of_id: synchroFile.idInsideRepository,
                     repository_file_version: synchroFile.repository_file_version,
-                    identical_to_repository_version: synchroFile.identical_to_repository_version
+                    identical_to_repository_version: synchroFile.identical_to_repository_version,
+                    file_type: 0
                 };
                 let m = new Module(f, main);
                 workspace.moduleStore.putModule(m);

@@ -886,7 +886,8 @@ export class MainEmbedded implements MainBase {
                     version: 1,
                     is_copy_of_id: null,
                     repository_file_version: null,
-                    identical_to_repository_version: null
+                    identical_to_repository_version: null,
+                    file_type: 0
                 };
 
                 let m = new Module(f, this);

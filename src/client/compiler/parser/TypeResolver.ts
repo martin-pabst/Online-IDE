@@ -485,7 +485,7 @@ export class TypeResolver {
     checkDoubleIdentifierDefinition() {
         let identifierModuleMap: Map<string, Module> = new Map();
 
-        let modules = this.moduleStore.getModules(true);
+        let modules = this.moduleStore.getJavaModules(true);
 
         for (let module of modules) {
             for (let type of module.typeStore.typeList) {
@@ -545,11 +545,11 @@ export class TypeResolver {
     }
 
     resolveUnresolvedTypes(lastPass: boolean) {
-        // for (let module of this.moduleStore.getModules(false)) {
+        // for (let module of this.moduleStore.getJavaModules(false)) {
         //     module.dependsOnModules = new Map();
         // }
 
-        for (let module of this.moduleStore.getModules(false)) {
+        for (let module of this.moduleStore.getJavaModules(false)) {
             let ut = this.unresolvedTypes.get(module);
             let utNew: TypeNode[] = [];
             for (let type of ut) {
@@ -833,7 +833,7 @@ export class TypeResolver {
     }
 
     setupClassesAndInterfaces() {
-        for (let m of this.moduleStore.getModules(false)) {
+        for (let m of this.moduleStore.getJavaModules(false)) {
             if (m.classDefinitionsAST != null) {
                 for (let cdn of m.classDefinitionsAST) {
                     switch (cdn.type) {
@@ -998,7 +998,7 @@ export class TypeResolver {
     }
 
     resolveTypesInModules() {
-        for (let m of this.moduleStore.getModules(false)) {
+        for (let m of this.moduleStore.getJavaModules(false)) {
             let ut: TypeNode[] = [];
             this.unresolvedTypes.set(m, ut);
             for (let tn of m.typeNodes) {

@@ -96,6 +96,8 @@ import { TextFieldClass } from "../../runtimelibrary/graphics/Textfield.js";
 import { CheckBoxClass } from "../../runtimelibrary/graphics/Checkbox.js";
 import { RadioButtonClass } from "../../runtimelibrary/graphics/Radiobutton.js";
 import { ButtonClass } from "../../runtimelibrary/graphics/Button.js";
+import { FileTypeManager } from "../../main/gui/FileTypeManager.js";
+import { FilesClass } from "../../runtimelibrary/Files.js";
 
 export type ExportedWorkspace = {
     name: string;
@@ -125,6 +127,8 @@ export type File = {
     is_copy_of_id?: number,
     repository_file_version?: number,
     identical_to_repository_version: boolean,
+
+    file_type: number,  // 0 == Java, 1 == Textfile
 
     dirty: boolean,
     saved: boolean,
@@ -213,7 +217,7 @@ export class Module {
 
         if (uriCounter > 0) path += " (" + uriCounter + ")";
         this.uri = monaco.Uri.from({ path: path, scheme: 'inmemory' });
-        this.model = monaco.editor.createModel(file.text, "myJava", this.uri);
+        this.model = monaco.editor.createModel(file.text, FileTypeManager.filenameToFileType(file.name).language, this.uri);
         this.model.updateOptions({ tabSize: 3, bracketColorizationOptions: {enabled: true} });
         let formatter = new Formatter();
 
@@ -253,6 +257,10 @@ export class Module {
             }
         });
 
+    }
+
+    setupMonacoModel(){
+        
     }
 
     toExportedModule(): ExportedModule {
@@ -302,7 +310,8 @@ export class Module {
             id: f.id,
             is_copy_of_id: f.is_copy_of_id,
             repository_file_version: f.repository_file_version,
-            identical_to_repository_version: f.identical_to_repository_version
+            identical_to_repository_version: f.identical_to_repository_version,
+            file_type: f.file_type
         }
 
         let m: Module = new Module(f1, main);
@@ -326,7 +335,7 @@ export class Module {
             identical_to_repository_version: file.identical_to_repository_version,
             workspace_id: workspace.id,
             forceUpdate: false,
-            file_type: 0
+            file_type: file.file_type
         }
 
         return fd;
@@ -784,7 +793,7 @@ export class Module {
 export class BaseModule extends Module {
     constructor(main: MainBase) {
 
-        super({ name: "Base Module", text: "", text_before_revision: null, submitted_date: null, student_edited_after_revision: false, dirty: false, saved: true, version: 1 , identical_to_repository_version: true}, main);
+        super({ name: "Base Module", text: "", text_before_revision: null, submitted_date: null, student_edited_after_revision: false, dirty: false, saved: true, version: 1 , identical_to_repository_version: true, file_type: 0}, main);
 
         this.isSystemModule = true;
         this.mainProgram = null;
@@ -835,6 +844,7 @@ export class BaseModule extends Module {
 
         this.typeStore.addType(new ConsoleClass(this));
         this.typeStore.addType(new MathClass(this));
+        this.typeStore.addType(new FilesClass(this));
         this.typeStore.addType(new RandomClass(this));
         this.typeStore.addType(new Vector2Class(this));
         this.typeStore.addType(new MathToolsClass(this));
@@ -934,7 +944,7 @@ export class BaseModule extends Module {
 export class GNGModule extends Module {
     constructor(main: MainBase, moduleStore: ModuleStore) {
 
-        super({ name: "Graphics and Games - Module", text: "", text_before_revision: null, submitted_date: null, student_edited_after_revision: false, dirty: false, saved: true, version: 1 , identical_to_repository_version: true}, main);
+        super({ name: "Graphics and Games - Module", text: "", text_before_revision: null, submitted_date: null, student_edited_after_revision: false, dirty: false, saved: true, version: 1 , identical_to_repository_version: true, file_type: 0}, main);
 
         this.isSystemModule = true;
         this.mainProgram = null;
@@ -1082,6 +1092,9 @@ export class ModuleStore {
         return dirty;
     }
 
+    getJavaModules(includeSystemModules: boolean = false){
+        return this.getModules(includeSystemModules).filter( m => FileTypeManager.filenameToFileType(m.file.name).file_type == 0);
+    }
 
     getModules(includeSystemModules: boolean, excludedModuleName?: String): Module[] {
         let ret = [];

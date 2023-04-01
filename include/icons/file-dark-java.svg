@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="16"
+   height="16"
+   viewBox="0 0 16 16"
+   fill="none"
+   version="1.1"
+   id="svg4"
+   sodipodi:docname="file-dark-java.svg"
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs8" />
+  <sodipodi:namedview
+     id="namedview6"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="true"
+     inkscape:zoom="32.09375"
+     inkscape:cx="-2.6484907"
+     inkscape:cy="10.453749"
+     inkscape:window-width="1743"
+     inkscape:window-height="1271"
+     inkscape:window-x="823"
+     inkscape:window-y="472"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg4">
+    <inkscape:grid
+       type="xygrid"
+       id="grid291" />
+  </sodipodi:namedview>
+  <path
+     fill-rule="evenodd"
+     clip-rule="evenodd"
+     d="M4 1L3 2V14L4 15H13L14 14V5L13.7071 4.29289L10.7071 1.29289L10 1H4ZM4 14V2L9 2V6H13V14H4ZM13 5L10 2V5L13 5Z"
+     fill="#C5C5C5"
+     id="path2" />
+  <g
+     id="g2133"
+     style="fill:#7485e2;fill-opacity:1">
+    <rect
+       style="fill:#7485e2;fill-opacity:1;stroke:none;stroke-width:2.13545;stroke-linecap:round;stroke-linejoin:round;stop-color:#000000"
+       id="rect345"
+       width="4"
+       height="1"
+       x="6"
+       y="7" />
+    <rect
+       style="fill:#7485e2;fill-opacity:1;stroke:none;stroke-width:2.13544;stroke-linecap:round;stroke-linejoin:round;stop-color:#000000"
+       id="rect1214"
+       width="3"
+       height="1"
+       x="8"
+       y="-10"
+       transform="rotate(90)" />
+    <path
+       style="color:#000000;fill:#7485e2;fill-opacity:1;-inkscape-stroke:none"
+       d="m 5.9614433,11 c 1e-7,0.779603 0.3546631,1.514174 0.9824219,1.931641 0.6277589,0.417466 1.4464599,0.417466 2.0742188,0 C 9.6458428,12.514174 10.000506,11.779603 10.000506,11 H 9.0005059 c -1e-7,0.470825 -0.2247115,0.891861 -0.5371094,1.099609 -0.312398,0.207748 -0.6524458,0.207748 -0.9648438,0 C 7.1861548,11.891861 6.9614434,11.470825 6.9614433,11 Z"
+       id="path1268" />
+  </g>
+</svg>

@@ -685,7 +685,7 @@ export class CodeGenerator {
      * checks if child classes have method with same signature
      */
     checkIfMethodIsVirtual(method: Method, klass: Klass | StaticClass) {
-        for (let mo of this.moduleStore.getModules(false)) {
+        for (let mo of this.moduleStore.getJavaModules(false)) {
             for (let c of mo.typeStore.typeList) {
                 if (c instanceof Klass && c != klass && c.hasAncestorOrIs(klass)) {
                     for (let m of c.methods) {

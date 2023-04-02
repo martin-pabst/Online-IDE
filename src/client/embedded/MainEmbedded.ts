@@ -196,7 +196,7 @@ export class MainEmbedded implements MainBase {
             if (this.config.withErrorList == null) this.config.withErrorList = true;
         }
 
-        if (this.config.speed == null) this.config.speed = 9;
+        if (this.config.speed == null) this.config.speed = "max";
         if (this.config.libraries == null) this.config.libraries = [];
         if(this.config.jsonFilename == null) this.config.jsonFilename = "workspace.json";
 

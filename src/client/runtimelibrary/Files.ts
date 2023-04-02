@@ -27,7 +27,8 @@ export class FilesClass extends Klass {
                     interpreter.throwException("Die Datei mit dem angegebenen Namen '" + filename + "' gibt es nicht.");
                     return;
                 }
-                return m.file.text;
+                
+                return m.getProgramTextFromMonacoModel();
             }, false, true, "Gibt den Inhalt der Workspacedatei zurück."));
 
         this.addMethod(new Method("write", new Parameterlist([

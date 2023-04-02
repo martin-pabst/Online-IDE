@@ -83,6 +83,6 @@ export class ProgramControlButtons {
     setInterpreter(i: Interpreter){
         this.interpreter = i;
         this.speedControl.setInterpreter(i);
-        this.speedControl.setSpeed(20);
+        this.speedControl.setSpeed(this.interpreter.maxStepsPerSecond);
     }
 }

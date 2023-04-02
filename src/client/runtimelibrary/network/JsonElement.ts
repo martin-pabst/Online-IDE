@@ -15,6 +15,11 @@ export class JsonElementClass extends Klass {
 
         this.setBaseClass(<Klass>module.typeStore.getType("Object"));
 
+        let integerClassType = <Klass>module.typeStore.getType("Integer");
+        let booleanClassType = <Klass>module.typeStore.getType("Boolean");
+        let doubleClassType = <Klass>module.typeStore.getType("Double");
+
+
         this.addMethod(new Method("getType", new Parameterlist([
         ]), stringPrimitiveType,
             (parameters) => {
@@ -89,7 +94,7 @@ export class JsonElementClass extends Klass {
             false));
 
         this.addMethod(new Method("getAsInt", new Parameterlist([
-        ]), intPrimitiveType,
+        ]), integerClassType,
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
@@ -118,7 +123,7 @@ export class JsonElementClass extends Klass {
             false));
 
         this.addMethod(new Method("getAsDouble", new Parameterlist([
-        ]), doublePrimitiveType,
+        ]), doubleClassType,
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
@@ -135,7 +140,7 @@ export class JsonElementClass extends Klass {
             false));
 
         this.addMethod(new Method("getAsBoolean", new Parameterlist([
-        ]), booleanPrimitiveType,
+        ]), booleanClassType,
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
@@ -179,7 +184,7 @@ export class JsonElementClass extends Klass {
 
         this.addMethod(new Method("getAsInt", new Parameterlist([
             { identifier: "attributeIdentifier", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
-        ]), intPrimitiveType,
+        ]), integerClassType,
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
@@ -204,7 +209,7 @@ export class JsonElementClass extends Klass {
 
         this.addMethod(new Method("getAsDouble", new Parameterlist([
             { identifier: "attributeIdentifier", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
-        ]), doublePrimitiveType,
+        ]), doubleClassType,
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;
@@ -229,7 +234,7 @@ export class JsonElementClass extends Klass {
 
         this.addMethod(new Method("getAsBoolean", new Parameterlist([
             { identifier: "attributeIdentifier", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
-        ]), booleanPrimitiveType,
+        ]), booleanClassType,
             (parameters) => {
 
                 let o: RuntimeObject = parameters[0].value;

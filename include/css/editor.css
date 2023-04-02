@@ -209,6 +209,38 @@ body .monaco-editor-hover .monaco-tokenized-source {
     display: none;
 }
 
+#jo_login_new {
+    position: absolute;
+    top: 3%;
+    left: 3%;
+    width: 30%;
+    z-index: 100;
+    color: rgb(151, 151, 151);
+}
+
+#jo_login_new>ul {
+    font-size: 80%;
+    padding-inline-start: 0;
+    margin-block-start: 0.2em;
+}
+
+#jo_login_new>div {
+    font-size: 120%;
+}
+
+#jo_login_new>ul a:link {
+    color: rgb(63, 126, 160);
+}
+
+#jo_login_new>ul a:hover {
+    filter:brightness(150%);
+}
+
+#jo_login_new>ul a:visited {
+    color: rgb(63, 126, 160);
+    filter:brightness(50%);
+}
+
 #login>.jo_login_div, #bitteWarten>.jo_login_div {
     width: 100%;
     display: flex;

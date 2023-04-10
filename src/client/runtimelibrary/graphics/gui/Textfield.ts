@@ -132,10 +132,10 @@ export class TextFieldHelper extends GuiTextComponentHelper {
     isMouseOver: boolean = false;
 
     constructor(public x: number, public y: number, public width: number, public fontsize: number,
-        public caption: string,
+        caption: string,
         interpreter: Interpreter, runtimeObject: RuntimeObject, public fontFamily?: string) {
 
-        super(interpreter, runtimeObject, true, true, fontsize, "", fontFamily);
+        super(interpreter, runtimeObject, true, true, fontsize, caption, fontFamily);
 
         this.centerXInitial = x;
         this.centerYInitial = y;
@@ -191,7 +191,7 @@ export class TextFieldHelper extends GuiTextComponentHelper {
 
         let t = this.text;
         if(t.length == 0){
-            t = this.caption;
+            t = this.text;
             this.textStyle.fill = 0x404040;
         } else {
             t = this.text.substring(this.renderFromCharacterPosition);

@@ -768,6 +768,8 @@ export class TypeResolver {
     }
 
     resolveExtendsImplements() {
+        let objectType = <Klass>this.moduleStore.getType("Object").type;
+
         for (let cn of this.classes) {
 
             let c = cn.resolvedType;
@@ -800,9 +802,19 @@ export class TypeResolver {
                     });
                     continue;
                 }
+                if(eType.hasAncestorOrIs(c)){
+                    c.module.errors[2].push({
+                        position: cn.extends.position,
+                        text: "Der Typ " + cn.identifier + " erbt von " + eType.identifier + ", ist aber selbst in dessen Oberklassenhierarchie enthalten.",
+                        level: "error"
+                    })
+                    c.setBaseClass(objectType);
+                    cn.extends.resolvedType = objectType;
+                } else {
+                    c.setBaseClass(<Klass>eType);
+                    cn.extends.resolvedType = eType;
+                }
 
-                c.setBaseClass(<Klass>eType);
-                cn.extends.resolvedType = eType;
             } else {
                 c.setBaseClass(<Klass>this.moduleStore.getType("Object").type)
             }

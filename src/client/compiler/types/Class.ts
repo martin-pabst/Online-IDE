@@ -357,6 +357,7 @@ export class Klass extends Type {
     }
 
     setBaseClass(baseClass: Klass) {
+
         this.baseClass = baseClass;
         this.staticClass.baseClass = baseClass.staticClass;
     }

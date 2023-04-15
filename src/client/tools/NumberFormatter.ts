@@ -501,30 +501,33 @@ export class NumberFormatter {
     };
 
     
-    Number.prototype.toFixed = function(precision) {
-        return jQuery._roundNumber(this, precision);
-    };
+//     Number.prototype.toFixed = function(precision) {
+//         return jQuery._roundNumber(this, precision);
+//     };
     
-    jQuery._roundNumber = function(number, decimalPlaces) {
-        var power = Math.pow(10, decimalPlaces || 0);
-        var value = String(Math.round(number * power) / power);
+//     jQuery._roundNumber = function(number, decimalPlaces) {
+//         var power = Math.pow(10, decimalPlaces || 0);
+//         var value = String(Math.round(number * power) / power);
         
-        // ensure the decimal places are there
-        if (decimalPlaces > 0) {
-            var dp = value.indexOf(".");
-            if (dp == -1) {
-                value += '.';
-                dp = 0;
-            } else {
-                dp = value.length - (dp + 1);
-            }
+//         // ensure the decimal places are there
+//         if (decimalPlaces > 0) {
+//             var dp = value.indexOf(".");
+//             if (dp == -1) {
+//                 value += '.';
+//                 dp = 0;
+//             } else {
+//                 dp = value.length - (dp + 1);
+//             }
             
-            while (dp < decimalPlaces) {
-                value += '0';
-                dp++;
-            }
-        }
-        return value;
-    };
+//             while (dp < decimalPlaces) {
+//                 value += '0';
+//                 dp++;
+//             }
+//         }
+//         return value;
+//     };
 
- })(jQuery);
+//  })(jQuery);
+
+}
+

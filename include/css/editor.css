@@ -67,6 +67,11 @@
     --debugger-classidentifier: #2a709e;
 }   
 
+/* Sorgt für eine bessere Schriftart unter Linux: */
+.monaco-editor {
+    font-family: var(--monaco-monospace-font)
+}
+
 .monaco-editor .monaco-hover code {
     color: #d4d4d4;
     box-shadow: none;

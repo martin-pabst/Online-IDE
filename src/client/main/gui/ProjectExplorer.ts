@@ -293,7 +293,7 @@ export class ProjectExplorer {
 
         let that = this;
 
-        this.workspaceListPanel = new AccordionPanel(this.accordion, "WORKSPACES", "3",
+        this.workspaceListPanel = new AccordionPanel(this.accordion, "WORKSPACES", "4",
             "img_add-workspace-dark", "Neuer Workspace...", "workspace", true, true, "workspace", false, ["file"]);
 
         this.workspaceListPanel.newElementCallback =

@@ -6,7 +6,7 @@
    fill="none"
    version="1.1"
    id="svg4"
-   sodipodi:docname="add-test-dark.svg"
+   sodipodi:docname="test-dark.svg"
    inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -24,9 +24,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#505050"
      showgrid="true"
-     inkscape:zoom="29.5"
-     inkscape:cx="5.2881356"
-     inkscape:cy="6.5423729"
+     inkscape:zoom="41.7193"
+     inkscape:cx="7.4066439"
+     inkscape:cy="7.7661897"
      inkscape:window-width="1920"
      inkscape:window-height="1137"
      inkscape:window-x="1272"
@@ -42,14 +42,14 @@
   <path
      fill-rule="evenodd"
      clip-rule="evenodd"
-     d="M 6,5 H 4 V 3 H 3 V 5 H 1 V 6 H 3 V 8 H 4 V 6 H 6 Z M 11,3.5 10.470983,3 H 10.2 5 v 1 h 5 v 9 H 4 V 9 H 3 v 4.5 L 3.5,14 H 9 10.5 L 11,13.5 c 0.04548,-4.1824948 -0.115775,-5.8321075 0,-10 z"
+     d="M 11,3.5 10.470983,3 H 10.2 3.4756096 L 3,3.5 V 4 h 7 v 9 H 4 V 4 H 3 v 9.5 L 3.5,14 H 9 10.5 L 11,13.5 c 0.04548,-4.1824948 -0.115775,-5.8321075 0,-10 z"
      fill="#c5c5c5"
      id="path2"
-     sodipodi:nodetypes="ccccccccccccccccccccccccccccc" />
+     sodipodi:nodetypes="ccccccccccccccccc" />
   <path
      id="path266"
      style="fill:#ff0e0e;fill-opacity:1;stroke-width:0.877059"
-     d="m 5.5,6.5 v 5 h 1 v -2 h 2 v -1 -2 h -1 -1 z m 1,1 h 1 v 1 h -1 z" />
+     d="m 5.5,6 v 5 h 1 V 9 h 2 V 8 6 h -1 -1 z m 1,1 h 1 v 1 h -1 z" />
   <path
      id="rect1287"
      style="fill:#c5c5c5"

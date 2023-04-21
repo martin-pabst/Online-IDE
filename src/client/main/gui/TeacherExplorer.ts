@@ -4,6 +4,8 @@ import { ClassData, UserData, CRUDUserRequest, CRUDClassRequest, GetWorkspacesRe
 import { ajax } from "../../communication/AjaxHelper.js";
 import { Workspace } from "../../workspace/Workspace.js";
 import { Helper } from "./Helper.js";
+import { ToggleButton } from "./ToggleButton.js";
+import jQuery from "jquery";
 
 export class TeacherExplorer {
 
@@ -38,7 +40,7 @@ export class TeacherExplorer {
         let that = this;
 
         this.studentPanel = new AccordionPanel(this.main.projectExplorer.accordion,
-            "Schüler/innen", "2", null,
+            "Schüler/innen", "3", null,
             "", "student", false, false, "student", false, []);
 
         this.studentPanel.selectCallback = (ae: UserData) => {
@@ -106,9 +108,16 @@ export class TeacherExplorer {
 
     initClassPanel() {
         let that = this;
+        
+        let $buttonContainer = jQuery('<div class="joe_teacherExplorerClassButtons"></div>');
+        let toggleButtonClass = new ToggleButton("Klassen", $buttonContainer, true);
+        let toggleButtonTest = new ToggleButton("Prüfungen", $buttonContainer, false);
+        toggleButtonClass.linkTo(toggleButtonTest);
 
         this.classPanel = new AccordionPanel(this.main.projectExplorer.accordion,
-            "Klassen", "1", null, "", "class", false, false, "class", false, []);
+            $buttonContainer, "2", "img_add-test-dark", "", "class", false, false, "class", false, []);
+
+        this.classPanel.$buttonNew.hide();
 
         this.classPanel.selectCallback = (ea) => {
             that.main.networkManager.sendUpdates(() => {
@@ -121,6 +130,9 @@ export class TeacherExplorer {
             });
         }
 
+        toggleButtonTest.onChange((checked) => {
+            this.classPanel.$buttonNew.toggle(checked);
+        })
 
     }
 

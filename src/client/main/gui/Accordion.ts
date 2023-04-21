@@ -53,10 +53,14 @@ export class AccordionPanel {
 
     $newFolderAction: JQuery<HTMLElement>;
 
-    constructor(private accordion: Accordion, private caption: string, private flexWeight: string,
+    private _$caption: JQuery<HTMLElement>;
+
+    constructor(private accordion: Accordion, caption: string|JQuery<HTMLElement>, private flexWeight: string,
         private newButtonClass: string, private buttonNewTitle: string,
         private defaultIconClass: string, private withDeleteButton: boolean, private withFolders: boolean,
         private kind: "workspace" | "file" | "class" | "student", private enableDrag: boolean, private acceptDropKinds: string[]) {
+
+        this._$caption = (typeof caption == "string") ? jQuery(`<div class="jo_captiontext">${caption}</div>`) : caption;
 
         accordion.addPanel(this);
 
@@ -249,15 +253,12 @@ export class AccordionPanel {
     }
 
 
-
-
-
-
     renderOuterHtmlElements($accordionDiv: JQuery<HTMLElement>) {
         let that = this;
 
-        this.$captionElement = jQuery(`<div class="jo_leftpanelcaption jo_expanded">
-        <div class="jo_captiontext">` + this.caption + `</div><div class="jo_actions"></div></div>`);
+        this.$captionElement = jQuery(`<div class="jo_leftpanelcaption jo_expanded"><div class="jo_actions"></div></div>`);
+        this.$captionElement.prepend(this._$caption);
+        this.$captionElement.prepend(jQuery('<div class="jo_expandIcon"></div>'))
 
         if (this.newButtonClass != null) {
             this.$buttonNew = jQuery('<div class="jo_button jo_active ' + this.newButtonClass + '" title="' + this.buttonNewTitle + '">');

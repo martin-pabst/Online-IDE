@@ -482,7 +482,8 @@ export class MyCompletionItemProvider implements monaco.languages.CompletionItem
                     label: "else {}",
                     insertText: "else {\n\t$0\n}",
                     detail: "else-Zweig",
-                    filterText: 'el',
+                    filterText: 'else',
+                    sortText: 'aelse',
                     insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
                     kind: monaco.languages.CompletionItemKind.Snippet,
                     range: undefined

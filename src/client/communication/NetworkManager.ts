@@ -1,5 +1,5 @@
 import { Main } from "../main/Main.js";
-import { ajax, PerformanceCollector } from "./AjaxHelper.js";
+import { ajax, csrfToken, PerformanceCollector } from "./AjaxHelper.js";
 import { WorkspaceData, FileData, SendUpdatesRequest, SendUpdatesResponse, CreateOrDeleteFileOrWorkspaceRequest, CRUDResponse, UpdateUserSettingsRequest, UpdateUserSettingsResponse, DuplicateWorkspaceRequest, DuplicateWorkspaceResponse, ClassData, DistributeWorkspaceRequest, DistributeWorkspaceResponse, CollectPerformanceDataRequest, SetRepositorySecretRequest, SetRepositorySecretResponse, GetDatabaseRequest, getDatabaseResponse, DatabaseData, GetTemplateRequest, ObtainSqlTokenRequest, ObtainSqlTokenResponse, JAddStatementRequest, JAddStatementResponse, JRollbackStatementRequest, JRollbackStatementResponse } from "./Data.js";
 import { Workspace } from "../workspace/Workspace.js";
 import { Module } from "../compiler/parser/Module.js";
@@ -616,9 +616,13 @@ export class NetworkManager {
             token: token
         }
 
+        let headers: {[key: string]: string;} = {};
+        if(csrfToken != null) headers = {"x-token-pm": csrfToken};
+
         jQuery.ajax({
             type: 'POST',
             async: true,
+            headers: headers,
             data: JSON.stringify(request),
             contentType: 'application/json',
             url: this.sqlIdeURL + "jGetTemplate",

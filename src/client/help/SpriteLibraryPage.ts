@@ -2,6 +2,7 @@ import '/include/css/imagesprites.css';
 import '/include/css/spriteLibrary.css';
 import jQuery from 'jquery';
 import {SpriteLibrary} from '../runtimelibrary/graphics/SpriteLibrary.js';
+import { extractCsrfTokenFromGetRequest } from '../communication/AjaxHelper.js';
 
 type SpriteLibraryEntry = {
     filename: string,
@@ -19,7 +20,9 @@ declare var SpriteLibrary: SpriteLibraryEntry[];
 
 export class SpriteLibraryPage {
     start() {
-        
+
+        extractCsrfTokenFromGetRequest();
+
         let $entries = jQuery('#entries');
         let $set: JQuery<HTMLElement>;
         let $currentLine: JQuery<HTMLElement>;

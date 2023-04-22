@@ -1,6 +1,6 @@
 import { AdminMenuItem } from "./AdminMenuItem.js";
 import { UserData, CRUDUserRequest, CRUDSchoolRequest, CRUDResponse, SchoolData, GetSchoolDataRequest, GetSchoolDataResponse, ImportSchoolsResponse, GetMessagesResponse, GetMessagesRequest } from "../communication/Data.js";
-import { ajax } from "../communication/AjaxHelper.js";
+import { ajax, csrfToken } from "../communication/AjaxHelper.js";
 import { PasswordPopup } from "./PasswordPopup.js";
 
 declare var w2prompt: any;
@@ -94,12 +94,16 @@ export class ExportImportMI extends AdminMenuItem {
             loggingDiv.empty();
             loggingDiv.append(jQuery('<div style="color: green; font-weight: bold; margin-bottom: 5px;">Die Daten werden hochgeladen. Bitte warten...</div>'));
 
+            let headers: {[key: string]: string;} = {};
+            if(csrfToken != null) headers = {"x-token-pm": csrfToken};
+        
             jQuery.ajax({
                 url: 'servlet/importSchools', 
                 type: 'POST',
                 data: new FormData(<HTMLFormElement>jQuery('#jo_exportschools form')[0]), // The form with the file inputs.
                 processData: false,
                 enctype: 'multipart/form-data',
+                headers: headers,
                 contentType: false,
                 cache: false       
               }).done(function(response: ImportSchoolsResponse){

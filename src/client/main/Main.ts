@@ -43,6 +43,10 @@ export class Main implements MainBase {
 
     repositoryOn: boolean = true;
 
+    isTest(): boolean {
+        return window.location.href.indexOf('online-ide') < 0;
+    }
+
     isEmbedded(): boolean { return false; }
 
     getInterpreter(): Interpreter {

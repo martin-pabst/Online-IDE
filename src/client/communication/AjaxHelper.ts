@@ -38,7 +38,7 @@ export class PerformanceCollector {
 
 }
 
-
+export var csrfToken: string = "";
 
 export function ajax(url: string, request: any, successCallback: (response: any) => void,
 
@@ -52,15 +52,21 @@ export function ajax(url: string, request: any, successCallback: (response: any)
     showNetworkBusy(true);
     let time = performance.now();
 
+    let headers: {[key: string]: string;} = {};
+    if(csrfToken != null) headers = {"x-token-pm": csrfToken};
+
     jQuery.ajax({
         type: 'POST',
         async: true,
         data: JSON.stringify(request),
         contentType: 'application/json',
+        headers: headers,
         url: url,
         success: function (response: any) {
 
             PerformanceCollector.registerPerformanceEntry(url, time);
+
+            if(response["csrfToken"] != null) csrfToken = response["csrfToken"];
 
             showNetworkBusy(false);
             if (response.success != null && response.success == false || typeof (response) == "string" && response == '') {
@@ -105,27 +111,13 @@ export function showNetworkBusy(busy: boolean) {
 }
 
 
-
-// export function newLogin(url: string, request: any, successCallback: (response: any) => void,
-//     errorCallback?: (message: string) => void) {
-
-//     if (credentials.username == null) return;
-//     let loginRequest: LoginRequest = {username: credentials.username, password: credentials.password};
-
-//     $.ajax({
-//         type: 'POST',
-//         data: JSON.stringify(loginRequest),
-//         contentType: 'application/json',
-//         url: "login",
-//         success: function (response: any) {
-//             if (response.success != null && response.success == false || typeof (response) == "string" && response == '') {
-//             } else {
-//                 ajax(url, request, successCallback, errorCallback);
-//             }
-//             return;
-//         },
-//         error: function (jqXHR, message) {
-// //            ajax(url, request, successCallback, errorCallback);
-//         }
-//     });
-// }
+export function extractCsrfTokenFromGetRequest(){
+    let url = window.location.href;
+    let tokenIndex = url.indexOf("csrfToken=");
+    if(tokenIndex >= 0){
+        let token = url.substring(tokenIndex + "csrfToken=".length);
+        if(token != null && token.length > 0){
+            csrfToken = token;
+        }
+    }
+}

@@ -6,9 +6,13 @@ import { Enum } from "../compiler/types/Enum.js";
 import { getDeclarationAsString } from "../compiler/types/DeclarationHelper.js";
 import { defineMyJava } from "../main/gui/MyJava.js";
 import jQuery from 'jquery';
+import { extractCsrfTokenFromGetRequest } from "../communication/AjaxHelper.js";
 
 export class ApiDoc {
     start() {
+
+        extractCsrfTokenFromGetRequest();
+
         this.initEditor();
         this.initTypes();
         this.initClassDocumentation();

@@ -1,4 +1,4 @@
-import { ajax } from "../communication/AjaxHelper.js";
+import { ajax, extractCsrfTokenFromGetRequest } from "../communication/AjaxHelper.js";
 import { GetStatisticsRequest, GetStatisticsResponse, StatisticData } from "../communication/Data.js";
 
 import '/include/css/statistics.css';
@@ -11,6 +11,9 @@ class Statistics {
     timeFormat = 'YYYY-MM-DD HH:mm';
 
     start(){
+
+        extractCsrfTokenFromGetRequest();
+
         let request: GetStatisticsRequest = {now: false};
         let that = this;
 

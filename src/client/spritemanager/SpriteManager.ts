@@ -6,6 +6,7 @@ import { EditableSpritesheet } from "./EditableSpritesheet.js";
 import { SpritesheetData } from "./SpritesheetData.js";
 import { UploadSpriteResponse } from "../communication/Data.js";
 import {SpriteLibrary} from  "../runtimelibrary/graphics/SpriteLibrary.js";
+import { csrfToken } from '../communication/AjaxHelper.js';
 
 type SpriteLibraryEntry = {
     filename: string,
@@ -360,13 +361,17 @@ export class SpriteManager {
 
         let deleteSpritesheet: boolean = this.userSpritesheet.spriteDataList.length == 0;
 
+        let headers: {[key: string]: string;} = { 'x-workspaceid': "" + that.main.getCurrentWorkspace().id, "x-filetype": deleteSpritesheet ? "delete" : "zip" };
+        if(csrfToken != null) headers["x-token-pm"] = csrfToken;
+    
+
         jQuery.ajax({
             type: 'POST',
             async: true,
             contentType: 'application/octet-stream',
             data: this.userSpritesheet.spritesheet.zipFile,
             processData: false,
-            headers: { 'x-workspaceid': "" + that.main.getCurrentWorkspace().id, "x-filetype": deleteSpritesheet ? "delete" : "zip" },
+            headers: headers,
             url: "servlet/uploadSprite",
             success: function (response: UploadSpriteResponse) {
                 if(response.success){

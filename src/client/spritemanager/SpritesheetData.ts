@@ -4,6 +4,7 @@ import { Workspace } from "../workspace/Workspace.js";
 import { PixiSpritesheetData } from "./PixiSpritesheetData.js";
 import * as PIXI from 'pixi.js';
 import jQuery from 'jquery';
+import { csrfToken } from "../communication/AjaxHelper.js";
 
 
 export class SpritesheetData {
@@ -77,11 +78,16 @@ export class SpritesheetData {
     }
 
     private async loadFromServer(path: string):Promise<void>{
+
+        let headers: {[key: string]: string;} = {};
+        if(csrfToken != null) headers = {"x-token-pm": csrfToken};
+
         return new Promise((resolve, reject) => {
             jQuery.ajax({
                 type: 'GET',
                 async: true,
                 url: path,
+                headers: headers,
                 xhrFields: { responseType: 'arraybuffer' },
                 success: (arrayBuffer: ArrayBuffer) => {
 

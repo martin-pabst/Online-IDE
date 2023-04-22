@@ -1,3 +1,4 @@
+import { csrfToken } from "../../communication/AjaxHelper.js";
 import { DatabaseLongPollingListenerRequest, JMessageFromServer, JWebSocketMessageConnect, JWebSocketMessageDisconnect, JWebSocketMessageExecuteStatement, LongPollingListenerResponse, SendingStatementsMessageFromServer, WebSocketRequestConnect } from "../../communication/Data.js";
 import { NetworkManager } from "../../communication/NetworkManager.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
@@ -22,9 +23,13 @@ export class DatabaseLongPollingListener {
             listenerIdentifier: this.identifier
         }
 
+        let headers: {[key: string]: string;} = {};
+        if(csrfToken != null) headers = {"x-token-pm": csrfToken};
+
         jQuery.ajax({
             type: 'POST',
             async: true,
+            headers: headers,
             data: JSON.stringify(request),
             contentType: 'application/json',
             url: that.networkManager.sqlIdeURL + "jRegisterLongPollingListener",

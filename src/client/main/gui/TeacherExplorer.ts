@@ -108,11 +108,13 @@ export class TeacherExplorer {
 
     initClassPanel() {
         let that = this;
-        
-        let $buttonContainer = jQuery('<div class="joe_teacherExplorerClassButtons"></div>');
-        let toggleButtonClass = new ToggleButton("Klassen", $buttonContainer, true);
-        let toggleButtonTest = new ToggleButton("Prüfungen", $buttonContainer, false);
-        toggleButtonClass.linkTo(toggleButtonTest);
+
+        let $buttonContainer = "Klassen";
+
+        // let $buttonContainer = jQuery('<div class="joe_teacherExplorerClassButtons"></div>');
+        // let toggleButtonClass = new ToggleButton("Klassen", $buttonContainer, true);
+        // let toggleButtonTest = new ToggleButton("Prüfungen", $buttonContainer, false);
+        // toggleButtonClass.linkTo(toggleButtonTest);
 
         this.classPanel = new AccordionPanel(this.main.projectExplorer.accordion,
             $buttonContainer, "2", "img_add-test-dark", "", "class", false, false, "class", false, []);
@@ -130,9 +132,9 @@ export class TeacherExplorer {
             });
         }
 
-        toggleButtonTest.onChange((checked) => {
-            this.classPanel.$buttonNew.toggle(checked);
-        })
+        // toggleButtonTest.onChange((checked) => {
+        //     this.classPanel.$buttonNew.toggle(checked);
+        // })
 
     }
 

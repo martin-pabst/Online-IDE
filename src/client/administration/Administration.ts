@@ -1,6 +1,6 @@
 import { AdminMenuItem } from "./AdminMenuItem.js";
 import { SchoolsWithAdminsMI } from "./SchoolsWithAdminsMI.js";
-import { ajax } from "../communication/AjaxHelper.js";
+import { ajax, extractCsrfTokenFromGetRequest } from "../communication/AjaxHelper.js";
 import { GetUserDataResponse, UserData, ClassData } from "../communication/Data.js";
 import { TeachersWithClassesMI } from "./TeachersWithClasses.js";
 import { ClassesWithStudentsMI } from "./ClassesWithStudentsMI.js";
@@ -21,6 +21,9 @@ export class Administration {
     classes: ClassData[];
 
     start() {
+
+        extractCsrfTokenFromGetRequest();
+
         let that = this;
         //@ts-ignore
         w2utils.locale('de-de');

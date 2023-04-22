@@ -1,13 +1,13 @@
 # test-mode
 ## db model:
-  * new table test
+  * new table pruefung
     * id
     * name (e.g. "1. Stegreifaufgabe")
     * klasse_id
     * template_workspace_id
     * state: varchar(20)
       * values: preparing, running, correcting, opening
-  * new column workspace.test_id
+  * new column workspace.pruefung_id
     
 ## teacher-frontend
   * Accordion "Klassen" gets caption with buttons "Klassen" and "Prüfungen" which enable toggling between class list and test list

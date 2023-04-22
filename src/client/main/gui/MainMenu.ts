@@ -1,7 +1,7 @@
 import { Main } from "../Main.js";
 import { UserData } from "../../communication/Data.js";
 import { PasswordChanger } from "./UserMenu.js";
-import { ajax } from "../../communication/AjaxHelper.js";
+import { ajax, csrfToken } from "../../communication/AjaxHelper.js";
 import { WorkspaceImporter } from "./WorkspaceImporter.js";
 import jQuery from 'jquery';
 
@@ -162,7 +162,7 @@ export class MainMenu {
                             { identifier: "-" },
                             {
                                 identifier: "Sprite-Bilderübersicht",
-                                link: serverURL + "spriteLibrary.html"
+                                link: serverURL + "spriteLibrary.html?csrfToken=" + csrfToken
                             },
                         ]
                     }
@@ -192,12 +192,12 @@ export class MainMenu {
                             {
                                 identifier: "API-Verzeichnis",
                                 //link: "https://www.learnj.de/doku.php?id=api:documentation:start"
-                                link: serverURL + "api_documentation.html"
+                                link: serverURL + "api_documentation.html?csrfToken=" + csrfToken
                             },
                             { identifier: "-" },
                             {
                                 identifier: "Tastaturkommandos (Shortcuts)",
-                                link: serverURL + "shortcuts.html"
+                                link: serverURL + "shortcuts.html?csrfToken=" + csrfToken
                             },
                             { identifier: "-" },
                             {
@@ -259,7 +259,7 @@ export class MainMenu {
             mainMenu.items[0].subMenu.items.push(
                         {
                             identifier: "Schulen/Klassen/Benutzer ...",
-                            link: serverURL + "administration_mc.html"
+                            link: serverURL + "administration_mc.html?csrfToken=" + csrfToken
                         }
             )
         }
@@ -268,7 +268,7 @@ export class MainMenu {
             mainMenu.items[0].subMenu.items.push(
                         {
                             identifier: "Serverauslastung ...",
-                            link: serverURL + "statistics.html"
+                            link: serverURL + "statistics.html?csrfToken=" + csrfToken
                         },{
                             identifier:"Shutdown server...",
                             action: () => {

@@ -45,14 +45,14 @@ export class DatabaseLongPollingListener {
                 if (!that.isClosed) {
                     setTimeout(() => {
                         that.longPoll();
-                    }, 1000);
+                    }, 100);
                 }
             },
             error: function (jqXHR, message) {
                 if (!that.isClosed) {
                     setTimeout(() => {
                         that.longPoll();
-                    }, 3000);
+                    }, 1000);
                 }
             }
         });

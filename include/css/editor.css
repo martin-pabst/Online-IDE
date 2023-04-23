@@ -1372,3 +1372,26 @@ body .monaco-editor-hover .monaco-tokenized-source {
 .joe_teacherExplorerClassButtons>.joe_toggleButton {
     margin-right: 6px;
 }
+
+
+.joe_guiButton {
+    font-weight: normal;
+    color: #ddd;
+    border: 1px solid #808080;
+    height: fit-content;
+    padding: 1px 3px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.joe_guiButton:hover{
+    border-color: #ccc;
+}
+
+.joe_guiButton:active{
+    color: #fff;
+}
+
+.joe_guiButton:not(.active){
+    filter:opacity(0.5) grayscale();
+}

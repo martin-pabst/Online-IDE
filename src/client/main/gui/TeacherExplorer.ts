@@ -4,8 +4,9 @@ import { ClassData, UserData, CRUDUserRequest, CRUDClassRequest, GetWorkspacesRe
 import { ajax } from "../../communication/AjaxHelper.js";
 import { Workspace } from "../../workspace/Workspace.js";
 import { Helper } from "./Helper.js";
-import { ToggleButton } from "./ToggleButton.js";
+import { GUIToggleButton } from "./controls/GUIToggleButton.js";
 import jQuery from "jquery";
+import { PruefungDialog } from "./PruefungDialog.js";
 
 export class TeacherExplorer {
 
@@ -109,17 +110,19 @@ export class TeacherExplorer {
     initClassPanel() {
         let that = this;
 
-        let $buttonContainer = "Klassen";
-
-        // let $buttonContainer = jQuery('<div class="joe_teacherExplorerClassButtons"></div>');
-        // let toggleButtonClass = new ToggleButton("Klassen", $buttonContainer, true);
-        // let toggleButtonTest = new ToggleButton("Prüfungen", $buttonContainer, false);
-        // toggleButtonClass.linkTo(toggleButtonTest);
+        let $buttonContainer = jQuery('<div class="joe_teacherExplorerClassButtons"></div>');
+        let toggleButtonClass = new GUIToggleButton("Klassen", $buttonContainer, true);
+        let toggleButtonTest = new GUIToggleButton("Prüfungen", $buttonContainer, false);
+        toggleButtonClass.linkTo(toggleButtonTest);
 
         this.classPanel = new AccordionPanel(this.main.projectExplorer.accordion,
-            $buttonContainer, "2", "img_add-test-dark", "", "class", false, false, "class", false, []);
+            $buttonContainer, "2", "", "", "class", false, false, "class", false, []);
 
-        this.classPanel.$buttonNew.hide();
+        let $buttonNew = jQuery('<div class="jo_button jo_active img_add-test-dark" title="Neue Prüfung erstellen">');
+            this.classPanel.$captionElement.find('.jo_actions').append($buttonNew);
+
+
+        $buttonNew.attr("title", "Neue Prüfung erstellen").hide();
 
         this.classPanel.selectCallback = (ea) => {
             that.main.networkManager.sendUpdates(() => {
@@ -132,9 +135,18 @@ export class TeacherExplorer {
             });
         }
 
-        // toggleButtonTest.onChange((checked) => {
-        //     this.classPanel.$buttonNew.toggle(checked);
-        // })
+        toggleButtonTest.onChange((checked) => {
+            $buttonNew.toggle(200);
+        })
+
+        $buttonNew.on('pointerdown', (e) => {
+            e.stopPropagation();
+        })
+
+        $buttonNew.on('pointerup', (e) => {
+            e.stopPropagation();
+            new PruefungDialog(this.main).open(null, this.classData);
+        })
 
     }
 

@@ -781,3 +781,21 @@ export type UploadSpriteResponse = {
     message: string,
     spriteFileId: number
 }
+
+export type PruefungState = "preparing" | "running" | "correcting" | "opening";
+
+export type Pruefung = {
+    id: number,
+    name: string,
+    klasse_id: number,
+    template_workspace_id: number,
+    state: PruefungState;
+}
+
+/*
+        id: Int,
+        var name: String,
+        var klasse_id: Int,
+        var template_workspace_id: Int,
+        var state: String
+*/

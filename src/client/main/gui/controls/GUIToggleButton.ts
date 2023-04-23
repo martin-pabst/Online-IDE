@@ -2,12 +2,12 @@ import jQuery from "jquery";
 
 type Listener = (checked: boolean) => void;
 
-export class ToggleButton {
+export class GUIToggleButton {
     
     $html: JQuery<HTMLDivElement>;
     isActive: boolean = true;
     listeners: Listener[] = [];
-    linkedToggleButtons: Set<ToggleButton> = new Set();
+    linkedToggleButtons: Set<GUIToggleButton> = new Set();
 
     constructor(private _caption: string, public $parent: JQuery<HTMLElement>, private _isChecked){
         this.$html = jQuery(`<div class='joe_toggleButton active${_isChecked ? " checked" : ""}'>${_caption}</div>`);        
@@ -24,7 +24,7 @@ export class ToggleButton {
         this.listeners.push(listener);
     }
 
-    linkTo(...otherToggleButtons: ToggleButton[]){
+    linkTo(...otherToggleButtons: GUIToggleButton[]){
         otherToggleButtons?.forEach(tb => {
             this.linkedToggleButtons.add(tb)
             tb.linkedToggleButtons.add(this);

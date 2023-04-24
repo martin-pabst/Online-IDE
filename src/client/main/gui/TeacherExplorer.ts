@@ -1,7 +1,7 @@
 import { AccordionPanel, AccordionElement } from "./Accordion.js";
 import { Main } from "../Main.js";
-import { ClassData, UserData, CRUDUserRequest, CRUDClassRequest, GetWorkspacesResponse, GetWorkspacesRequest, Workspaces } from "../../communication/Data.js";
-import { ajax } from "../../communication/AjaxHelper.js";
+import { ClassData, UserData, CRUDUserRequest, CRUDClassRequest, GetWorkspacesResponse, GetWorkspacesRequest, Workspaces, Pruefung } from "../../communication/Data.js";
+import { ajax, ajaxAsync } from "../../communication/AjaxHelper.js";
 import { Workspace } from "../../workspace/Workspace.js";
 import { Helper } from "./Helper.js";
 import { GUIToggleButton } from "./controls/GUIToggleButton.js";
@@ -17,8 +17,12 @@ export class TeacherExplorer {
     ownWorkspaces: Workspace[];
     currentOwnWorkspace: Workspace;
 
-    constructor(private main: Main, private classData: ClassData[]) {
+    pruefungen: Pruefung[] = [];
 
+    classPanelMode: "classes" | "tests" = "classes";
+
+    constructor(private main: Main, private classData: ClassData[]) {
+        this.fetchPruefungen();
     }
 
     removePanels() {
@@ -125,18 +129,45 @@ export class TeacherExplorer {
         $buttonNew.attr("title", "Neue Prüfung erstellen").hide();
 
         this.classPanel.selectCallback = (ea) => {
-            that.main.networkManager.sendUpdates(() => {
 
-                let classData = <ClassData>ea;
-                if (classData != null) {
-                    this.renderStudents(classData.students);
+            let projectExplorer = this.main.projectExplorer;
+
+            if(this.classPanelMode == "classes"){
+                that.main.networkManager.sendUpdates(() => {
+    
+                    let classData = <ClassData>ea;
+                    if (classData != null) {
+                        this.renderStudents(classData.students);
+                    }
+    
+                });
+            } else {
+                let p: Pruefung = <Pruefung>ea;
+                projectExplorer.workspaceListPanel.clear();
+                projectExplorer.fileListPanel.clear();
+
+                if(p.state == "preparing"){
+                    this.studentPanel.clear();    
+                    let workspace = this.ownWorkspaces.find(w => w.id == p.template_workspace_id);
+                    projectExplorer.setWorkspaceActive(workspace);
+                } else {
+                    let klass = this.classData.find(c => c.id = p.klasse_id);
+                    if(klass != null){
+                        this.renderStudents(klass.students);
+                    }
                 }
+            }
 
-            });
         }
 
-        toggleButtonTest.onChange((checked) => {
+        toggleButtonTest.onChange(async (checked) => {
             $buttonNew.toggle(200);
+            that.classPanelMode = checked ? "tests" : "classes";
+            if(checked){
+                this.renderPruefungen();
+            } else {
+                this.renderClasses(this.classData);
+            }
         })
 
         $buttonNew.on('pointerdown', (e) => {
@@ -193,6 +224,29 @@ export class TeacherExplorer {
             }
             this.classPanel.addElement(ae, true);
         }
+
+    }
+
+    renderPruefungen(){
+        this.classPanel.clear();
+        
+        for(let p of this.pruefungen){
+            let ae: AccordionElement = {
+                name: p.name,
+                externalElement: p,
+                isFolder: false,
+                path: [],
+                iconClass: "img_test-dark"
+            }
+            this.classPanel.addElement(ae, true);
+        }
+    }
+
+    async fetchPruefungen(){
+
+        // TODO!
+        let response = await ajaxAsync("/servlet/pruefungenForLehrkraft", {})
+        this.pruefungen = response.pruefungen;
 
     }
 

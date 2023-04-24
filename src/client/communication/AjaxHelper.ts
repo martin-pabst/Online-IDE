@@ -121,3 +121,41 @@ export function extractCsrfTokenFromGetRequest(){
         }
     }
 }
+
+
+export async function ajaxAsync(url: string, data: any): Promise<any>{
+    let headers: [string, string][] = [["content-type", "text/json"]];
+    
+    if(csrfToken != null){
+        headers.push(["x-token-pm", csrfToken]);
+    }
+
+    try {
+        let response = await fetch(url, {
+            method: "POST",
+            headers: headers,
+            body: JSON.stringify(data)
+        })
+
+         let obj: any = await response.json()
+
+        if(obj["token"] != null){
+            csrfToken = obj["token"];
+        }
+
+        if(obj == null){
+            alert("Fehler beim Übertragen der Daten.");             
+        } else if(obj.status != "OK"){
+            alert("Fehler beim Übertragen der Daten:\n" + obj.message);             
+        }
+
+        return obj;
+    } catch (exception){
+        return {
+            status: "Error",
+            message: "Es ist ein Fehler aufgetreten: " + exception
+        }
+    }
+}
+
+

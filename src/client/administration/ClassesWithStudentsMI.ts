@@ -370,7 +370,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
 
         let field = classesGrid.columns[event.column]["field"];
 
-        if(data[field]) data[field] = event.value_new;
+        if(data[field] != undefined) data[field] = event.value_new;
 
         if (event.column == 3) {
             let teacher: TeacherData = event.value_new;

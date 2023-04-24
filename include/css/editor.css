@@ -1395,3 +1395,8 @@ body .monaco-editor-hover .monaco-tokenized-source {
 .joe_guiButton:not(.active){
     filter:opacity(0.5) grayscale();
 }
+
+.joe_pruefung_state {
+    font-weight: bold;
+    color:rgb(65, 161, 41);
+}

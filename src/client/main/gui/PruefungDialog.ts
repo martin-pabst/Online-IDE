@@ -112,6 +112,7 @@ export class PruefungDialog {
             },
         ])
  
+        initFooter(dialog.$dialogFooter);
 
     }
 
@@ -140,4 +141,47 @@ export class PruefungDialog {
 
 
 
+}
+
+function initFooter($dialogFooter: JQuery<HTMLElement>) {
+    $dialogFooter.append(`
+    <div>
+    <h3>Zu den Zuständen:</h3>
+    <ul>
+        <li>Jede Prüfung durchläuft (i.d.R. der Reihe nach) die vier Zustände "Vorbereitung", "Prüfung läuft", "Korrektur" und "Herausgabe". 
+             Je nach Zustand ändert sich die Ansicht der Prüfung bei den Schüler/innen und bei der Lehrkraft (s.u.).</li>
+        <li>Mit den Buttons "Zustand vor" und "Zustand zurück" oben können Sie die Prüfung in den jeweils nächsten/vorhergehenden Zustand versetzen. 
+            <div style="font-weight: bold">Die Zustandsänderung wird erst nach Klick auf den OK-Button wirksam.</div></li>
+        <li><span class="joe_pruefung_state">Zustand "Vorbereitung": </span> 
+            <div>
+            In diesem Zustand sehen die Schüler/innen die Prüfung noch nicht. Klickt die Lehrkraft die Prüfung im Navigator links an, dann sieht sie darüber 
+            den Vorlagen-Workspace der Prüfung. Jede Datei, die sie dort erstellt, wird beim Übergang zum Zustand "Prüfung läuft" in den Prüfungsworkspace jeder Schülerin/jedes Schülers kopiert.
+            </div>
+        </li>
+        <li><span class="joe_pruefung_state">Zustand "Prüfung läuft": </span> 
+            <div>
+            Beim Übergang in den Zustand "Prüfung läuft" werden die Prüfungsworkspaces der Schüler/innen erstellt. Sie enthalten Kopien aller Dateien aus dem Vorlagen-Workspace der Prüfung.
+            Die Schüler/innen sehen ab jetzt nur noch den Prüfungs-Workspace und können schreibend darauf zugreifen. Die Menüzeile der Online-IDE erscheint rot gefärbt, so dass die Lehrkraft 
+            schnell sehen kann, auf welchen Rechnern der Prüfungsmodus aktiv ist.
+            </div>
+        </li>
+        <li><span class="joe_pruefung_state">Zustand "Korrektur": </span> 
+            <div>
+            Die Schüler/innen sehen in diesem Zustand wieder ihre normalen Workspaces. Den Prüfungsworkspace sehen sie nicht mehr. Klickt die Lehrkraft im Navigator links auf die Prüfung. So sieht sie darüber die Liste der Schüler/innen der zugeordneten Klasse.
+            Klickt sie auf eine/n der Schüler/innen, so sieht sie deren/dessen Prüfungsworkspace und kann dort Korrekturen vornehmen. Oberhalb des Editorbereichs erscheint der Button "Korrekturen zeigen". Durch Klick darauf werden die Korrekturen der Lehrkraft
+            in einer Diff-Ansicht gezeigt.
+            </div>
+        </li>
+        <li><span class="joe_pruefung_state">Zustand "Herausgabe": </span> 
+            <div>
+            Die Schüler/innen sehen in diesem Zustand in der Liste ihrer Workspaces einen Ordner "Prüfungen". Er enthält den Prüfungsworkspace. Klicken sie auf diesen, so können sie 
+            <span style="font-weight: bold"> nur lesend</span> auf die enthaltenen Dateien zugreifen. Wurde eine Datei durch die Lehrkraft verändert, so erscheint oberhalb des Editor-Bereichs der Button "Korrekturen zeigen". Nach
+            Klick darauf zeigt die IDE die Korrekturen in einer Diff-Ansicht. 
+            <div>Die Lehrkraft sieht die Prüfung genau so wie im Zustand "Korrektur".</div>
+            </div>
+        </li>
+
+    </ul>
+    </div>
+    `)
 }

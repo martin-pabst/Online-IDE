@@ -67,6 +67,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                         },
                         {
                             field: 'teacher', caption: 'Lehrkraft', size: '30%', sortable: true, resizable: true,
+                            editable: { type: 'list', items: that.teacherDataList, filter: false },
                             render: function (record: ClassData) {
                                 let teacher = that.teacherDataList.find(td => td.userData.id == record.lehrkraft_id);
                                 if (teacher != null) {
@@ -370,6 +371,23 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
         let field = classesGrid.columns[event.column]["field"];
 
         data[field] = event.value_new;
+
+        if (event.column == 3) {
+            let teacher: TeacherData = event.value_new;
+            if (teacher == null || typeof teacher == "string") {
+                classesGrid.refresh();
+                return;
+            } else {
+                let teacherOld1 = this.teacherDataList.find((td) => td.userData.id == data.lehrkraft_id);
+                if (teacherOld1 != null) teacherOld1.classes = teacherOld1.classes.filter(cd => cd.id != data.id);
+                // let teacherOld2 = this.teachersGrid.get(data.lehrkraft_id + "");
+                // if (teacherOld2 != null) teacherOld1.classes = teacherOld1.classes.filter(cd => cd.id != data.id);
+                data.lehrkraft_id = teacher.userData.id;
+                teacher.classes.push(data);
+               
+                event.value_new = teacher.userData.rufname + " " + teacher.userData.familienname;
+            }
+        }
 
         if (event.column == 4) {
             let teacher: TeacherData = event.value_new;

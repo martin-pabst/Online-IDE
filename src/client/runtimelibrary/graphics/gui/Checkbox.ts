@@ -22,7 +22,7 @@ export class CheckBoxClass extends Klass {
 
                 let o: RuntimeObject = parameters[0].value;
 
-                let sh = new CheckBoxHelper(0, 0, 300, 24, "Text", module.main.getInterpreter(), o);
+                let sh = new CheckBoxHelper(0, 0, 300, 24, "Text", module.main.getInterpreter(), o, false);
                 o.intrinsicData["Actor"] = sh;
 
             }, false, false, 'Instanziert ein neues CheckBox-Objekt.', true));
@@ -43,7 +43,30 @@ export class CheckBoxClass extends Klass {
                 let fontsize: number = parameters[4].value;
                 let text: string = parameters[5].value;
 
-                let sh = new CheckBoxHelper(x, y, width, fontsize, text, module.main.getInterpreter(), o);
+                let sh = new CheckBoxHelper(x, y, width, fontsize, text, module.main.getInterpreter(), o, false);
+                o.intrinsicData["Actor"] = sh;
+
+            }, false, false, 'Instanziert ein neues CheckBox-Objekt. (x, y) sind die Koordinaten der linken oberen Ecke, fontsize die Höhe des Textes in Pixeln.', true));
+
+        this.addMethod(new Method("CheckBox", new Parameterlist([
+            { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "width", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "fontsize", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "text", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "checked", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), null,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let x: number = parameters[1].value;
+                let y: number = parameters[2].value;
+                let width: number = parameters[3].value;
+                let fontsize: number = parameters[4].value;
+                let text: string = parameters[5].value;
+                let checked: boolean = parameters[6].value;
+
+                let sh = new CheckBoxHelper(x, y, width, fontsize, text, module.main.getInterpreter(), o, checked);
                 o.intrinsicData["Actor"] = sh;
 
             }, false, false, 'Instanziert ein neues CheckBox-Objekt. (x, y) sind die Koordinaten der linken oberen Ecke, fontsize die Höhe des Textes in Pixeln.', true));
@@ -66,7 +89,7 @@ export class CheckBoxClass extends Klass {
                 let text: string = parameters[5].value;
                 let fontFamily: string = parameters[6].value;
 
-                let sh = new CheckBoxHelper(x, y, width, fontsize, text, module.main.getInterpreter(), o, fontFamily);
+                let sh = new CheckBoxHelper(x, y, width, fontsize, text, module.main.getInterpreter(), o, false, fontFamily);
                 o.intrinsicData["Actor"] = sh;
 
             }, false, false, 'Instanziert ein neues Textobjekt. (x, y) sind die Koordinaten der linken oberen Ecke, fontsize die Höhe des Textes in Pixeln.', true));
@@ -98,6 +121,21 @@ export class CheckBoxClass extends Klass {
                 sh.setCrossColor(color);
 
             }, false, false, 'Setzt die Farbe des Kreuzchens. Die Farbe wird als int-Wert gegeben, wobei farbe == 256*256*rot + 256*grün + blau', false));
+
+        this.addMethod(new Method("setChecked", new Parameterlist([
+            { identifier: "checked", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let checked: boolean = parameters[1].value;
+                let sh: CheckBoxHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("setChecked")) return;
+
+                sh.setChecked(checked);
+
+            }, false, false, 'Setzt den Zustand der Checkbox: angekreuzt bzw. nicht angekreuzt', false));
 
         this.addMethod(new Method("isChecked", new Parameterlist([
         ]), booleanPrimitiveType,
@@ -134,9 +172,11 @@ export class CheckBoxHelper extends GuiTextComponentHelper {
 
     constructor(public x: number, public y: number, public checkboxWidth: number, public fontsize: number,
         public text: string,
-        interpreter: Interpreter, runtimeObject: RuntimeObject, public fontFamily?: string) {
+        interpreter: Interpreter, runtimeObject: RuntimeObject, checked: boolean, public fontFamily?: string) {
 
         super(interpreter, runtimeObject, true, false, fontsize, text, fontFamily);
+
+        this.isChecked = checked;
 
         this.centerXInitial = x;
         this.centerYInitial = y;
@@ -175,7 +215,7 @@ export class CheckBoxHelper extends GuiTextComponentHelper {
     getCopy(klass: Klass): RuntimeObject {
 
         let ro: RuntimeObject = new RuntimeObject(klass);
-        let rh: CheckBoxHelper = new CheckBoxHelper(this.x, this.y, this.checkboxWidth, this.fontsize, this.text, this.worldHelper.interpreter, ro);
+        let rh: CheckBoxHelper = new CheckBoxHelper(this.x, this.y, this.checkboxWidth, this.fontsize, this.text, this.worldHelper.interpreter, ro, this.isChecked);
         ro.intrinsicData["Actor"] = rh;
 
         rh.copyFrom(this);
@@ -300,6 +340,11 @@ export class CheckBoxHelper extends GuiTextComponentHelper {
         let p = new PIXI.Point(x * this.worldHelper.globalScale, y * this.worldHelper.globalScale);
         this.displayObject.worldTransform.applyInverse(p, p);
         return p;
+    }
+
+    setChecked(checked: boolean){
+        this.isChecked = checked;
+        this.render();
     }
 
     onMouseEvent(kind: JOMouseEvent, x: number, y: number): void {

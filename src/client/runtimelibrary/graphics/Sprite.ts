@@ -432,16 +432,21 @@ export class SpriteHelper extends ShapeHelper {
 
     }
 
+    oldTexture: PIXI.Texture;
+
     makeTiling(width: number, height: number, gapX: number, gapY: number) {
         width /= this.scaleFactor;
         height /= this.scaleFactor;
         let sprite: PIXI.Sprite = <PIXI.Sprite>this.displayObject;
-        let texture = sprite.texture;
+
+        if(this.oldTexture == null) this.oldTexture = sprite.texture;
+
+        let texture = this.oldTexture;
         if(gapX > 0 || gapY > 0){
-            texture = this.generateGapTexture(sprite.texture, gapX, gapY);
+            texture = this.generateGapTexture(texture, gapX, gapY);
         }
+        texture.baseTexture.mipmap = PIXI.MIPMAP_MODES.OFF;
         let tileSprite = new PIXI.TilingSprite(texture, width, height);
-        sprite.texture.baseTexture.mipmap = PIXI.MIPMAP_MODES.OFF;
         tileSprite.setParent(sprite.parent);
         tileSprite.transform.localTransform.copyFrom(sprite.transform.localTransform);
         //@ts-ignore

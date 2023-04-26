@@ -339,9 +339,30 @@ export class SpriteClass extends Klass {
 
                 if (sh.testdestroyed("makeTiling")) return;
 
-                sh.makeTiling(width, height);
+                sh.makeTiling(width, height, 0, 0);
 
             }, false, false, "Fügt das identische Bild nach rechts und unten kachelartig ('tile'!) so oft hinzu, bis die angegebene Breite erreicht ist. \nTIPP: Mit der Methode getTileImage() erhält man ein Tile-Objekt, dessen Methoden move, scale, mirrorX und mirrorY sich gleichzeitig auf jede einzelne Kachel auswirken.", false));
+
+        this.addMethod(new Method("makeTiling", new Parameterlist([
+            { identifier: "width", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "height", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "gapX", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "gapY", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let width: number = parameters[1].value;
+                let height: number = parameters[2].value;
+                let gapX: number = parameters[3].value;
+                let gapY: number = parameters[4].value;
+                let sh: SpriteHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("makeTiling")) return;
+
+                sh.makeTiling(width, height, gapX, gapY);
+
+            }, false, false, "Fügt das identische Bild nach rechts und unten kachelartig ('tile'!) so oft hinzu, bis die angegebene Breite erreicht ist. \nTIPP: Mit der Methode getTileImage() erhält man ein Tile-Objekt, dessen Methoden move, scale, mirrorX und mirrorY sich gleichzeitig auf jede einzelne Kachel auswirken. GapX und GapY sind die Abstände, die zwischen den einzelnen Kacheln eingehalten werden.", false));
 
         this.addMethod(new Method("getTileImage", new Parameterlist([
         ]), <Klass>module.typeStore.getType("Tile"),
@@ -411,11 +432,15 @@ export class SpriteHelper extends ShapeHelper {
 
     }
 
-    makeTiling(width: number, height: number) {
+    makeTiling(width: number, height: number, gapX: number, gapY: number) {
         width /= this.scaleFactor;
         height /= this.scaleFactor;
         let sprite: PIXI.Sprite = <PIXI.Sprite>this.displayObject;
-        let tileSprite = new PIXI.TilingSprite(sprite.texture, width, height);
+        let texture = sprite.texture;
+        if(gapX > 0 || gapY > 0){
+            texture = this.generateGapTexture(sprite.texture, gapX, gapY);
+        }
+        let tileSprite = new PIXI.TilingSprite(texture, width, height);
         sprite.texture.baseTexture.mipmap = PIXI.MIPMAP_MODES.OFF;
         tileSprite.setParent(sprite.parent);
         tileSprite.transform.localTransform.copyFrom(sprite.transform.localTransform);
@@ -437,6 +462,16 @@ export class SpriteHelper extends ShapeHelper {
         sprite.destroy();
         this.isTileSprite = true;
     }
+
+    generateGapTexture(texture, gapx: number, gapy: number) {
+        const gapBox = new PIXI.Graphics()
+        const originSprite = new PIXI.Sprite(texture)
+        gapBox.lineStyle(1, 0x0, 0.01)
+        gapBox.drawRect(0, 0, originSprite.width + gapx, originSprite.height + gapy)
+        gapBox.addChild(originSprite)
+        //@ts-ignore
+        return this.worldHelper.app.renderer.generateTexture(gapBox);
+      }
 
     setTileOffset(x: number, y: number) {
         if (this.isTileSprite) {

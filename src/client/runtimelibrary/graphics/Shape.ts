@@ -730,6 +730,34 @@ export class ShapeClass extends Klass {
 
             }, false, false, "Gibt ein Array zurück, das die vier Eckpunkte des Hit-Polygons in Form von Vector2-Ortsvektoren enthält. Bei den Klassen Rectangle, Triangle und Polygon sind dies die Eckpunkte.", false));
 
+            this.addMethod(new Method("getScale", new Parameterlist([
+        ]), doublePrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: ShapeHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("getScale")) return;
+
+                return sh.scaleFactor;
+
+            }, false, false, "Gibt den Wert des Streckungsfaktors zurück.", false));
+
+            this.addMethod(new Method("setScale", new Parameterlist([
+                { identifier: "newFactor", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true }
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let factor = <number>parameters[1].value;
+                let sh: ShapeHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("setScale")) return;
+
+                sh.scale(factor/sh.scaleFactor);
+
+            }, false, false, "Setzt den Wert des Streckungsfaktors ausgehend vom Wert 1.0 nach Instanzieren des Objekts. Im Unterschied zu dieser Methode multipliziert die Methode scale(double factor) den aktuellen Streckungsfaktor mit dem angegebenen Wert.", false));
+
     }
 
 }

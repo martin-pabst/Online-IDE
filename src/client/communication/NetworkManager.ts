@@ -140,7 +140,7 @@ export class NetworkManager {
             owner_id: this.main.workspacesOwnerId,
             userId: this.main.user.id,
             language: 0,
-            currentWorkspaceId: this.main.currentWorkspace?.id,
+            currentWorkspaceId: this.main.currentWorkspace?.pruefung_id == null ? this.main.currentWorkspace?.id : null,
             getModifiedWorkspaces: sendIfNothingIsDirty
         }
 

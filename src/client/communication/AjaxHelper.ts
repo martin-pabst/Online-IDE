@@ -145,7 +145,7 @@ export async function ajaxAsync(url: string, data: any): Promise<any>{
 
         if(obj == null){
             alert("Fehler beim Übertragen der Daten.");             
-        } else if(obj.status != "OK"){
+        } else if(obj.success != true){
             alert("Fehler beim Übertragen der Daten:\n" + obj.message);             
         }
 

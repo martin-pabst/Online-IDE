@@ -1,6 +1,6 @@
 import { AccordionPanel, AccordionElement } from "./Accordion.js";
 import { Main } from "../Main.js";
-import { ClassData, UserData, CRUDUserRequest, CRUDClassRequest, GetWorkspacesResponse, GetWorkspacesRequest, Workspaces, Pruefung } from "../../communication/Data.js";
+import { ClassData, UserData, CRUDUserRequest, CRUDClassRequest, GetWorkspacesResponse, GetWorkspacesRequest, Workspaces, Pruefung, PruefungCaptions } from "../../communication/Data.js";
 import { ajax, ajaxAsync } from "../../communication/AjaxHelper.js";
 import { Workspace } from "../../workspace/Workspace.js";
 import { Helper } from "./Helper.js";
@@ -130,8 +130,6 @@ export class TeacherExplorer {
 
         this.classPanel.selectCallback = (ea) => {
 
-            let projectExplorer = this.main.projectExplorer;
-
             if(this.classPanelMode == "classes"){
                 that.main.networkManager.sendUpdates(() => {
     
@@ -142,20 +140,7 @@ export class TeacherExplorer {
     
                 });
             } else {
-                let p: Pruefung = <Pruefung>ea;
-                projectExplorer.workspaceListPanel.clear();
-                projectExplorer.fileListPanel.clear();
-
-                if(p.state == "preparing"){
-                    this.studentPanel.clear();    
-                    let workspace = this.ownWorkspaces.find(w => w.id == p.template_workspace_id);
-                    projectExplorer.setWorkspaceActive(workspace);
-                } else {
-                    let klass = this.classData.find(c => c.id = p.klasse_id);
-                    if(klass != null){
-                        this.renderStudents(klass.students);
-                    }
-                }
+                this.onSelectPruefung(<Pruefung>ea);
             }
 
         }
@@ -164,9 +149,17 @@ export class TeacherExplorer {
             $buttonNew.toggle(200);
             that.classPanelMode = checked ? "tests" : "classes";
             if(checked){
+                if (that.main.workspacesOwnerId == that.main.user.id) {
+                    that.ownWorkspaces = that.main.workspaceList.slice();
+                    that.currentOwnWorkspace = that.main.currentWorkspace;
+                }
+                
                 this.renderPruefungen();
             } else {
+                this.main.projectExplorer.workspaceListPanel.show();
+                this.studentPanel.show();    
                 this.renderClasses(this.classData);
+                this.main.projectExplorer.onHomeButtonClicked();
             }
         })
 
@@ -174,10 +167,42 @@ export class TeacherExplorer {
             e.stopPropagation();
         })
 
-        $buttonNew.on('pointerup', (e) => {
+        $buttonNew.on('pointerup', async (e) => {
             e.stopPropagation();
-            new PruefungDialog(this.main).open(null, this.classData);
+            try {
+                let newPruefung = await new PruefungDialog(this.main).open(this.classData);
+                this.addPruefungToClassPanel(newPruefung);
+            } catch(error) {
+
+            }
+            
         })
+
+    }
+    onSelectPruefung(p: Pruefung) {
+
+        let projectExplorer = this.main.projectExplorer;
+        projectExplorer.workspaceListPanel.clear();
+        projectExplorer.fileListPanel.clear();
+
+        this.main.projectExplorer.setExplorerColor(null);
+        this.main.projectExplorer.$homeAction.hide();
+
+        if(p.state == "preparing"){
+            this.studentPanel.clear();    
+            let workspace = this.main.workspaceList.find(w => w.id == p.template_workspace_id);
+            projectExplorer.setWorkspaceActive(workspace);
+            projectExplorer.workspaceListPanel.hide();
+
+            this.studentPanel.hide();
+        } else {
+            projectExplorer.workspaceListPanel.show();
+            this.studentPanel.show();
+            let klass = this.classData.find(c => c.id = p.klasse_id);
+            if(klass != null){
+                this.renderStudents(klass.students);
+            }
+        }
 
     }
 
@@ -208,7 +233,8 @@ export class TeacherExplorer {
 
     renderClasses(classDataList: ClassData[]) {
         this.studentPanel.clear();
-
+        this.classPanel.clear();
+        
         classDataList.sort((a, b) => {
             if (a.name > b.name) return 1;
             if (b.name > a.name) return -1;
@@ -230,22 +256,49 @@ export class TeacherExplorer {
     renderPruefungen(){
         this.classPanel.clear();
         
-        for(let p of this.pruefungen){
-            let ae: AccordionElement = {
-                name: p.name,
-                externalElement: p,
-                isFolder: false,
-                path: [],
-                iconClass: "img_test-dark"
+        this.pruefungen.forEach(p => this.addPruefungToClassPanel(p));
+    }
+
+    addPruefungToClassPanel(p: Pruefung){
+        let ae: AccordionElement = {
+            name: p.name,
+            externalElement: p,
+            isFolder: false,
+            path: [],
+            iconClass: "test"
+        }
+        this.classPanel.addElement(ae, true);
+        this.updateClassNameAndState(p);
+
+    }
+
+    updateClassNameAndState(p: Pruefung){
+        let ae: AccordionElement = this.classPanel.findElement(p);
+        if(ae != null){
+            let klasse = this.classData.find(c => c.id = p.klasse_id);
+            if(klasse != null){
+                let $text = jQuery('<span></span>');
+                $text.addClass('joe_pruefung_klasse');
+                $text.text(`(${klasse.name}, ${PruefungCaptions[p.state]})`);
+                $text.css('margin', '0 4px');
+                ae.$htmlFirstLine.find('.jo_textAfterName').empty().append($text);            
+            }    
+            let $buttonDiv = ae.$htmlFirstLine?.find('.jo_additionalButtonRepository');
+            if($buttonDiv != null){
+                let $button = jQuery('<div class="img_edit-dark jo_button jo_active" title="Bearbeiten..."></div>');
+                $buttonDiv.append($button);
+                $buttonDiv.on('pointerdown', (e) => {
+                    e.stopPropagation();
+                    new PruefungDialog(this.main, p).open(this.classData);
+                })
             }
-            this.classPanel.addElement(ae, true);
+
         }
     }
 
     async fetchPruefungen(){
 
-        // TODO!
-        let response = await ajaxAsync("/servlet/pruefungenForLehrkraft", {})
+        let response = await ajaxAsync("/servlet/getPruefungenForLehrkraft", {})
         this.pruefungen = response.pruefungen;
 
     }

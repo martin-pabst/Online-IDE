@@ -69,6 +69,8 @@ export type WorkspaceData = {
     sql_manipulateDatabaseStatements: string,
     sql_history: string, 
 
+    pruefungId: number,
+
     spritesheetId: number
 }
 
@@ -783,6 +785,12 @@ export type UploadSpriteResponse = {
 }
 
 export type PruefungState = "preparing" | "running" | "correcting" | "opening";
+export var PruefungCaptions: {[index: string]: string} = {
+    "preparing": "Vorbereitung",
+    "running": "Pr. läuft!",
+    "correcting": "Korrektur",
+    "opening": "Herausgabe"
+}
 
 export type Pruefung = {
     id: number,
@@ -792,10 +800,13 @@ export type Pruefung = {
     state: PruefungState;
 }
 
-/*
-        id: Int,
-        var name: String,
-        var klasse_id: Int,
-        var template_workspace_id: Int,
-        var state: String
-*/
+export type CRUDPruefungRequest = {
+    pruefung?: Pruefung,
+    requestType: "create" | "update" | "delete"
+}
+
+export type CRUDPruefungResponse = {
+    success: boolean,
+    newPruefungWithIds?: Pruefung,
+    message: string
+}

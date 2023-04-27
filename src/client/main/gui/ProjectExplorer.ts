@@ -653,7 +653,7 @@ export class ProjectExplorer {
         this.fileListPanel.clear();
         this.workspaceListPanel.clear();
 
-        for (let w of workspaceList) {
+        for (let w of workspaceList.filter(w => w.pruefung_id == null)) {
             let path = w.path.split("/");
             if (path.length == 1 && path[0] == "") path = [];
             w.panelElement = {

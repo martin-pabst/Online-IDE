@@ -1,4 +1,4 @@
-import { ClassData, Pruefung, PruefungState } from "../../communication/Data.js";
+import { CRUDPruefungRequest, CRUDPruefungResponse, ClassData, Pruefung, PruefungState } from "../../communication/Data.js";
 import { ButtonClass } from "../../runtimelibrary/graphics/gui/Button.js";
 import { setSelectItems } from "../../tools/HtmlTools.js";
 import { Workspace } from "../../workspace/Workspace.js";
@@ -7,6 +7,8 @@ import { MainBase } from "../MainBase.js";
 import { CheckboxState, Dialog } from "./Dialog.js";
 import jQuery from "jquery";
 import { GUIButton } from "./controls/GUIButton.js";
+import { getSelectedObject } from "../../tools/HtmlTools.js";
+import { ajaxAsync } from "../../communication/AjaxHelper.js";
 
 
 export class PruefungDialog {
@@ -17,40 +19,46 @@ export class PruefungDialog {
     buttonBack: GUIButton;
     buttonForward: GUIButton;
     
+    $nameInput: JQuery<HTMLInputElement>;
+
     isNewPruefung: boolean;
 
     oldStateIndex: number;
     selectedStateIndex: number;
+    $classSelect: JQuery<HTMLSelectElement>;
 
-    constructor(private main: Main){
+    resolve: (pruefung: Pruefung) => void;
+    reject: (reason?: any) => void;
+
+    constructor(private main: Main, private pruefung: Pruefung = null){
 
     }
 
-    open(pruefung: Pruefung, classData: ClassData[]){
+    open(classData: ClassData[]): Promise<Pruefung> {
 
-        this.isNewPruefung = pruefung == null;
-        this.selectedStateIndex = pruefung == null ? 0 : this.states.indexOf(pruefung.state);
+        this.isNewPruefung = this.pruefung == null;
+        this.selectedStateIndex = this.pruefung == null ? 0 : this.states.indexOf(this.pruefung.state);
         this.oldStateIndex = this.selectedStateIndex;
 
         let dialog = new Dialog();
         dialog.init();
-        dialog.heading(pruefung == null ? "Neue Prüfung anlegen" : `Daten zur Prüfung "${pruefung.name}" bearbeiten`);
+        dialog.heading(this.pruefung == null ? "Neue Prüfung anlegen" : `Daten zur Prüfung "${this.pruefung.name}" bearbeiten`);
 
         let $inputGrid = jQuery(`<div style="display: grid; grid-template-columns: 150px 1fr; align-items: baseline"></div>`);
 
         $inputGrid.append(`<div>Name der Prüfung:</div>`);
-        let $nameInput = jQuery(`<input type="text" style="width: 200px; margin: 10px 0 0 20px"></input>`);
-        $inputGrid.append($nameInput);
+        this.$nameInput = <JQuery<HTMLInputElement>> jQuery(`<input type="text" style="width: 200px; margin: 10px 0 0 20px"></input>`);
+        $inputGrid.append(this.$nameInput);
         
-        if(pruefung != null){
-            $nameInput.val(pruefung.name);
+        if(this.pruefung != null){
+            this.$nameInput.val(this.pruefung.name);
         }
 
         $inputGrid.append(`<div>Klasse:</div>`);
-        let $classSelect = <JQuery<HTMLSelectElement>> jQuery(`<select style="width: 100px; margin: 10px 0 0 20px"></select>`)
-        $inputGrid.append($classSelect);
+        this.$classSelect = <JQuery<HTMLSelectElement>> jQuery(`<select style="width: 100px; margin: 10px 0 0 20px"></select>`)
+        $inputGrid.append(this.$classSelect);
         
-        setSelectItems($classSelect, classData.map( cd => {
+        setSelectItems(this.$classSelect, classData.map( cd => {
             
             return {
                 caption: cd.name,
@@ -58,7 +66,7 @@ export class PruefungDialog {
                 value: cd.id
             }
 
-        }), pruefung == null ? undefined : pruefung.klasse_id);
+        }), this.pruefung == null ? undefined : this.pruefung.klasse_id);
         
         $inputGrid.append(`<div style="margin-top: 15px">Zustand:</div>`);
 
@@ -106,13 +114,54 @@ export class PruefungDialog {
                 caption: "OK",
                 color: "green",
                 callback: () => {
- 
+                    this.savePruefung();
                     dialog.close();
                 }
             },
         ])
  
         initFooter(dialog.$dialogFooter);
+
+        return new Promise<Pruefung>((resolve, reject) => {
+            this.resolve = resolve;
+            this.reject = reject;
+        });
+
+    }
+
+    async savePruefung() {
+
+        if(this.pruefung == null){
+            this.pruefung = {
+                id: -1,
+                klasse_id: -1,
+                name: "",
+                state: "preparing",
+                template_workspace_id: -1
+            }
+        }
+
+        this.pruefung.name = <string>this.$nameInput.val();
+        this.pruefung.klasse_id = (<ClassData>getSelectedObject(this.$classSelect)).id;
+        this.pruefung.state = this.states[this.selectedStateIndex];
+
+        if(this.isNewPruefung){
+            let request: CRUDPruefungRequest = {requestType: "create", pruefung: this.pruefung}
+            let response: CRUDPruefungResponse = await ajaxAsync('/servlet/crudPruefung', request);
+            if(response.success){
+                this.resolve(this.pruefung);
+            } else {
+                this.reject();
+            }
+        } else {
+            let request: CRUDPruefungRequest = {requestType: "update", pruefung: this.pruefung}
+            let response: CRUDPruefungResponse = await ajaxAsync('/servlet/crudPruefung', request);
+            if(response.success){
+                this.resolve(this.pruefung);
+            } else {
+                this.reject();
+            }
+        }
 
     }
 

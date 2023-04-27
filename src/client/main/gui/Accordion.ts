@@ -105,6 +105,16 @@ export class AccordionPanel {
 
     }
 
+    hide(){
+        this.$captionElement.hide();
+        this.$listElement.hide();
+    }
+
+    show(){
+        this.$captionElement.show();
+        this.$listElement.show();
+    }
+
     collapseAll() {
         for (let element of this.elements) {
             if (element.isFolder) {

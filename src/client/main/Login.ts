@@ -109,7 +109,7 @@ export class Login {
                 this.main.rightDiv.classDiagram.clearAfterLogout();
 
                 let logoutRequest: LogoutRequest = {
-                    currentWorkspaceId: this.main.currentWorkspace?.id
+                    currentWorkspaceId: this.main.currentWorkspace?.pruefung_id == null ? this.main.currentWorkspace?.id : null
                 }
 
                 ajax('logout', logoutRequest, () => {

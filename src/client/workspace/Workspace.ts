@@ -29,6 +29,8 @@ export class Workspace {
     currentlyOpenModule: Module;
     saved: boolean = true;
 
+    pruefung_id: number;
+
     compilerMessage: string;
 
     evaluator: Evaluator;
@@ -75,7 +77,8 @@ export class Workspace {
             sql_history: "",
             sql_manipulateDatabaseStatements: "",
             settings: JSON.stringify(this.settings),
-            spritesheetId: this.spritesheetId
+            spritesheetId: this.spritesheetId,
+            pruefungId: this.pruefung_id
         }
 
         if(withFiles){
@@ -129,9 +132,9 @@ export class Workspace {
         }
     }
 
-    static restoreFromData(ws: WorkspaceData, main: Main): Workspace {
+    static restoreFromData(wd: WorkspaceData, main: Main): Workspace {
 
-        let settings: WorkspaceSettings = (ws.settings != null && ws.settings.startsWith("{")) ? JSON.parse(ws.settings) : {libraries: []}; 
+        let settings: WorkspaceSettings = (wd.settings != null && wd.settings.startsWith("{")) ? JSON.parse(wd.settings) : {libraries: []}; 
 
         //@ts-ignore
         if(settings.libaries){
@@ -139,17 +142,18 @@ export class Workspace {
             settings.libraries = settings.libaries;
         }
 
-        let w = new Workspace(ws.name, main, ws.owner_id);
-        w.id = ws.id;
-        w.path = ws.path;
-        w.isFolder = ws.isFolder;
-        w.owner_id = ws.owner_id;
-        w.version = ws.version;
-        w.repository_id = ws.repository_id;
-        w.has_write_permission_to_repository = ws.has_write_permission_to_repository;
+        let w = new Workspace(wd.name, main, wd.owner_id);
+        w.id = wd.id;
+        w.path = wd.path;
+        w.isFolder = wd.isFolder;
+        w.owner_id = wd.owner_id;
+        w.version = wd.version;
+        w.repository_id = wd.repository_id;
+        w.has_write_permission_to_repository = wd.has_write_permission_to_repository;
         w.settings = settings;
+        w.pruefung_id = wd.pruefungId;
 
-        w.spritesheetId = ws.spritesheetId;
+        w.spritesheetId = wd.spritesheetId;
 
         if(w.settings.libraries == null){
             w.settings.libraries = [];
@@ -159,12 +163,12 @@ export class Workspace {
             w.moduleStore.setAdditionalLibraries(w.settings.libraries);
         }
 
-        for(let f of ws.files){
+        for(let f of wd.files){
 
             let m: Module = Module.restoreFromData(f, main);
             w.moduleStore.putModule(m);
 
-            if(f.id == ws.currentFileId){
+            if(f.id == wd.currentFileId){
                 w.currentlyOpenModule = m;
             }
 

@@ -7,6 +7,7 @@ import { InterpreterState } from "../interpreter/Interpreter.js";
 import { SoundTools } from "../tools/SoundTools.js";
 import { UserMenu } from "./gui/UserMenu.js";
 import { escapeHtml } from "../tools/StringTools.js";
+import { SSEManager } from '../communication/SSEManager.js';
 
 export class Login {
 
@@ -120,7 +121,7 @@ export class Login {
                 });
             });
 
-            this.main.networkManager.notifierClient.disconnect();
+            SSEManager.close();
 
         });
 
@@ -225,7 +226,7 @@ export class Login {
         
                     }
         
-                    that.main.networkManager.initializeNotifierClient();
+                    that.main.networkManager.initializeSSE();
 
                 }
 

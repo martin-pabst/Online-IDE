@@ -5,37 +5,35 @@ import { Workspace } from "../workspace/Workspace.js";
 import { Module } from "../compiler/parser/Module.js";
 import { AccordionElement, AccordionPanel } from "../main/gui/Accordion.js";
 import {WorkspaceSettings } from "../communication/Data.js";
-import { NotifierClient } from "./NotifierClient.js";
 import { CacheManager } from "../tools/database/CacheManager.js";
 import jQuery from 'jquery';
+import { SSEManager } from "./SSEManager.js";
 
 export class NetworkManager {
-
+    
     // sqlIdeURL = "http://localhost:6500/servlet/";
     sqlIdeURL = "https://www.sql-ide.de/servlet/";
-
+    
     timerhandle: any;
-
+    
     ownUpdateFrequencyInSeconds: number = 25;
     teacherUpdateFrequencyInSeconds: number = 5;
-
+    
     updateFrequencyInSeconds: number = 25;
     forcedUpdateEvery: number = 25;
     forcedUpdatesInARow: number = 0;
-
+    
     secondsTillNextUpdate: number = this.updateFrequencyInSeconds;
     errorHappened: boolean = false;
-
+    
     interval: any;
-
+    
     counterTillForcedUpdate: number;
-
-    notifierClient: NotifierClient;
-
+    
     constructor(private main: Main, private $updateTimerDiv: JQuery<HTMLElement>) {
 
     }
-
+    
     initializeTimer() {
 
         let that = this;
@@ -44,13 +42,13 @@ export class NetworkManager {
         if (this.interval != null) clearInterval(this.interval);
 
         this.counterTillForcedUpdate = this.forcedUpdateEvery;
-
+        
         this.interval = setInterval(() => {
-
+            
             if (that.main.user == null) return; // don't call server if no user is logged in
-
+            
             that.secondsTillNextUpdate--;
-
+            
             if (that.secondsTillNextUpdate < 0) {
                 that.secondsTillNextUpdate = that.updateFrequencyInSeconds;
                 that.counterTillForcedUpdate--;
@@ -63,15 +61,15 @@ export class NetworkManager {
                     }
                 }
 
-
+                
                 that.sendUpdates(() => { }, doForceUpdate, false);
-
+                
             }
-
+            
             let $rect = this.$updateTimerDiv.find('.jo_updateTimerRect');
-
+            
             $rect.attr('width', that.secondsTillNextUpdate + "px");
-
+            
             if (that.errorHappened) {
                 $rect.css('fill', '#c00000');
                 this.$updateTimerDiv.attr('title', "Fehler beim letzten Speichervorgang -> Werd's wieder versuchen");
@@ -79,15 +77,17 @@ export class NetworkManager {
                 $rect.css('fill', '#008000');
                 this.$updateTimerDiv.attr('title', that.secondsTillNextUpdate + " Sekunden bis zum nächsten Speichern");
             }
-
+            
             PerformanceCollector.sendDataToServer();
-
+            
         }, 1000);
-
+        
     }
 
-    initializeNotifierClient(){
-        this.notifierClient = new NotifierClient(this.main, this);
+    initializeSSE() {
+        SSEManager.subscribe("doFileUpdate", (data) => {
+            this.sendUpdates(() => {}, true);
+        })
     }
 
     sendUpdates(callback?: () => void, sendIfNothingIsDirty: boolean = false, sendBeacon: boolean = false) {
@@ -96,14 +96,14 @@ export class NetworkManager {
             if (callback != null) callback();
             return;
         }
-
+        
         this.main.projectExplorer.writeEditorTextToFile();
-
+        
         let classDiagram = this.main.rightDiv?.classDiagram;
         let userSettings = this.main.user.settings;
 
         if (classDiagram?.dirty || this.main.userDataDirty) {
-
+            
             this.main.userDataDirty = false;
             userSettings.classDiagram = classDiagram?.serialize();
             this.sendUpdateUserSettings(() => { }, sendBeacon);

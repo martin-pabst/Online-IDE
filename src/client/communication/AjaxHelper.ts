@@ -1,5 +1,6 @@
 import { LoginRequest, PerformanceData } from "./Data.js";
 import jQuery from 'jquery';
+import { SSEManager } from "./SSEManager.js";
 // export var credentials: { username: string, password: string } = { username: null, password: null };
 
 export class PerformanceCollector {
@@ -66,7 +67,12 @@ export function ajax(url: string, request: any, successCallback: (response: any)
 
             PerformanceCollector.registerPerformanceEntry(url, time);
 
-            if(response["csrfToken"] != null) csrfToken = response["csrfToken"];
+            if(response["csrfToken"] != null)
+            {
+                csrfToken = response["csrfToken"];
+                SSEManager.open(csrfToken);
+            }
+            
 
             showNetworkBusy(false);
             if (response.success != null && response.success == false || typeof (response) == "string" && response == '') {
@@ -125,7 +131,7 @@ export function extractCsrfTokenFromGetRequest(){
 
 export async function ajaxAsync(url: string, data: any): Promise<any>{
     let headers: [string, string][] = [["content-type", "text/json"]];
-    
+
     if(csrfToken != null){
         headers.push(["x-token-pm", csrfToken]);
     }
@@ -141,6 +147,7 @@ export async function ajaxAsync(url: string, data: any): Promise<any>{
 
         if(obj["token"] != null){
             csrfToken = obj["token"];
+            SSEManager.open(csrfToken);
         }
 
         if(obj == null){

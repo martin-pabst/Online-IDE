@@ -29,6 +29,7 @@ type JavaOnlineConfig = {
     withConsole?: boolean,
     withErrorList?: boolean,
     withBottomPanel?: boolean,
+    jsonStore?: string,
     speed?: number | "max",
     id?: string,
     hideStartPanel?: boolean,
@@ -125,7 +126,7 @@ export class MainEmbedded implements MainBase {
     semicolonAngel: SemicolonAngel;
 
     userSpritesheet: PIXI.Spritesheet;
-    
+
     constructor($div: JQuery<HTMLElement>, private scriptList: JOScript[]) {
 
         this.readConfig($div);
@@ -143,6 +144,15 @@ export class MainEmbedded implements MainBase {
                 }
 
             });
+        }
+
+
+        if (window.location.hash) {
+            const id = window.location.hash.slice(6);
+            if (id && confirm("Das Laden von einem externen Workspace wird diese Workspace überschreiben. Möchtest du fortfahren?")) {
+               this.fileExplorer?.removeAllFiles();
+               this.loadWorkspaceFromJsonStore(id);
+            }
         }
 
         this.semicolonAngel = new SemicolonAngel(this);
@@ -216,7 +226,7 @@ export class MainEmbedded implements MainBase {
 
         /**
          * WICHTIG: Die Reihenfolge der beiden Operationen ist extrem wichtig.
-         * Falls das Model im readonly-Zustand gesetzt wird, funktioniert <Strg + .> 
+         * Falls das Model im readonly-Zustand gesetzt wird, funktioniert <Strg + .>
          * nicht und die Lightbulbs werden nicht angezeigt, selbst dann, wenn
          * später readonly = false gesetzt wird.
          */
@@ -447,6 +457,18 @@ export class MainEmbedded implements MainBase {
 
         $controlsDiv.append($buttonOpen, $buttonSave);
 
+        if (this.config.jsonStore) {
+            let $buttonJsonStore = jQuery(
+                '<div class="img_link-dark jo_button jo_active"' +
+                  'style="margin-right: 8px;" title="Workspace als URL speichern"></div>'
+            );
+
+            $buttonJsonStore.on("click", () => {
+                that.saveWorkspaceToJsonStore();
+            });
+
+            $controlsDiv.append($buttonJsonStore);
+        }
 
 
         if (this.config.withBottomPanel) {
@@ -563,7 +585,7 @@ export class MainEmbedded implements MainBase {
         <div class="jo_parenthesis_warning" title="Klammerwarnung!" style="bottom: 55px">
         <div class="jo_warning_light"></div>
         <div class="jo_pw_heading">{ }</div>
-        <div title="Letzten Schritt rückgängig" 
+        <div title="Letzten Schritt rückgängig"
             class="jo_pw_undo img_undo jo_button jo_active"></div>
         </div>
         `);
@@ -672,7 +694,7 @@ export class MainEmbedded implements MainBase {
         let $filesHeader = jQuery('<div class="joe_filesHeader jo_tabheading jo_active"  style="line-height: 24px">Programmdateien</div>');
 
         this.$filesListDiv = jQuery('<div class="joe_filesList jo_scrollable"></div>');
-        // for (let index = 0; index < 20; index++) {            
+        // for (let index = 0; index < 20; index++) {
         //     let $file = jQuery('<div class="jo_file jo_java"><div class="jo_fileimage"></div><div class="jo_filename"></div></div></div>');
         //     $filesList.append($file);
         // }
@@ -788,6 +810,32 @@ export class MainEmbedded implements MainBase {
         downloadFile(ws.toExportedWorkspace(), filename)
     }
 
+    saveWorkspaceToJsonStore() {
+        let ws = this.currentWorkspace;
+        const json = ws.toExportedWorkspace();
+        const jsonStore = this.config.jsonStore;
+        if (jsonStore) {
+            fetch(`${jsonStore}/api/v2/post`, {
+                method: "POST",
+                mode: "cors",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(json),
+            })
+              .then((r) => r.json())
+              .then((json) => {
+                  prompt(
+                      "Der Upload ist abgeschlossen. Besuche die URL, um den übermittelten Stand zu laden.",
+                      window.location.origin + "/#json=" + json.id
+                  );
+              })
+              .catch(() => {
+                  alert("Beim Upload ist was schief gelaufen. Bitte versuche es erneut!");
+              });
+        }
+    }
+
 
     makeBottomDiv($bottomDiv: JQuery<HTMLElement>, $buttonDiv: JQuery<HTMLElement>) {
 
@@ -852,6 +900,68 @@ export class MainEmbedded implements MainBase {
         $bottomDiv.append($tabs);
 
     }
+
+    loadWorkspaceFromJsonStore(id: string) {
+      const jsonStore = this.config.jsonStore;
+      if (jsonStore) {
+          fetch(`${jsonStore}/api/v2/${id}`, {
+              method: "GET",
+              mode: "cors",
+          })
+          .then((r) => r.text())
+          .then((text) => {
+              this.loadWorkspaceFromText(text)
+          })
+          .catch(() => {
+              alert("Beim Laden ist etwas schief gegangen. Bitte überprüfe die URL.");
+          });
+      }
+    }
+
+    loadWorkspaceFromText(text: string) {
+        let ew: ExportedWorkspace = JSON.parse(text);
+
+        if (ew.modules == null || ew.name == null || ew.settings == null) {
+            alert(`<div>Das Format der Datei ${file.name} passt nicht.</div>`);
+            return;
+        }
+
+        let ws: Workspace = new Workspace(ew.name, this, 0);
+        ws.settings = ew.settings;
+        ws.alterAdditionalLibraries();
+
+        for (let mo of ew.modules) {
+            let f: File = {
+                name: mo.name,
+                dirty: false,
+                saved: true,
+                text: mo.text,
+                text_before_revision: null,
+                submitted_date: null,
+                student_edited_after_revision: false,
+                version: 1,
+                is_copy_of_id: null,
+                repository_file_version: null,
+                identical_to_repository_version: null,
+                file_type: 0
+            };
+
+            let m = new Module(f, this);
+            ws.moduleStore.putModule(m);
+        }
+        this.currentWorkspace = ws;
+
+        if(this.fileExplorer != null){
+            this.fileExplorer.removeAllFiles();
+            ws.moduleStore.getModules(false).forEach(module => this.fileExplorer.addModule(module));
+            this.fileExplorer.setFirstFileActive();
+        } else {
+            this.setModuleActive(this.currentWorkspace.moduleStore.getFirstModule());
+        }
+
+        this.saveScripts();
+    }
+
     loadWorkspaceFromFile(file: globalThis.File) {
         let that = this;
         if (file == null) return;
@@ -862,49 +972,7 @@ export class MainEmbedded implements MainBase {
                 alert(`<div>Das Format der Datei ${file.name} passt nicht.</div>`);
                 return;
             }
-
-            let ew: ExportedWorkspace = JSON.parse(text);
-
-            if (ew.modules == null || ew.name == null || ew.settings == null) {
-                alert(`<div>Das Format der Datei ${file.name} passt nicht.</div>`);
-                return;
-            }
-
-            let ws: Workspace = new Workspace(ew.name, this, 0);
-            ws.settings = ew.settings;
-            ws.alterAdditionalLibraries();
-
-            for (let mo of ew.modules) {
-                let f: File = {
-                    name: mo.name,
-                    dirty: false,
-                    saved: true,
-                    text: mo.text,
-                    text_before_revision: null,
-                    submitted_date: null,
-                    student_edited_after_revision: false,
-                    version: 1,
-                    is_copy_of_id: null,
-                    repository_file_version: null,
-                    identical_to_repository_version: null,
-                    file_type: 0
-                };
-
-                let m = new Module(f, this);
-                ws.moduleStore.putModule(m);
-            }
-            that.currentWorkspace = ws;
-
-            if(that.fileExplorer != null){
-                that.fileExplorer.removeAllFiles();
-                ws.moduleStore.getModules(false).forEach(module => that.fileExplorer.addModule(module));
-                that.fileExplorer.setFirstFileActive();
-            } else {
-                this.setModuleActive(this.currentWorkspace.moduleStore.getFirstModule());
-            }
-
-            that.saveScripts();
-
+            that.loadWorkspaceFromText(text);
         };
         reader.readAsText(file);
 
@@ -929,18 +997,18 @@ export class MainEmbedded implements MainBase {
         <div class="jo_run-input-button-outer" class="jo_rix">
         <div class="jo_run-input-button" class="jo_rix">OK</div>
         </div>
-        
+
         <div class="jo_run-input-error" class="jo_rix"></div>
     </div>
     </div>
-    </div> 
+    </div>
     <div class="jo_run-inner">
     <div class="jo_graphics"></div>
     <div class="jo_output jo_scrollable"></div>
     </div>
-    
+
     </div>
-    
+
     `);
 
 
@@ -959,7 +1027,7 @@ export class MainEmbedded implements MainBase {
             Die Variablen sind nur dann sichtbar, wenn das Programm
             <ul>
             <li>im Einzelschrittmodus ausgeführt wird(Klick auf <span class="img_step-over-dark jo_inline-image"></span>),</li>
-            <li>an einem Breakpoint hält (Setzen eines Breakpoints mit Mausklick links neben den Zeilennummern und anschließendes Starten des Programms mit 
+            <li>an einem Breakpoint hält (Setzen eines Breakpoints mit Mausklick links neben den Zeilennummern und anschließendes Starten des Programms mit
                 <span class="img_start-dark jo_inline-image"></span>) oder </li>
                 <li>in sehr niedriger Geschwindigkeit ausgeführt wird (weniger als 10 Schritte/s).
                 </ul>
@@ -988,10 +1056,8 @@ export class MainEmbedded implements MainBase {
             let spritesheet = new SpritesheetData();
 
             await spritesheet.initializeSpritesheetForWorkspace(this.currentWorkspace, this, this.config.spritesheetURL);
-    
+
         }
     }
 
 }
-
-

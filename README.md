@@ -28,7 +28,7 @@ Die Lehrkraft hat Zugriff auf die Workspaces der Schüler/innen, so dass sie Hau
 Die Java-ähnliche Programmiersprache ist im [LearnJ-Wiki](https://www.learnj.de) ausführlich beschrieben und dort ist die IDE in Embedded-Form auch vielfach zu sehen. Hier [ein schönes Beispiel des vollen Funktionsumfangs!](https://www.learnj.de/doku.php?id=api:documentation:grafik:animation#beispiel_4feuerwerk)
 
 ## Integration als <iframe> in Moodle
-Mehr dazu [auf dieser Seite.](https://www.embed.learnj.de/createwrapper.html) 
+Mehr dazu [auf dieser Seite.](https://www.embed.learnj.de/createwrapper.html)
 
 ## Integration in eigene Webseiten
 Nach dem Checkout des Repository können Sie den dist-Ordner mit den fertigen Programmdateien erstellen mittels:
@@ -56,8 +56,8 @@ Im Header der Webseite müssen die verwendeten Bibliotheken geladen werden:
     <link rel="preload" href="lib/monaco-editor/dev/vs/editor/editor.main.nls.de.js" as="script">
 
     <link rel='stylesheet' type='text/css' media='screen' href='assets/fonts/fonts.css'>
-    
-    <script src="lib/p5.js/p5.js"></script>    
+
+    <script src="lib/p5.js/p5.js"></script>
     <script src="lib/pako/pako.js"></script>
     <script src="lib/jszip/jszip.js"></script>
     <script src="lib/upng/UPNG.js"></script>
@@ -73,9 +73,9 @@ Im Header der Webseite müssen die verwendeten Bibliotheken geladen werden:
 ```
 
 Die Bestandteile des verwendeten Monaco Editors werden dynamisch aus dem Unterverzeichnis `window.javaOnlineDir + window.monacoEditorPath`nachgeladen, das Spritesheet aus dem Verzeichnis `window.javaOnlineDir + "assets/graphics"`. Der Defaultwert von `window.javaOnlineDir` ist "", der Defaultwert von `window.monacoEditorPath` ist `"lib/monaco-editor/dev/vs"`.
-  
 
-Alle divs innerhalb des `<body>`-Elements, die die Klasse `java-online` tragen, werden nach dem `DOMContentLoaded`-Event automatisch in Embedded-IDEs umgewandelt. Die Java-Quelltexte werden in `<script>`-Tags innerhalb der divs verpackt. 
+
+Alle divs innerhalb des `<body>`-Elements, die die Klasse `java-online` tragen, werden nach dem `DOMContentLoaded`-Event automatisch in Embedded-IDEs umgewandelt. Die Java-Quelltexte werden in `<script>`-Tags innerhalb der divs verpackt.
 
 ### Minimal-Beispiel
 ```html
@@ -98,10 +98,10 @@ Dieses Beispiel erscheint so im Browser:
 
 ### Beispiel mit Dateiliste, Console, Fehlerliste und Tipp
 ```html
-<div class="java-online" style="width: 80%; height: 400px; margin-left: 5px" 
+<div class="java-online" style="width: 80%; height: 400px; margin-left: 5px"
 data-java-online="{
-    'id': 'Vererbung_Beispiel_1',  
-    'withBottomPanel': true, 
+    'id': 'Vererbung_Beispiel_1',
+    'withBottomPanel': true,
     'withFileList': true,
     'withPCode': true,
     'withConsole': true,
@@ -117,23 +117,23 @@ new Quadrat(40, 20, 300);
 <script type="text/plain" title="Quadrat.java">
 class Quadrat extends Rectangle {
     public Quadrat(double left, double top, double width){
-        super(left, top, width, width); 
+        super(left, top, width, width);
     }
 }
 </script>
 
 <script type="text/plain" title="Tipp" data-type="hint">
 ## Tipp:
-Tipps werden in einer einfachen Markdown-Syntax 
+Tipps werden in einer einfachen Markdown-Syntax
 verfasst, die **Fettschrift** u.ä. ermöglicht, aber
- auch Syntax-Highlighting im Fließtext (``class Quadrat extends Rectangle { }``) 
+ auch Syntax-Highlighting im Fließtext (``class Quadrat extends Rectangle { }``)
  und in ganzen Absätzen:
 /```  (den / weglassen!)
 double v = Math.random()*8 + 2; // Betrag der Geschwindigkeit zwischen 2 und 10
 double w = Math.random()*2*Math.PI; // Winkel zwischen 0 und 2*PI
 vx = v * Math.cos(w);
 vy = v * Math.sin(w);
-/``` (den / weglassen!)            
+/``` (den / weglassen!)
 </script>
 
 </div>
@@ -145,8 +145,9 @@ Dieses Beispiel erscheint so im Browser:
 Im Attribut `data-java-online` kann die Embedded-IDE konfiguriert werden:
 ```javascript
 data-java-online="{
-    'id': 'Vererbung_Beispiel_1',   // eindeutige id je URL und Embedded-IDE in der IndexedDB des Browsers  
-    'withBottomPanel': true,        // mit unterem Panel 
+    'id': 'Vererbung_Beispiel_1',   // eindeutige id je URL und Embedded-IDE in der IndexedDB des Browsers
+    'jsonStore': 'https://mein-json-store.de', // die URL zu einer Instanz von https://github.com/openpatch/json-store, um Workspace hinter einer URL zu hinterlegen
+    'withBottomPanel': true,        // mit unterem Panel
     'withFileList': true,           // falls mit unterem Panel: mit/ohne Dateiliste links
     'withPCode': true,              // falls mit unterem Panel: mit/ohne PCode-Tab
     'withConsole': true,            // falls mit unterem Panel: mit/ohne Console-Tab

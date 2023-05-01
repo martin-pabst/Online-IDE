@@ -5,39 +5,82 @@
    viewBox="0 0 16 16"
    fill="none"
    version="1.1"
-   id="svg10635"
-   sodipodi:docname="test-state-running.svg"
+   id="svg1496"
+   sodipodi:docname="test-running.svg"
    inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
   <defs
-     id="defs10639" />
+     id="defs1500" />
   <sodipodi:namedview
-     id="namedview10637"
-     pagecolor="#505050"
-     bordercolor="#eeeeee"
-     borderopacity="1"
-     inkscape:showpageshadow="0"
-     inkscape:pageopacity="0"
+     id="namedview1498"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
      inkscape:pagecheckerboard="0"
-     inkscape:deskcolor="#505050"
+     inkscape:deskcolor="#d1d1d1"
      showgrid="false"
-     inkscape:zoom="14.75"
-     inkscape:cx="-5.0847458"
-     inkscape:cy="8"
-     inkscape:window-width="1920"
-     inkscape:window-height="1137"
-     inkscape:window-x="1272"
-     inkscape:window-y="-8"
+     inkscape:zoom="90.509668"
+     inkscape:cx="7.5295824"
+     inkscape:cy="9.0377085"
+     inkscape:window-width="3840"
+     inkscape:window-height="2066"
+     inkscape:window-x="-11"
+     inkscape:window-y="-11"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg10635" />
+     inkscape:current-layer="svg1496" />
   <path
      fill-rule="evenodd"
      clip-rule="evenodd"
-     d="M3.99976 14V2.18091L12.9998 8.06215L3.99976 14ZM5.49999 4.99997L10.3145 8.06215L5.49999 11.1809L5.49999 4.99997Z"
-     fill="#89D185"
-     id="path10633"
-     style="fill:#ff1f1f;fill-opacity:1" />
+     d="m 2.4928005,12.3239 c -0.9677,-1.2333 -1.49339999,-2.75578 -1.4928,-4.32345 -9.999e-5,-1.53049 0.5014,-3.01884 1.4277,-4.23717 0.9264,-1.21833 2.2264,-2.0995 3.70125,-2.50859 1.47481,-0.409086 3.04305,-0.323551 4.4646205,0.24351 1.42156,0.56706 2.61811,1.5844 3.40643,2.89625 v -2.394 h 1 v 3.5 l -0.5,0.5 h -3.5 v -1 h 2.189 C 12.521051,3.84546 11.487631,2.94567 10.251731,2.44298 9.0158205,1.94028 7.6477405,1.86329 6.3632405,2.22413 c -1.28454,0.36085 -2.41234,1.139 -3.20574,2.21174 -0.7933,1.07275 -1.207,2.37906 -1.1757,3.71292 0.0312,1.33386 0.5055,2.61941 1.3481,3.65381 0.8427,1.0345 2.0057,1.759 3.30567,2.0594 1.29998,0.3004 2.66296,0.1595 3.8740005,-0.4005 1.21104,-0.5599 2.20123,-1.5071 2.81443,-2.692 l 0.887,0.462 c -0.72304,1.3909 -1.89206,2.4989 -3.31976,3.1464 -1.4277005,0.6475 -3.0314305,0.797 -4.5542105,0.4246 -1.52283,-0.3724 -2.87653,-1.2452 -3.84423,-2.4786 z"
+     fill="#c5c5c5"
+     id="path1494"
+     sodipodi:nodetypes="ccccccccccccccscccscccscc" >
+	 <animate attributeName="fill"
+			repeatCount="indefinite" 
+			calcMode="spline" dur="1s"
+			keyTimes="0;.5;1" values="#808080; #ffffff; #808080" 
+			keySplines="0.25 0.0 0.6 1; 0.25 0.0 0.6 1"
+   />
+  </path>
+  <path
+     fill-rule="evenodd"
+     clip-rule="evenodd"
+     d="M 8.9656633,7.9254802 C 9.0828029,8.4392052 8.7099489,8.4628088 8.4018576,8.5645103 L 3.3901787,9.9108128 3.1313596,8.944887 8.3429852,7.5450089 c 0.358524,-0.089782 0.5343356,0.097224 0.6226781,0.3804713 z"
+     fill="#c5c5c5"
+     id="path1719"
+     sodipodi:nodetypes="cccccc"
+     style="fill:#ff3300"
+     inkscape:transform-center-x="1.7710273"
+     inkscape:transform-center-y="0.50347022">
+	 <animate attributeName="fill"
+			repeatCount="indefinite" 
+			calcMode="spline" dur="1.5s"
+			keyTimes="0;.5;1" values="#800000; #ff3030; #800000" 
+			keySplines="0.25 0.0 0.6 1; 0.25 0.0 0.6 1"
+   />
+   <animateTransform attributeType="xml" attributeName="transform" type="rotate" 
+   from="0 8.5 8.0" to="360 8.5 8.0" dur="3.0s" additive="sum" repeatCount="indefinite" />
+  </path>
+  <path
+     fill-rule="evenodd"
+     clip-rule="evenodd"
+     d="M 8.4869114,8.5034776 C 7.9603732,8.483664 8.0340756,8.1174056 8.0155794,7.79349 v -3.793 h 1 v 4 c -0.00607,0.3695449 -0.232207,0.4909652 -0.528668,0.5029876 z"
+     fill="#c5c5c5"
+     id="path1619"
+     sodipodi:nodetypes="cccccc"
+     style="fill:#ff3300">
+	 <animate attributeName="fill"
+			repeatCount="indefinite" 
+			calcMode="spline" dur="1.5s"
+			keyTimes="0;.5;1" values="#800000; #ff3030; #800000" 
+			keySplines="0.25 0.0 0.6 1; 0.25 0.0 0.6 1"
+   />
+   <animateTransform attributeType="xml" attributeName="transform" type="rotate" 
+   from="0 8.5 8.0" to="360 8.5 8.0" dur="15.0s" additive="sum" repeatCount="indefinite" />
+	 </path>
 </svg>

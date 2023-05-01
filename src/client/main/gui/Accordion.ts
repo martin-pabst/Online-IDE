@@ -33,6 +33,7 @@ export class AccordionPanel {
     $captionElement: JQuery<HTMLElement>;
     $buttonNew: JQuery<HTMLElement>;
     $listElement: JQuery<HTMLElement>;
+    $listOuter: JQuery<HTMLElement>;
 
     private fixed: boolean;
 
@@ -55,7 +56,7 @@ export class AccordionPanel {
 
     private _$caption: JQuery<HTMLElement>;
 
-    constructor(private accordion: Accordion, caption: string|JQuery<HTMLElement>, private flexWeight: string,
+    constructor(private accordion: Accordion, caption: string | JQuery<HTMLElement>, private flexWeight: string,
         private newButtonClass: string, private buttonNewTitle: string,
         private defaultIconClass: string, private withDeleteButton: boolean, private withFolders: boolean,
         private kind: "workspace" | "file" | "class" | "student", private enableDrag: boolean, private acceptDropKinds: string[]) {
@@ -105,14 +106,21 @@ export class AccordionPanel {
 
     }
 
-    hide(){
-        this.$captionElement.hide();
-        this.$listElement.hide();
-    }
+    hide() {
 
-    show(){
+        this.$listOuter.animate({
+            'flex-grow': 0.001
+        }, 1000, () => { this.$listOuter.hide(); this.$captionElement.hide(); });
+        
+    }
+    
+    show() {
+        let targetGrow = this.$listOuter.data('grow');
+        this.$listOuter.show();
         this.$captionElement.show();
-        this.$listElement.show();
+        this.$listOuter.animate({
+            'flex-grow': targetGrow
+        }, 1000);
     }
 
     collapseAll() {
@@ -322,14 +330,14 @@ export class AccordionPanel {
 
         }
 
-        let $listOuter = jQuery('<div id="filelistouter" class="jo_projectexplorerdiv jo_scrollable" data-grow="'
+        this.$listOuter = jQuery('<div class="jo_projectexplorerdiv jo_scrollable" data-grow="'
             + this.flexWeight + '" style="flex-grow: ' + this.flexWeight + '"></div>');
         this.$listElement = jQuery('<div class="jo_filelist"></div>')
 
-        $listOuter.append(this.$listElement);
+        this.$listOuter.append(this.$listElement);
 
         $accordionDiv.append(this.$captionElement);
-        $accordionDiv.append($listOuter);
+        $accordionDiv.append(this.$listOuter);
 
         let $ce = this.$captionElement;
         let $li = this.$listElement.parent();
@@ -660,7 +668,7 @@ export class AccordionPanel {
         };
 
         element.$htmlFirstLine[0].addEventListener("contextmenu", (event) => {
-                contextmenuHandler(event);
+            contextmenuHandler(event);
         }, false);
 
         // long press for touch devices

@@ -88,6 +88,8 @@ export class NetworkManager {
         SSEManager.subscribe("doFileUpdate", (data) => {
             this.sendUpdates(() => {}, true);
         })
+
+
     }
 
     sendUpdates(callback?: () => void, sendIfNothingIsDirty: boolean = false, sendBeacon: boolean = false) {

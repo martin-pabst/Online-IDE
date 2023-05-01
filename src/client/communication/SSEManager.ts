@@ -35,7 +35,7 @@ export class SSEManager {
                     let callback: SSECallbackMethod = undefined;
 
                     if(ssm.messageId != null){
-                        callback = async (data: any) => {
+                        callback = async (data?: any) => {
                             let message: SseCallbackRequest = {messageId: ssm.messageId, token: ssm.token, data: JSON.stringify(data)}
                             return ajaxAsync("/servlet/sseCallback",  message);
                         }
@@ -62,5 +62,8 @@ export class SSEManager {
         this.eventTypeToSubscriberInfoMap.set(eventType, { eventType: eventType, messageHandler: handler });
     }
 
+    public static unsubscribe(eventType: string){
+        this.eventTypeToSubscriberInfoMap.delete(eventType);
+    }
 
 }

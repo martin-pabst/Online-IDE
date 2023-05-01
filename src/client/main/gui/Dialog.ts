@@ -18,7 +18,7 @@ export class Dialog {
         this.$dialog = jQuery('#dialog');
         jQuery('#main').css('visibility', 'hidden');
         this.$dialog.append(jQuery(
-            '<div style="flex: 1"></div>' +
+            '<div style="height: 20px"></div>' +
             '<div class="dialog-main"></div>' +
             '<div class="dialog-footer"></div>' +
             '<div style="flex: 4"></div>'
@@ -26,6 +26,9 @@ export class Dialog {
         this.$dialogMain = this.$dialog.find('.dialog-main');
         this.$dialogFooter = this.$dialog.find('.dialog-footer');
         this.$dialog.css('visibility', 'visible');
+
+        this.$dialogMain.empty();
+        this.$dialogFooter.empty();
     }
 
 

@@ -173,7 +173,8 @@ export type LoginResponse = {
     user: UserData,
     classdata: ClassData[], // null if !is_teacher
     workspaces: Workspaces,
-    isTestuser: boolean
+    isTestuser: boolean,
+    activePruefung: Pruefung
 }
 
 export type LogoutRequest = {
@@ -195,9 +196,10 @@ export type SendUpdatesRequest = {
 }
 
 export type SendUpdatesResponse = {
+    success: boolean,
     workspaces: Workspaces,
     filesToForceUpdate: FileData[],
-    success: boolean
+    activePruefung: Pruefung
 }
 
 export type UpdateUserSettingsRequest = {
@@ -808,5 +810,40 @@ export type CRUDPruefungRequest = {
 export type CRUDPruefungResponse = {
     success: boolean,
     newPruefungWithIds?: Pruefung,
+    message: string
+}
+
+
+
+export type StudentPruefungStateInfo = {
+    timestamp: number,
+    state: string,
+    running: boolean
+} 
+
+export type GetPruefungStudentStatesRequest = {
+    pruefungId: number
+}
+
+export type GetPruefungStudentStatesResponse = {
+    success: boolean,
+    pruefungState: string,
+    pruefungStudentStates: {[id: number]: StudentPruefungStateInfo},
+    message: string
+}
+
+
+// data class ReportPruefungStudentStateRequest(var pruefungId: Int, var clientState: String);
+// data class ReportPruefungStudentStateResponse(var success: Boolean, var pruefungState: String, var message: String);
+
+export type ReportPruefungStudentStateRequest = {
+    pruefungId: number,
+    clientState: String,
+    running: Boolean
+}
+
+export type ReportPruefungStudentStateResponse = {
+    success: boolean,
+    pruefungState: string,
     message: string
 }

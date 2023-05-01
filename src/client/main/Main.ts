@@ -35,6 +35,7 @@ import { checkIfMousePresent } from "../tools/HtmlTools.js";
 import { InconsistencyFixer } from "../workspace/InconsistencyFixer.js";
 import { SpriteManager } from "../spritemanager/SpriteManager.js";
 import * as PIXI from 'pixi.js';
+import { PruefungManagerForStudents } from './pruefung/PruefungManagerForStudents.js';
 
 export class Main implements MainBase {
 
@@ -121,6 +122,8 @@ export class Main implements MainBase {
     repositoryCreateManager: RepositoryCreateManager;
     repositoryUpdateManager: RepositorySettingsManager;
     repositoryCheckoutManager: RepositoryCheckoutManager;
+
+    pruefungManagerForStudents: PruefungManagerForStudents;
 
     spriteManager: SpriteManager;
 

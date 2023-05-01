@@ -21,7 +21,8 @@ export class TeacherExplorer {
 
     classPanelMode: "classes" | "tests" = "classes";
 
-    constructor(private main: Main, private classData: ClassData[]) {
+
+    constructor(private main: Main, public classData: ClassData[]) {
         this.fetchPruefungen();
     }
 
@@ -42,46 +43,17 @@ export class TeacherExplorer {
 
     initStudentPanel() {
 
-        let that = this;
-
         this.studentPanel = new AccordionPanel(this.main.projectExplorer.accordion,
             "Schüler/innen", "3", null,
             "", "student", false, false, "student", false, []);
 
         this.studentPanel.selectCallback = (ae: UserData) => {
-
-            that.main.networkManager.sendUpdates(() => {
-
-                let request: GetWorkspacesRequest = {
-                    ws_userId: ae.id,
-                    userId: this.main.user.id,
-                    language: 0
-                }
-
-                ajax("getWorkspaces", request, (response: GetWorkspacesResponse) => {
-                    if (response.success == true) {
-
-                        if (that.main.workspacesOwnerId == that.main.user.id) {
-                            that.ownWorkspaces = that.main.workspaceList.slice();
-                            that.currentOwnWorkspace = that.main.currentWorkspace;
-                        }
-
-                        that.main.restoreWorkspaces(response.workspaces, false);
-                        that.main.workspacesOwnerId = ae.id;
-                        that.main.projectExplorer.setExplorerColor("rgba(255, 0, 0, 0.2");
-                        that.main.projectExplorer.$homeAction.show();
-                        Helper.showHelper("homeButtonHelper", this.main);
-
-                        that.main.bottomDiv.showHomeworkTab();
-                        that.main.bottomDiv.homeworkManager.attachToWorkspaces(that.main.workspaceList);
-                    }
-
-                    this.main.networkManager.updateFrequencyInSeconds = this.main.networkManager.teacherUpdateFrequencyInSeconds;
-                    this.main.networkManager.secondsTillNextUpdate = this.main.networkManager.teacherUpdateFrequencyInSeconds;
-
-                });
-
-            });
+            if (this.classPanelMode == "classes") {
+                this.main.projectExplorer.fetchAndRenderWorkspaces(ae);
+            } else {
+                let selectedPruefung = this.classPanel.getSelectedElement().externalElement;
+                this.main.projectExplorer.fetchAndRenderWorkspaces(ae, this, selectedPruefung);
+            }
         }
 
     }
@@ -113,6 +85,7 @@ export class TeacherExplorer {
 
     initClassPanel() {
         let that = this;
+        let projectExplorer = this.main.projectExplorer;
 
         let $buttonContainer = jQuery('<div class="joe_teacherExplorerClassButtons"></div>');
         let toggleButtonClass = new GUIToggleButton("Klassen", $buttonContainer, true);
@@ -123,44 +96,49 @@ export class TeacherExplorer {
             $buttonContainer, "2", "", "", "class", false, false, "class", false, []);
 
         let $buttonNew = jQuery('<div class="jo_button jo_active img_add-test-dark" title="Neue Prüfung erstellen">');
-            this.classPanel.$captionElement.find('.jo_actions').append($buttonNew);
+        this.classPanel.$captionElement.find('.jo_actions').append($buttonNew);
 
 
         $buttonNew.attr("title", "Neue Prüfung erstellen").hide();
 
         this.classPanel.selectCallback = (ea) => {
 
-            if(this.classPanelMode == "classes"){
-                that.main.networkManager.sendUpdates(() => {
-    
+            that.main.networkManager.sendUpdates(() => {
+
+                if (this.classPanelMode == "classes") {
+
                     let classData = <ClassData>ea;
                     if (classData != null) {
                         this.renderStudents(classData.students);
                     }
-    
-                });
-            } else {
-                this.onSelectPruefung(<Pruefung>ea);
-            }
+
+                } else {
+                    this.onSelectPruefung(<Pruefung>ea);
+                }
+            });
 
         }
 
         toggleButtonTest.onChange(async (checked) => {
             $buttonNew.toggle(200);
             that.classPanelMode = checked ? "tests" : "classes";
-            if(checked){
-                if (that.main.workspacesOwnerId == that.main.user.id) {
-                    that.ownWorkspaces = that.main.workspaceList.slice();
-                    that.currentOwnWorkspace = that.main.currentWorkspace;
+            that.main.networkManager.sendUpdates(() => {
+                if (checked) {
+                    if (that.main.workspacesOwnerId == that.main.user.id) {
+                        that.ownWorkspaces = that.main.workspaceList.slice();
+                        that.currentOwnWorkspace = that.main.currentWorkspace;
+                    }
+                    projectExplorer.workspaceListPanel.hide();
+                    projectExplorer.fileListPanel.clear();
+                    this.studentPanel.hide();
+                    this.renderPruefungen();
+                } else {
+                    this.main.projectExplorer.workspaceListPanel.show();
+                    this.studentPanel.show();
+                    this.renderClasses(this.classData);
+                    this.main.projectExplorer.onHomeButtonClicked();
                 }
-                
-                this.renderPruefungen();
-            } else {
-                this.main.projectExplorer.workspaceListPanel.show();
-                this.studentPanel.show();    
-                this.renderClasses(this.classData);
-                this.main.projectExplorer.onHomeButtonClicked();
-            }
+            })
         })
 
         $buttonNew.on('pointerdown', (e) => {
@@ -170,15 +148,22 @@ export class TeacherExplorer {
         $buttonNew.on('pointerup', async (e) => {
             e.stopPropagation();
             try {
-                let newPruefung = await new PruefungDialog(this.main).open(this.classData);
+                let newPruefung = await new PruefungDialog(this.main, this.classData).open();
+                let w = new Workspace("Prüfungsvorlage", this.main, this.main.user.id);
+                w.id = newPruefung.template_workspace_id;
+                w.pruefung_id = newPruefung.id;
+                this.main.workspaceList.push(w);
+                this.ownWorkspaces = this.main.workspaceList;
+                this.pruefungen.push(newPruefung);
                 this.addPruefungToClassPanel(newPruefung);
-            } catch(error) {
+            } catch (error) {
 
             }
-            
+
         })
 
     }
+
     onSelectPruefung(p: Pruefung) {
 
         let projectExplorer = this.main.projectExplorer;
@@ -188,18 +173,16 @@ export class TeacherExplorer {
         this.main.projectExplorer.setExplorerColor(null);
         this.main.projectExplorer.$homeAction.hide();
 
-        if(p.state == "preparing"){
-            this.studentPanel.clear();    
+        if (p.state == "preparing") {
+            this.studentPanel.clear();
+            this.restoreOwnWorkspaces();
             let workspace = this.main.workspaceList.find(w => w.id == p.template_workspace_id);
             projectExplorer.setWorkspaceActive(workspace);
-            projectExplorer.workspaceListPanel.hide();
-
             this.studentPanel.hide();
         } else {
-            projectExplorer.workspaceListPanel.show();
             this.studentPanel.show();
             let klass = this.classData.find(c => c.id = p.klasse_id);
-            if(klass != null){
+            if (klass != null) {
                 this.renderStudents(klass.students);
             }
         }
@@ -217,7 +200,7 @@ export class TeacherExplorer {
             return 0;
         })
 
-        for(let i = 0; i < userDataList.length; i++){
+        for (let i = 0; i < userDataList.length; i++) {
             let ud = userDataList[i];
             let ae: AccordionElement = {
                 name: ud.familienname + ", " + ud.rufname,
@@ -234,7 +217,7 @@ export class TeacherExplorer {
     renderClasses(classDataList: ClassData[]) {
         this.studentPanel.clear();
         this.classPanel.clear();
-        
+
         classDataList.sort((a, b) => {
             if (a.name > b.name) return 1;
             if (b.name > a.name) return -1;
@@ -253,13 +236,13 @@ export class TeacherExplorer {
 
     }
 
-    renderPruefungen(){
+    renderPruefungen() {
         this.classPanel.clear();
-        
+
         this.pruefungen.forEach(p => this.addPruefungToClassPanel(p));
     }
 
-    addPruefungToClassPanel(p: Pruefung){
+    addPruefungToClassPanel(p: Pruefung) {
         let ae: AccordionElement = {
             name: p.name,
             externalElement: p,
@@ -272,31 +255,38 @@ export class TeacherExplorer {
 
     }
 
-    updateClassNameAndState(p: Pruefung){
+    updateClassNameAndState(p: Pruefung) {
         let ae: AccordionElement = this.classPanel.findElement(p);
-        if(ae != null){
-            let klasse = this.classData.find(c => c.id = p.klasse_id);
-            if(klasse != null){
+        if (ae != null) {
+            let klasse = this.classData.find(c => c.id == p.klasse_id);
+            if (klasse != null) {
                 let $text = jQuery('<span></span>');
                 $text.addClass('joe_pruefung_klasse');
-                $text.text(`(${klasse.name}, ${PruefungCaptions[p.state]})`);
+                $text.text(`(${klasse.name})`);
                 $text.css('margin', '0 4px');
-                ae.$htmlFirstLine.find('.jo_textAfterName').empty().append($text);            
-            }    
+                ae.$htmlFirstLine.find('.jo_textAfterName').empty().append($text);
+            }
             let $buttonDiv = ae.$htmlFirstLine?.find('.jo_additionalButtonRepository');
-            if($buttonDiv != null){
+            if ($buttonDiv != null) {
                 let $button = jQuery('<div class="img_edit-dark jo_button jo_active" title="Bearbeiten..."></div>');
                 $buttonDiv.append($button);
-                $buttonDiv.on('pointerdown', (e) => {
+                $buttonDiv.on('pointerdown', async (e) => {
                     e.stopPropagation();
-                    new PruefungDialog(this.main, p).open(this.classData);
+                    this.main.networkManager.sendUpdates(async () => {
+                        try {
+                            await new PruefungDialog(this.main, this.classData, p).open();
+                            this.updateClassNameAndState(p);
+                        } catch (ex) {
+    
+                        }
+                    })
                 })
             }
-
+            this.classPanel.setElementClass(ae, "test-" + p.state);
         }
     }
 
-    async fetchPruefungen(){
+    async fetchPruefungen() {
 
         let response = await ajaxAsync("/servlet/getPruefungenForLehrkraft", {})
         this.pruefungen = response.pruefungen;

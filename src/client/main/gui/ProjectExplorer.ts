@@ -9,12 +9,14 @@ import { Workspace } from "../../workspace/Workspace.js";
 import { Main } from "../Main.js";
 import { AccordionPanel, Accordion, AccordionElement, AccordionContextMenuItem } from "./Accordion.js";
 import { Helper } from "./Helper.js";
-import { WorkspaceData, Workspaces, ClassData } from "../../communication/Data.js";
+import { WorkspaceData, Workspaces, ClassData, UserData, GetWorkspacesRequest, GetWorkspacesResponse, Pruefung } from "../../communication/Data.js";
 import { dateToString } from "../../tools/StringTools.js";
 import { DistributeToStudentsDialog } from "./DistributeToStudentsDialog.js";
 import { WorkspaceSettingsDialog } from "./WorkspaceSettingsDialog.js";
 import { SpritesheetData } from "../../spritemanager/SpritesheetData.js";
 import { FileTypeManager } from './FileTypeManager.js';
+import { ajax, ajaxAsync } from '../../communication/AjaxHelper.js';
+import { TeacherExplorer } from './TeacherExplorer.js';
 
 
 export class ProjectExplorer {
@@ -70,7 +72,7 @@ export class ProjectExplorer {
                     student_edited_after_revision: false,
                     version: 1,
                     panelElement: accordionElement,
-                    identical_to_repository_version: false, 
+                    identical_to_repository_version: false,
                     file_type: 0
                 };
                 that.fileListPanel.setElementClass(accordionElement, FileTypeManager.filenameToFileType(accordionElement.name).iconclass)
@@ -111,7 +113,7 @@ export class ProjectExplorer {
                 that.main.networkManager.sendDeleteWorkspaceOrFile("file", module.file.id, (error: string) => {
                     if (error == null) {
                         that.main.currentWorkspace.moduleStore.removeModule(module);
-                        if(that.main.currentWorkspace.moduleStore.getModules(false).length == 0){
+                        if (that.main.currentWorkspace.moduleStore.getModules(false).length == 0) {
                             that.fileListPanel.setCaption("Keine Datei vorhanden");
                         }
                         callbackIfSuccessful();
@@ -911,6 +913,54 @@ export class ProjectExplorer {
 
     getNewModule(file: File): Module {
         return new Module(file, this.main);
+    }
+
+    fetchAndRenderOwnWorkspaces() {
+        this.fetchAndRenderWorkspaces(this.main.user);
+    }
+
+    fetchAndRenderWorkspaces(ae: UserData, teacherExplorer?: TeacherExplorer, pruefung: Pruefung = null) {
+        this.main.networkManager.sendUpdates(async () => {
+
+            let request: GetWorkspacesRequest = {
+                ws_userId: ae.id,
+                userId: this.main.user.id,
+                language: 0
+            }
+
+            let response: GetWorkspacesResponse = await ajaxAsync("/servlet/getWorkspaces", request);
+
+            if (response.success == true) {
+
+                if (this.main.workspacesOwnerId == this.main.user.id && teacherExplorer != null) {
+                    teacherExplorer.ownWorkspaces = this.main.workspaceList.slice();
+                    teacherExplorer.currentOwnWorkspace = this.main.currentWorkspace;
+                } 
+                
+                if(ae.id != this.main.user.id)
+                {
+                    this.main.projectExplorer.setExplorerColor("rgba(255, 0, 0, 0.2");
+                    this.main.projectExplorer.$homeAction.show();
+                    Helper.showHelper("homeButtonHelper", this.main);
+
+                    this.main.bottomDiv.showHomeworkTab();
+                    this.main.bottomDiv.homeworkManager.attachToWorkspaces(this.main.workspaceList);
+                    this.main.networkManager.updateFrequencyInSeconds = this.main.networkManager.teacherUpdateFrequencyInSeconds;
+                    this.main.networkManager.secondsTillNextUpdate = this.main.networkManager.teacherUpdateFrequencyInSeconds;
+
+                    if(teacherExplorer != null && teacherExplorer.classPanelMode == "tests"){
+                        response.workspaces.workspaces = response.workspaces.workspaces.filter(w => w.pruefungId == pruefung.id);
+                    }
+                }
+
+
+                this.main.restoreWorkspaces(response.workspaces, false);
+                this.main.workspacesOwnerId = ae.id;
+            }
+
+
+
+        });
     }
 
 

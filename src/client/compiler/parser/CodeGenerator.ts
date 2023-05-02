@@ -2258,7 +2258,16 @@ export class CodeGenerator {
         // let methods = resolvedType.getMethodsThatFitWithCasting(resolvedType.identifier,
         //     parameterTypes, true, upToVisibility);
 
-        let methods = resolvedType.getConstructor(parameterTypes, upToVisibility);
+        let methods = resolvedType.getConstructor(parameterTypes, Visibility.private);
+
+        let m = methods.methodList.slice();
+        methods.methodList = m.filter(m => m.visibility <= upToVisibility);
+
+        if(methods.methodList.length == 0 && m.length > 0){
+            let m1 = m[0];
+            let visibility = Visibility[m1.visibility];
+            methods.error = `Es gibt zwar einen Konstruktor mit passender Signatur, dieser ist aber ${visibility} und daher hier nicht sichtbar.`;
+        }
 
         this.module.pushMethodCallPosition(node.position, node.commaPositions, resolvedType.getMethods(Visibility.public, resolvedType.identifier), node.rightBracketPosition);
 

@@ -554,13 +554,14 @@ export class Klass extends Type {
     public getConstructor(parameterTypes: Type[], upToVisibility: Visibility, classIdentifier: string = this.identifier): { error: string, methodList: Method[] } {
 
         let constructors: Method[] = this.methods.filter((m) => {
-            return m.isConstructor;
+            return m.isConstructor && m.visibility <= upToVisibility;
         });
 
         if (constructors.length == 0 && this.baseClass != null) {
             return this.baseClass.getConstructor(parameterTypes, upToVisibility, classIdentifier);
         } else {
             return findSuitableMethods(constructors, this.identifier, parameterTypes, classIdentifier, true);
+
         }
 
     }

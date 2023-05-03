@@ -1,5 +1,5 @@
 import jQuery from 'jquery';
-import { ClassData, UserData, Workspaces } from "../communication/Data.js";
+import { ClassData, UserData, WorkspaceData, Workspaces } from "../communication/Data.js";
 import { NetworkManager } from "../communication/NetworkManager.js";
 import { Compiler, CompilerStatus } from "../compiler/Compiler.js";
 import { booleanPrimitiveType, charPrimitiveType, doublePrimitiveType, floatPrimitiveType, intPrimitiveType, stringPrimitiveType, voidPrimitiveType, IntegerType, DoubleType, CharacterType, BooleanType, FloatType, longPrimitiveType, LongType, shortPrimitiveType } from "../compiler/types/PrimitiveTypes.js";
@@ -486,8 +486,8 @@ export class Main implements MainBase {
 
     }
 
-    createNewWorkspace(name: string, owner_id: number): Workspace {
-        return new Workspace(name, this, owner_id);
+    restoreWorkspaceFromData(workspaceData: WorkspaceData): Workspace {
+        return Workspace.restoreFromData(workspaceData, this);
     }
 
 

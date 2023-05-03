@@ -473,22 +473,9 @@ export class NetworkManager {
     }
 
     public createNewWorkspaceFromWorkspaceData(remoteWorkspace: WorkspaceData, withSort: boolean = false): Workspace {
-        let w = this.main.createNewWorkspace(remoteWorkspace.name, remoteWorkspace.owner_id);
-        w.id = remoteWorkspace.id;
-        w.repository_id = remoteWorkspace.repository_id;
-        w.has_write_permission_to_repository = remoteWorkspace.has_write_permission_to_repository;
-        w.path = remoteWorkspace.path;
-        w.isFolder = remoteWorkspace.isFolder;
-        w.moduleStore.dirty = true;
-        w.spritesheetId = remoteWorkspace.spritesheetId;
-        w.pruefung_id = remoteWorkspace.pruefungId;
 
-        if(remoteWorkspace.settings != null && remoteWorkspace.settings.startsWith("{")){
-            let remoteWorkspaceSettings:WorkspaceSettings = JSON.parse(remoteWorkspace.settings);
-            w.settings = remoteWorkspaceSettings;
-            w.moduleStore.setAdditionalLibraries(remoteWorkspaceSettings.libraries);
-        }
-
+        let w = this.main.restoreWorkspaceFromData(remoteWorkspace);
+        
         this.main.workspaceList.push(w);
         let path = remoteWorkspace.path.split("/");
         if (path.length == 1 && path[0] == "") path = [];
@@ -508,13 +495,8 @@ export class NetworkManager {
             w.renderSynchronizeButton(panelElement);
         }
 
-        for (let fileData of remoteWorkspace.files) {
-            this.createFile(w, fileData);
-        }
-
         if (withSort) {
             this.main.projectExplorer.workspaceListPanel.sortElements();
-            this.main.projectExplorer.fileListPanel.sortElements();
         }
         return w;
     }

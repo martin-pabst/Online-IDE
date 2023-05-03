@@ -4,7 +4,7 @@ import { SSEManager } from "../../communication/SSEManager.js";
 import { Workspace } from "../../workspace/Workspace.js";
 import { Main } from "../Main.js";
 
-type MessagePruefungStart = { pruefung: Pruefung, workspace: WorkspaceData }
+type MessagePruefungStart = { pruefung: Pruefung }
 
 export class PruefungManagerForStudents {
 
@@ -14,7 +14,7 @@ export class PruefungManagerForStudents {
 
     constructor(private main: Main){
         SSEManager.subscribe("startPruefung", (message: MessagePruefungStart ) => {
-            this.startPruefung(message.pruefung, message.workspace);
+            this.startPruefung(message.pruefung);
         })
         SSEManager.subscribe("stopPruefung", (message: MessagePruefungStart ) => {
             this.stopPruefung();
@@ -33,13 +33,16 @@ export class PruefungManagerForStudents {
 
     }
     
-    startPruefung(pruefung: Pruefung, workspaceData: WorkspaceData) {
+    startPruefung(pruefung: Pruefung) {
         
         if(this.pruefung != null) return;
 
         this.main.networkManager.sendUpdates(() => {
             
-            let pruefungWorkspace = Workspace.restoreFromData(workspaceData, this.main);
+            let wss = this.main.workspaceList.filter(ws => ws.pruefung_id == pruefung.id);
+            if(wss.length == 0) alert('Es fehlt der Prüfungsworkspace.');
+            
+            let pruefungWorkspace = wss[0];
             this.main.workspaceList = [pruefungWorkspace];
             this.main.currentWorkspace = pruefungWorkspace;
             let projectExplorer = this.main.projectExplorer;

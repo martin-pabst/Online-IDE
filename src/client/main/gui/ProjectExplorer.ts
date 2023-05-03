@@ -114,6 +114,7 @@ export class ProjectExplorer {
                     if (error == null) {
                         that.main.currentWorkspace.moduleStore.removeModule(module);
                         if (that.main.currentWorkspace.moduleStore.getModules(false).length == 0) {
+
                             that.fileListPanel.setCaption("Keine Datei vorhanden");
                         }
                         callbackIfSuccessful();

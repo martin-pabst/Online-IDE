@@ -1,4 +1,4 @@
-import { CRUDPruefungRequest, CRUDPruefungResponse, ClassData, GetPruefungStudentStatesRequest, GetPruefungStudentStatesResponse, Pruefung, PruefungCaptions, PruefungState } from "../../communication/Data.js";
+import { CRUDPruefungRequest, CRUDPruefungResponse, ClassData, GetPruefungStudentStatesRequest, GetPruefungStudentStatesResponse, Pruefung, PruefungCaptions, PruefungState, UserData } from "../../communication/Data.js";
 import { ButtonClass } from "../../runtimelibrary/graphics/gui/Button.js";
 import { setSelectItems } from "../../tools/HtmlTools.js";
 import { Workspace } from "../../workspace/Workspace.js";
@@ -240,31 +240,57 @@ export class PruefungDialog {
 
     startDisplayingStudentStates(){
         
-        this.dialog.$dialogFooter.empty();
+        let $footer = this.dialog.$dialogFooter;
+        $footer.empty();
+
+        let $captionDiv = jQuery(`<div style="position: relative"></div>`)
+        $footer.append($captionDiv);
+        $captionDiv.append(`<h2><span class="img_test-state-running joe_pruefung_clock_before_caption"></span>Prüfung läuft!</h2>`)
+
+        let $timerBar = jQuery(`<div class="joe_pruefung_timerbar"></div>`)
+        $captionDiv.append($timerBar);
+
+        let $stateList = <JQuery<HTMLDivElement>> jQuery(`<div class="joe_pruefung_studentStateList"></div>`)
+        $footer.append($stateList);
 
         let counter: number = 0;
         let that = this;
 
         this.timer = setInterval(async () => {
+            $timerBar.empty();
+            for(let i = 0; i <  counter % 5; i++){
+                $timerBar.append(`<span class="joe_pruefung_timerspan"></span>`)
+            }
+
             if(counter % 5 == 0){
                 let request: GetPruefungStudentStatesRequest = {pruefungId: this.pruefung.id}
 
                 let pruefungStates: GetPruefungStudentStatesResponse  = await ajaxAsync("/servlet/getPruefungStates", request);
 
-                let $list = jQuery('<div></div>');
-                let klass = this.classData.find( c => c.id == that.pruefung.klasse_id);
-                for(let student of klass.students){
-                    let state = pruefungStates.pruefungStudentStates[student.id];
-
-                    let running = (state == null || !state.running) ? "(nicht verbunden)" : "verbunden";
-
-                    let $studentDiv = jQuery(`<div>${student.familienname}, ${student.rufname}: ${running}</div>`);
-                    $list.append($studentDiv);
-                }
-                this.dialog.$dialogFooter.empty().append($list);
+                that.displayStudentState(pruefungStates, $stateList);
             }
+            counter++;
         }, 1000)
 
+
+    }
+
+    displayStudentState(pruefungStates: GetPruefungStudentStatesResponse, $list: JQuery<HTMLDivElement>){
+        let klass = this.classData.find( c => c.id == this.pruefung.klasse_id);
+        $list.empty();
+        let i = 0;
+        for(let student of klass.students){
+            let column = (i % 2 == 0) ? 1 : 5;
+            let state = pruefungStates.pruefungStudentStates[student.id];
+
+            let running = (state == null || !state.running) ? `<span class="joe_pruefung_not_connected">(nicht verbunden)</span>` : `<span class="joe_pruefung_connected">verbunden</span>`;
+
+            let $studentDiv = jQuery(`<div style="grid-column: ${column}">${student.familienname}, ${student.rufname}</div>
+            <div style="grid-column: ${column + 2}">${running}</div>`);
+            $list.append($studentDiv);
+            i++;
+        }
+        
 
     }
 

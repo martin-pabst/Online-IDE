@@ -1438,3 +1438,38 @@ body .monaco-editor-hover .monaco-tokenized-source {
     position: relative;
     top: 3px;
 }
+
+.joe_pruefung_studentStateList {
+    display: grid;
+    grid-template-columns: 1fr 10px 1fr 30px 1fr 10px 1fr;
+}
+
+.joe_pruefung_not_connected {
+    color: rgb(255, 136, 0);
+}
+
+.joe_pruefung_connected {
+    color: rgb(78, 238, 30);
+}
+
+.joe_pruefung_clock_before_caption {
+    width: 25px !important;
+    height: 25px !important;
+    margin-right: 10px;
+    display: inline-block;
+    background-size: contain;
+}
+
+.joe_pruefung_timerbar {
+    position: absolute;
+    right: 0;
+    top: 5px;
+}
+
+.joe_pruefung_timerspan {
+    height: 5px;
+    width: 30px;
+    background-color:rgb(85, 85, 219);
+    display: inline-block;
+    margin-right: 2px;
+}

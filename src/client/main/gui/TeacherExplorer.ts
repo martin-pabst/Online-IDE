@@ -130,8 +130,12 @@ export class TeacherExplorer {
                     }
                     projectExplorer.workspaceListPanel.hide();
                     projectExplorer.fileListPanel.clear();
+                    projectExplorer.fileListPanel.setCaption("---");
                     this.studentPanel.hide();
                     this.renderPruefungen();
+                    if(this.pruefungen.length > 0){
+                        this.classPanel.select(this.pruefungen[0], true, true);
+                    }
                 } else {
                     this.main.projectExplorer.workspaceListPanel.show();
                     this.studentPanel.show();
@@ -156,6 +160,7 @@ export class TeacherExplorer {
                 this.ownWorkspaces = this.main.workspaceList;
                 this.pruefungen.push(newPruefung);
                 this.addPruefungToClassPanel(newPruefung);
+                this.classPanel.select(newPruefung, true, true);
             } catch (error) {
 
             }
@@ -181,6 +186,7 @@ export class TeacherExplorer {
             this.studentPanel.hide();
         } else {
             this.studentPanel.show();
+            projectExplorer.fileListPanel.setCaption("---");
             let klass = this.classData.find(c => c.id = p.klasse_id);
             if (klass != null) {
                 this.renderStudents(klass.students);

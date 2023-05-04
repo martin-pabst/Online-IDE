@@ -373,6 +373,7 @@ export class Parser {
             case TokenType.booleanConstant:
             case TokenType.floatingPointConstant:
             case TokenType.keywordNew:
+            case TokenType.not:
                 let ret = this.parseVariableDeclarationOrTerm();
                 if (expectSemicolon) this.expect(TokenType.semicolon, true, true);
                 retStatements = ret;

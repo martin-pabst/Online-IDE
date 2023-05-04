@@ -247,7 +247,7 @@ export class MyConsole {
     showErrors(errors: Error[]) {
 
         let markers: monaco.editor.IMarkerData[] = [];
-        let errorLevelToMonacoSeverityMap: {[errorlevel: String]: monaco.MarkerSeverity} = {
+        let errorLevelToMonacoSeverityMap: {[errorlevel: string]: monaco.MarkerSeverity} = {
             "info": monaco.MarkerSeverity.Info,
             "warning": monaco.MarkerSeverity.Warning,
             "error": monaco.MarkerSeverity.Error

@@ -85,7 +85,7 @@ export class AdhocCompiler {
 
 
 
-        if (errors.length == 0) {
+        if (errors.find(e => e.level == "error") == null) {
 
             let statements = this.module.mainProgram.statements;
             for (let statement of statements) {

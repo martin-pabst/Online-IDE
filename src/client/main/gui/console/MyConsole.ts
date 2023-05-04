@@ -230,7 +230,7 @@ export class MyConsole {
 
                 let compilation = this.compiler.compile(command, moduleStore, heap, symbolTable);
 
-                this.readyToExecute = compilation.errors.length == 0;
+                this.readyToExecute = compilation.errors.find(e => e.level == "error") == null;
 
                 this.showErrors(compilation.errors);
 
@@ -247,6 +247,11 @@ export class MyConsole {
     showErrors(errors: Error[]) {
 
         let markers: monaco.editor.IMarkerData[] = [];
+        let errorLevelToMonacoSeverityMap: {[errorlevel: String]: monaco.MarkerSeverity} = {
+            "info": monaco.MarkerSeverity.Info,
+            "warning": monaco.MarkerSeverity.Warning,
+            "error": monaco.MarkerSeverity.Error
+        }
 
         for (let error of errors) {
             markers.push({
@@ -255,7 +260,7 @@ export class MyConsole {
                 endLineNumber: error.position.line,
                 endColumn: error.position.column + error.position.length,
                 message: error.text,
-                severity: monaco.MarkerSeverity.Error
+                severity: errorLevelToMonacoSeverityMap[error.level]
             });
 
         }

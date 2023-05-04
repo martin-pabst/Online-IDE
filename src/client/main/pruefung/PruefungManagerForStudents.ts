@@ -65,11 +65,14 @@ export class PruefungManagerForStudents {
 
     }
     
-    stopPruefung(){
-        this.main.projectExplorer.fetchAndRenderOwnWorkspaces();
-        this.pruefung == null;
+    async stopPruefung(){
+        this.pruefung = null;
         if(this.timer != null) clearInterval(this.timer);
         this.timer = null;
+        
+        this.main.projectExplorer.workspaceListPanel.show();
+
+        await this.main.projectExplorer.fetchAndRenderOwnWorkspaces();
     }
 
 

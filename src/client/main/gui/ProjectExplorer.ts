@@ -9,7 +9,7 @@ import { Workspace } from "../../workspace/Workspace.js";
 import { Main } from "../Main.js";
 import { AccordionPanel, Accordion, AccordionElement, AccordionContextMenuItem } from "./Accordion.js";
 import { Helper } from "./Helper.js";
-import { WorkspaceData, Workspaces, ClassData, UserData, GetWorkspacesRequest, GetWorkspacesResponse, Pruefung } from "../../communication/Data.js";
+import { WorkspaceData, Workspaces, ClassData, UserData, GetWorkspacesRequest, GetWorkspacesResponse, Pruefung, FileData } from "../../communication/Data.js";
 import { dateToString } from "../../tools/StringTools.js";
 import { DistributeToStudentsDialog } from "./DistributeToStudentsDialog.js";
 import { WorkspaceSettingsDialog } from "./WorkspaceSettingsDialog.js";
@@ -912,56 +912,55 @@ export class ProjectExplorer {
         this.workspaceListPanel.setCaption(caption);
     }
 
-    getNewModule(file: File): Module {
-        return new Module(file, this.main);
+    getNewModule(fileData: FileData): Module {
+        return Module.restoreFromData(fileData, this.main);
     }
 
-    fetchAndRenderOwnWorkspaces() {
-        this.fetchAndRenderWorkspaces(this.main.user);
+    async fetchAndRenderOwnWorkspaces() {
+        await this.fetchAndRenderWorkspaces(this.main.user);
     }
 
-    fetchAndRenderWorkspaces(ae: UserData, teacherExplorer?: TeacherExplorer, pruefung: Pruefung = null) {
-        this.main.networkManager.sendUpdates(async () => {
+    async fetchAndRenderWorkspaces(ae: UserData, teacherExplorer?: TeacherExplorer, pruefung: Pruefung = null) {
+        await this.main.networkManager.sendUpdates();
 
-            let request: GetWorkspacesRequest = {
-                ws_userId: ae.id,
-                userId: this.main.user.id,
-                language: 0
-            }
+        let request: GetWorkspacesRequest = {
+            ws_userId: ae.id,
+            userId: this.main.user.id,
+            language: 0
+        }
 
-            let response: GetWorkspacesResponse = await ajaxAsync("/servlet/getWorkspaces", request);
+        let response: GetWorkspacesResponse = await ajaxAsync("/servlet/getWorkspaces", request);
 
-            if (response.success == true) {
+        if (response.success == true) {
 
-                if (this.main.workspacesOwnerId == this.main.user.id && teacherExplorer != null) {
-                    teacherExplorer.ownWorkspaces = this.main.workspaceList.slice();
-                    teacherExplorer.currentOwnWorkspace = this.main.currentWorkspace;
-                } 
-                
-                if(ae.id != this.main.user.id)
-                {
-                    this.main.projectExplorer.setExplorerColor("rgba(255, 0, 0, 0.2");
-                    this.main.projectExplorer.$homeAction.show();
-                    Helper.showHelper("homeButtonHelper", this.main);
+            if (this.main.workspacesOwnerId == this.main.user.id && teacherExplorer != null) {
+                teacherExplorer.ownWorkspaces = this.main.workspaceList.slice();
+                teacherExplorer.currentOwnWorkspace = this.main.currentWorkspace;
+            } 
+            
+            if(ae.id != this.main.user.id)
+            {
+                this.main.projectExplorer.setExplorerColor("rgba(255, 0, 0, 0.2");
+                this.main.projectExplorer.$homeAction.show();
+                Helper.showHelper("homeButtonHelper", this.main);
 
-                    this.main.bottomDiv.showHomeworkTab();
-                    this.main.bottomDiv.homeworkManager.attachToWorkspaces(this.main.workspaceList);
-                    this.main.networkManager.updateFrequencyInSeconds = this.main.networkManager.teacherUpdateFrequencyInSeconds;
-                    this.main.networkManager.secondsTillNextUpdate = this.main.networkManager.teacherUpdateFrequencyInSeconds;
+                this.main.bottomDiv.showHomeworkTab();
+                this.main.bottomDiv.homeworkManager.attachToWorkspaces(this.main.workspaceList);
+                this.main.networkManager.updateFrequencyInSeconds = this.main.networkManager.teacherUpdateFrequencyInSeconds;
+                this.main.networkManager.secondsTillNextUpdate = this.main.networkManager.teacherUpdateFrequencyInSeconds;
 
-                    if(teacherExplorer != null && teacherExplorer.classPanelMode == "tests"){
-                        response.workspaces.workspaces = response.workspaces.workspaces.filter(w => w.pruefungId == pruefung.id);
-                    }
+                if(teacherExplorer != null && teacherExplorer.classPanelMode == "tests"){
+                    response.workspaces.workspaces = response.workspaces.workspaces.filter(w => w.pruefungId == pruefung.id);
                 }
-
-
-                this.main.restoreWorkspaces(response.workspaces, false);
-                this.main.workspacesOwnerId = ae.id;
             }
 
 
+            this.main.restoreWorkspaces(response.workspaces, false);
+            this.main.workspacesOwnerId = ae.id;
+        }
 
-        });
+
+
     }
 
 

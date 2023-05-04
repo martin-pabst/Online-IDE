@@ -187,7 +187,7 @@ export class TeacherExplorer {
         } else {
             this.studentPanel.show();
             projectExplorer.fileListPanel.setCaption("---");
-            let klass = this.classData.find(c => c.id = p.klasse_id);
+            let klass = this.classData.find(c => c.id == p.klasse_id);
             if (klass != null) {
                 this.renderStudents(klass.students);
             }

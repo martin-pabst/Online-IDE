@@ -92,6 +92,13 @@ export class NetworkManager {
 
     }
 
+    sendUpdatesAsync(sendIfNothingIsDirty: boolean = false, sendBeacon: boolean = false):Promise<void> {
+        let p = new Promise<void>((resolve, reject) => {
+            this.sendUpdates(resolve, sendIfNothingIsDirty, sendBeacon);
+        })
+        return p;
+    }
+
     sendUpdates(callback?: () => void, sendIfNothingIsDirty: boolean = false, sendBeacon: boolean = false) {
 
         if (this.main.user == null || this.main.user.is_testuser) {
@@ -502,6 +509,9 @@ export class NetworkManager {
     }
 
     private createFile(workspace: Workspace, remoteFile: FileData) {
+        let m = this.main.projectExplorer.getNewModule(remoteFile); //new Module(f, this.main);
+        let f = m.file;
+
         let ae: any = null; //AccordionElement
         if (workspace == this.main.currentWorkspace) {
             ae = {
@@ -510,23 +520,10 @@ export class NetworkManager {
             }
 
             this.main.projectExplorer.fileListPanel.addElement(ae, true);
+            f.panelElement = ae;
+            ae.externalElement = m;
         }
 
-        let f: any = { // File
-            id: remoteFile.id,
-            name: remoteFile.name,
-            dirty: true,
-            saved: true,
-            text: remoteFile.text,
-            version: remoteFile.version,
-            is_copy_of_id: remoteFile.is_copy_of_id,
-            repository_file_version: remoteFile.repository_file_version,
-            identical_to_repository_version: true,
-            workspace_id: workspace.id,
-            panelElement: ae
-        };
-        let m = this.main.projectExplorer.getNewModule(f); //new Module(f, this.main);
-        if (ae != null) ae.externalElement = m;
         let modulStore = workspace.moduleStore;
         modulStore.putModule(m);
 

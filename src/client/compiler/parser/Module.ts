@@ -108,6 +108,7 @@ import { JsonParserClass } from "../../runtimelibrary/network/JsonParser.js";
 import { ChangeListenerClass } from "../../runtimelibrary/graphics/gui/ChangeListener.js";
 import { GuiComponentClass } from "../../runtimelibrary/graphics/gui/GuiComponent.js";
 import { GuiTextComponentClass } from "../../runtimelibrary/graphics/gui/GuiTextComponent.js";
+import { CollectionsClass } from "../../runtimelibrary/collections/Collections.js";
 
 export type ExportedWorkspace = {
     name: string;
@@ -851,6 +852,8 @@ export class BaseModule extends Module {
         this.typeStore.addType(new SetIteratorImplClass(this));
         this.typeStore.addType(new MapClass(this));
         this.typeStore.addType(new HashMapClass(this));
+        this.typeStore.addType(new CollectionsClass(this));
+
 
         this.typeStore.addType(new ConsoleClass(this));
         this.typeStore.addType(new MathClass(this));

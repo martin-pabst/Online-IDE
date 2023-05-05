@@ -790,8 +790,9 @@ export class Interpreter {
         while (!this.stepFinished && !this.additionalStepFinishedFlag && exception == null) {
 
 
-            if (typeof this.currentProgram == "undefined") {
-                debugger;
+            if (this.currentProgram == null) {
+                console.log("Interpeter.nextStep: Current program is null!");
+                this.return;
             }
 
             if (this.currentProgramPosition > this.currentProgram.statements.length - 1) {

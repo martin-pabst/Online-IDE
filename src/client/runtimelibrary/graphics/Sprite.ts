@@ -326,6 +326,19 @@ export class SpriteClass extends Klass {
 
             }, false, false, "Gibt die Höhe zurück.", false));
 
+        this.addMethod(new Method("getImageIndex", new Parameterlist([
+        ]), intPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: SpriteHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("getImageIndex")) return;
+
+                return sh.index;
+
+            }, false, false, "Gibt den Index des Bildes innerhalb der Sprite-Library zurück.", false));
+
         this.addMethod(new Method("makeTiling", new Parameterlist([
             { identifier: "width", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "height", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true }

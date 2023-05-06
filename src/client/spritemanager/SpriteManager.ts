@@ -67,7 +67,17 @@ export class SpriteManager {
 
         let $importExportLeft = makeDiv(null, "jo_sm_importExportLeft jo_sm_writeonly", null, null, $importExportArea);
         this.$importDropZone = makeDiv(null, "jo_sm_importDropZone", null, null, $importExportLeft);
-        makeDiv(null, null, "1. Schritt: png-Dateien hierhin ziehen", { "font-weight": "bold" }, this.$importDropZone);
+        makeDiv(null, null, "1. Schritt: png-Dateien hierhin ziehen oder...", { "font-weight": "bold" }, this.$importDropZone);
+
+        let $buttonImport = <JQuery<HTMLInputElement>>jQuery('<input type="file" multiple="multiple" style="cursor:pointer; margin-top: 30px" class="jo_sm_writeonly"></input>');
+        this.$importDropZone.append($buttonImport);
+        $buttonImport.on("change", (event) => { 
+            var files = event.target.files;
+            that.fileList = files;
+            $filesCountDiv.text(files.length != 1 ? (files.length + " Dateien sind ausgewählt.") : "Eine Datei ist ausgewählt.");
+            this.$buttonImport.addClass("jo_active");
+         })
+
         let $filesCountDiv = makeDiv(null, null, "", null, this.$importDropZone);
 
         this.$importDropZone.on('dragover', (evt) => {

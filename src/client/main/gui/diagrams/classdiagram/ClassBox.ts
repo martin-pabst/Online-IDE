@@ -54,6 +54,20 @@ export class ClassBox extends DiagramElement {
 
     }
 
+    copy(): ClassBox {
+        let cb1 = new ClassBox(this.diagram, this.leftCm, this.topCm, null);
+        cb1.className = this.className;
+        cb1.filename = this.filename;
+        cb1.hashedSignature = this.hashedSignature;
+        cb1.documentation = this.documentation;
+        cb1.active = false;
+        cb1.withMethods = this.withMethods;
+        cb1.withAttributes = this.withAttributes;
+        
+        cb1.isSystemClass = this.isSystemClass;
+        return cb1;
+    }
+
     serialize(): SerializedClassBox {
         return {
             className: this.className,

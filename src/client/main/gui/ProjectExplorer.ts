@@ -460,10 +460,14 @@ export class ProjectExplorer {
             cmiList.push({
                 caption: "Duplizieren",
                 callback: (element: AccordionElement) => {
-                    this.main.networkManager.sendDuplicateWorkspace(element.externalElement,
+                    let srcWorkspace: Workspace = element.externalElement;
+                    this.main.networkManager.sendDuplicateWorkspace(srcWorkspace,
                         (error: string, workspaceData) => {
                             if (error == null && workspaceData != null) {
                                 let newWorkspace: Workspace = Workspace.restoreFromData(workspaceData, this.main);
+
+                                this.main.rightDiv.classDiagram.duplicateSerializedClassDiagram(srcWorkspace.id, newWorkspace.id);
+
                                 this.main.workspaceList.push(newWorkspace);
                                 let path = workspaceData.path.split("/");
                                 if (path.length == 1 && path[0] == "") path = [];

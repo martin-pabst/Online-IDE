@@ -84,10 +84,6 @@ export class ClassDiagram extends Diagram {
         this.classBoxesRepository[newWorkspaceId] = classBoxesDest;
         this.dirty = true;
 
-        setTimeout(() => {
-            
-        }, 1000);
-
     }
 
     clearAfterLogout() {

@@ -134,6 +134,12 @@ export class MainMenu {
                             { identifier: "Zoom out (Strg + Mausrad)", action: () => { this.main.editor.changeEditorFontSize(-4); } },
                             { identifier: "Zoom normal", action: () => { this.main.editor.setFontSize(14); } },
                             { identifier: "Zoom in (Strg + Mausrad)", action: () => { this.main.editor.changeEditorFontSize(4); } },
+                            { identifier: "-" },
+                            { identifier: "Automatischer Zeilenumbruch ein/aus", action: () => { 
+                                let wordWrap = this.main.editor.editor.getOption(monaco.editor.EditorOption.wordWrap); 
+                                wordWrap = wordWrap == "on" ? "off" : "on";
+                                this.main.editor.editor.updateOptions({wordWrap: wordWrap});
+                            } },
 
                         ]
                     }

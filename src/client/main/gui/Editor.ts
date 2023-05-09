@@ -170,6 +170,7 @@ export class Editor implements monaco.languages.RenameProvider {
                 horizontal: 'auto'
             },
             theme: "myCustomThemeDark",
+            wrappingIndent: "same"
             // automaticLayout: true
 
         }

@@ -340,7 +340,6 @@ export class GroupHelper extends ShapeHelper {
         return -1;
     }
 
-
     setChildIndex(sh: ShapeHelper, index: number) {
         let container: PIXI.Container = <PIXI.Container>this.displayObject;
         container.setChildIndex(sh.displayObject, index);
@@ -415,6 +414,40 @@ export class GroupHelper extends ShapeHelper {
 
     }
 
+    collidesWithAnyShape(color?: number): boolean {
+
+        for (let shapeHelper of this.worldHelper.shapes) {
+            if (this == shapeHelper) continue;
+
+            if (shapeHelper["fillColor"] && color != null) {
+                if (shapeHelper["fillColor"] != color) {
+                    continue;
+                }
+            }
+
+            if (shapeHelper["shapes"] || shapeHelper["turtle"]) {
+                if (shapeHelper.collidesWith(this)) {
+                    return true;
+                } else {
+                    continue;
+                }
+            }
+
+            if(this.collidesWith(shapeHelper)) return true;
+
+        }
+
+        return false;
+
+    }
+
+    transformHitPolygon(){
+        for(let rto of this.shapes){
+            let shape = <ShapeHelper>rto.intrinsicData["Actor"];
+            shape.transformHitPolygon();
+        }
+        this.hitPolygonDirty = false;
+    }
 
     add(shape: RuntimeObject) {
 

@@ -410,7 +410,7 @@ export class RobotClass extends Klass {
 
             }, false, false, "Gibt genau dann true zurück, wenn unter dem Roboter keine Marke (egal in welcher Farbe) liegt."));
 
-        let himmelsrichtungen = ["Norden", "Osten", "Süden", "Westen"];
+        let himmelsrichtungen = ["Norden", "Westen", "Süden", "Osten"];
 
         for (let i = 0; i < 4; i++) {
             let hr: string = himmelsrichtungen[i];

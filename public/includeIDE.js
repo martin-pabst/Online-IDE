@@ -7,11 +7,13 @@ let base = "https://embed.learnj.de/include/";
 // includeJs(base + "lib/monaco-editor/dev/vs/loader.js");
 // includeJs(base + "js/runtimelibrary/graphics/SpriteLibrary.js");
 // includeJs(base + "lib/howler/howler.core.min.js");
+//
 
 let scripts = [
     // base + "lib/pixijs/pixi.js",
     // base + "lib/pixi3d/pixi3d.js",
     base + "lib/p5.js/p5.js",
+    base + 'assets/fonts/fonts.css',
     base + 'online-ide-embedded.css',
     base + "lib/jquery/jquery-3.3.1.js",
     base + "lib/markdownit/markdownit.min.js",

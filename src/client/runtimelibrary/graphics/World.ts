@@ -582,6 +582,7 @@ export class WorldHelper {
             let renderer = <PIXI.Renderer>this.app.renderer;
             renderer.resize(width, height);
             renderer.background.color = 0x0;
+
         } else {
             this.app = new PIXI.Application({
                 antialias: true,
@@ -606,6 +607,48 @@ export class WorldHelper {
         let sourceFrame = new PIXI.Rectangle(0, 0, this.width, this.height);
         let destinationFrame = new PIXI.Rectangle(0, 0, width, height);
         this.stage = new WorldContainer(sourceFrame, destinationFrame);
+
+        // let shader = `precision mediump float;
+
+        // varying vec2 vTextureCoord;
+        // varying vec4 vColor;
+        
+        // uniform sampler2D uSampler;
+        // uniform vec4 filterArea;
+        // uniform float mx, my, r;
+        
+        // void main(void)
+        // {
+        //    vec2 uvs = vTextureCoord.xy;
+        //    vec2 tex = vTextureCoord * filterArea.xy;
+
+        //    vec4 fg;
+
+        //     float dx = tex.x - mx;
+        //     float dy = tex.y - my;
+        //     dx = dx*dx;
+        //     dy = dy*dy;
+
+        //   if(dx + dy < r * r){
+        //       fg = texture2D(uSampler, vTextureCoord);
+        //     } else {
+        //         fg = vec4(0.0, 0.0, 0.0, 0.0);
+        //   }
+        
+        //    gl_FragColor = fg;
+        
+        // }`
+
+        // let filter = new PIXI.Filter(null, shader, {
+        //     mx: 400.0,
+        //     my: 300.0,
+        //     r: 400
+        // });
+
+
+        // this.app.stage.filters = [filter]
+
+
         this.stage.projectionTransform = new PIXI.Matrix();
 
         this.app.stage.addChild(this.stage);

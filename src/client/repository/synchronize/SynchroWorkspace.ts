@@ -98,7 +98,7 @@ export class SynchroWorkspace {
                 workspaceFile: null,
                 repository_file_version: fileEntry.version,
                 identical_to_repository_version: true,
-                text: fileEntry.text.replace(/\r\n/g, "\n"),
+                text: fileEntry.text == null ? null : fileEntry.text.replace(/\r\n/g, "\n"),
                 synchroWorkspace: this,
                 
                 state: "original",

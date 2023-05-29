@@ -417,7 +417,7 @@ export class SpriteHelper extends ShapeHelper {
     isTileSprite: boolean = false;
 
     constructor(public x: number, public y: number, public name: string, public index: number,
-        interpreter: Interpreter, runtimeObject: RuntimeObject, copyFromOtherShape?: ShapeHelper,
+        private interpreter: Interpreter, runtimeObject: RuntimeObject, copyFromOtherShape?: ShapeHelper,
         public scaleMode: string = "nearest_neighbour") {
         super(interpreter, runtimeObject);
 
@@ -597,7 +597,7 @@ export class SpriteHelper extends ShapeHelper {
         let texture = sheet.textures[nameWithIndex];
         if(texture == null){
             sheet = this.worldHelper.interpreter.main.userSpritesheet;
-            texture = sheet.textures[nameWithIndex];
+            texture = sheet?.textures[nameWithIndex];
         }
 
         if (texture != null) {
@@ -670,6 +670,8 @@ export class SpriteHelper extends ShapeHelper {
             this.hitPolygonDirty = true;
 
         } else {
+            this.interpreter.throwException("Das Spritesheet " + name + " hat kein Bild mit Index " + index);
+
             if (this.displayObject == null) {
                 this.displayObject = new PIXI.Sprite();
             }

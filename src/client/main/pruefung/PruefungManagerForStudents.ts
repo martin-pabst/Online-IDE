@@ -17,19 +17,22 @@ export class PruefungManagerForStudents {
             this.startPruefung(message.pruefung);
         })
         SSEManager.subscribe("stopPruefung", (message: MessagePruefungStart ) => {
-            this.stopPruefung();
+            this.stopPruefung(true);
         })
     }
 
     close(){
-        SSEManager.unsubscribe("startPruefung");
-        SSEManager.unsubscribe("stopPruefung");
-        if(this.timer != null) clearInterval(this.timer);
-        this.main.networkManager.sendUpdates(() => {
-            let projectExplorer = this.main.projectExplorer;
-            projectExplorer.workspaceListPanel.show();
-            projectExplorer.fetchAndRenderOwnWorkspaces();
-        })
+        if(this.pruefung != null){
+            SSEManager.unsubscribe("startPruefung");
+            SSEManager.unsubscribe("stopPruefung");
+            if(this.timer != null) clearInterval(this.timer);
+            this.main.networkManager.sendUpdates(() => {
+                let projectExplorer = this.main.projectExplorer;
+                projectExplorer.workspaceListPanel.show();
+                projectExplorer.fetchAndRenderOwnWorkspaces();
+            }, true, false, false)
+            this.pruefung = null;
+        }
 
     }
     
@@ -57,22 +60,24 @@ export class PruefungManagerForStudents {
                 let request: ReportPruefungStudentStateRequest = {pruefungId: this.pruefung.id, clientState: "", running: true}
                 let response: ReportPruefungStudentStateResponse = await ajaxAsync('/servlet/reportPruefungState',  request)
                 if(response.pruefungState != "running"){
-                    this.stopPruefung();
+                    this.stopPruefung(true);
                 }
             }, 5000)
             
-        }, true);
+        }, true, false, false);
 
     }
     
-    async stopPruefung(){
+    async stopPruefung(renderWorkspaces: boolean){
         this.pruefung = null;
         if(this.timer != null) clearInterval(this.timer);
         this.timer = null;
         
         this.main.projectExplorer.workspaceListPanel.show();
 
-        await this.main.projectExplorer.fetchAndRenderOwnWorkspaces();
+        if(renderWorkspaces){
+            await this.main.projectExplorer.fetchAndRenderOwnWorkspaces();
+        }
     }
 
 

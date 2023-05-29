@@ -64,11 +64,6 @@ export type WorkspaceData = {
     repository_id: number,    // id of repository-workspace
     has_write_permission_to_repository: boolean, // true if owner of this working copy has write permission to repository workspace
 
-    language: number,
-    sql_baseDatabase: string,
-    sql_manipulateDatabaseStatements: string,
-    sql_history: string, 
-
     pruefungId: number,
 
     spritesheetId: number
@@ -317,7 +312,6 @@ export type DeleteRepositoryResponse = { success: boolean, message?: string };
  */
 export type DistributeWorkspaceRequest = {
     workspace_id: number, // Workspace to copy
-    language: number, // 0 == Java, 1 == SQL
     class_id: number,
     student_ids: number[]
 }

@@ -6,6 +6,7 @@ import { isJSDocThisTag, isThisTypeNode } from "typescript";
 import { WorkspaceImporter } from "./WorkspaceImporter.js";
 import { Main } from "../Main.js";
 import { MainBase } from "../MainBase.js";
+import { Workspace } from '../../workspace/Workspace.js';
 
 export type AccordionElement = {
     name: string;
@@ -415,6 +416,7 @@ export class AccordionPanel {
             return this.compareWithPath(aName, a.path, a.isFolder, bName, b.path, b.isFolder);
 
         });
+        this.$listElement.empty();
         this.elements.forEach((element) => { this.$listElement.append(element.$htmlFirstLine) });
     }
 
@@ -860,10 +862,13 @@ export class AccordionPanel {
         return ps;
     }
 
-    setElementClass(element: AccordionElement, iconClass: string) {
+    setElementClass(element: AccordionElement, iconClass: string, fileimageTitle?: string) {
         if (element != null) {
             element.$htmlFirstLine?.removeClass("jo_" + element.iconClass).addClass("jo_" + iconClass);
             element.iconClass = iconClass;
+            if(fileimageTitle != null){
+                element.$htmlFirstLine.find('.jo_fileimage').attr('title', fileimageTitle);
+            }
         }
 
     }

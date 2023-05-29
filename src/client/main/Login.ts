@@ -108,7 +108,7 @@ export class Login {
 
             this.main.networkManager.sendUpdates(() => {
                 
-                this.main.pruefungManagerForStudents?.stopPruefung();
+                this.main.pruefungManagerForStudents?.stopPruefung(false);
 
                 this.main.rightDiv.classDiagram.clearAfterLogout();
 

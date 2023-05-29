@@ -72,10 +72,6 @@ export class Workspace {
             version: this.version,
             repository_id: this.repository_id,
             has_write_permission_to_repository: this.has_write_permission_to_repository,
-            language: 0,
-            sql_baseDatabase: "",
-            sql_history: "",
-            sql_manipulateDatabaseStatements: "",
             settings: JSON.stringify(this.settings),
             spritesheetId: this.spritesheetId,
             pruefungId: this.pruefung_id

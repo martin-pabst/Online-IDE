@@ -921,6 +921,7 @@ export class ProjectExplorer {
     }
 
     async fetchAndRenderWorkspaces(ae: UserData, teacherExplorer?: TeacherExplorer, pruefung: Pruefung = null) {
+
         await this.main.networkManager.sendUpdates();
 
         let request: GetWorkspacesRequest = {

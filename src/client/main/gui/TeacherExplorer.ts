@@ -274,7 +274,7 @@ export class TeacherExplorer {
             }
             let $buttonDiv = ae.$htmlFirstLine?.find('.jo_additionalButtonRepository');
             if ($buttonDiv != null) {
-                let $button = jQuery('<div class="img_edit-dark jo_button jo_active" title="Bearbeiten..."></div>');
+                let $button = jQuery('<div class="img_gear-dark jo_button jo_active" title="Bearbeiten..." style="top: 2px; position: relative"></div>');
                 $buttonDiv.append($button);
                 $buttonDiv.on('pointerdown', async (e) => {
                     e.stopPropagation();
@@ -288,7 +288,7 @@ export class TeacherExplorer {
                     })
                 })
             }
-            this.classPanel.setElementClass(ae, "test-" + p.state);
+            this.classPanel.setElementClass(ae, "test-" + p.state, PruefungCaptions[p.state]);
         }
     }
 

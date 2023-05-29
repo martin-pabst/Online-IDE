@@ -99,7 +99,7 @@ export class NetworkManager {
         return p;
     }
 
-    sendUpdates(callback?: () => void, sendIfNothingIsDirty: boolean = false, sendBeacon: boolean = false) {
+    sendUpdates(callback?: () => void, sendIfNothingIsDirty: boolean = false, sendBeacon: boolean = false, alertIfNewWorkspacesFound: boolean = false) {
 
         if (this.main.user == null || this.main.user.is_testuser) {
             if (callback != null) callback();
@@ -166,7 +166,7 @@ export class NetworkManager {
 
                         // if (this.main.workspacesOwnerId == this.main.user.id) {
                             if (response.workspaces != null) {
-                                that.updateWorkspaces(request, response);
+                                that.updateWorkspaces(request, response, alertIfNewWorkspacesFound);
                             }
                             if (response.filesToForceUpdate != null) {
                                 that.updateFiles(response.filesToForceUpdate);
@@ -279,8 +279,7 @@ export class NetworkManager {
             let request: DistributeWorkspaceRequest = {
                 workspace_id: ws.id,
                 class_id: klasse?.id,
-                student_ids: student_ids,
-                language: 0
+                student_ids: student_ids
             }
 
             ajax("distributeWorkspace", request, (response: DistributeWorkspaceResponse) => {
@@ -385,7 +384,7 @@ export class NetworkManager {
     }
 
 
-    private updateWorkspaces(sendUpdatesRequest: SendUpdatesRequest, sendUpdatesResponse: SendUpdatesResponse) {
+    private updateWorkspaces(sendUpdatesRequest: SendUpdatesRequest, sendUpdatesResponse: SendUpdatesResponse, alertIfNewWorkspacesFound: boolean = false) {
 
         let idToRemoteWorkspaceDataMap: Map<number, WorkspaceData> = new Map();
 
@@ -447,7 +446,7 @@ export class NetworkManager {
             }
         }
 
-        if (newWorkspaceNames.length > 0) {
+        if (newWorkspaceNames.length > 0 && alertIfNewWorkspacesFound) {
             let message: string = newWorkspaceNames.length > 1 ? "Folgende Workspaces hat Deine Lehrkraft Dir gesendet: " : "Folgenden Workspace hat Deine Lehrkraft Dir gesendet: ";
             message += newWorkspaceNames.join(", ");
             alert(message);

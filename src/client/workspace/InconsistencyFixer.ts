@@ -65,7 +65,7 @@ export class InconsistencyFixer {
         }
 
         for (let ws of workspaceList) {
-            if (!ws.isFolder && ws.path != "" && ws.path != null && folderPathAndNames.indexOf(ws.path) < 0) {
+            if (!ws.isFolder && ws.pruefung_id == null && ws.path != "" && ws.path != null && folderPathAndNames.indexOf(ws.path) < 0) {
                 console.log("Found workspace (" + ws.path + "/" + ws.name + ") with path not corresponding to any folder => Set path = ''.");
                 ws.path = "";
                 ws.saved = false;

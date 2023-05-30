@@ -3,6 +3,7 @@ import { Pruefung, ReportPruefungStudentStateRequest, ReportPruefungStudentState
 import { SSEManager } from "../../communication/SSEManager.js";
 import { Workspace } from "../../workspace/Workspace.js";
 import { Main } from "../Main.js";
+import jQuery from "jquery";
 
 type MessagePruefungStart = { pruefung: Pruefung }
 
@@ -56,13 +57,15 @@ export class PruefungManagerForStudents {
             projectExplorer.setWorkspaceActive(pruefungWorkspace);
             
             this.pruefung = pruefung;
+
+            jQuery('#pruefunglaeuft').css('display', 'block');
             this.timer = setInterval(async () => {
                 let request: ReportPruefungStudentStateRequest = {pruefungId: this.pruefung.id, clientState: "", running: true}
                 let response: ReportPruefungStudentStateResponse = await ajaxAsync('/servlet/reportPruefungState',  request)
                 if(response.pruefungState != "running"){
                     this.stopPruefung(true);
                 }
-            }, 5000)
+            }, 3000)
             
         }, true, false, false);
 
@@ -78,6 +81,8 @@ export class PruefungManagerForStudents {
         if(renderWorkspaces){
             await this.main.projectExplorer.fetchAndRenderOwnWorkspaces();
         }
+
+        jQuery('#pruefunglaeuft').css('display', 'none');
     }
 
 

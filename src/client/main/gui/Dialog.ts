@@ -16,6 +16,7 @@ export class Dialog {
 
     init() {
         this.$dialog = jQuery('#dialog');
+        this.$dialog.empty();
         jQuery('#main').css('visibility', 'hidden');
         this.$dialog.append(jQuery(
             '<div style="height: 20px"></div>' +

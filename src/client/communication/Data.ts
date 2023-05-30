@@ -65,6 +65,7 @@ export type WorkspaceData = {
     has_write_permission_to_repository: boolean, // true if owner of this working copy has write permission to repository workspace
 
     pruefungId: number,
+    readonly: boolean,
 
     spritesheetId: number
 }

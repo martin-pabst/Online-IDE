@@ -12,6 +12,7 @@ export class Workspace {
     name: string;
     path: string;
     isFolder: boolean;
+    readonly: boolean;
     id: number;
     owner_id: number;
 
@@ -74,7 +75,8 @@ export class Workspace {
             has_write_permission_to_repository: this.has_write_permission_to_repository,
             settings: JSON.stringify(this.settings),
             spritesheetId: this.spritesheetId,
-            pruefungId: this.pruefung_id
+            pruefungId: this.pruefung_id,
+            readonly: this.readonly
         }
 
         if(withFiles){
@@ -150,6 +152,7 @@ export class Workspace {
         w.pruefung_id = wd.pruefungId;
 
         w.spritesheetId = wd.spritesheetId;
+        w.readonly = wd.readonly;
 
         if(w.settings.libraries == null){
             w.settings.libraries = [];

@@ -18,6 +18,8 @@ export type AccordionElement = {
 
     isFolder: boolean;
     path: string[];
+
+    readonly: boolean;
 }
 
 export type AccordionContextMenuItem = {
@@ -254,7 +256,8 @@ export class AccordionPanel {
         let ae: AccordionElement = {
             name: name,
             isFolder: true,
-            path: path
+            path: path,
+            readonly: false
         }
 
         let $element = this.renderElement(ae, true);
@@ -294,7 +297,8 @@ export class AccordionPanel {
                 let ae: AccordionElement = {
                     name: "Neu",
                     isFolder: false,
-                    path: path
+                    path: path, 
+                    readonly: false
                 }
 
                 let insertIndex = this.getElementIndex("", path, false);
@@ -416,7 +420,7 @@ export class AccordionPanel {
             return this.compareWithPath(aName, a.path, a.isFolder, bName, b.path, b.isFolder);
 
         });
-        this.$listElement.empty();
+
         this.elements.forEach((element) => { this.$listElement.append(element.$htmlFirstLine) });
     }
 
@@ -457,7 +461,7 @@ export class AccordionPanel {
            <div class="jo_additionalButtonHomework"></div>
            <div class="jo_additionalButtonStart"></div>
            <div class="jo_additionalButtonRepository"></div>
-           ${this.withDeleteButton ? '<div class="jo_delete img_delete jo_button jo_active' + (false ? " jo_delete_always" : "") + '"></div>' : ""}
+           ${this.withDeleteButton && !element.readonly ? '<div class="jo_delete img_delete jo_button jo_active' + (false ? " jo_delete_always" : "") + '"></div>' : ""}
            ${!jo_mouseDetected ? '<div class="jo_settings_button img_ellipsis-dark jo_button jo_active"></div>' : ""}
            </div>`);
 
@@ -471,7 +475,7 @@ export class AccordionPanel {
         }
 
         if (this.withFolders) {
-            if (element.isFolder) {
+            if (element.isFolder && !element.readonly) {
                 element.$htmlFirstLine.on('dragover', (event) => {
                     if (AccordionPanel.currentlyDraggedElementKind == that.kind) {
                         element.$htmlFirstLine.addClass('jo_file_dragover');
@@ -595,7 +599,7 @@ export class AccordionPanel {
         let contextmenuHandler = function (event) {
 
             let contextMenuItems: ContextMenuItem[] = [];
-            if (that.renameCallback != null) {
+            if (that.renameCallback != null && !element.readonly) {
                 contextMenuItems.push({
                     caption: "Umbenennen",
                     callback: () => {
@@ -606,7 +610,7 @@ export class AccordionPanel {
 
             let mousePointer = window.PointerEvent ? "pointer" : "mouse";
 
-            if (element.isFolder) {
+            if (element.isFolder && !element.readonly) {
                 contextMenuItems = contextMenuItems.concat([
                     {
                         caption: "Neuen Unterordner anlegen (unterhalb '" + element.name + "')...",
@@ -697,7 +701,7 @@ export class AccordionPanel {
             });
         }
 
-        if (that.withDeleteButton) {
+        if (that.withDeleteButton && !element.readonly) {
 
             element.$htmlFirstLine.find('.jo_delete')[0].addEventListener("contextmenu", (event) => {
                 event.preventDefault();

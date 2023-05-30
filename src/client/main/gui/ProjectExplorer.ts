@@ -179,7 +179,8 @@ export class ProjectExplorer {
                                     name: f.name,
                                     path: [],
                                     externalElement: m,
-                                    iconClass: FileTypeManager.filenameToFileType(f.name).iconclass
+                                    iconClass: FileTypeManager.filenameToFileType(f.name).iconclass,
+                                    readonly: false
                                 }
                                 f.panelElement = element;
                                 that.fileListPanel.addElement(element, true);
@@ -475,7 +476,8 @@ export class ProjectExplorer {
                                     externalElement: newWorkspace,
                                     iconClass: newWorkspace.repository_id == null ? 'workspace' : 'repository',
                                     isFolder: false,
-                                    path: path
+                                    path: path, 
+                                    readonly: false
                                 };
 
                                 this.workspaceListPanel.addElement(newWorkspace.panelElement, true);
@@ -639,7 +641,8 @@ export class ProjectExplorer {
                     externalElement: m,
                     isFolder: false,
                     path: [],
-                    iconClass: FileTypeManager.filenameToFileType(m.file.name).iconclass
+                    iconClass: FileTypeManager.filenameToFileType(m.file.name).iconclass,
+                    readonly: workspace.readonly
                 };
 
                 this.fileListPanel.addElement(m.file.panelElement, true);
@@ -656,7 +659,7 @@ export class ProjectExplorer {
         this.fileListPanel.clear();
         this.workspaceListPanel.clear();
 
-        for (let w of workspaceList.filter(w => w.pruefung_id == null)) {
+        for (let w of workspaceList) {
             let path = w.path.split("/");
             if (path.length == 1 && path[0] == "") path = [];
             w.panelElement = {
@@ -664,7 +667,8 @@ export class ProjectExplorer {
                 externalElement: w,
                 iconClass: w.repository_id == null ? 'workspace' : 'repository',
                 isFolder: w.isFolder,
-                path: path
+                path: path,
+                readonly: w.readonly
             };
 
             this.workspaceListPanel.addElement(w.panelElement, false);
@@ -774,7 +778,7 @@ export class ProjectExplorer {
             this.main.getMonacoEditor().updateOptions({ readOnly: true });
             this.fileListPanel.setCaption('Keine Datei vorhanden');
         } else {
-            this.main.getMonacoEditor().updateOptions({ readOnly: false });
+            this.main.getMonacoEditor().updateOptions({ readOnly: this.main.currentWorkspace.readonly });
             this.main.getMonacoEditor().setModel(m.model);
             if (this.main.getBottomDiv() != null) this.main.getBottomDiv().errorManager.showParenthesisWarning(m.bracketError);
 

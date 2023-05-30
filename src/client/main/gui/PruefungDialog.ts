@@ -74,6 +74,8 @@ export class PruefungDialog {
             }
 
         }), this.pruefung == null ? undefined : this.pruefung.klasse_id);
+
+        this.$classSelect.attr('disabled', (this.pruefung != null && this.pruefung.state != 'preparing') ? 'true' : '');
         
         $inputGrid.append(`<div style="margin-top: 15px">Zustand:</div>`);
 

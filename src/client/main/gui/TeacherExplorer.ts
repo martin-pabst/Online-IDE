@@ -131,8 +131,11 @@ export class TeacherExplorer {
                     projectExplorer.workspaceListPanel.hide();
                     projectExplorer.fileListPanel.clear();
                     projectExplorer.fileListPanel.setCaption("---");
-                    this.studentPanel.hide();
+                    if(this.pruefungen.length == 0){
+                        this.studentPanel.hide();
+                    }
                     this.renderPruefungen();
+                    this.main.getMonacoEditor().setModel(monaco.editor.createModel("Keine Datei vorhanden.", "text"));
                     if(this.pruefungen.length > 0){
                         this.classPanel.select(this.pruefungen[0], true, true);
                     }
@@ -178,7 +181,7 @@ export class TeacherExplorer {
         this.main.projectExplorer.setExplorerColor(null);
         this.main.projectExplorer.$homeAction.hide();
 
-        if (p.state == "preparing") {
+        if (p.state == "preparing" || p.state == "running") {
             this.studentPanel.clear();
             this.restoreOwnWorkspaces();
             let workspace = this.main.workspaceList.find(w => w.id == p.template_workspace_id);
@@ -213,7 +216,8 @@ export class TeacherExplorer {
                 sortName: ud.familienname + " " + ud.rufname,
                 externalElement: ud,
                 isFolder: false,
-                path: []
+                path: [],
+                readonly: false
             }
             this.studentPanel.addElement(ae, true);
         }
@@ -235,7 +239,8 @@ export class TeacherExplorer {
                 name: cd.name,
                 externalElement: cd,
                 isFolder: false,
-                path: []
+                path: [],
+                readonly: false
             }
             this.classPanel.addElement(ae, true);
         }
@@ -254,7 +259,8 @@ export class TeacherExplorer {
             externalElement: p,
             isFolder: false,
             path: [],
-            iconClass: "test"
+            iconClass: "test",
+            readonly: false
         }
         this.classPanel.addElement(ae, true);
         this.updateClassNameAndState(p);
@@ -273,6 +279,7 @@ export class TeacherExplorer {
                 ae.$htmlFirstLine.find('.jo_textAfterName').empty().append($text);
             }
             let $buttonDiv = ae.$htmlFirstLine?.find('.jo_additionalButtonRepository');
+            $buttonDiv.empty();
             if ($buttonDiv != null) {
                 let $button = jQuery('<div class="img_gear-dark jo_button jo_active" title="Bearbeiten..." style="top: 2px; position: relative"></div>');
                 $buttonDiv.append($button);

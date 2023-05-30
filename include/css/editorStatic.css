@@ -8,7 +8,7 @@ html, body {
     background-color: var(--backgroundDark);
     font-family: 'Roboto', sans-serif;
     /* font-weight: 500; */
-    overflow: hidden;
+    overflow: auto;
     font-size: 10pt;
 }
 
@@ -18,4 +18,10 @@ html, body {
 .inline {
     height:100% !important;
     width:100% !important;
+}
+
+@media screen and (max-width: 1000px) {
+    .isidigitalimg, #jo_login_new {
+        display: none;
+    }
 }

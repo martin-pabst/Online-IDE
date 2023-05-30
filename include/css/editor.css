@@ -1240,6 +1240,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
 .jo_infodiv_line {
     width: 100%;
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
     justify-content: center;
 }

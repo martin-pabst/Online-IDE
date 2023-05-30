@@ -5,37 +5,35 @@ import { Workspace } from "../workspace/Workspace.js";
 import { Module } from "../compiler/parser/Module.js";
 import { AccordionElement, AccordionPanel } from "../main/gui/Accordion.js";
 import {WorkspaceSettings } from "../communication/Data.js";
-import { NotifierClient } from "./NotifierClient.js";
 import { CacheManager } from "../tools/database/CacheManager.js";
 import jQuery from 'jquery';
+import { SSEManager } from "./SSEManager.js";
 
 export class NetworkManager {
-
+    
     // sqlIdeURL = "http://localhost:6500/servlet/";
     sqlIdeURL = "https://www.sql-ide.de/servlet/";
-
+    
     timerhandle: any;
-
+    
     ownUpdateFrequencyInSeconds: number = 25;
     teacherUpdateFrequencyInSeconds: number = 5;
-
+    
     updateFrequencyInSeconds: number = 25;
     forcedUpdateEvery: number = 25;
     forcedUpdatesInARow: number = 0;
-
+    
     secondsTillNextUpdate: number = this.updateFrequencyInSeconds;
     errorHappened: boolean = false;
-
+    
     interval: any;
-
+    
     counterTillForcedUpdate: number;
-
-    notifierClient: NotifierClient;
-
+    
     constructor(private main: Main, private $updateTimerDiv: JQuery<HTMLElement>) {
 
     }
-
+    
     initializeTimer() {
 
         let that = this;
@@ -44,13 +42,13 @@ export class NetworkManager {
         if (this.interval != null) clearInterval(this.interval);
 
         this.counterTillForcedUpdate = this.forcedUpdateEvery;
-
+        
         this.interval = setInterval(() => {
-
+            
             if (that.main.user == null) return; // don't call server if no user is logged in
-
+            
             that.secondsTillNextUpdate--;
-
+            
             if (that.secondsTillNextUpdate < 0) {
                 that.secondsTillNextUpdate = that.updateFrequencyInSeconds;
                 that.counterTillForcedUpdate--;
@@ -63,15 +61,15 @@ export class NetworkManager {
                     }
                 }
 
-
+                
                 that.sendUpdates(() => { }, doForceUpdate, false);
-
+                
             }
-
+            
             let $rect = this.$updateTimerDiv.find('.jo_updateTimerRect');
-
+            
             $rect.attr('width', that.secondsTillNextUpdate + "px");
-
+            
             if (that.errorHappened) {
                 $rect.css('fill', '#c00000');
                 this.$updateTimerDiv.attr('title', "Fehler beim letzten Speichervorgang -> Werd's wieder versuchen");
@@ -79,31 +77,42 @@ export class NetworkManager {
                 $rect.css('fill', '#008000');
                 this.$updateTimerDiv.attr('title', that.secondsTillNextUpdate + " Sekunden bis zum nächsten Speichern");
             }
-
+            
             PerformanceCollector.sendDataToServer();
-
+            
         }, 1000);
+        
+    }
+
+    initializeSSE() {
+        SSEManager.subscribe("doFileUpdate", (data) => {
+            this.sendUpdates(() => {}, true);
+        })
+
 
     }
 
-    initializeNotifierClient(){
-        this.notifierClient = new NotifierClient(this.main, this);
+    sendUpdatesAsync(sendIfNothingIsDirty: boolean = false, sendBeacon: boolean = false):Promise<void> {
+        let p = new Promise<void>((resolve, reject) => {
+            this.sendUpdates(resolve, sendIfNothingIsDirty, sendBeacon);
+        })
+        return p;
     }
 
-    sendUpdates(callback?: () => void, sendIfNothingIsDirty: boolean = false, sendBeacon: boolean = false) {
+    sendUpdates(callback?: () => void, sendIfNothingIsDirty: boolean = false, sendBeacon: boolean = false, alertIfNewWorkspacesFound: boolean = false) {
 
         if (this.main.user == null || this.main.user.is_testuser) {
             if (callback != null) callback();
             return;
         }
-
+        
         this.main.projectExplorer.writeEditorTextToFile();
-
+        
         let classDiagram = this.main.rightDiv?.classDiagram;
         let userSettings = this.main.user.settings;
 
         if (classDiagram?.dirty || this.main.userDataDirty) {
-
+            
             this.main.userDataDirty = false;
             userSettings.classDiagram = classDiagram?.serialize();
             this.sendUpdateUserSettings(() => { }, sendBeacon);
@@ -140,7 +149,7 @@ export class NetworkManager {
             owner_id: this.main.workspacesOwnerId,
             userId: this.main.user.id,
             language: 0,
-            currentWorkspaceId: this.main.currentWorkspace?.id,
+            currentWorkspaceId: this.main.currentWorkspace?.pruefung_id == null ? this.main.currentWorkspace?.id : null,
             getModifiedWorkspaces: sendIfNothingIsDirty
         }
 
@@ -157,7 +166,7 @@ export class NetworkManager {
 
                         // if (this.main.workspacesOwnerId == this.main.user.id) {
                             if (response.workspaces != null) {
-                                that.updateWorkspaces(request, response);
+                                that.updateWorkspaces(request, response, alertIfNewWorkspacesFound);
                             }
                             if (response.filesToForceUpdate != null) {
                                 that.updateFiles(response.filesToForceUpdate);
@@ -270,8 +279,7 @@ export class NetworkManager {
             let request: DistributeWorkspaceRequest = {
                 workspace_id: ws.id,
                 class_id: klasse?.id,
-                student_ids: student_ids,
-                language: 0
+                student_ids: student_ids
             }
 
             ajax("distributeWorkspace", request, (response: DistributeWorkspaceResponse) => {
@@ -376,7 +384,7 @@ export class NetworkManager {
     }
 
 
-    private updateWorkspaces(sendUpdatesRequest: SendUpdatesRequest, sendUpdatesResponse: SendUpdatesResponse) {
+    private updateWorkspaces(sendUpdatesRequest: SendUpdatesRequest, sendUpdatesResponse: SendUpdatesResponse, alertIfNewWorkspacesFound: boolean = false) {
 
         let idToRemoteWorkspaceDataMap: Map<number, WorkspaceData> = new Map();
 
@@ -438,7 +446,7 @@ export class NetworkManager {
             }
         }
 
-        if (newWorkspaceNames.length > 0) {
+        if (newWorkspaceNames.length > 0 && alertIfNewWorkspacesFound) {
             let message: string = newWorkspaceNames.length > 1 ? "Folgende Workspaces hat Deine Lehrkraft Dir gesendet: " : "Folgenden Workspace hat Deine Lehrkraft Dir gesendet: ";
             message += newWorkspaceNames.join(", ");
             alert(message);
@@ -471,21 +479,9 @@ export class NetworkManager {
     }
 
     public createNewWorkspaceFromWorkspaceData(remoteWorkspace: WorkspaceData, withSort: boolean = false): Workspace {
-        let w = this.main.createNewWorkspace(remoteWorkspace.name, remoteWorkspace.owner_id);
-        w.id = remoteWorkspace.id;
-        w.repository_id = remoteWorkspace.repository_id;
-        w.has_write_permission_to_repository = remoteWorkspace.has_write_permission_to_repository;
-        w.path = remoteWorkspace.path;
-        w.isFolder = remoteWorkspace.isFolder;
-        w.moduleStore.dirty = true;
-        w.spritesheetId = remoteWorkspace.spritesheetId;
 
-        if(remoteWorkspace.settings != null && remoteWorkspace.settings.startsWith("{")){
-            let remoteWorkspaceSettings:WorkspaceSettings = JSON.parse(remoteWorkspace.settings);
-            w.settings = remoteWorkspaceSettings;
-            w.moduleStore.setAdditionalLibraries(remoteWorkspaceSettings.libraries);
-        }
-
+        let w = this.main.restoreWorkspaceFromData(remoteWorkspace);
+        
         this.main.workspaceList.push(w);
         let path = remoteWorkspace.path.split("/");
         if (path.length == 1 && path[0] == "") path = [];
@@ -505,18 +501,16 @@ export class NetworkManager {
             w.renderSynchronizeButton(panelElement);
         }
 
-        for (let fileData of remoteWorkspace.files) {
-            this.createFile(w, fileData);
-        }
-
         if (withSort) {
             this.main.projectExplorer.workspaceListPanel.sortElements();
-            this.main.projectExplorer.fileListPanel.sortElements();
         }
         return w;
     }
 
     private createFile(workspace: Workspace, remoteFile: FileData) {
+        let m = this.main.projectExplorer.getNewModule(remoteFile); //new Module(f, this.main);
+        let f = m.file;
+
         let ae: any = null; //AccordionElement
         if (workspace == this.main.currentWorkspace) {
             ae = {
@@ -525,23 +519,10 @@ export class NetworkManager {
             }
 
             this.main.projectExplorer.fileListPanel.addElement(ae, true);
+            f.panelElement = ae;
+            ae.externalElement = m;
         }
 
-        let f: any = { // File
-            id: remoteFile.id,
-            name: remoteFile.name,
-            dirty: true,
-            saved: true,
-            text: remoteFile.text,
-            version: remoteFile.version,
-            is_copy_of_id: remoteFile.is_copy_of_id,
-            repository_file_version: remoteFile.repository_file_version,
-            identical_to_repository_version: true,
-            workspace_id: workspace.id,
-            panelElement: ae
-        };
-        let m = this.main.projectExplorer.getNewModule(f); //new Module(f, this.main);
-        if (ae != null) ae.externalElement = m;
         let modulStore = workspace.moduleStore;
         modulStore.putModule(m);
 

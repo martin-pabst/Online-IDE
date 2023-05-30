@@ -12,18 +12,26 @@ export class Dialog {
 
     $dialog: JQuery<HTMLElement>;
     $dialogMain: JQuery<HTMLElement>;
+    $dialogFooter: JQuery<HTMLElement>;
 
     init() {
         this.$dialog = jQuery('#dialog');
+        this.$dialog.empty();
         jQuery('#main').css('visibility', 'hidden');
         this.$dialog.append(jQuery(
-            '<div style="flex: 1"></div>' +
+            '<div style="height: 20px"></div>' +
             '<div class="dialog-main"></div>' +
+            '<div class="dialog-footer"></div>' +
             '<div style="flex: 4"></div>'
         ));
         this.$dialogMain = this.$dialog.find('.dialog-main');
+        this.$dialogFooter = this.$dialog.find('.dialog-footer');
         this.$dialog.css('visibility', 'visible');
+
+        this.$dialogMain.empty();
+        this.$dialogFooter.empty();
     }
+
 
     heading(text: string) {
         let $div = jQuery('<div class="dialog-heading">' + text + "</div>")

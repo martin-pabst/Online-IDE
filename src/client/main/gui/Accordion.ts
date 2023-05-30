@@ -6,6 +6,7 @@ import { isJSDocThisTag, isThisTypeNode } from "typescript";
 import { WorkspaceImporter } from "./WorkspaceImporter.js";
 import { Main } from "../Main.js";
 import { MainBase } from "../MainBase.js";
+import { Workspace } from '../../workspace/Workspace.js';
 
 export type AccordionElement = {
     name: string;
@@ -17,6 +18,8 @@ export type AccordionElement = {
 
     isFolder: boolean;
     path: string[];
+
+    readonly: boolean;
 }
 
 export type AccordionContextMenuItem = {
@@ -33,6 +36,7 @@ export class AccordionPanel {
     $captionElement: JQuery<HTMLElement>;
     $buttonNew: JQuery<HTMLElement>;
     $listElement: JQuery<HTMLElement>;
+    $listOuter: JQuery<HTMLElement>;
 
     private fixed: boolean;
 
@@ -55,7 +59,7 @@ export class AccordionPanel {
 
     private _$caption: JQuery<HTMLElement>;
 
-    constructor(private accordion: Accordion, caption: string|JQuery<HTMLElement>, private flexWeight: string,
+    constructor(private accordion: Accordion, caption: string | JQuery<HTMLElement>, private flexWeight: string,
         private newButtonClass: string, private buttonNewTitle: string,
         private defaultIconClass: string, private withDeleteButton: boolean, private withFolders: boolean,
         private kind: "workspace" | "file" | "class" | "student", private enableDrag: boolean, private acceptDropKinds: string[]) {
@@ -103,6 +107,23 @@ export class AccordionPanel {
 
         }
 
+    }
+
+    hide() {
+
+        this.$listOuter.animate({
+            'flex-grow': 0.001
+        }, 1000, () => { this.$listOuter.hide(); this.$captionElement.hide(); });
+        
+    }
+    
+    show() {
+        let targetGrow = this.$listOuter.data('grow');
+        this.$listOuter.show();
+        this.$captionElement.show();
+        this.$listOuter.animate({
+            'flex-grow': targetGrow
+        }, 1000);
     }
 
     collapseAll() {
@@ -235,7 +256,8 @@ export class AccordionPanel {
         let ae: AccordionElement = {
             name: name,
             isFolder: true,
-            path: path
+            path: path,
+            readonly: false
         }
 
         let $element = this.renderElement(ae, true);
@@ -275,7 +297,8 @@ export class AccordionPanel {
                 let ae: AccordionElement = {
                     name: "Neu",
                     isFolder: false,
-                    path: path
+                    path: path, 
+                    readonly: false
                 }
 
                 let insertIndex = this.getElementIndex("", path, false);
@@ -312,14 +335,14 @@ export class AccordionPanel {
 
         }
 
-        let $listOuter = jQuery('<div id="filelistouter" class="jo_projectexplorerdiv jo_scrollable" data-grow="'
+        this.$listOuter = jQuery('<div class="jo_projectexplorerdiv jo_scrollable" data-grow="'
             + this.flexWeight + '" style="flex-grow: ' + this.flexWeight + '"></div>');
         this.$listElement = jQuery('<div class="jo_filelist"></div>')
 
-        $listOuter.append(this.$listElement);
+        this.$listOuter.append(this.$listElement);
 
         $accordionDiv.append(this.$captionElement);
-        $accordionDiv.append($listOuter);
+        $accordionDiv.append(this.$listOuter);
 
         let $ce = this.$captionElement;
         let $li = this.$listElement.parent();
@@ -397,6 +420,7 @@ export class AccordionPanel {
             return this.compareWithPath(aName, a.path, a.isFolder, bName, b.path, b.isFolder);
 
         });
+
         this.elements.forEach((element) => { this.$listElement.append(element.$htmlFirstLine) });
     }
 
@@ -437,7 +461,7 @@ export class AccordionPanel {
            <div class="jo_additionalButtonHomework"></div>
            <div class="jo_additionalButtonStart"></div>
            <div class="jo_additionalButtonRepository"></div>
-           ${this.withDeleteButton ? '<div class="jo_delete img_delete jo_button jo_active' + (false ? " jo_delete_always" : "") + '"></div>' : ""}
+           ${this.withDeleteButton && !element.readonly ? '<div class="jo_delete img_delete jo_button jo_active' + (false ? " jo_delete_always" : "") + '"></div>' : ""}
            ${!jo_mouseDetected ? '<div class="jo_settings_button img_ellipsis-dark jo_button jo_active"></div>' : ""}
            </div>`);
 
@@ -451,7 +475,7 @@ export class AccordionPanel {
         }
 
         if (this.withFolders) {
-            if (element.isFolder) {
+            if (element.isFolder && !element.readonly) {
                 element.$htmlFirstLine.on('dragover', (event) => {
                     if (AccordionPanel.currentlyDraggedElementKind == that.kind) {
                         element.$htmlFirstLine.addClass('jo_file_dragover');
@@ -575,7 +599,7 @@ export class AccordionPanel {
         let contextmenuHandler = function (event) {
 
             let contextMenuItems: ContextMenuItem[] = [];
-            if (that.renameCallback != null) {
+            if (that.renameCallback != null && !element.readonly) {
                 contextMenuItems.push({
                     caption: "Umbenennen",
                     callback: () => {
@@ -586,7 +610,7 @@ export class AccordionPanel {
 
             let mousePointer = window.PointerEvent ? "pointer" : "mouse";
 
-            if (element.isFolder) {
+            if (element.isFolder && !element.readonly) {
                 contextMenuItems = contextMenuItems.concat([
                     {
                         caption: "Neuen Unterordner anlegen (unterhalb '" + element.name + "')...",
@@ -650,7 +674,7 @@ export class AccordionPanel {
         };
 
         element.$htmlFirstLine[0].addEventListener("contextmenu", (event) => {
-                contextmenuHandler(event);
+            contextmenuHandler(event);
         }, false);
 
         // long press for touch devices
@@ -677,7 +701,7 @@ export class AccordionPanel {
             });
         }
 
-        if (that.withDeleteButton) {
+        if (that.withDeleteButton && !element.readonly) {
 
             element.$htmlFirstLine.find('.jo_delete')[0].addEventListener("contextmenu", (event) => {
                 event.preventDefault();
@@ -842,10 +866,13 @@ export class AccordionPanel {
         return ps;
     }
 
-    setElementClass(element: AccordionElement, iconClass: string) {
+    setElementClass(element: AccordionElement, iconClass: string, fileimageTitle?: string) {
         if (element != null) {
             element.$htmlFirstLine?.removeClass("jo_" + element.iconClass).addClass("jo_" + iconClass);
             element.iconClass = iconClass;
+            if(fileimageTitle != null){
+                element.$htmlFirstLine.find('.jo_fileimage').attr('title', fileimageTitle);
+            }
         }
 
     }

@@ -7,6 +7,8 @@ import { InterpreterState } from "../interpreter/Interpreter.js";
 import { SoundTools } from "../tools/SoundTools.js";
 import { UserMenu } from "./gui/UserMenu.js";
 import { escapeHtml } from "../tools/StringTools.js";
+import { SSEManager } from '../communication/SSEManager.js';
+import { PruefungManagerForStudents } from './pruefung/PruefungManagerForStudents.js';
 
 export class Login {
 
@@ -105,11 +107,13 @@ export class Login {
             }
 
             this.main.networkManager.sendUpdates(() => {
+                
+                this.main.pruefungManagerForStudents?.stopPruefung(false);
 
                 this.main.rightDiv.classDiagram.clearAfterLogout();
 
                 let logoutRequest: LogoutRequest = {
-                    currentWorkspaceId: this.main.currentWorkspace?.id
+                    currentWorkspaceId: this.main.currentWorkspace?.pruefung_id == null ? this.main.currentWorkspace?.id : null
                 }
 
                 ajax('logout', logoutRequest, () => {
@@ -120,7 +124,7 @@ export class Login {
                 });
             });
 
-            this.main.networkManager.notifierClient.disconnect();
+            SSEManager.close();
 
         });
 
@@ -225,7 +229,20 @@ export class Login {
         
                     }
         
-                    that.main.networkManager.initializeNotifierClient();
+                    that.main.networkManager.initializeSSE();
+
+                    this.main.pruefungManagerForStudents?.close();
+
+                    if(!user.is_teacher && !user.is_admin && !user.is_schooladmin){
+                        this.main.pruefungManagerForStudents = new PruefungManagerForStudents(this.main);
+                        if(response.activePruefung != null){
+
+                            let workspaceData = this.main.workspaceList.filter(w => w.pruefung_id == response.activePruefung.id)[0].getWorkspaceData(true);
+
+                            this.main.pruefungManagerForStudents.startPruefung(response.activePruefung);
+                        }
+                    }
+    
 
                 }
 

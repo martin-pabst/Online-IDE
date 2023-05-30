@@ -9,12 +9,14 @@ import { Workspace } from "../../workspace/Workspace.js";
 import { Main } from "../Main.js";
 import { AccordionPanel, Accordion, AccordionElement, AccordionContextMenuItem } from "./Accordion.js";
 import { Helper } from "./Helper.js";
-import { WorkspaceData, Workspaces, ClassData } from "../../communication/Data.js";
+import { WorkspaceData, Workspaces, ClassData, UserData, GetWorkspacesRequest, GetWorkspacesResponse, Pruefung, FileData } from "../../communication/Data.js";
 import { dateToString } from "../../tools/StringTools.js";
 import { DistributeToStudentsDialog } from "./DistributeToStudentsDialog.js";
 import { WorkspaceSettingsDialog } from "./WorkspaceSettingsDialog.js";
 import { SpritesheetData } from "../../spritemanager/SpritesheetData.js";
 import { FileTypeManager } from './FileTypeManager.js';
+import { ajax, ajaxAsync } from '../../communication/AjaxHelper.js';
+import { TeacherExplorer } from './TeacherExplorer.js';
 
 
 export class ProjectExplorer {
@@ -70,7 +72,7 @@ export class ProjectExplorer {
                     student_edited_after_revision: false,
                     version: 1,
                     panelElement: accordionElement,
-                    identical_to_repository_version: false, 
+                    identical_to_repository_version: false,
                     file_type: 0
                 };
                 that.fileListPanel.setElementClass(accordionElement, FileTypeManager.filenameToFileType(accordionElement.name).iconclass)
@@ -111,7 +113,8 @@ export class ProjectExplorer {
                 that.main.networkManager.sendDeleteWorkspaceOrFile("file", module.file.id, (error: string) => {
                     if (error == null) {
                         that.main.currentWorkspace.moduleStore.removeModule(module);
-                        if(that.main.currentWorkspace.moduleStore.getModules(false).length == 0){
+                        if (that.main.currentWorkspace.moduleStore.getModules(false).length == 0) {
+
                             that.fileListPanel.setCaption("Keine Datei vorhanden");
                         }
                         callbackIfSuccessful();
@@ -176,7 +179,8 @@ export class ProjectExplorer {
                                     name: f.name,
                                     path: [],
                                     externalElement: m,
-                                    iconClass: FileTypeManager.filenameToFileType(f.name).iconclass
+                                    iconClass: FileTypeManager.filenameToFileType(f.name).iconclass,
+                                    readonly: false
                                 }
                                 f.panelElement = element;
                                 that.fileListPanel.addElement(element, true);
@@ -476,7 +480,8 @@ export class ProjectExplorer {
                                     externalElement: newWorkspace,
                                     iconClass: newWorkspace.repository_id == null ? 'workspace' : 'repository',
                                     isFolder: false,
-                                    path: path
+                                    path: path, 
+                                    readonly: false
                                 };
 
                                 this.workspaceListPanel.addElement(newWorkspace.panelElement, true);
@@ -640,7 +645,8 @@ export class ProjectExplorer {
                     externalElement: m,
                     isFolder: false,
                     path: [],
-                    iconClass: FileTypeManager.filenameToFileType(m.file.name).iconclass
+                    iconClass: FileTypeManager.filenameToFileType(m.file.name).iconclass,
+                    readonly: workspace.readonly
                 };
 
                 this.fileListPanel.addElement(m.file.panelElement, true);
@@ -665,7 +671,8 @@ export class ProjectExplorer {
                 externalElement: w,
                 iconClass: w.repository_id == null ? 'workspace' : 'repository',
                 isFolder: w.isFolder,
-                path: path
+                path: path,
+                readonly: w.readonly
             };
 
             this.workspaceListPanel.addElement(w.panelElement, false);
@@ -775,7 +782,7 @@ export class ProjectExplorer {
             this.main.getMonacoEditor().updateOptions({ readOnly: true });
             this.fileListPanel.setCaption('Keine Datei vorhanden');
         } else {
-            this.main.getMonacoEditor().updateOptions({ readOnly: false });
+            this.main.getMonacoEditor().updateOptions({ readOnly: this.main.currentWorkspace.readonly });
             this.main.getMonacoEditor().setModel(m.model);
             if (this.main.getBottomDiv() != null) this.main.getBottomDiv().errorManager.showParenthesisWarning(m.bracketError);
 
@@ -913,8 +920,56 @@ export class ProjectExplorer {
         this.workspaceListPanel.setCaption(caption);
     }
 
-    getNewModule(file: File): Module {
-        return new Module(file, this.main);
+    getNewModule(fileData: FileData): Module {
+        return Module.restoreFromData(fileData, this.main);
+    }
+
+    async fetchAndRenderOwnWorkspaces() {
+        await this.fetchAndRenderWorkspaces(this.main.user);
+    }
+
+    async fetchAndRenderWorkspaces(ae: UserData, teacherExplorer?: TeacherExplorer, pruefung: Pruefung = null) {
+
+        await this.main.networkManager.sendUpdates();
+
+        let request: GetWorkspacesRequest = {
+            ws_userId: ae.id,
+            userId: this.main.user.id,
+            language: 0
+        }
+
+        let response: GetWorkspacesResponse = await ajaxAsync("/servlet/getWorkspaces", request);
+
+        if (response.success == true) {
+
+            if (this.main.workspacesOwnerId == this.main.user.id && teacherExplorer != null) {
+                teacherExplorer.ownWorkspaces = this.main.workspaceList.slice();
+                teacherExplorer.currentOwnWorkspace = this.main.currentWorkspace;
+            } 
+            
+            if(ae.id != this.main.user.id)
+            {
+                this.main.projectExplorer.setExplorerColor("rgba(255, 0, 0, 0.2");
+                this.main.projectExplorer.$homeAction.show();
+                Helper.showHelper("homeButtonHelper", this.main);
+
+                this.main.bottomDiv.showHomeworkTab();
+                this.main.bottomDiv.homeworkManager.attachToWorkspaces(this.main.workspaceList);
+                this.main.networkManager.updateFrequencyInSeconds = this.main.networkManager.teacherUpdateFrequencyInSeconds;
+                this.main.networkManager.secondsTillNextUpdate = this.main.networkManager.teacherUpdateFrequencyInSeconds;
+
+                if(teacherExplorer != null && teacherExplorer.classPanelMode == "tests"){
+                    response.workspaces.workspaces = response.workspaces.workspaces.filter(w => w.pruefungId == pruefung.id);
+                }
+            }
+
+
+            this.main.restoreWorkspaces(response.workspaces, false);
+            this.main.workspacesOwnerId = ae.id;
+        }
+
+
+
     }
 
 

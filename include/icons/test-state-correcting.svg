@@ -6,7 +6,7 @@
    fill="none"
    version="1.1"
    id="svg4"
-   sodipodi:docname="test-dark.svg"
+   sodipodi:docname="test-state-correcting.svg"
    inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -24,9 +24,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#505050"
      showgrid="true"
-     inkscape:zoom="41.7193"
-     inkscape:cx="7.059083"
-     inkscape:cy="7.7661897"
+     inkscape:zoom="64"
+     inkscape:cx="9.9296875"
+     inkscape:cy="2.78125"
      inkscape:window-width="3840"
      inkscape:window-height="2066"
      inkscape:window-x="-11"
@@ -42,17 +42,18 @@
   <path
      fill-rule="evenodd"
      clip-rule="evenodd"
-     d="M 11,3.5 10.470983,3 H 10.2 3.4756096 L 3,3.5 V 4 h 7 v 9 H 4 V 4 H 3 v 9.5 L 3.5,14 H 9 10.5 L 11,13.5 c 0.04548,-4.1824948 -0.115775,-5.8321075 0,-10 z"
+     d="M 10,11.026072 V 13 H 4 V 4 H 3 v 9.5 L 3.5,14 H 9 10.5 L 11,13.5 c 0,-0.798961 0.01133,-2.121257 0,-3.5 m 0,-4 c -3e-6,-0.8702218 -0.03183,-1.3540052 0,-2.5 L 10.470983,3 H 10.2 3.4756096 L 3,3.5 V 4 h 7 v 3"
      fill="#c5c5c5"
      id="path2"
-     sodipodi:nodetypes="ccccccccccccccccc" />
-  <path
-     id="path266"
-     style="fill:#089b16;fill-opacity:1;stroke-width:0.877059"
-     d="m 5.5,6 v 5 h 1 V 9 h 2 V 8 6 h -1 -1 z m 1,1 h 1 v 1 h -1 z" />
+     sodipodi:nodetypes="cccccccccccccccccccc" />
   <path
      id="rect1287"
      style="fill:#c5c5c5"
-     d="M 6,1.5 V 3 H 7 V 2 h 5 v 9 h -1 v 1 h 1 0.5 L 13,11.481497 V 2 1.5 L 12.5,1 H 7 6.5 Z"
-     sodipodi:nodetypes="ccccccccccccccccc" />
+     d="M 12,8.5571906 V 11 h -1 v 1 h 1 0.5 L 13,11.481497 V 8.521236 M 13,5.4650965 V 2 1.5 L 12.5,1 H 7 6.5 L 6,1.5 V 3 H 7 V 2 h 5 v 3.5010511"
+     sodipodi:nodetypes="cccccccccccccccccccc" />
+  <path
+     style="fill:#089b16;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="m 6.5,8.5 -1,1 2,2 h 1 L 13,7 12,6 8,10 Z"
+     id="path905"
+     sodipodi:nodetypes="cccccccc" />
 </svg>

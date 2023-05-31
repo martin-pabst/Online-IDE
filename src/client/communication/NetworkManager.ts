@@ -86,7 +86,7 @@ export class NetworkManager {
 
     initializeSSE() {
         SSEManager.subscribe("doFileUpdate", (data) => {
-            this.sendUpdates(() => {}, true);
+            this.sendUpdates(() => {}, true, false, true);
         })
 
 
@@ -157,6 +157,7 @@ export class NetworkManager {
         if (wdList.length > 0 || fdList.length > 0 || sendIfNothingIsDirty || this.errorHappened) {
 
             if (sendBeacon) {
+                // If user closes browser-tab or even browser then only sendBeacon works to send data.
                 navigator.sendBeacon("sendUpdates", JSON.stringify(request));
             } else {
 
@@ -401,7 +402,9 @@ export class NetworkManager {
 
             // Did student get a workspace from his/her teacher?
             if (localWorkspaces.length == 0) {
-                newWorkspaceNames.push(remoteWorkspace.name);
+                if(remoteWorkspace.pruefungId == null){
+                    newWorkspaceNames.push(remoteWorkspace.name);
+                }
                 this.createNewWorkspaceFromWorkspaceData(remoteWorkspace);
             }
 
@@ -491,7 +494,8 @@ export class NetworkManager {
             externalElement: w,
             iconClass: remoteWorkspace.repository_id == null ? "workspace" : "repository",
             isFolder: remoteWorkspace.isFolder,
-            path: path
+            path: path,
+            readonly: remoteWorkspace.readonly
         };
 
         this.main.projectExplorer.workspaceListPanel.addElement(panelElement, true);

@@ -1,5 +1,8 @@
 import { ajaxAsync } from "./AjaxHelper.js";
 
+
+type SSEEventType = "startPruefung" | "stopPruefung" | "doFileUpdate";
+
 type SSECallbackMethod = (data: any) => Promise<any>;
 
 type SSEMessageHandler = (data: any, callback?: SSECallbackMethod) => void;
@@ -14,16 +17,24 @@ type ServerSentMessage = {eventType: string, messageId?: number, token?: string,
 type SseCallbackRequest = {messageId: number, token: string, data: string};
 
 export class SSEManager {
-
+    
     static instance: SSEManager;
-
+    
     static eventTypeToSubscriberInfoMap: Map<string, SSESubscriberInfo> = new Map();
     static eventSource: EventSource;
+    
+    public static subscribe(eventType: SSEEventType, handler: SSEMessageHandler) {
+        this.eventTypeToSubscriberInfoMap.set(eventType, { eventType: eventType, messageHandler: handler });
+    }
+    
+    public static unsubscribe(eventType: SSEEventType){
+        this.eventTypeToSubscriberInfoMap.delete(eventType);
+    }
 
     static open(csrfToken: string){
-
+        
         SSEManager.close();
-
+        
         try {
             SSEManager.eventSource = new EventSource("/servlet/sse?csrfToken=" + csrfToken, {withCredentials: true});
             
@@ -58,12 +69,5 @@ export class SSEManager {
         }
     }
 
-    public static subscribe(eventType: string, handler: SSEMessageHandler) {
-        this.eventTypeToSubscriberInfoMap.set(eventType, { eventType: eventType, messageHandler: handler });
-    }
-
-    public static unsubscribe(eventType: string){
-        this.eventTypeToSubscriberInfoMap.delete(eventType);
-    }
 
 }

@@ -54,15 +54,17 @@ export class DistributeToStudentsDialog {
 
         jQuery('.jo_ds_filterdiv>input').on('input', () => {
             let filterText = <string>jQuery('.jo_ds_filterdiv>input').val();
+            
             if(filterText == null || filterText == ""){
                 jQuery('.jo_ds_student_line').show();
             } else {
+                let filterTextLowerCase = filterText.toLocaleLowerCase();
                 jQuery('.jo_ds_student_line').each((index, element) => {
                     let $element = jQuery(element);
                     let klass:ClassData = $element.data('klass');
                     let student: UserData = $element.data('student');
                     let text = klass.name + " " + student.rufname + " " + student.familienname;
-                    if(text.indexOf(filterText) >= 0){
+                    if(text.toLocaleLowerCase().indexOf(filterTextLowerCase) >= 0){
                         $element.show();
                     } else {
                         $element.hide();

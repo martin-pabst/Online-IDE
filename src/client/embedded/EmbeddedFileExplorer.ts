@@ -100,7 +100,8 @@ export class EmbeddedFileExplorer {
             $htmlFirstLine: $fileDiv,
             isFolder: false,
             path: [],
-            iconClass: FileTypeManager.filenameToFileType(module.file.name).iconclass
+            iconClass: FileTypeManager.filenameToFileType(module.file.name).iconclass,
+            readonly: false
         }
 
         $fileDiv.find('.jo_delete').on("mousedown", (e: JQuery.MouseDownEvent) => {

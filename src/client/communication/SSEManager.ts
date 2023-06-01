@@ -1,7 +1,7 @@
 import { ajaxAsync } from "./AjaxHelper.js";
 
 
-type SSEEventType = "startPruefung" | "stopPruefung" | "doFileUpdate";
+type SSEEventType = "startPruefung" | "stopPruefung" | "doFileUpdate" | "broadcastDatabaseChange" | "checkIfAlive" | "close";
 
 type SSECallbackMethod = (data: any) => Promise<any>;
 
@@ -12,23 +12,21 @@ type SSESubscriberInfo = {
     messageHandler: SSEMessageHandler
 }
 
-type ServerSentMessage = {eventType: string, messageId?: number, token?: string, data?: any};
+export type ServerSentMessage = {eventType: SSEEventType, messageId?: number, token?: string, data?: any};
 
 type SseCallbackRequest = {messageId: number, token: string, data: string};
 
 export class SSEManager {
     
-    static instance: SSEManager;
-    
     static eventTypeToSubscriberInfoMap: Map<string, SSESubscriberInfo> = new Map();
     static eventSource: EventSource;
     
     public static subscribe(eventType: SSEEventType, handler: SSEMessageHandler) {
-        this.eventTypeToSubscriberInfoMap.set(eventType, { eventType: eventType, messageHandler: handler });
+        SSEManager.eventTypeToSubscriberInfoMap.set(eventType, { eventType: eventType, messageHandler: handler });
     }
     
     public static unsubscribe(eventType: SSEEventType){
-        this.eventTypeToSubscriberInfoMap.delete(eventType);
+        SSEManager.eventTypeToSubscriberInfoMap.delete(eventType);
     }
 
     static open(csrfToken: string){
@@ -40,6 +38,16 @@ export class SSEManager {
             
             SSEManager.eventSource.onmessage = (event) => {
                 let ssm: ServerSentMessage = JSON.parse(event.data);
+
+                if(ssm.eventType == "checkIfAlive"){
+                    ajaxAsync("/servlet/sseKeepAlive?keepAliveToken=" + ssm.data, "");
+                    return;
+                }
+
+                if(ssm.eventType == "close"){
+                    SSEManager.close();
+                }
+
                 let subscriber = SSEManager.eventTypeToSubscriberInfoMap.get(ssm.eventType);
                 if(subscriber != null){
 
@@ -71,3 +79,5 @@ export class SSEManager {
 
 
 }
+
+

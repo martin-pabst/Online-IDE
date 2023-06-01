@@ -8,6 +8,7 @@ import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { DatabaseLongPollingListener } from "../../tools/database/DatabaseLongPollingListener.js";
 import { stringPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
 import { PreparedStatementHelper } from "./DatabasePreparedStatement.js";
+import { DatabaseSSEListener } from "../../tools/database/DatabaseSSEListener.js";
 
 export class ConnectionClass extends Klass {
 
@@ -73,7 +74,7 @@ export class ConnectionHelper {
     database: DatabaseTool;
     databaseData: DatabaseData;
     token: string;
-    longPollingListener: DatabaseLongPollingListener;
+    databaseSSEListener: DatabaseSSEListener;
 
     constructor(private main: Main) {
 
@@ -90,12 +91,11 @@ export class ConnectionHelper {
                 that.database = new DatabaseTool(that.main);
                 that.database.initializeWorker(dbData.templateDump, dbData.statements, (error) => {
 
-                    that.longPollingListener = new DatabaseLongPollingListener(that.main.networkManager,
-                        that.token, (firstNewStatementIndex, newStatements, rollbackToVersion) => {
+                    that.databaseSSEListener = new DatabaseSSEListener(that.main.networkManager,
+                        that.token, dbData.id, (firstNewStatementIndex, newStatements, rollbackToVersion) => {
                             that.onServerSentStatements(firstNewStatementIndex, newStatements, rollbackToVersion);
                         })
 
-                    that.longPollingListener.longPoll();
                     callback(null);
                 });
             } else {
@@ -105,9 +105,9 @@ export class ConnectionHelper {
     }
 
     close() {
-        if (this.longPollingListener != null) {
-            this.longPollingListener.close();
-            this.longPollingListener = null;
+        if (this.databaseSSEListener != null) {
+            this.databaseSSEListener.close();
+            this.databaseSSEListener = null;
         }
 
         if(this.database != null){
@@ -212,7 +212,7 @@ export class ConnectionHelper {
 
     executeQuery(query: string, callback: (error: string, data: QueryResult) => void) {
 
-        if (this.database == null || this.longPollingListener == null) {
+        if (this.database == null || this.databaseSSEListener == null) {
             callback("Es besteht keine Verbindung zur Datenbank.", null);
             return;
         }

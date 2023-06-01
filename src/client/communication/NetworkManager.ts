@@ -11,8 +11,8 @@ import { SSEManager } from "./SSEManager.js";
 
 export class NetworkManager {
     
-    // sqlIdeURL = "http://localhost:6500/servlet/";
-    sqlIdeURL = "https://www.sql-ide.de/servlet/";
+    sqlIdeURL = "http://localhost:6500/servlet/";
+    // sqlIdeURL = "https://www.sql-ide.de/servlet/";
     
     timerhandle: any;
     
@@ -30,7 +30,7 @@ export class NetworkManager {
     
     counterTillForcedUpdate: number;
     
-    constructor(private main: Main, private $updateTimerDiv: JQuery<HTMLElement>) {
+    constructor(public main: Main, private $updateTimerDiv: JQuery<HTMLElement>) {
 
     }
     

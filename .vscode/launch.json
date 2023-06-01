@@ -8,28 +8,28 @@
             "name": "Debug IDE Edge",
             "request": "launch",
             "type": "msedge",
-            "url": "http://localhost:4000",
+            "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}"
         },
         {
             "name": "Debug Embedded Edge",
             "request": "launch",
             "type": "msedge",
-            "url": "http://localhost:4000/embedded.html",
+            "url": "http://localhost:3000/embedded.html",
             "webRoot": "${workspaceFolder}"
         },
         {
             "type": "chrome",
             "request": "launch",
             "name": "Debug IDE Chrome",
-            "url": "http://localhost:4000",
+            "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}"
         },
         {
             "type": "chrome",
             "request": "launch",
             "name": "Debug Embedded Chrome",
-            "url": "http://localhost:4000/embedded.html",
+            "url": "http://localhost:3000/embedded.html",
             "webRoot": "${workspaceFolder}"
         },
         {

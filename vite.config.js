@@ -30,7 +30,7 @@ export default defineConfig({
       '/servlet/subscriptionwebsocket': { target: 'ws://localhost:5500', ws: true },
       '/worker': {
         rewrite: (path) => path.replace('/worker', '/dist/worker'),
-        target: "http://localhost:4000"
+        target: "http://localhost:3000"
       }
     }
   },

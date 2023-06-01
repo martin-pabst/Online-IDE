@@ -9,9 +9,9 @@ import { UserMenu } from "./gui/UserMenu.js";
 import { escapeHtml } from "../tools/StringTools.js";
 import { SSEManager } from '../communication/SSEManager.js';
 import { PruefungManagerForStudents } from './pruefung/PruefungManagerForStudents.js';
+import { DatabaseSSEListener } from '../tools/database/DatabaseSSEListener.js';
 
 export class Login {
-
 
     constructor(private main: Main) {
 
@@ -125,6 +125,7 @@ export class Login {
             });
 
             SSEManager.close();
+            DatabaseSSEListener.closeSSE();
 
         });
 

@@ -36,6 +36,8 @@ import { InconsistencyFixer } from "../workspace/InconsistencyFixer.js";
 import { SpriteManager } from "../spritemanager/SpriteManager.js";
 import * as PIXI from 'pixi.js';
 import { PruefungManagerForStudents } from './pruefung/PruefungManagerForStudents.js';
+import { DatabaseSSEListener } from '../tools/database/DatabaseSSEListener.js';
+import { SSEManager } from '../communication/SSEManager.js';
 
 export class Main implements MainBase {
 
@@ -343,6 +345,8 @@ export class Main implements MainBase {
                 that.networkManager.sendUpdates(null, false, true);
                 that.networkManager.sendUpdateUserSettings(() => {});
                 that.interpreter.closeAllWebsockets();
+                DatabaseSSEListener.closeSSE();
+                SSEManager.close();
             }
             
         });

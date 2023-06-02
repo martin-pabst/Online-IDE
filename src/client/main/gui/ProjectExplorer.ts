@@ -73,7 +73,6 @@ export class ProjectExplorer {
                     version: 1,
                     panelElement: accordionElement,
                     identical_to_repository_version: false,
-                    file_type: 0
                 };
                 that.fileListPanel.setElementClass(accordionElement, FileTypeManager.filenameToFileType(accordionElement.name).iconclass)
                 let m = new Module(f, that.main);
@@ -140,7 +139,6 @@ export class ProjectExplorer {
             //         callback: (element: AccordionElement) => {
             //             that.fileListPanel.setElementClass(element, ft.iconclass);
             //             let m: Module = element.externalElement;
-            //             m.file.file_type = ft.file_type;
             //             m.file.saved = false;
             //             that.main.networkManager.sendUpdates()
             //         }
@@ -164,7 +162,6 @@ export class ProjectExplorer {
                         version: module.file.version,
                         panelElement: null,
                         identical_to_repository_version: false,
-                        file_type: module.file.file_type
                     };
 
                     let m = new Module(f, that.main);
@@ -414,7 +411,6 @@ export class ProjectExplorer {
                 version: module.file.version,
                 panelElement: null,
                 identical_to_repository_version: false,
-                file_type: module.file.file_type
             };
 
             if (dropEffekt == "move") {

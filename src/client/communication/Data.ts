@@ -46,8 +46,7 @@ export type FileData = {
     forceUpdate: boolean,
     is_copy_of_id?: number,
     repository_file_version?: number,
-    identical_to_repository_version: boolean,
-    file_type: number // 0 == Java, 1 == Textfile
+    identical_to_repository_version: boolean
 }
 
 export type WorkspaceData = {

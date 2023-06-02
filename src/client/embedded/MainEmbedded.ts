@@ -376,7 +376,6 @@ export class MainEmbedded implements MainBase {
             workspace_id: 0,
             forceUpdate: false,
             identical_to_repository_version: false,
-            file_type: 0
         }, this);
 
         this.currentWorkspace.moduleStore.putModule(module);
@@ -887,7 +886,6 @@ export class MainEmbedded implements MainBase {
                     is_copy_of_id: null,
                     repository_file_version: null,
                     identical_to_repository_version: null,
-                    file_type: 0
                 };
 
                 let m = new Module(f, this);

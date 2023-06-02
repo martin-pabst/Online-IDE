@@ -139,8 +139,6 @@ export type File = {
     repository_file_version?: number,
     identical_to_repository_version: boolean,
 
-    file_type: number,  // 0 == Java, 1 == Textfile
-
     dirty: boolean,
     saved: boolean,
     version: number,
@@ -322,7 +320,6 @@ export class Module {
             is_copy_of_id: f.is_copy_of_id,
             repository_file_version: f.repository_file_version,
             identical_to_repository_version: f.identical_to_repository_version,
-            file_type: f.file_type
         }
 
         let m: Module = new Module(f1, main);
@@ -346,7 +343,6 @@ export class Module {
             identical_to_repository_version: file.identical_to_repository_version,
             workspace_id: workspace.id,
             forceUpdate: false,
-            file_type: file.file_type
         }
 
         return fd;
@@ -804,7 +800,8 @@ export class Module {
 export class BaseModule extends Module {
     constructor(main: MainBase) {
 
-        super({ name: "Base Module", text: "", text_before_revision: null, submitted_date: null, student_edited_after_revision: false, dirty: false, saved: true, version: 1 , identical_to_repository_version: true, file_type: 0}, main);
+        super({ name: "Base Module", text: "", text_before_revision: null, submitted_date: null, student_edited_after_revision: false,
+         dirty: false, saved: true, version: 1 , identical_to_repository_version: true}, main);
 
         this.isSystemModule = true;
         this.mainProgram = null;
@@ -971,7 +968,8 @@ export class BaseModule extends Module {
 export class GNGModule extends Module {
     constructor(main: MainBase, moduleStore: ModuleStore) {
 
-        super({ name: "Graphics and Games - Module", text: "", text_before_revision: null, submitted_date: null, student_edited_after_revision: false, dirty: false, saved: true, version: 1 , identical_to_repository_version: true, file_type: 0}, main);
+        super({ name: "Graphics and Games - Module", text: "", text_before_revision: null, submitted_date: null, 
+        student_edited_after_revision: false, dirty: false, saved: true, version: 1 , identical_to_repository_version: true}, main);
 
         this.isSystemModule = true;
         this.mainProgram = null;

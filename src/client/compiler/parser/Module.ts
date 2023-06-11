@@ -869,7 +869,8 @@ export class BaseModule extends Module {
         this.typeStore.addType(new ColorClass(this));
         this.typeStore.addType(new ActorClass(this));
         this.typeStore.addType(new DirectionClass(this));
-        this.typeStore.addType(new ShapeClass(this));
+        let shapeClass = new ShapeClass(this);
+        this.typeStore.addType(shapeClass);
         this.typeStore.addType(new FilledShapeClass(this));
         this.typeStore.addType(new RectangleClass(this));
         this.typeStore.addType(new RoundedRectangleClass(this));
@@ -884,7 +885,11 @@ export class BaseModule extends Module {
         this.typeStore.addType(new SpriteLibraryClass(this));
         this.typeStore.addType(new RepeatTypeClass(this));
         this.typeStore.addType(new TileClass(this));
-        this.typeStore.addType(new SpriteClass(this));
+        let spriteClass = new SpriteClass(this);
+        this.typeStore.addType(spriteClass);
+
+        shapeClass.setSpriteType(spriteClass);
+
         this.typeStore.addType(new CollisionPairClass(this));
         this.typeStore.addType(new GroupClass(this));
         this.typeStore.addType(new PolygonClass(this));

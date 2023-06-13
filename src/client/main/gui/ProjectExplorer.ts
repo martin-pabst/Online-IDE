@@ -930,8 +930,7 @@ export class ProjectExplorer {
 
         let request: GetWorkspacesRequest = {
             ws_userId: ae.id,
-            userId: this.main.user.id,
-            language: 0
+            userId: this.main.user.id
         }
 
         let response: GetWorkspacesResponse = await ajaxAsync("/servlet/getWorkspaces", request);

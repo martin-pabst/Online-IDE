@@ -154,13 +154,11 @@ export type TeacherData = {
 
 export type LoginRequest = {
     username: string,
-    password: string,
-    language: number
+    password: string
 }
 
 export type TicketLoginRequest = {
-    ticket: string,
-    language: number
+    ticket: string
 }
 
 export type LoginResponse = {
@@ -185,7 +183,6 @@ export type SendUpdatesRequest = {
     files: FileData[],
     owner_id: number,
     userId: number,
-    language: number,
     currentWorkspaceId: number,
     getModifiedWorkspaces: boolean
 }
@@ -255,8 +252,7 @@ export type BulkCreateUsersResponse = {
 
 export type GetWorkspacesRequest = {
     ws_userId: number,
-    userId: number,
-    language: number
+    userId: number
 }
 
 export type GetWorkspacesResponse = {
@@ -279,8 +275,7 @@ export type ChangeClassOfStudentsResponse = {
  * Copies Workspace and returns copy.
  */
 export type DuplicateWorkspaceRequest = {
-    workspace_id: number, // Workspace to copy
-    language: number
+    workspace_id: number // Workspace to copy
 }
 
 export type DuplicateWorkspaceResponse = {

@@ -148,7 +148,6 @@ export class NetworkManager {
             files: fdList,
             owner_id: this.main.workspacesOwnerId,
             userId: this.main.user.id,
-            language: 0,
             currentWorkspaceId: this.main.currentWorkspace?.pruefung_id == null ? this.main.currentWorkspace?.id : null,
             getModifiedWorkspaces: sendIfNothingIsDirty
         }
@@ -257,8 +256,7 @@ export class NetworkManager {
 
 
         let request: DuplicateWorkspaceRequest = {
-            workspace_id: ws.id,
-            language: 0
+            workspace_id: ws.id
         }
 
         ajax("duplicateWorkspace", request, (response: DuplicateWorkspaceResponse) => {

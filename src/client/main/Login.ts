@@ -139,15 +139,13 @@ export class Login {
 
         let loginRequest: LoginRequest|TicketLoginRequest = {
             username: <string>jQuery('#login-username').val(),
-            password: <string>jQuery('#login-password').val(),
-            language: 0
+            password: <string>jQuery('#login-password').val()
         }
 
         if(ticket != null){
             servlet = "ticketLogin";
             loginRequest = {
-                ticket: ticket,
-                language: 0
+                ticket: ticket
             }
         }
 

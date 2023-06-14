@@ -1,12 +1,12 @@
 import { Module, ModuleStore } from "../compiler/parser/Module.js";
 import { MainEmbedded } from "./MainEmbedded.js";
 import { openContextMenu, makeEditable } from "../tools/HtmlTools.js";
-import { JOScript, ScriptType } from "./EmbeddedStarter.js";
+import { JOScript } from "./EmbeddedStarter.js";
 import jQuery from "jquery";
 import { FileTypeManager } from "../main/gui/FileTypeManager.js";
 
 type FileData = {
-    type: ScriptType,
+    type?: string,
     module?: Module,
     hint?: string,
     $fileDiv: JQuery<HTMLElement>
@@ -34,7 +34,7 @@ export class EmbeddedFileExplorer {
     
             $addButton.on("click", () => {
     
-                let module = this.main.addModule({ text: "", title: "Neue Datei.java", type: "java" });
+                let module = this.main.addModule({ text: "", title: "Neue Datei.java" });
                 let fileData = this.addModule(module);
     
                 this.renameElement(fileData, () => {

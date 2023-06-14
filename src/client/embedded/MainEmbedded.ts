@@ -21,6 +21,7 @@ import { HitPolygonStore } from "../runtimelibrary/graphics/PolygonStore.js";
 import { SpritesheetData } from "../spritemanager/SpritesheetData.js";
 import * as PIXI from 'pixi.js';
 import jQuery from "jquery";
+import { FileTypeManager } from "../main/gui/FileTypeManager.js";
 
 
 type JavaOnlineConfig = {
@@ -158,7 +159,7 @@ export class MainEmbedded implements MainBase {
         if (this.config.withFileList) {
             this.fileExplorer = new EmbeddedFileExplorer(this.currentWorkspace.moduleStore, this.$filesListDiv, this);
             this.fileExplorer.setFirstFileActive();
-            this.scriptList.filter((script) => script.type == "hint").forEach((script) => this.fileExplorer.addHint(script));
+            this.scriptList.filter((script) => script.title.endsWith(".md")).forEach((script) => this.fileExplorer.addHint(script));
         } else {
             this.setModuleActive(this.currentWorkspace.moduleStore.getFirstModule());
         }
@@ -270,8 +271,7 @@ export class MainEmbedded implements MainBase {
 
                             let module = that.addModule({
                                 title: name,
-                                text: script,
-                                type: "java"
+                                text: script
                             });
 
                             that.fileExplorer?.addModule(module);
@@ -356,7 +356,10 @@ export class MainEmbedded implements MainBase {
 
         let i = 0;
         for (let script of scriptList) {
-            if (script.type == "java") {
+
+            let fileType = FileTypeManager.filenameToFileType(script.title);
+
+            if (fileType.file_type == 0) {
                 this.addModule(script);
             }
 

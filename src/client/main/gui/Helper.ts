@@ -78,6 +78,10 @@ export class Helper {
             id = "stepButtonHelper";
         }
 
+        if(id == "spritesheetHelper" && !helperHistory["newFileHelperDone"]){
+            return;
+        }
+
         let flag = id + "Done";
 
         if (helperHistory != null && (helperHistory[flag] == null || !helperHistory[flag])) {

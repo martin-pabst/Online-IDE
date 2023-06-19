@@ -228,11 +228,12 @@ export class Module {
 
         if (uriCounter > 0) path += " (" + uriCounter + ")";
         this.uri = monaco.Uri.from({ path: path, scheme: 'inmemory' });
-        this.model = monaco.editor.createModel(file.text, FileTypeManager.filenameToFileType(file.name).language, this.uri);
+        let fileType = FileTypeManager.filenameToFileType(file.name);
+        this.model = monaco.editor.createModel(file.text, fileType.language, this.uri);
         this.model.updateOptions({ tabSize: 3, bracketColorizationOptions: {enabled: true} });
         let formatter = new Formatter();
 
-        if(main.isEmbedded() && file.text != null && file.text.length > 3){
+        if(main.isEmbedded() && file.text != null && file.text.length > 3 && fileType.language == "myJava"){
             let edits = <monaco.languages.TextEdit[]>formatter.format(this.model);
             this.model.applyEdits(edits);
         }

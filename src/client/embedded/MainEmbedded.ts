@@ -357,17 +357,17 @@ export class MainEmbedded implements MainBase {
         let i = 0;
         for (let script of scriptList) {
 
-            let fileType = FileTypeManager.filenameToFileType(script.title);
+            
 
-            if (fileType.file_type == 0) {
                 this.addModule(script);
-            }
 
         }
 
     }
 
     addModule(script: JOScript): Module {
+        let fileType = FileTypeManager.filenameToFileType(script.title);
+
         let module: Module = Module.restoreFromData({
             id: this.currentWorkspace.moduleStore.getModules(true).length,
             name: script.title,
@@ -379,7 +379,7 @@ export class MainEmbedded implements MainBase {
             workspace_id: 0,
             forceUpdate: false,
             identical_to_repository_version: false,
-            file_type: 0
+            file_type: fileType.file_type
         }, this);
 
         this.currentWorkspace.moduleStore.putModule(module);

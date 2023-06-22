@@ -16,7 +16,7 @@ class Pattern {
     roundingMode: RoundingMode = "HALF_EVEN";
 }
 
-class DecimalFormat {
+export class DecimalFormat {
 
     position: number;
 

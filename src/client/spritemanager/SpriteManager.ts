@@ -299,7 +299,7 @@ export class SpriteManager {
     makeIntParameterInput($enclosingDiv: JQuery<HTMLElement>, caption: string, defaultValue: number): JQuery<HTMLInputElement> {
         let $div = $enclosingDiv.append(makeDiv(null, "jo_sm_parameterDiv"));
         makeDiv(null, "jo_sm_parameterCaption", caption, null, $div);
-        let $ret = jQuery('<input type="number" class="jo_sm_parameterInput" value="' + defaultValue + '" style="width: 2em"></input>');
+        let $ret = jQuery('<input type="number" class="jo_sm_parameterInput" value="' + defaultValue + '" style="width: 3em"></input>');
         $div.append($ret);
         return <any>$ret;
     }

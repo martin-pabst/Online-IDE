@@ -62,8 +62,8 @@ export class EditableSpritesheet {
             let width = Math.trunc((spriteData.width - 2*margin + space)/columnscount - space);
             let heigth = Math.trunc((spriteData.height - 2*margin + space)/linesCount - space);
 
+            for(let row = 0; row < linesCount; row++){
             for(let column = 0; column < columnscount; column++){
-                for(let row = 0; row < linesCount; row++){
                     let x = margin + column * (width + space);
                     let y = margin + row * (heigth + space);
                     let singleSpriteData:SpriteData = this.cut(spriteData, x, y, width, heigth);

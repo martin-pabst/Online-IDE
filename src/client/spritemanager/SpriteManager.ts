@@ -173,7 +173,7 @@ export class SpriteManager {
         this.$spriteListDiv.empty();
         this.userSpritesheet.spriteDataList.forEach((sd) => this.renderImageInList(sd));
 
-        this.checkSeriesAndIndexes();
+        this.checkSeriesAndIndexesAndSetNextSpriteIndex();
 
     }
 
@@ -201,7 +201,7 @@ export class SpriteManager {
         }
         this.$buttonImport.removeClass("jo_active");
 
-        this.checkSeriesAndIndexes();
+        this.checkSeriesAndIndexesAndSetNextSpriteIndex();
 
         setTimeout(() => {
             this.printMessage(images.length + " Bilder hinzugefügt");
@@ -262,8 +262,8 @@ export class SpriteManager {
             let $indexInput = this.makeIntParameterInput($inputDiv, "Index: ", imageData.index ? imageData.index : 0);
             $indexInput.addClass('jo_sm_index');
     
-            $seriesInput.on("input", () => { imageData.series = <string>$seriesInput.val(); that.checkSeriesAndIndexes(); })
-            $indexInput.on("input", () => { imageData.index = <number>$indexInput.val(); that.checkSeriesAndIndexes(); })
+            $seriesInput.on("input", () => { imageData.series = <string>$seriesInput.val(); that.checkSeriesAndIndexesAndSetNextSpriteIndex(); })
+            $indexInput.on("input", () => { imageData.index = <number>$indexInput.val(); that.checkSeriesAndIndexesAndSetNextSpriteIndex(); })
         }
         
         let $infoDiv = makeDiv(null, "jo_sm_infoDiv", "Breite: " + imageData.width + " px, Höhe: " + imageData.height + " px", null, $inputInfoDiv);
@@ -285,7 +285,7 @@ export class SpriteManager {
                         that.userSpritesheet.spriteDataList.splice(index, 1);
                         $line.remove();
                         that.generateZipAndPrintZipSize();
-                        that.checkSeriesAndIndexes();
+                        that.checkSeriesAndIndexesAndSetNextSpriteIndex();
                     }
                 }], ev.pageX + 2, ev.pageY + 2);
                 ev.stopPropagation();
@@ -317,7 +317,7 @@ export class SpriteManager {
         let that = this;
         if (!this.guiReady) {
             this.initGUI();
-        }
+        } 
 
         let workspace = this.main.getCurrentWorkspace();
         if(workspace == null){
@@ -359,11 +359,29 @@ export class SpriteManager {
 
         this.userSpritesheet = new EditableSpritesheet(spritesheetData);
         this.$spriteListDiv.empty();
-        this.userSpritesheet.spriteDataList.forEach((sd) => this.renderImageInList(sd));
+        this.userSpritesheet.spriteDataList.forEach((sd) => {
+            this.renderImageInList(sd);
+        });
 
-        this.checkSeriesAndIndexes();
+        this.checkSeriesAndIndexesAndSetNextSpriteIndex();
 
     }
+    
+    setNextSpriteIndex(){
+        let maxIndex = -1;
+        this.userSpritesheet.spriteDataList.forEach((sd) => {
+            if(sd.index > maxIndex) maxIndex = sd.index;
+        });
+
+        this.$uploadIndex.val(maxIndex + 1);
+
+        this.$uploadColumnsCount.val(1);
+        this.$uploadLinesCount.val(1);
+        this.$uploadMargin.val(0);
+        this.$uploadSpace.val(0);
+
+    }
+
 
     async saveAndExit() {
         await this.userSpritesheet.generateAndZipSpritesheet();
@@ -419,7 +437,7 @@ export class SpriteManager {
         md.scrollTop = md.scrollHeight;
     }
 
-    checkSeriesAndIndexes() {
+    checkSeriesAndIndexesAndSetNextSpriteIndex() {
         if(this.readonly) return;
         this.hasErrors = false;
 
@@ -455,6 +473,8 @@ export class SpriteManager {
         } else {
             this.$buttonOK.addClass('jo_active');
         }
+
+        this.setNextSpriteIndex();
     }
 
 

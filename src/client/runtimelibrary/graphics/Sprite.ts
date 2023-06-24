@@ -666,8 +666,10 @@ export class SpriteHelper extends ShapeHelper {
                 sprite.texture = texture; // sheet.textures[nameWithIndex];
             }
 
-            this.hitPolygonInitial = HitPolygonStore.getPolygonForTexture(name, index, this, new PIXI.Sprite(sheet.textures[nameWithIndex]));
-            this.hitPolygonDirty = true;
+            if(!this.isTileSprite){
+                this.hitPolygonInitial = HitPolygonStore.getPolygonForTexture(name, index, this, new PIXI.Sprite(sheet.textures[nameWithIndex]));
+                this.hitPolygonDirty = true;
+            }
 
         } else {
             this.interpreter.throwException("Das Spritesheet " + name + " hat kein Bild mit Index " + index);

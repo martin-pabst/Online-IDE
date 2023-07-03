@@ -218,6 +218,11 @@ export class Module {
         // this.uri = monaco.Uri.from({ path: '/file' + (Module.maxUriNumber++) + '.learnJava', scheme: 'file' });
         let path = file.name;
 
+        // a few lines later there's
+        // monaco.Uri.from({ path: path, scheme: 'inmemory' });
+        // this method throws an exception if path contains '//'
+        path = path.replaceAll('//', '_');   
+
         let uriCounter = Module.uriMap[path];
         if (uriCounter == null) {
             uriCounter = 0;

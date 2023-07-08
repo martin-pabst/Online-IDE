@@ -1390,6 +1390,8 @@ export abstract class ShapeHelper extends ActorHelper {
         return this.belongsToGroup?.runtimeObject || null
     }
 
-
+    public borderContainsPoint(x: number, y: number, color: number = -1): boolean {
+        return false;
+    }
 
 }

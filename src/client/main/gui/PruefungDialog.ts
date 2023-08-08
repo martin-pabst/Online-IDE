@@ -75,7 +75,7 @@ export class PruefungDialog {
 
         }), this.pruefung == null ? undefined : this.pruefung.klasse_id);
 
-        // this.$classSelect.attr('disabled', (this.pruefung != null && this.pruefung.state != 'preparing') ? 'true' : '');
+        this.enableOrDisableClassSelect();
         
         $inputGrid.append(`<div style="margin-top: 15px">Zustand:</div>`);
 
@@ -159,6 +159,16 @@ export class PruefungDialog {
         });
 
     }
+    
+    enableOrDisableClassSelect() {
+        let classSelectDisabled: boolean = this.pruefung != null && this.pruefung.state != 'preparing';
+
+        if(classSelectDisabled){
+            this.$classSelect.prop('disabled', 'disabled');
+        } else {
+            this.$classSelect.prop('disabled', false);
+        }
+    }
 
     async savePruefung() {
 
@@ -207,6 +217,8 @@ export class PruefungDialog {
         } else if(oldState != "running" && newState == "running"){
             if(this.timer == null) this.startDisplayingStudentStates();
         }
+
+        this.enableOrDisableClassSelect();
 
     }
 

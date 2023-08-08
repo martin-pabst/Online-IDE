@@ -146,13 +146,13 @@ export class EmbeddedFileExplorer {
 
     }
 
-    removeFile(fileData: FileData) {
+    removeFile(fileData: FileData, focusFirstFileSubsequently: boolean = true) {
         fileData.$fileDiv.remove();
         this.main.removeModule(fileData.module);
         this.files = this.files.filter((fd) => fd != fileData);
         if (this.currentFile == fileData) {
             if (this.files.length > 0) {
-                this.selectFile(this.files[0]);
+                this.selectFile(this.files[0], focusFirstFileSubsequently);
             } else {
                 this.main.getMonacoEditor().setValue("Keine Datei vorhanden.");
                 this.main.getMonacoEditor().updateOptions({ readOnly: true });
@@ -166,10 +166,10 @@ export class EmbeddedFileExplorer {
         });
     }
 
-    removeModule(module: Module) {
+    removeModule(module: Module, focusFirstFileSubsequently: boolean = true) {
         for (let fileData of this.files) {
             if (fileData.module == module) {
-                this.removeFile(fileData);
+                this.removeFile(fileData, focusFirstFileSubsequently);
             }
         }
     }
@@ -194,18 +194,21 @@ export class EmbeddedFileExplorer {
 
     setFirstFileActive() {
         if (this.files.length > 0) {
-            this.selectFile(this.files[0]);
+            this.selectFile(this.files[0], false);
         }
     }
 
-    selectFile(fileData: FileData) {
+    selectFile(fileData: FileData, focusEditorSubsequently: boolean = true) {
         if (fileData == null) return;
         switch (fileData.type) {
             case "java":
                 this.main.$hintDiv.hide();
                 this.main.$monacoDiv.show();
                 this.main.setModuleActive(fileData.module);
-                this.main.getMonacoEditor().focus();
+                if(focusEditorSubsequently)
+                {
+                    this.main.getMonacoEditor().focus();
+                }
                 break;
             case "hint":
                 this.main.$monacoDiv.hide();

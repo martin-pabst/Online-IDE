@@ -257,7 +257,7 @@ export class MainEmbedded implements MainBase {
                 let countDown = scriptList.length;
 
                 for (let module of modules) {
-                    that.fileExplorer?.removeModule(module);
+                    that.fileExplorer?.removeModule(module, false);
                     that.removeModule(module);
                 }
 

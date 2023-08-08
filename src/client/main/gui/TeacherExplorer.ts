@@ -49,7 +49,7 @@ export class TeacherExplorer {
 
         this.studentPanel.selectCallback = (ae: UserData) => {
             if (this.classPanelMode == "classes") {
-                this.main.projectExplorer.fetchAndRenderWorkspaces(ae);
+                this.main.projectExplorer.fetchAndRenderWorkspaces(ae, this);
             } else {
                 let selectedPruefung = this.classPanel.getSelectedElement().externalElement;
                 this.main.projectExplorer.fetchAndRenderWorkspaces(ae, this, selectedPruefung);

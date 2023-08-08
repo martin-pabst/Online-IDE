@@ -1801,7 +1801,6 @@ export class CodeGenerator {
         let conditionType = this.processNode(node.condition);
 
         this.checkIfAssignmentInstedOfEqual(node.condition, conditionType?.type);
-        console.log(conditionType);
         if (conditionType != null && conditionType.type != booleanPrimitiveType && conditionType.type.identifier != "Boolean") {
             this.pushError("Der Wert des Terms in Klammern hinter 'if' muss den Datentyp boolean besitzen.", node.condition.position);
         }

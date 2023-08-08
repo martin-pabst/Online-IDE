@@ -684,5 +684,15 @@ export class GroupHelper extends ShapeHelper {
         }
     }
 
+    public borderContainsPoint(x: number, y: number, color: number = -1): boolean {
+
+        for (let child of this.shapes) {
+            let sh = <ShapeHelper>child.intrinsicData["Actor"];
+            if(sh.borderContainsPoint(x, y, color)) return true;
+        }
+
+        return false;
+    }
+
 
 }

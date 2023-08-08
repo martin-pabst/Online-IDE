@@ -9,6 +9,7 @@ import { WorldHelper } from "./World.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { ColorClassIntrinsicData } from "./Color.js";
 import { FilledShapeDefaults } from "./FilledShapeDefaults.js";
+import { polygonEnthältPunkt, polygonzugEnthältPunkt } from "../../tools/MatheTools.js";
 
 export class FilledShapeClass extends Klass {
 
@@ -393,6 +394,20 @@ export abstract class FilledShapeHelper extends ShapeHelper {
         rto.intrinsicData = id;
 
         return rto;
+
+    }
+
+    public borderContainsPoint(x: number, y: number, color: number = -1): boolean {
+
+        if(color != -1 && this.borderColor != color) return false;
+
+        if (this.hitPolygonInitial == null) return false;
+
+        if(this.borderColor == null) return false;
+
+        if (this.hitPolygonDirty) this.transformHitPolygon();
+
+        return polygonzugEnthältPunkt(this.hitPolygonTransformed, { x: x, y: y }, this.borderWidth/2);
 
     }
 

@@ -21,14 +21,10 @@ import { PixiSpritesheetData } from "../spritemanager/PixiSpritesheetData.js";
 
 declare var APP_VERSION: string;
 
-
-export type ScriptType = "java" | "hint" | "txt" | "json" | "xml";
-
 export type JOScript = {
-    type: ScriptType;
-    title: string;
-    text: string;
-    url?: string;
+    title: string,
+    text: string,
+    url?: string
 }
 
 export class EmbeddedStarter {
@@ -133,15 +129,19 @@ export class EmbeddedStarter {
 
             $div.find('script').each((index: number, element: HTMLElement) => {
                 let $script = jQuery(element);
-                let type: ScriptType = "java";
-                if ($script.data('type') != null) type = <ScriptType>($script.data('type'));
+
                 let srcAttr = $script.attr('src');
                 let text = $script.text().trim();
                 let script: JOScript = {
-                    type: type,
                     title: $script.attr('title'),
                     text: text
                 };
+
+
+                if($script.data('type') == "hint" && !script.title.endsWith(".md")){
+                    script.title += ".md";
+                }
+
                 if (srcAttr != null) script.url = srcAttr;
                 script.text = this.eraseDokuwikiSearchMarkup(script.text);
                 scriptList.push(script);

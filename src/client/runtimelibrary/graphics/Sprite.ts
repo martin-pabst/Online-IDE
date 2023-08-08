@@ -15,7 +15,7 @@ import { RenderTexture } from "@pixi/core";
 import { convexhull } from "../../tools/ConvexHull.js";
 import { GroupHelper } from "./Group.js";
 import * as PIXI from 'pixi.js';
-
+import { RepeatType } from "./RepeatType.js";
 export class SpriteClass extends Klass {
 
     constructor(module: Module) {
@@ -198,7 +198,7 @@ export class SpriteClass extends Klass {
 
                 if (sh.testdestroyed("playAnimation")) return;
 
-                sh.playAnimation(indices, repeatType.enumValue.identifier, imagesPerSecond);
+                sh.playAnimation(indices, <RepeatType>repeatType.enumValue.identifier, imagesPerSecond);
 
             }, false, false, 'Spielt eine Animation ab.', false));
 
@@ -228,7 +228,7 @@ export class SpriteClass extends Klass {
                     indices.push(toIndex);
                 }
 
-                sh.playAnimation(indices, repeatType.enumValue.identifier, imagesPerSecond);
+                sh.playAnimation(indices, <RepeatType>repeatType.enumValue.identifier, imagesPerSecond);
 
             }, false, false, 'Spielt eine Animation ab.', false));
 
@@ -386,7 +386,7 @@ export class SpriteClass extends Klass {
 
                 if (sh.testdestroyed("getTileImage")) return;
 
-                if(!sh.isTileSprite){
+                if (!sh.isTileSprite) {
                     sh.worldHelper.interpreter.throwException("Das Sprite hat kein TileImage. Sie müssen es zuerst mit der Methode makeTiling in ein Kachel-Sprite umwandeln.")
                     return;
                 }
@@ -411,7 +411,7 @@ export class SpriteHelper extends ShapeHelper {
     animationTime: number = 0;
     animationPaused: boolean = false;
 
-    repeatType = "once";
+    repeatType: RepeatType = "once";
     textureName: string = "";
 
     isTileSprite: boolean = false;
@@ -452,10 +452,10 @@ export class SpriteHelper extends ShapeHelper {
         height /= this.scaleFactor;
         let sprite: PIXI.Sprite = <PIXI.Sprite>this.displayObject;
 
-        if(this.oldTexture == null) this.oldTexture = sprite.texture;
+        if (this.oldTexture == null) this.oldTexture = sprite.texture;
 
         let texture = this.oldTexture;
-        if(gapX > 0 || gapY > 0){
+        if (gapX > 0 || gapY > 0) {
             texture = this.generateGapTexture(texture, gapX, gapY);
         }
         texture.baseTexture.mipmap = PIXI.MIPMAP_MODES.OFF;
@@ -489,7 +489,7 @@ export class SpriteHelper extends ShapeHelper {
         gapBox.addChild(originSprite)
         //@ts-ignore
         return this.worldHelper.app.renderer.generateTexture(gapBox);
-      }
+    }
 
     setTileOffset(x: number, y: number) {
         if (this.isTileSprite) {
@@ -592,10 +592,10 @@ export class SpriteHelper extends ShapeHelper {
 
         // let sheet = PIXI.Loader.shared.resources["spritesheet"].spritesheet;
         let sheet = PIXI.Assets.get('spritesheet');
-        
+
         let nameWithIndex = name + "#" + index;
         let texture = sheet.textures[nameWithIndex];
-        if(texture == null){
+        if (texture == null) {
             sheet = this.worldHelper.interpreter.main.userSpritesheet;
             texture = sheet?.textures[nameWithIndex];
         }
@@ -666,8 +666,10 @@ export class SpriteHelper extends ShapeHelper {
                 sprite.texture = texture; // sheet.textures[nameWithIndex];
             }
 
-            this.hitPolygonInitial = HitPolygonStore.getPolygonForTexture(name, index, this, new PIXI.Sprite(sheet.textures[nameWithIndex]));
-            this.hitPolygonDirty = true;
+            if(!this.isTileSprite){
+                this.hitPolygonInitial = HitPolygonStore.getPolygonForTexture(name, index, this, new PIXI.Sprite(sheet.textures[nameWithIndex]));
+                this.hitPolygonDirty = true;
+            }
 
         } else {
             this.interpreter.throwException("Das Spritesheet " + name + " hat kein Bild mit Index " + index);
@@ -684,7 +686,7 @@ export class SpriteHelper extends ShapeHelper {
 
     };
 
-    playAnimation(indexArray: number[], repeatType: string, imagesPerSecond: number) {
+    playAnimation(indexArray: number[], repeatType: RepeatType, imagesPerSecond: number) {
         this.stopAnimation(false);
         this.animationIndices = indexArray;
         this.repeatType = repeatType;
@@ -718,29 +720,34 @@ export class SpriteHelper extends ShapeHelper {
 
         let image: number;
 
-        if (this.repeatType == "backAndForth") {
-            let period2 = this.animationIndices.length * 2 / this.imagesPerMillisecond;
-            let numberOfPeriodsDone = Math.trunc(this.animationTime / period2);
-            let timeIntoPeriod = this.animationTime - numberOfPeriodsDone * period2;
-            image = this.imagesPerMillisecond * timeIntoPeriod;
-            if (image >= this.animationIndices.length) {
-                image = Math.max(2 * this.animationIndices.length - 0.1 - image, 0);
-            }
-            image = Math.trunc(image);
-        } else
-            if (this.repeatType == "loop") {
-                let period = this.animationIndices.length / this.imagesPerMillisecond;
-                let numberOfPeriodsDone = Math.trunc(this.animationTime / period);
-                let timeIntoPeriod = this.animationTime - numberOfPeriodsDone * period;
+        switch (this.repeatType) {
+            case "backAndForth":
+                let period2 = this.animationIndices.length * 2 / this.imagesPerMillisecond;
+                let numberOfPeriodsDone = Math.trunc(this.animationTime / period2);
+                let timeIntoPeriod = this.animationTime - numberOfPeriodsDone * period2;
                 image = this.imagesPerMillisecond * timeIntoPeriod;
+                if (image >= this.animationIndices.length) {
+                    image = Math.max(2 * this.animationIndices.length - 0.1 - image, 0);
+                }
                 image = Math.trunc(image);
-            } else {
+                break;
+            case "loop":
+                let period = this.animationIndices.length / this.imagesPerMillisecond;
+                let numberOfPeriodsDone1 = Math.trunc(this.animationTime / period);
+                let timeIntoPeriod1 = this.animationTime - numberOfPeriodsDone1 * period;
+                image = this.imagesPerMillisecond * timeIntoPeriod1;
+                image = Math.trunc(image);
+                image = Math.trunc(image);
+                break;
+            case "once":
                 image = Math.trunc(this.imagesPerMillisecond * this.animationTime);
                 if (image >= this.animationIndices.length) {
                     this.stopAnimation(true);
+                    this.destroy();
                     return;
                 }
-            }
+                break;
+        }
 
         this.animationTime += deltaTime;
 
@@ -826,13 +833,13 @@ export class TileHelper {
     constructor(public spriteHelper: SpriteHelper) {
     }
 
-    move(dx: number, dy: number){
+    move(dx: number, dy: number) {
         let tileSprite: PIXI.TilingSprite = <PIXI.TilingSprite>this.spriteHelper.displayObject;
         tileSprite.tilePosition.x += dx;
         tileSprite.tilePosition.y += dy;
     }
-    
-    scale(fx: number, fy: number){
+
+    scale(fx: number, fy: number) {
         let tileSprite: PIXI.TilingSprite = <PIXI.TilingSprite>this.spriteHelper.displayObject;
         tileSprite.tileScale.x *= fx;
         tileSprite.tileScale.y *= fy;

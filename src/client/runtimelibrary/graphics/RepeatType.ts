@@ -2,6 +2,8 @@ import { Enum } from "../../compiler/types/Enum.js";
 import { Module } from "../../compiler/parser/Module.js";
 import { TokenType } from "../../compiler/lexer/Token.js";
 
+export type RepeatType = "backAndForth" | "loop" | "once";
+
 export class RepeatTypeClass extends Enum {
 
     constructor(module: Module){

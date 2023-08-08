@@ -360,6 +360,22 @@ export class ShapeClass extends Klass {
 
             }, false, false, "Gibt genau dann true zurück, wenn das Grafikobjekt mit einem anderen Grafikobjekt der angegebenen Füllfarbe kollidiert.", false));
 
+            this.addMethod(new Method("getFirstCollidingSprite", new Parameterlist([
+            { identifier: "imageIndex", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), this,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let spriteIndex: number = parameters[1].value;
+
+                let sh: ShapeHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("getFirstCollidingSprite")) return;
+
+                return sh.getFirstCollidingSprite(spriteIndex);
+
+            }, false, false, "Falls dieses Grafikobjekt gerade mindestens ein Sprite mit dem übergebenen Bildindex (null bedeutet: mit irgendeinem BildIndex) berührt, wird das erste dieser Sprites zurückgegeben.", false));
+
         this.addMethod(new Method("moveBackFrom", new Parameterlist([
             { identifier: "otherShape", type: this, declaration: null, usagePositions: null, isFinal: true },
             { identifier: "keepColliding", type: booleanPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
@@ -760,6 +776,11 @@ export class ShapeClass extends Klass {
 
     }
 
+    setSpriteType(spriteClass: Klass) {
+        this.methods.find(m => m.identifier == "getFirstCollidingSprite").returnType = spriteClass;
+    }
+
+
 }
 
 export abstract class ShapeHelper extends ActorHelper {
@@ -924,6 +945,40 @@ export abstract class ShapeHelper extends ActorHelper {
         this.displayObject.visible = visible;
     }
 
+
+    getFirstCollidingSprite(index?: number): RuntimeObject {
+        this.displayObject.updateTransform();
+        if (this.hitPolygonDirty) this.transformHitPolygon();
+
+        for (let shapeHelper of this.worldHelper.shapes) {
+            if(shapeHelper == this) continue;
+            
+            let spriteIndex = shapeHelper["index"];
+            if(!spriteIndex) continue;
+
+            if(index != null && index != spriteIndex) return;
+
+            let bb = this.displayObject.getBounds();
+            let bb1 = shapeHelper.displayObject.getBounds();
+
+            if (bb.left > bb1.right || bb1.left > bb.right) continue;
+
+            if (bb.top > bb1.bottom || bb1.top > bb.bottom) continue;
+
+            // boundig boxes collide, so check further:
+            if (shapeHelper.hitPolygonDirty) shapeHelper.transformHitPolygon();
+
+            // return polygonBerührtPolygon(this.hitPolygonTransformed, shapeHelper.hitPolygonTransformed);
+            if (polygonBerührtPolygonExakt(this.hitPolygonTransformed, shapeHelper.hitPolygonTransformed, true, true)) {
+                return shapeHelper.runtimeObject;
+            }
+
+        }
+
+        return null;
+
+    }
+
     collidesWithAnyShape(color?: number): boolean {
         this.displayObject.updateTransform();
         if (this.hitPolygonDirty) this.transformHitPolygon();
@@ -931,7 +986,7 @@ export abstract class ShapeHelper extends ActorHelper {
         for (let shapeHelper of this.worldHelper.shapes) {
             if (this == shapeHelper) continue;
 
-            if (shapeHelper["fillColor"] && color != null) {
+            if (color != null) {
                 if (shapeHelper["fillColor"] != color) {
                     continue;
                 }
@@ -1335,6 +1390,8 @@ export abstract class ShapeHelper extends ActorHelper {
         return this.belongsToGroup?.runtimeObject || null
     }
 
-
+    public borderContainsPoint(x: number, y: number, color: number = -1): boolean {
+        return false;
+    }
 
 }

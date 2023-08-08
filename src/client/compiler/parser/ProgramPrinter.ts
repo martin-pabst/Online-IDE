@@ -221,7 +221,7 @@ export class ProgramPrinter {
                 s1 += "Operator: " + TokenTypeReadable[node.operator];
                 break;
             case TokenType.pushConstant:
-                s1 += "Value: " + node.value;
+                s1 += "Value: " + (node.value + "").replace(/</g, "&lt;").replace(/>/g, "&gt;");
                 break;
             case TokenType.pushStaticClassObject:
                 s1 += "Static class: " + node.klass.identifier;

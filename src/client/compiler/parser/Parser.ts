@@ -48,7 +48,7 @@ export class Parser {
     errorList: Error[];
     typeNodes: TypeNode[];
 
-    lookahead = 4;
+    lookahead = 7;
     ct: Token[];
     lastToken: Token;
     cct: Token;
@@ -548,7 +548,15 @@ export class Parser {
 
         if (this.expect(TokenType.leftBracket, true)) {
 
-            if (this.ct[2].tt == TokenType.colon) {
+            let forLoopOverCollection: boolean = false;
+            for(let i = 0; i < this.lookahead; i++){
+                if(this.ct[i].tt == TokenType.colon){
+                    forLoopOverCollection = true;
+                    break;
+                }
+            }
+
+            if (forLoopOverCollection) {
                 return this.parseForLoopOverCollection(position, scopeFrom);
             }
 

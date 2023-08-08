@@ -12,7 +12,8 @@ export class FileTypeManager {
         { name: "Java-Quelltext", file_type: 0, iconclass: "java", language: "myJava", suffix: ".java" },
         { name: "Textdatei", file_type: 1, iconclass: "text", language: "text", suffix: ".txt" },
         { name: "Textdatei", file_type: 1, iconclass: "json", language: "json", suffix: ".json" },
-        { name: "Textdatei", file_type: 1, iconclass: "xml", language: "xml", suffix: ".xml" }
+        { name: "Textdatei", file_type: 1, iconclass: "xml", language: "xml", suffix: ".xml" },
+        { name: "Markup", file_type: 1, iconclass: "md", language: "md", suffix: ".md"}
     ];
 
     static fileTypeToIconClass(file_type: number): string {

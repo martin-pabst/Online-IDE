@@ -91,9 +91,18 @@ export function winkelGradZwischenPunkten(p1: Punkt, p2: Punkt): number {
     return Math.atan2(d.y, d.x)/Math.PI*180;
 }
 
-export function streckenzugEnthältPunkt(punkte: Punkt[], punkt: Punkt) {
+export function streckenzugEnthältPunkt(punkte: Punkt[], punkt: Punkt, abstand: number = 0.000001) {
     for(let i = 0; i < punkte.length - 1; i++){
-        if(abstandPunktZuStrecke(punkte[i], punkte[i+1], punkt) < 0.000001){
+        if(abstandPunktZuStrecke(punkte[i], punkte[i+1], punkt) < abstand){
+            return true;
+        }
+    }
+    return false;
+}
+
+export function polygonzugEnthältPunkt(punkte: Punkt[], punkt: Punkt, abstand: number = 0.000001) {
+    for(let i = 0; i < punkte.length; i++){
+        if(abstandPunktZuStrecke(punkte[i % punkte.length], punkte[(i+1) % punkte.length], punkt) < abstand){
             return true;
         }
     }

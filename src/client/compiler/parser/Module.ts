@@ -216,6 +216,11 @@ export class Module {
         // this.uri = monaco.Uri.from({ path: '/file' + (Module.maxUriNumber++) + '.learnJava', scheme: 'file' });
         let path = file.name;
 
+        // a few lines later there's
+        // monaco.Uri.from({ path: path, scheme: 'inmemory' });
+        // this method throws an exception if path contains '//'
+        path = path.replaceAll('//', '_');   
+
         let uriCounter = Module.uriMap[path];
         if (uriCounter == null) {
             uriCounter = 0;
@@ -226,11 +231,12 @@ export class Module {
 
         if (uriCounter > 0) path += " (" + uriCounter + ")";
         this.uri = monaco.Uri.from({ path: path, scheme: 'inmemory' });
-        this.model = monaco.editor.createModel(file.text, FileTypeManager.filenameToFileType(file.name).language, this.uri);
+        let fileType = FileTypeManager.filenameToFileType(file.name);
+        this.model = monaco.editor.createModel(file.text, fileType.language, this.uri);
         this.model.updateOptions({ tabSize: 3, bracketColorizationOptions: {enabled: true} });
         let formatter = new Formatter();
 
-        if(main.isEmbedded() && file.text != null && file.text.length > 3){
+        if(main.isEmbedded() && file.text != null && file.text.length > 3 && fileType.language == "myJava"){
             let edits = <monaco.languages.TextEdit[]>formatter.format(this.model);
             this.model.applyEdits(edits);
         }
@@ -866,7 +872,8 @@ export class BaseModule extends Module {
         this.typeStore.addType(new ColorClass(this));
         this.typeStore.addType(new ActorClass(this));
         this.typeStore.addType(new DirectionClass(this));
-        this.typeStore.addType(new ShapeClass(this));
+        let shapeClass = new ShapeClass(this);
+        this.typeStore.addType(shapeClass);
         this.typeStore.addType(new FilledShapeClass(this));
         this.typeStore.addType(new RectangleClass(this));
         this.typeStore.addType(new RoundedRectangleClass(this));
@@ -881,7 +888,11 @@ export class BaseModule extends Module {
         this.typeStore.addType(new SpriteLibraryClass(this));
         this.typeStore.addType(new RepeatTypeClass(this));
         this.typeStore.addType(new TileClass(this));
-        this.typeStore.addType(new SpriteClass(this));
+        let spriteClass = new SpriteClass(this);
+        this.typeStore.addType(spriteClass);
+
+        shapeClass.setSpriteType(spriteClass);
+
         this.typeStore.addType(new CollisionPairClass(this));
         this.typeStore.addType(new GroupClass(this));
         this.typeStore.addType(new PolygonClass(this));

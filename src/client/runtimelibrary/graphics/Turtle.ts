@@ -1,13 +1,14 @@
 import { Module } from "../../compiler/parser/Module.js";
 import { Klass } from "../../compiler/types/Class.js";
-import { doublePrimitiveType, intPrimitiveType, booleanPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
+import { doublePrimitiveType, intPrimitiveType, booleanPrimitiveType, stringPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
 import { Method, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { FilledShapeHelper } from "./FilledShape.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
-import { polygonBerührtPolygon, polygonEnthältPunkt, steckenzugSchneidetStreckenzug, streckenzugEnthältPunkt } from "../../tools/MatheTools.js";
+import { Punkt, abstandPunktZuStrecke, polygonBerührtPolygon, polygonEnthältPunkt, steckenzugSchneidetStreckenzug, streckenzugEnthältPunkt } from "../../tools/MatheTools.js";
 import { ShapeHelper } from "./Shape.js";
 import * as PIXI from 'pixi.js';
+import { ColorHelper } from "./ColorHelper.js";
 
 export class TurtleClass extends Klass {
 
@@ -174,6 +175,52 @@ export class TurtleClass extends Klass {
 
             }, false, false, 'Löscht alle bis jetzt mit der Turtle gezeichneten Strecken.', false));
 
+        this.addMethod(new Method("collidesWithBorderColor", new Parameterlist([
+            { identifier: "borderColor", type: intPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), booleanPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let borderColor: number = parameters[1].value;
+                let sh: TurtleHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("collidesWithBorderColor")) return;
+
+                return sh.collidesWithBorderColor(borderColor);
+
+            }, false, false, 'Gibt genau dann true zurück, wenn sich der "Mittelpunkt" des Turtle-Dreiecks auf dem Rand eines anderen graphischen Objekts mit der angegebenen Farbe befindet.', false));
+
+        this.addMethod(new Method("collidesWithBorderColor", new Parameterlist([
+            { identifier: "color", type: stringPrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), booleanPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let borderColor: string = parameters[1].value;
+                let sh: TurtleHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("collidesWithBorderColor")) return;
+
+                let c = ColorHelper.parseColorToOpenGL(borderColor);
+
+                return sh.collidesWithBorderColor(c.color);
+
+            }, false, false, 'Gibt genau dann true zurück, wenn sich der "Mittelpunkt" des Turtle-Dreiecks auf dem Rand eines anderen graphischen Objekts mit der angegebenen Farbe befindet.', false));
+
+        this.addMethod(new Method("getLastSegmentLength", new Parameterlist([
+        ]), doublePrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: TurtleHelper = o.intrinsicData["Actor"];
+
+                if (sh.testdestroyed("getLastSegmentLength")) return;
+
+                return sh.getLastSegmentLength();
+
+            }, false, false, 'Gibt die Länge des letzten gezeichneten Streckenzugs zurück.', false));
+
+
 
     }
 
@@ -213,6 +260,8 @@ export class TurtleHelper extends FilledShapeHelper {
     lastTurtleAngleDeg: number = 0; // angle in Rad
 
     renderJobPresent: boolean = false;
+
+    angleHasChanged: boolean = true;
 
     constructor(xStart: number, yStart: number, private showTurtle: boolean,
         interpreter: Interpreter, runtimeObject: RuntimeObject) {
@@ -275,9 +324,10 @@ export class TurtleHelper extends FilledShapeHelper {
     }
 
     turn(angleDeg: number) {
+        this.angleHasChanged = true;
         this.turtleAngleDeg -= angleDeg;
-        if(Math.abs(this.turtleAngleDeg) > 360){
-            this.turtleAngleDeg -= Math.floor(this.turtleAngleDeg/360)*360;
+        if (Math.abs(this.turtleAngleDeg) > 360) {
+            this.turtleAngleDeg -= Math.floor(this.turtleAngleDeg / 360) * 360;
         }
         let lastLineElement: LineElement = this.lineElements[this.lineElements.length - 1];
         this.moveTurtleTo(lastLineElement.x, lastLineElement.y, this.turtleAngleDeg);
@@ -311,17 +361,29 @@ export class TurtleHelper extends FilledShapeHelper {
 
         let lastLineElement: LineElement = this.lineElements[this.lineElements.length - 1];
 
-        let turtleAngleRad = this.turtleAngleDeg/180.0*Math.PI;
+        let newBorderColor = this.penIsDown ? this.borderColor : null;
+        let turtleAngleRad = this.turtleAngleDeg / 180.0 * Math.PI;
 
-        let newLineElement: LineElement = {
-            x: lastLineElement.x + length * Math.cos(turtleAngleRad),
-            y: lastLineElement.y + length * Math.sin(turtleAngleRad),
-            color: this.penIsDown ? this.borderColor : null,
-            alpha: this.borderAlpha,
-            lineWidth: this.borderWidth
+        let newLineElement: LineElement;
+
+        if (!this.angleHasChanged && lastLineElement.color == newBorderColor &&
+            lastLineElement.alpha == this.borderAlpha && lastLineElement.lineWidth == this.borderWidth) {
+            lastLineElement.x += length * Math.cos(turtleAngleRad);
+            lastLineElement.y += length * Math.sin(turtleAngleRad);
+            newLineElement = lastLineElement;
+        } else {
+            newLineElement = {
+                x: lastLineElement.x + length * Math.cos(turtleAngleRad),
+                y: lastLineElement.y + length * Math.sin(turtleAngleRad),
+                color: newBorderColor,
+                alpha: this.borderAlpha,
+                lineWidth: this.borderWidth
+            }
+
+            this.lineElements.push(newLineElement);
         }
 
-        this.lineElements.push(newLineElement);
+        this.angleHasChanged = false;
 
         // if (this.isFilled) {
         //     this.render();
@@ -380,7 +442,7 @@ export class TurtleHelper extends FilledShapeHelper {
         this.turtle.lineStyle(3, 0xff0000, 1, 0.5);
         this.turtle.moveTo(x, y);
 
-        let angleRad = angleDeg/180.0*Math.PI;
+        let angleRad = angleDeg / 180.0 * Math.PI;
 
         let vx = Math.cos(angleRad);
         let vy = Math.sin(angleRad);
@@ -398,9 +460,9 @@ export class TurtleHelper extends FilledShapeHelper {
         this.turtle.lineTo(x + vx * lengthForward, y + vy * lengthForward);
     }
 
-    moveTurtleTo(x: number, y: number, angleDeg: number){
+    moveTurtleTo(x: number, y: number, angleDeg: number) {
         this.turtle.localTransform.identity();
-        this.turtle.localTransform.rotate(angleDeg/180.0*Math.PI);
+        this.turtle.localTransform.rotate(angleDeg / 180.0 * Math.PI);
         this.turtle.localTransform.translate(x, y);
 
         // this.turtle.localTransform.translate(-this.turtleX, -this.turtleY);
@@ -497,7 +559,7 @@ export class TurtleHelper extends FilledShapeHelper {
         if (this.hitPolygonDirty) this.transformHitPolygon();
         if (shapeHelper.hitPolygonDirty) shapeHelper.transformHitPolygon();
 
-        if(shapeHelper. hitPolygonTransformed.length == 2 && !this.isFilled){
+        if (shapeHelper.hitPolygonTransformed.length == 2 && !this.isFilled) {
             return steckenzugSchneidetStreckenzug(this.hitPolygonTransformed, shapeHelper.hitPolygonTransformed);
         }
 
@@ -511,8 +573,8 @@ export class TurtleHelper extends FilledShapeHelper {
 
     clear(x: number = null, y: number = null, angle: number = null) {
         let lastLineElement = this.lineElements.pop();
-        if(x == null) x = lastLineElement.x;
-        if(y == null) y = lastLineElement.y;
+        if (x == null) x = lastLineElement.x;
+        if (y == null) y = lastLineElement.y;
 
         this.lineElements = [];
 
@@ -526,14 +588,15 @@ export class TurtleHelper extends FilledShapeHelper {
         this.calculateCenter();
 
         this.hitPolygonInitial = [];
-        if(angle != null){
+        if (angle != null) {
             this.turtleAngleDeg = angle;
+            this.angleHasChanged = true;
             this.lastTurtleAngleDeg = 0;
             this.borderColor = 0;
             this.turtleSize = 40;
         }
         this.render();
-        if(angle != null){
+        if (angle != null) {
             this.moveTurtleTo(x, y, angle);
         }
     }
@@ -586,11 +649,93 @@ export class TurtleHelper extends FilledShapeHelper {
 
         if (this.hitPolygonDirty) this.transformHitPolygon();
 
-        if(this.isFilled){
+        if (this.isFilled) {
             return polygonEnthältPunkt(this.hitPolygonTransformed, { x: x, y: y });
         } else {
             return streckenzugEnthältPunkt(this.hitPolygonTransformed, { x: x, y: y });
         }
+    }
+
+    public borderContainsPointExcludingLastLineElement(x: number, y: number, color: number = -1): boolean {
+
+        let lastLineElement = this.lineElements.pop();
+        let ret = this.borderContainsPoint(x, y, color);
+        this.lineElements.push(lastLineElement);
+        return ret;
+    }
+
+
+    public borderContainsPoint(x: number, y: number, color: number = -1): boolean {
+
+
+        this.displayObject.updateTransform();
+
+        let m = this.displayObject.transform.worldTransform;
+
+        let transformIsIdentity = m.a == 1 && m.b == 0 && m.c == 0 && m.d == 1 && m.tx == 0 && m.ty == 0;
+
+        let p: Punkt = { x: x, y: y };
+
+        if (this.lineElements.length < 2) return false;
+
+        let rightLe: LineElement = this.lineElements[0];
+        
+        let left: Punkt;
+        let right: Punkt = rightLe;
+
+        if (!transformIsIdentity) {
+            right = {
+                x: (m.a * right.x) + (m.c * right.y) + m.tx,
+                y: (m.b * right.x) + (m.d * right.y) + m.ty
+            }
+        }
+
+        for (let i = 0; i < this.lineElements.length - 1; i++) {
+
+            left = right;
+            rightLe = this.lineElements[i + 1];
+            right = rightLe;
+
+            if (!transformIsIdentity) {
+                right = {
+                    x: (m.a * right.x) + (m.c * right.y) + m.tx,
+                    y: (m.b * right.x) + (m.d * right.y) + m.ty
+                }
+            }
+
+            if (color != -1 && rightLe.color != color) continue;
+
+            if (abstandPunktZuStrecke(left, right, p) <= rightLe.lineWidth / 2) return true;
+
+        }
+
+        return false;
+    }
+
+
+    collidesWithBorderColor(borderColor: number): boolean {
+        let lastLineElement = this.lineElements[this.lineElements.length - 1];
+        let x = lastLineElement.x;
+        let y = lastLineElement.y;
+
+        for (let sh of this.worldHelper.shapes) {
+            if (sh == this) {
+                if ((<TurtleHelper>sh).borderContainsPointExcludingLastLineElement(x, y, borderColor)) return true;
+            } else {
+                if (sh.borderContainsPoint(x, y, borderColor)) return true;
+            }
+        }
+
+        return false;
+    }
+
+    getLastSegmentLength(): any {
+        if (this.lineElements.length < 2) return 0;
+        let l1 = this.lineElements[this.lineElements.length - 2];
+        let l2 = this.lineElements[this.lineElements.length - 1];
+        let dx = l2.x - l1.x;
+        let dy = l2.y - l1.y;
+        return Math.sqrt(dx * dx + dy * dy);
     }
 
 

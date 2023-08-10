@@ -476,7 +476,7 @@ export class ProjectExplorer {
                                     externalElement: newWorkspace,
                                     iconClass: newWorkspace.repository_id == null ? 'workspace' : 'repository',
                                     isFolder: false,
-                                    path: path, 
+                                    path: path,
                                     readonly: false
                                 };
 
@@ -940,27 +940,29 @@ export class ProjectExplorer {
             if (this.main.workspacesOwnerId == this.main.user.id && teacherExplorer != null) {
                 teacherExplorer.ownWorkspaces = this.main.workspaceList.slice();
                 teacherExplorer.currentOwnWorkspace = this.main.currentWorkspace;
-            } 
+            }
+
+            if (ae.id != this.main.user.id) {
+                
+                if (teacherExplorer != null && teacherExplorer.classPanelMode == "tests") {
+                    response.workspaces.workspaces = response.workspaces.workspaces.filter(w => w.pruefungId == pruefung.id);
+                }
+
+            }
+                        
+            this.main.restoreWorkspaces(response.workspaces, false);
+            this.main.workspacesOwnerId = ae.id;
             
-            if(ae.id != this.main.user.id)
-            {
+            if (ae.id != this.main.user.id) {
                 this.main.projectExplorer.setExplorerColor("rgba(255, 0, 0, 0.2");
                 this.main.projectExplorer.$homeAction.show();
                 Helper.showHelper("homeButtonHelper", this.main);
-
-                this.main.bottomDiv.showHomeworkTab();
-                this.main.bottomDiv.homeworkManager.attachToWorkspaces(this.main.workspaceList);
                 this.main.networkManager.updateFrequencyInSeconds = this.main.networkManager.teacherUpdateFrequencyInSeconds;
                 this.main.networkManager.secondsTillNextUpdate = this.main.networkManager.teacherUpdateFrequencyInSeconds;
 
-                if(teacherExplorer != null && teacherExplorer.classPanelMode == "tests"){
-                    response.workspaces.workspaces = response.workspaces.workspaces.filter(w => w.pruefungId == pruefung.id);
-                }
+                this.main.bottomDiv.homeworkManager.attachToWorkspaces(this.main.workspaceList);
+                this.main.bottomDiv.showHomeworkTab();
             }
-
-
-            this.main.restoreWorkspaces(response.workspaces, false);
-            this.main.workspacesOwnerId = ae.id;
         }
 
 

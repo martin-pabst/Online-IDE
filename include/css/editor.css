@@ -1376,7 +1376,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
 }
 
 .joe_toggleButton:not(.checked){
-    background-color: #80808080;
+    background-color: #404040;
     color: #b0b0b0;
 }
 

@@ -77,7 +77,7 @@ export class Dialog {
 
     waitMessage(text: string): (visible: boolean) => void {
 
-        let $message = jQuery(`<div class="dialog-wait">${text}<img src="assets/projectexplorer/svg-loaders/ball-triangle.svg"></div>`)
+        let $message = jQuery(`<div class="dialog-wait">${text}<img src="assets/graphics/ball-triangle.svg"></div>`)
         this.$dialogMain.append($message);
 
         return (visible: boolean) => {

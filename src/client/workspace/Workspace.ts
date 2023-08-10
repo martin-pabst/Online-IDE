@@ -74,8 +74,8 @@ export class Workspace {
             repository_id: this.repository_id,
             has_write_permission_to_repository: this.has_write_permission_to_repository,
             settings: JSON.stringify(this.settings),
-            spritesheetId: this.spritesheetId,
-            pruefungId: this.pruefung_id,
+            spritesheet_id: this.spritesheetId,
+            pruefung_id: this.pruefung_id,
             readonly: this.readonly
         }
 
@@ -149,9 +149,9 @@ export class Workspace {
         w.repository_id = wd.repository_id;
         w.has_write_permission_to_repository = wd.has_write_permission_to_repository;
         w.settings = settings;
-        w.pruefung_id = wd.pruefungId;
+        w.pruefung_id = wd.pruefung_id;
 
-        w.spritesheetId = wd.spritesheetId;
+        w.spritesheetId = wd.spritesheet_id;
         w.readonly = wd.readonly;
 
         if(w.settings.libraries == null){

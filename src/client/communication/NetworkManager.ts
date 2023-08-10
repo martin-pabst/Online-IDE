@@ -400,7 +400,7 @@ export class NetworkManager {
 
             // Did student get a workspace from his/her teacher?
             if (localWorkspaces.length == 0) {
-                if(remoteWorkspace.pruefungId == null){
+                if(remoteWorkspace.pruefung_id == null){
                     newWorkspaceNames.push(remoteWorkspace.name);
                 }
                 this.createNewWorkspaceFromWorkspaceData(remoteWorkspace);

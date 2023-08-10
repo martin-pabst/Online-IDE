@@ -63,10 +63,10 @@ export type WorkspaceData = {
     repository_id: number,    // id of repository-workspace
     has_write_permission_to_repository: boolean, // true if owner of this working copy has write permission to repository workspace
 
-    pruefungId: number,
+    pruefung_id: number,
     readonly: boolean,
 
-    spritesheetId: number
+    spritesheet_id: number
 }
 
 export type Workspaces = {

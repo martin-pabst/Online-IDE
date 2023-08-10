@@ -945,7 +945,7 @@ export class ProjectExplorer {
             if (ae.id != this.main.user.id) {
                 
                 if (teacherExplorer != null && teacherExplorer.classPanelMode == "tests") {
-                    response.workspaces.workspaces = response.workspaces.workspaces.filter(w => w.pruefungId == pruefung.id);
+                    response.workspaces.workspaces = response.workspaces.workspaces.filter(w => w.pruefung_id == pruefung.id);
                 }
 
             }

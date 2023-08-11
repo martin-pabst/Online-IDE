@@ -257,8 +257,8 @@ export class SynchronizationManager {
             this.$backToCurrentRepositoryVersionButton.show();
             this.$writeRepositoryChangesButton.hide();
         }
-
-        jQuery('#jo_synchro_main_heading_text').text(`Synchronisieren mit Repository "${this.currentRepository.name}"`);
+        
+        jQuery('#jo_synchro_main_heading_text').text(`Synchronisieren mit Repository "${this.currentRepository.name}"${this.repositoryIsWritable?"" : " (read-only)"}`);
 
         let lastFileSelected: boolean = false;
         if (lastSynchroFileLeft != null || lastSynchroFileRight != null) {

@@ -35,7 +35,6 @@ export class MoveTeacherToSchoolPopup {
                     },
                     "ok": function () {
                         w2popup.close();
-                        console.log(this.record["newSchool"]);
                         MoveTeacherToSchoolPopup.callbackOK(this.record["newSchool"]);
                     }
                 }

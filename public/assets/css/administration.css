@@ -208,3 +208,17 @@ body {
     border: 1px solid gray;
     padding: 5px;
 }
+
+.jo_twc_topRight {
+    flex: 1;
+}
+
+.jo_twc_bottomRight {
+    flex: 1;
+    margin-top: 10px;
+}
+
+.jo_twc_right {
+    display: flex;
+    flex-direction: column;
+}

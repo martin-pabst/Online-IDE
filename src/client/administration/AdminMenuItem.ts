@@ -12,6 +12,8 @@ export abstract class AdminMenuItem {
     abstract onMenuButtonPressed($mainHeading: JQuery<HTMLElement>, $tableLeft: JQuery<HTMLElement>,
         $tableRight: JQuery<HTMLElement>, $mainFooter: JQuery<HTMLElement>): void;
 
+    abstract destroy();
+
     abstract checkPermission(user: UserData): boolean;
 
     protected selectTextInCell(){

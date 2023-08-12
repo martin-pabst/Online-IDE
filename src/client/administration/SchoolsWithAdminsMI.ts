@@ -8,9 +8,13 @@ declare var w2prompt: any;
 declare var w2alert: any;
 
 export class SchoolsWithAdminsMI extends AdminMenuItem {
+    destroy() {
+        this.schoolGrid.destroy();
+        this.teacherGrid.destroy();
+    }
 
     schoolGridName = "schoolsGrid";
-    adminGridName = "adminsGrid";
+    teacherGridName = "adminsGrid";
 
     schoolGrid: W2UI.W2Grid;
     teacherGrid: W2UI.W2Grid;
@@ -29,120 +33,116 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
         $tableRight: JQuery<HTMLElement>, $mainFooter: JQuery<HTMLElement>) {
         let that = this;
 
-        if (this.schoolGrid != null) {
-            this.schoolGrid.render();
-        } else {
-            $tableLeft.w2grid({
-                name: this.schoolGridName,
-                header: 'Schulen',
-                // selectType: "cell",
-                multiSelect: false,
-                show: {
-                    header: true,
-                    toolbar: true,
-                    toolbarAdd: true,
-                    toolbarDelete: true,
-                    footer: true,
-                    selectColumn: true,
-                    toolbarSearch: false
-                },
-                recid: "id",
-                columns: [
-                    { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
-                    { field: 'name', caption: 'Bezeichnung', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
-                    { field: 'kuerzel', caption: 'Kürzel', size: '10%', sortable: true, resizable: true, editable: { type: 'text', maxlength: "10" } },
-                    { field: 'numberOfClasses', caption: 'Klassen', size: '30%', sortable: true, resizable: true },
-                    { field: 'numberOfUsers', caption: 'User', size: '30%', sortable: true, resizable: true },
-                ],
-                searches: [
-                    { field: 'name', label: 'Bezeichnung', type: 'text' }
-                ],
-                sortData: [{ field: 'name', direction: 'asc' }, { field: 'kuerzel', direction: 'asc' },
-                { field: 'numberOfClasses', direction: 'asc' }, { field: 'numberOfUsers', direction: 'asc' }],
-                onSelect: (event) => { event.done(() => { that.onSelectSchool() }) },
-                onUnselect: (event) => { that.onUnSelectSchool(event) },
-                onAdd: (event) => { that.onAddSchool() },
-                onChange: (event) => { that.onUpdateSchool(event) },
-                onDelete: (event) => { that.onDeleteSchool(event) },
-            })
+        $tableLeft.w2grid({
+            name: this.schoolGridName,
+            header: 'Schulen',
+            // selectType: "cell",
+            multiSelect: false,
+            show: {
+                header: true,
+                toolbar: true,
+                toolbarAdd: true,
+                toolbarDelete: true,
+                footer: true,
+                selectColumn: true,
+                toolbarSearch: false
+            },
+            recid: "id",
+            columns: [
+                { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
+                { field: 'name', caption: 'Bezeichnung', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
+                { field: 'kuerzel', caption: 'Kürzel', size: '10%', sortable: true, resizable: true, editable: { type: 'text', maxlength: "10" } },
+                { field: 'numberOfClasses', caption: 'Klassen', size: '30%', sortable: true, resizable: true },
+                { field: 'numberOfUsers', caption: 'User', size: '30%', sortable: true, resizable: true },
+            ],
+            searches: [
+                { field: 'name', label: 'Bezeichnung', type: 'text' }
+            ],
+            sortData: [{ field: 'name', direction: 'asc' }, { field: 'kuerzel', direction: 'asc' },
+            { field: 'numberOfClasses', direction: 'asc' }, { field: 'numberOfUsers', direction: 'asc' }],
+            onSelect: (event) => {
+                event.done(() => {
+                    that.onSelectSchool();
+                });
+            },
+            onUnselect: (event) => { that.onUnSelectSchool(event) },
+            onAdd: (event) => { that.onAddSchool() },
+            onChange: (event) => { that.onUpdateSchool(event) },
+            onDelete: (event) => { that.onDeleteSchool(event) },
+        })
 
-            this.schoolGrid = w2ui[this.schoolGridName];
+        this.schoolGrid = w2ui[this.schoolGridName];
 
-        }
 
 
         this.loadTablesFromSchoolObject();
 
-        if (this.teacherGrid != null) {
-            this.teacherGrid.render();
-        } else {
-            $tableRight.w2grid({
-                name: this.adminGridName,
-                header: 'Lehrkräfte',
-                // selectType: "cell",
-                show: {
-                    header: true,
-                    toolbar: true,
-                    toolbarAdd: true,
-                    toolbarDelete: true,
-                    footer: true,
-                    selectColumn: true,
-                    toolbarSearch: false,
-                    toolbarInput: false
-                },
-                toolbar: {
-                    items: [
-                        { type: 'break' },
-                        { type: 'button', id: 'passwordButton', text: 'Passwort ändern...' }, //, img: 'fa-key' }
-                        { type: 'button', id: 'moveTeacherButton', text: 'Versetzen in Schule...' } //, img: 'fa-key' }
-                    ],
-                    onClick: function (target, data) {
-                        switch(target){
-                            case "passwordButton":
-                                that.changePassword();
-                                break;
-                            case "moveTeacherButton":
-                                that.moveTeacherToOtherSchool();
-                                break;
-                        }
-                    }
-                },
-                recid: "id",
-                columns: [
-                    { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
-                    { field: 'username', caption: 'Benutzername', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
-                    { field: 'rufname', caption: 'Rufname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
-                    { field: 'familienname', caption: 'Familienname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
-                    { field: 'is_schooladmin', caption: 'Admin', size: '10%', sortable: true, resizable: false, editable: { type: 'checkbox', style: 'text-align: center' } },
-                    {
-                        field: 'id', caption: 'PW', size: '40px', sortable: false, render: (e) => {
-                            return '<div class="pw_button" title="Passwort ändern" data-recid="' + e.recid + '" style="visibility: hidden">PW!</div>';
-                        }
-                    }
+        $tableRight.w2grid({
+            name: this.teacherGridName,
+            header: 'Lehrkräfte',
+            // selectType: "cell",
+            show: {
+                header: true,
+                toolbar: true,
+                toolbarAdd: true,
+                toolbarDelete: true,
+                footer: true,
+                selectColumn: true,
+                toolbarSearch: false,
+                toolbarInput: false
+            },
+            toolbar: {
+                items: [
+                    { type: 'break' },
+                    { type: 'button', id: 'passwordButton', text: 'Passwort ändern...' }, //, img: 'fa-key' }
+                    { type: 'button', id: 'moveTeacherButton', text: 'Versetzen in Schule...' } //, img: 'fa-key' }
                 ],
-                searches: [
-                    { field: 'username', label: 'Benutzername', type: 'text' },
-                    { field: 'rufname', label: 'Rufname', type: 'text' },
-                    { field: 'familienname', label: 'Familienname', type: 'text' }
-                ],
-                sortData: [{ field: 'klasse', direction: 'asc' }, { field: 'familienname', direction: 'asc' }, { field: 'rufname', direction: 'asc' }],
-                onAdd: (event) => { that.onAddTeacher() },
-                onChange: (event) => { that.onUpdateTeacher(event) },
-                onDelete: (event) => { that.onDeleteTeacher(event) },
-                onSelect: (event) => { event.done(() => { that.onSelectTeacher(event) }) },
-                onUnselect: (event) => { event.done(() => { that.onSelectTeacher(event) }) },
+                onClick: function (target, data) {
+                    switch (target) {
+                        case "passwordButton":
+                            that.changePassword();
+                            break;
+                        case "moveTeacherButton":
+                            that.moveTeacherToOtherSchool();
+                            break;
+                    }
+                }
+            },
+            recid: "id",
+            columns: [
+                { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
+                { field: 'username', caption: 'Benutzername', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
+                { field: 'rufname', caption: 'Rufname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
+                { field: 'familienname', caption: 'Familienname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
+                { field: 'is_schooladmin', caption: 'Admin', size: '10%', sortable: true, resizable: false, editable: { type: 'checkbox', style: 'text-align: center' } },
+                {
+                    field: 'id', caption: 'PW', size: '40px', sortable: false, render: (e) => {
+                        return '<div class="pw_button" title="Passwort ändern" data-recid="' + e.recid + '" style="visibility: hidden">PW!</div>';
+                    }
+                }
+            ],
+            searches: [
+                { field: 'username', label: 'Benutzername', type: 'text' },
+                { field: 'rufname', label: 'Rufname', type: 'text' },
+                { field: 'familienname', label: 'Familienname', type: 'text' }
+            ],
+            sortData: [{ field: 'klasse', direction: 'asc' }, { field: 'familienname', direction: 'asc' }, { field: 'rufname', direction: 'asc' }],
+            onAdd: (event) => { that.onAddTeacher() },
+            onChange: (event) => { that.onUpdateTeacher(event) },
+            onDelete: (event) => { that.onDeleteTeacher(event) },
+            onSelect: (event) => { event.done(() => { that.onSelectTeacher(event) }) },
+            onUnselect: (event) => { event.done(() => { that.onSelectTeacher(event) }) },
 
-            });
+        });
 
-            this.teacherGrid = w2ui[this.adminGridName];
+        this.teacherGrid = w2ui[this.teacherGridName];
 
-        }
 
     }
 
     onSelectTeacher(event: any) {
 
-        let adminGrid = w2ui[this.adminGridName];
+        let adminGrid = w2ui[this.teacherGridName];
 
         // let selection = adminGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
 
@@ -157,7 +157,7 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
     }
 
 
-    moveTeacherToOtherSchool(){
+    moveTeacherToOtherSchool() {
         let recIds = <number[]>this.teacherGrid.getSelection();
         if (recIds.length != 1) {
             this.teacherGrid.error("Zum Verschieben in eine andere Schule muss genau eine Lehrkraft ausgewählt werden.");
@@ -165,11 +165,13 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
             let teacher: UserData = <UserData>this.teacherGrid.get(recIds[0] + "", false);
             let oldSchool = this.schoolDataList.find(sd => sd.id == teacher.schule_id);
             MoveTeacherToSchoolPopup.open(`${teacher.rufname} ${teacher.familienname} (${teacher.username})`,
-                oldSchool, this.schoolDataList, () => {
+                oldSchool, <SchoolData[]>this.schoolGrid.records, () => {
                     // on cancel...
                 }, (newSchool: SchoolData) => {
 
-                    if(teacher.schule_id == newSchool.id){
+                    newSchool = this.schoolDataList.find(s => s.id == newSchool.id);
+
+                    if (teacher.schule_id == newSchool.id) {
                         alert("Die gewählte Schule stimmt mit der bisherigen Schule überein, es wird daher nichts verändert.");
                         return;
                     }
@@ -180,7 +182,7 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
                         type: "update",
                         data: teacher,
                     }
-    
+
                     ajax("CRUDUser", request, (response: CRUDResponse) => {
                         newSchool.usersWithoutClass.push(teacher);
                         oldSchool.usersWithoutClass.splice(oldSchool.usersWithoutClass.indexOf(teacher), 1);
@@ -188,7 +190,7 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
                     }, (error) => {
                         w2alert('Fehler beim Versetzen der Lehrkraft: ' + error);
                     });
-    
+
                 }
             )
         }
@@ -284,7 +286,7 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
             // console.log(data);
             delete data["w2ui"]["changes"];
             this.schoolGrid.refreshCell(data["recid"], field);
-        }, () => {  
+        }, () => {
             data[field] = event.value_original;
             this.schoolGrid.refresh();
         });
@@ -315,9 +317,9 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
     onSelectSchool() {
 
         let recIds: number[] = <number[]>this.schoolGrid.getSelection();
-        if (recIds.length == 0){
+        if (recIds.length == 0) {
             return;
-        } 
+        }
 
         jQuery('#jo_exportschools a').attr('href', 'servlet/exportSchools?ids=' + recIds.join(','));
 
@@ -336,16 +338,16 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
         for (let sc of selectedSchools) {
             this.teacherGrid.header = "Lehrkräfte der Schule " + sc.name;
             for (let sd of sc.usersWithoutClass) {
-                if(sd.is_teacher) adminList.push(sd);
+                if (sd.is_teacher) adminList.push(sd);
             }
         }
 
         // setTimeout(() => {
-            this.teacherGrid.clear();
-            this.teacherGrid.add(adminList);
-            this.teacherGrid.refresh();
-            this.onSelectTeacher(null);           // to disable "change password"-Button
-            this.initializePasswordButtons();
+        this.teacherGrid.clear();
+        this.teacherGrid.add(adminList);
+        this.teacherGrid.refresh();
+        this.onSelectTeacher(null);           // to disable "change password"-Button
+        this.initializePasswordButtons();
         // }, 20);
 
 
@@ -353,7 +355,7 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
 
     }
 
-    onUnSelectSchool(event){
+    onUnSelectSchool(event) {
         this.teacherGrid.clear();
     }
 

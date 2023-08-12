@@ -2,20 +2,33 @@ import { AdminMenuItem } from "./AdminMenuItem.js";
 import { UserData, CRUDUserRequest, CRUDSchoolRequest, CRUDResponse, SchoolData, GetSchoolDataRequest, GetSchoolDataResponse, TeacherData, ClassData, CRUDClassRequest, GetTeacherDataRequest, GetTeacherDataResponse } from "../communication/Data.js";
 import { ajax } from "../communication/AjaxHelper.js";
 import { PasswordPopup } from "./PasswordPopup.js";
+import { SelectTeacherPopup } from "./SelectTeacherPopup.js";
 
 declare var w2prompt: any;
 declare var w2alert: any;
 
 export class TeachersWithClassesMI extends AdminMenuItem {
 
+    destroy() {
+        this.classesGrid.destroy();
+        this.teachersGrid.destroy();
+        this.classesWithoutTeachersGrid.destroy();
+        this.$tableRight.removeClass('jo_twc_right');
+    }
+
+
     classesGridName = "tgClassesGrid";
+    classesWithoutTeachersGridName = "tgClassesWithoutTeachersGrid";
     teachersGridName = "TgTeachersGrid";
 
     classesGrid: W2UI.W2Grid;
     teachersGrid: W2UI.W2Grid;
+    classesWithoutTeachersGrid: W2UI.W2Grid;
 
     teacherData: TeacherData[] = [];
-    classesWithoutTacher: ClassData[];
+    classesWithoutTeacher: ClassData[];
+
+    $tableRight: JQuery<HTMLElement>;
 
     checkPermission(user: UserData): boolean {
         return user.is_schooladmin;
@@ -27,127 +40,202 @@ export class TeachersWithClassesMI extends AdminMenuItem {
 
     onMenuButtonPressed($mainHeading: JQuery<HTMLElement>, $tableLeft: JQuery<HTMLElement>,
         $tableRight: JQuery<HTMLElement>, $mainFooter: JQuery<HTMLElement>) {
+
         let that = this;
+        this.$tableRight = $tableRight;
 
-        if (this.teachersGrid != null) {
-            this.teachersGrid.render();
-        } else {
-            $tableLeft.w2grid({
-                name: this.teachersGridName,
-                header: 'Lehrkräfte',
-                // selectType: "cell",
-                multiSelect: false,
-                show: {
-                    header: true,
-                    toolbar: true,
-                    toolbarAdd: true,
-                    toolbarDelete: true,
-                    footer: true,
-                    selectColumn: true,
-                    toolbarSearch: false
+        $tableLeft.w2grid({
+            name: this.teachersGridName,
+            header: 'Lehrkräfte',
+            // selectType: "cell",
+            multiSelect: false,
+            show: {
+                header: true,
+                toolbar: true,
+                toolbarAdd: true,
+                toolbarDelete: true,
+                footer: true,
+                selectColumn: true,
+                toolbarSearch: false
 
-                },
-                toolbar: {
-                    items: [
-                        { type: 'break' },
-                        { type: 'button', id: 'passwordButton', text: 'Passwort ändern...' } //, img: 'fa-key' }
-                    ],
-                    onClick: function (target, data) {
-                        if (target == "passwordButton") {
-                            that.changePassword();
-                        }
+            },
+            toolbar: {
+                items: [
+                    { type: 'break' },
+                    { type: 'button', id: 'passwordButton', text: 'Passwort ändern...' } //, img: 'fa-key' }
+                ],
+                onClick: function (target, data) {
+                    if (target == "passwordButton") {
+                        that.changePassword();
+                    }
+                }
+            },
+            recid: "id",
+            columns: [
+                { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
+                { field: 'username', caption: 'Benutzername', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
+                { field: 'rufname', caption: 'Rufname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
+                { field: 'familienname', caption: 'Familienname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
+                {
+                    field: 'numberOfClasses', caption: 'Klassen', size: '30%', sortable: true, resizable: true,
+                    render: function (record: TeacherData) {
+                        return '<div>' + record.classes.length + '</div>';
                     }
                 },
-                recid: "id",
-                columns: [
-                    { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
-                    { field: 'username', caption: 'Benutzername', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
-                    { field: 'rufname', caption: 'Rufname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
-                    { field: 'familienname', caption: 'Familienname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
-                    {
-                        field: 'numberOfClasses', caption: 'Klassen', size: '30%', sortable: true, resizable: true,
-                        render: function (record: TeacherData) {
-                            return '<div>' + record.classes.length + '</div>';
-                        }
-                    },
-                    {
-                        field: 'id', caption: 'PW', size: '40px', sortable: false, render: (e) => {
-                            return '<div class="pw_button" title="Passwort ändern" style="visibility: hidden" data-recid="' + e.recid + '">PW!</div>';
-                        }
+                {
+                    field: 'id', caption: 'PW', size: '40px', sortable: false, render: (e) => {
+                        return '<div class="pw_button" title="Passwort ändern" style="visibility: hidden" data-recid="' + e.recid + '">PW!</div>';
                     }
-                ],
-                searches: [
-                    { field: 'username', label: 'Benutzername', type: 'text' },
-                    { field: 'rufname', label: 'Rufname', type: 'text' },
-                    { field: 'familienname', label: 'Familienname', type: 'text' }
-                ],
-                sortData: [{ field: 'familienname', direction: 'asc' }, { field: 'rufname', direction: 'asc' }],
-                onSelect: (event) => { event.done(() => { that.onSelectTeacher(event) }) },
-                onUnselect: (event) => { that.onUnSelectTeacher(event) },
-                onAdd: (event) => { that.onAddTeacher() },
-                onChange: (event) => { that.onUpdateTeacher(event) },
-                onDelete: (event) => { that.onDeleteTeacher(event) },
-            })
+                }
+            ],
+            searches: [
+                { field: 'username', label: 'Benutzername', type: 'text' },
+                { field: 'rufname', label: 'Rufname', type: 'text' },
+                { field: 'familienname', label: 'Familienname', type: 'text' }
+            ],
+            sortData: [{ field: 'familienname', direction: 'asc' }, { field: 'rufname', direction: 'asc' }],
+            onSelect: (event) => { event.done(() => { that.onSelectTeacher() }) },
+            onUnselect: (event) => { that.onUnSelectTeacher(event) },
+            onAdd: (event) => { that.onAddTeacher() },
+            onChange: (event) => { that.onUpdateTeacher(event) },
+            onDelete: (event) => { that.onDeleteTeacher(event) },
+        })
 
-            this.teachersGrid = w2ui[this.teachersGridName];
-
-        }
+        this.teachersGrid = w2ui[this.teachersGridName];
 
         this.loadTablesFromTeacherObject();
 
         this.initializePasswordButtons();
 
-        if (this.classesGrid != null) {
-            this.classesGrid.render();
-        } else {
-            $tableRight.w2grid({
-                name: this.classesGridName,
-                header: 'Klassen',
-                // selectType: "cell",
-                multiSelect: true,
-                show: {
-                    header: true,
-                    toolbar: true,
-                    toolbarAdd: true,
-                    toolbarDelete: true,
-                    footer: true,
-                    selectColumn: true
+        let $topRight = jQuery('<div class="jo_twc_topRight"></div>');
+        let $bottomRight = jQuery('<div class="jo_twc_bottomRight"></div>');
+
+        $tableRight.addClass('jo_twc_right');
+        $tableRight.append($topRight, $bottomRight);
+
+        $topRight.w2grid({
+            name: this.classesGridName,
+            header: 'Klassen',
+            // selectType: "cell",
+            multiSelect: true,
+            show: {
+                header: true,
+                toolbar: true,
+                toolbarAdd: true,
+                toolbarDelete: true,
+                footer: true,
+                selectColumn: true
+            },
+            recid: "id",
+            columns: [
+                { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
+                { field: 'name', caption: 'Name', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
+                {
+                    field: 'teacher', caption: 'Lehrkraft', size: '30%', sortable: true, resizable: true,
+                    editable: { type: 'list', items: that.teacherData, filter: false }
                 },
-                recid: "id",
-                columns: [
-                    { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
-                    { field: 'name', caption: 'Name', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
-                    {
-                        field: 'teacher', caption: 'Lehrkraft', size: '30%', sortable: true, resizable: true,
-                        editable: { type: 'list', items: that.teacherData, filter: false }
+                {
+                    field: 'teacher2', caption: 'Zweitlehrkraft', size: '30%', sortable: true, resizable: true,
+                    render: function (record: ClassData) {
+                        let teacher = that.teacherData.find(td => td.userData.id == record.zweitlehrkraft_id);
+                        if (teacher != null) {
+                            return '<div>' + teacher.userData.rufname + " " + teacher.userData.familienname + '</div>';
+                        }
                     },
-                    {
-                        field: 'teacher2', caption: 'Zweitlehrkraft', size: '30%', sortable: true, resizable: true,
-                        render: function (record: ClassData) {
-                            let teacher = that.teacherData.find(td => td.userData.id == record.zweitlehrkraft_id);
-                            if (teacher != null) {
-                                return '<div>' + teacher.userData.rufname + " " + teacher.userData.familienname + '</div>';
-                            }
-                        },
-                        editable: { type: 'list', items: that.teacherData.slice(0).concat([{
+                    editable: {
+                        type: 'list', items: that.teacherData.slice(0).concat([{
                             //@ts-ignore
-                            userData: {id: -1, rufname: "Keine Zweitlehrkraft", familienname: ""},
+                            userData: { id: -1, rufname: "Keine Zweitlehrkraft", familienname: "" },
                             classes: [],
                             id: -1,
                             text: "Keine Zweitlehrkraft"
-                        }]), filter: false }                    },
-                ],
-                searches: [
-                    { field: 'name', label: 'Name', type: 'text' },
-                ],
-                sortData: [{ field: 'name', direction: 'asc' }],
-                onAdd: (event) => { that.onAddClass() },
-                onChange: (event) => { that.onUpdateClass(event) },
-                onDelete: (event) => { that.onDeleteClass(event) },
-            });
+                        }]), filter: false
+                    }
+                },
+            ],
+            searches: [
+                { field: 'name', label: 'Name', type: 'text' },
+            ],
+            sortData: [{ field: 'name', direction: 'asc' }],
+            onAdd: (event) => { that.onAddClass() },
+            onChange: (event) => { that.onUpdateClass(event) },
+            onDelete: (event) => { that.onDeleteClass(event) },
+        });
 
-            this.classesGrid = w2ui[this.classesGridName];
+        this.classesGrid = w2ui[this.classesGridName];
 
+        $bottomRight.w2grid({
+            name: this.classesWithoutTeachersGridName,
+            header: 'Klassen ohne Lehrkräfte',
+            // selectType: "cell",
+            multiSelect: true,
+            show: {
+                header: true,
+                toolbar: true,
+                toolbarDelete: true,
+                footer: true,
+                selectColumn: true
+            },
+            toolbar: {
+                items: [
+                    { type: 'break' },
+                    { type: 'button', id: 'setTeacherButton', text: 'Lehrkraft zuordnen...' } 
+                ],
+                onClick: function (target, data) {
+                    switch(target){
+                        case "setTeacherButton":
+                            that.setTeacher();
+                            break;
+                    }
+                }
+            },
+            recid: "id",
+            columns: [
+                { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
+                { field: 'name', caption: 'Name', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } }
+            ],
+            searches: [
+                { field: 'name', label: 'Name', type: 'text' },
+            ],
+            sortData: [{ field: 'name', direction: 'asc' }],
+            onChange: (event) => { that.onUpdateClassWithoutTeacher(event) },
+            onDelete: (event) => { that.onDeleteClassWithoutTeacher(event) },
+        });
+
+        this.classesWithoutTeachersGrid = w2ui[this.classesWithoutTeachersGridName];
+
+    }
+
+    setTeacher() {
+        let recIds = <number[]>this.classesWithoutTeachersGrid.getSelection();
+        if (recIds.length != 1) {
+            this.classesWithoutTeachersGrid.error("Es muss genau eine Klasse ausgewählt werden.");
+        } else {
+            let klass: ClassData = <ClassData>this.classesWithoutTeachersGrid.get(recIds[0] + "", false);
+            SelectTeacherPopup.open(klass.name,
+                this.teacherData, () => {
+                    // on cancel...
+                }, (teacher: TeacherData) => {
+
+                    klass.lehrkraft_id = teacher.userData.id;
+
+                    let request: CRUDClassRequest = {
+                        type: "update",
+                        data: klass,
+                    }
+    
+                    ajax("CRUDClass", request, (response: CRUDResponse) => {
+                        this.classesWithoutTeacher.splice(this.classesWithoutTeacher.indexOf(klass), 1);
+                        teacher = (<TeacherData[]>this.teacherData).find(t => t.userData.id == teacher.userData.id);
+                        teacher.classes.push(klass);
+                        this.onSelectTeacher();
+                        this.fillClassesWithoutTeacherGrid();
+                    }, (error) => {
+                        w2alert('Fehler beim Zuordnen der Lehrkraft: ' + error);
+                    });
+    
+                }
+            )
         }
 
     }
@@ -254,11 +342,11 @@ export class TeachersWithClassesMI extends AdminMenuItem {
         this.classesGrid.clear();
     }
 
-    onSelectTeacher(event: any) {
+    onSelectTeacher() {
 
         let recIds: number[] = <number[]>this.teachersGrid.getSelection();
 
-        if(recIds.length != 1) return;
+        if (recIds.length != 1) return;
 
         // //@ts-ignore
         // recIds = <any>this.teachersGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
@@ -281,7 +369,7 @@ export class TeachersWithClassesMI extends AdminMenuItem {
             for (let sd of sc.classes) {
                 sd["teacher"] = sc.userData.rufname + " " + sc.userData.familienname;
                 let teacher2 = this.teacherData.find(td => td.userData.id == sd.zweitlehrkraft_id);
-                if(teacher2 != null){
+                if (teacher2 != null) {
                     sd["teacher2"] = sc.userData.rufname + " " + sc.userData.familienname;
                 }
                 classesList.push(sd);
@@ -295,13 +383,22 @@ export class TeachersWithClassesMI extends AdminMenuItem {
 
     }
 
+    fillClassesWithoutTeacherGrid(){
+
+        this.classesWithoutTeacher.forEach(c => c.text = c.name);
+
+        this.classesWithoutTeachersGrid.clear();
+        this.classesWithoutTeachersGrid.add(this.classesWithoutTeacher);
+        this.classesWithoutTeachersGrid.refresh();
+    }
+
     loadTablesFromTeacherObject() {
 
         let request: GetTeacherDataRequest = { school_id: this.administration.userData.schule_id };
 
         ajax("getTeacherData", request, (data: GetTeacherDataResponse) => {
             this.teacherData = data.teacherData;
-            this.classesWithoutTacher = data.classesWithoutTeacher;
+            this.classesWithoutTeacher = data.classesWithoutTeacher;
 
             this.teachersGrid.clear();
 
@@ -322,6 +419,8 @@ export class TeachersWithClassesMI extends AdminMenuItem {
                 this.classesGrid.columns[3]["editable"].items = this.teacherData;
                 this.classesGrid.clear();
             }
+
+            this.fillClassesWithoutTeacherGrid();
 
 
         }, () => {
@@ -370,7 +469,7 @@ export class TeachersWithClassesMI extends AdminMenuItem {
 
         let data: TeacherData = <TeacherData>this.teachersGrid.records[event.index];
 
-        let field = this.teachersGrid.columns[event.column]["field"];       
+        let field = this.teachersGrid.columns[event.column]["field"];
 
         data.userData[field] = event.value_new;
         data[field] = event.value_new;
@@ -385,7 +484,7 @@ export class TeachersWithClassesMI extends AdminMenuItem {
         ajax("CRUDUser", request, (response: CRUDResponse) => {
             // console.log(data);
             // for (let key in data["w2ui"]["changes"]) {
-                delete data["w2ui"]["changes"][field];
+            delete data["w2ui"]["changes"][field];
             // }
             this.teachersGrid.refreshCell(data["recid"], field);
         }, () => {
@@ -467,6 +566,34 @@ export class TeachersWithClassesMI extends AdminMenuItem {
 
     }
 
+    onDeleteClassWithoutTeacher(event: any) {
+        if (!event.force || event.isStopped) return;
+
+        let recIds: number[] = <number[]>this.classesWithoutTeachersGrid.getSelection();
+
+        let request: CRUDClassRequest = {
+            type: "delete",
+            data: null,
+            ids: recIds,
+        }
+
+        ajax("CRUDClass", request, (response: CRUDResponse) => {
+            recIds.forEach(id => {
+                let cd: ClassData = <ClassData>this.classesWithoutTeachersGrid.get(id + "");
+                this.classesWithoutTeachersGrid.remove("" + id)
+                let ld: TeacherData = <TeacherData>this.teachersGrid.get(cd.lehrkraft_id + "");
+                if (ld != null) {
+                    ld.classes = ld.classes.filter((cl) => cl.id != cd.id);
+                }
+                this.classesWithoutTeacher.splice(this.classesWithoutTeacher.indexOf(cd), 1);
+            });
+            this.classesWithoutTeachersGrid.refresh();
+        }, () => {
+            this.classesWithoutTeachersGrid.refresh();
+        });
+
+    }
+
     onUpdateClass(event: any) {
 
         let data: ClassData = <ClassData>this.classesGrid.records[event.index];
@@ -518,7 +645,7 @@ export class TeachersWithClassesMI extends AdminMenuItem {
         }
 
         ajax("CRUDClass", request, (response: CRUDResponse) => {
-            if(data["w2ui"]["changes"][field] != null){
+            if (data["w2ui"]["changes"][field] != null) {
                 delete data["w2ui"]["changes"][field];
             }
             this.classesGrid.refreshCell(data["recid"], field);
@@ -526,6 +653,30 @@ export class TeachersWithClassesMI extends AdminMenuItem {
             data[field] = event.value_original;
             delete data["w2ui"]["changes"][field];
             this.classesGrid.refreshCell(data["recid"], field);
+        });
+    }
+
+    onUpdateClassWithoutTeacher(event: any) {
+
+        let data: ClassData = <ClassData>this.classesGrid.records[event.index];
+
+        let field = this.classesGrid.columns[event.column]["field"];
+        data[field] = event.value_new;
+
+        let request: CRUDClassRequest = {
+            type: "update",
+            data: data,
+        }
+
+        ajax("CRUDClass", request, (response: CRUDResponse) => {
+            if (data["w2ui"]["changes"][field] != null) {
+                delete data["w2ui"]["changes"][field];
+            }
+            this.classesWithoutTeachersGrid.refreshCell(data["recid"], field);
+        }, () => {
+            data[field] = event.value_original;
+            delete data["w2ui"]["changes"][field];
+            this.classesWithoutTeachersGrid.refreshCell(data["recid"], field);
         });
     }
 

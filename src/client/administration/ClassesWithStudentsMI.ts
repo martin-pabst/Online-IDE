@@ -9,6 +9,12 @@ declare var w2prompt: any;
 declare var w2alert: any;
 
 export class ClassesWithStudentsMI extends AdminMenuItem {
+    destroy() {
+        w2ui[this.classesGridName].destroy();
+        w2ui[this.studentGridName].destroy();
+    }
+
+
 
     classesGridName = "classesGrid";
     studentGridName = "studentsGrid";
@@ -37,13 +43,78 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
         let that = this;
 
         this.loadTablesFromTeacherObject(() => {
-            if (w2ui[this.classesGridName] != null) {
-                let grid: W2UI.W2Grid = w2ui[this.classesGridName];
-                grid.render();
-            } else {
-                $tableLeft.w2grid({
-                    name: this.classesGridName,
-                    header: 'Klassen',
+            $tableLeft.w2grid({
+                name: this.classesGridName,
+                header: 'Klassen',
+                // selectType: "cell",
+                show: {
+                    header: true,
+                    toolbar: true,
+                    toolbarAdd: true,
+                    toolbarDelete: true,
+                    footer: true,
+                    selectColumn: true,
+                    toolbarSearch: false,
+                    toolbarInput: false
+                },
+                recid: "id",
+                columns: [
+                    { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
+                    { field: 'name', caption: 'Bezeichnung', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
+                    {
+                        field: 'numberOfStudents', caption: 'Schüler/innen', size: '30%', sortable: false, resizable: true,
+                        render: function (record: ClassData) {
+                            return '<div>' + record.students.length + '</div>';
+                        }
+                    },
+                    {
+                        field: 'teacher', caption: 'Lehrkraft', size: '30%', sortable: true, resizable: true,
+                        editable: { type: 'list', items: that.teacherDataList, filter: false },
+                        render: function (record: ClassData) {
+                            let teacher = that.teacherDataList.find(td => td.userData.id == record.lehrkraft_id);
+                            if (teacher != null) {
+                                return '<div>' + teacher.userData.rufname + " " + teacher.userData.familienname + '</div>';
+                            }
+                        }
+                    },
+                    {
+                        field: 'teacher2', caption: 'Zweitlehrkraft', size: '30%', sortable: true, resizable: true,
+                        render: function (record: ClassData) {
+                            let teacher = that.teacherDataList.find(td => td.userData.id == record.zweitlehrkraft_id);
+                            if (teacher != null) {
+                                return '<div>' + teacher.userData.rufname + " " + teacher.userData.familienname + '</div>';
+                            }
+                        },
+                        editable: {
+                            type: 'list', items: that.teacherDataList.slice(0).concat([{
+                                //@ts-ignore
+                                userData: { id: -1, rufname: "Keine Zweitlehrkraft", familienname: "" },
+                                classes: [],
+                                id: -1,
+                                text: "Keine Zweitlehrkraft"
+                            }]), filter: false
+                        }
+                    },
+                    {
+                        field: 'aktiv', caption: 'aktiv', size: '10%', sortable: false, resizable: false, style: 'text-align: center',
+                        editable: { type: 'checkbox', style: 'text-align: center' }
+                    }
+                ],
+                searches: [
+                    { field: 'name', label: 'Bezeichnung', type: 'text' }
+                ],
+                sortData: [{ field: 'name', direction: 'ASC' }],
+                onSelect: (event) => { event.done(() => { that.onSelectClass(event) }) },
+                onUnselect: (event) => { event.done(() => { that.onUnselectClass(event) }) },
+                onAdd: (event) => { that.onAddClass() },
+                onChange: (event) => { that.onUpdateClass(event) },
+                onDelete: (event) => { that.onDeleteClass(event) },
+            })
+
+            this.loadClassDataList(() => {
+                $tableRight.w2grid({
+                    name: this.studentGridName,
+                    header: 'Schüler/innen',
                     // selectType: "cell",
                     show: {
                         header: true,
@@ -52,128 +123,54 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                         toolbarDelete: true,
                         footer: true,
                         selectColumn: true,
-                        toolbarSearch: false,
-                        toolbarInput: false
+                        toolbarSearch: false
+                    },
+                    toolbar: {
+                        items: [
+                            { type: 'break' },
+                            { type: 'button', id: 'passwordButton', text: 'Passwort ändern...' }, //, img: 'fa-key' },
+                            { type: 'button', id: 'changeClassButton', text: 'Klasse ändern...' } //, img: 'fa-key' }
+                        ],
+                        onClick: function (target, data) {
+                            if (target == "passwordButton") {
+                                that.changePassword();
+                            } else if (target == "changeClassButton") {
+                                that.changeClass();
+                            }
+                        }
                     },
                     recid: "id",
                     columns: [
                         { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
-                        { field: 'name', caption: 'Bezeichnung', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
                         {
-                            field: 'numberOfStudents', caption: 'Schüler/innen', size: '30%', sortable: false, resizable: true,
-                            render: function (record: ClassData) {
-                                return '<div>' + record.students.length + '</div>';
+                            field: 'klasse', caption: 'Klasse', size: '10%', sortable: true, resizable: true
+                        },
+                        { field: 'username', caption: 'Benutzername', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
+                        { field: 'rufname', caption: 'Rufname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
+                        { field: 'familienname', caption: 'Familienname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
+                        {
+                            field: 'id', caption: 'PW', size: '40px', sortable: false, render: (e) => {
+                                return '<div class="pw_button" title="Passwort ändern" data-recid="' + e.recid + '" style="visibility: hidden">PW!</div>';
                             }
-                        },
-                        {
-                            field: 'teacher', caption: 'Lehrkraft', size: '30%', sortable: true, resizable: true,
-                            editable: { type: 'list', items: that.teacherDataList, filter: false },
-                            render: function (record: ClassData) {
-                                let teacher = that.teacherDataList.find(td => td.userData.id == record.lehrkraft_id);
-                                if (teacher != null) {
-                                    return '<div>' + teacher.userData.rufname + " " + teacher.userData.familienname + '</div>';
-                                }
-                            }
-                        },
-                        {
-                            field: 'teacher2', caption: 'Zweitlehrkraft', size: '30%', sortable: true, resizable: true,
-                            render: function (record: ClassData) {
-                                let teacher = that.teacherDataList.find(td => td.userData.id == record.zweitlehrkraft_id);
-                                if (teacher != null) {
-                                    return '<div>' + teacher.userData.rufname + " " + teacher.userData.familienname + '</div>';
-                                }
-                            },
-                            editable: { type: 'list', items: that.teacherDataList.slice(0).concat([{
-                                //@ts-ignore
-                                userData: {id: -1, rufname: "Keine Zweitlehrkraft", familienname: ""},
-                                classes: [],
-                                id: -1,
-                                text: "Keine Zweitlehrkraft"
-                            }]), filter: false }
-                        },
-                        {
-                            field: 'aktiv', caption: 'aktiv', size: '10%', sortable: false, resizable: false, style: 'text-align: center',
-                            editable: { type: 'checkbox', style: 'text-align: center' }
                         }
                     ],
                     searches: [
-                        { field: 'name', label: 'Bezeichnung', type: 'text' }
+                        { field: 'username', label: 'Benutzername', type: 'text' },
+                        { field: 'rufname', label: 'Rufname', type: 'text' },
+                        { field: 'familienname', label: 'Familienname', type: 'text' }
                     ],
-                    sortData: [{ field: 'name', direction: 'ASC' }],
-                    onSelect: (event) => { event.done(() => { that.onSelectClass(event) }) },
-                    onUnselect: (event) => { event.done(() => { that.onUnselectClass(event) }) },
-                    onAdd: (event) => { that.onAddClass() },
-                    onChange: (event) => { that.onUpdateClass(event) },
-                    onDelete: (event) => { that.onDeleteClass(event) },
-                })
-            }
-
-            this.loadClassDataList(() => {
-                if (w2ui[this.studentGridName] != null) {
-                    let grid: W2UI.W2Grid = w2ui[this.studentGridName];
-                    grid.clear();
-                    grid.render();
-                } else {
-                    $tableRight.w2grid({
-                        name: this.studentGridName,
-                        header: 'Schüler/innen',
-                        // selectType: "cell",
-                        show: {
-                            header: true,
-                            toolbar: true,
-                            toolbarAdd: true,
-                            toolbarDelete: true,
-                            footer: true,
-                            selectColumn: true,
-                            toolbarSearch: false
-                        },
-                        toolbar: {
-                            items: [
-                                { type: 'break' },
-                                { type: 'button', id: 'passwordButton', text: 'Passwort ändern...' }, //, img: 'fa-key' },
-                                { type: 'button', id: 'changeClassButton', text: 'Klasse ändern...' } //, img: 'fa-key' }
-                            ],
-                            onClick: function (target, data) {
-                                if (target == "passwordButton") {
-                                    that.changePassword();
-                                } else if (target == "changeClassButton") {
-                                    that.changeClass();
-                                }
-                            }
-                        },
-                        recid: "id",
-                        columns: [
-                            { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
-                            {
-                                field: 'klasse', caption: 'Klasse', size: '10%', sortable: true, resizable: true
-                            },
-                            { field: 'username', caption: 'Benutzername', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
-                            { field: 'rufname', caption: 'Rufname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
-                            { field: 'familienname', caption: 'Familienname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
-                            {
-                                field: 'id', caption: 'PW', size: '40px', sortable: false, render: (e) => {
-                                    return '<div class="pw_button" title="Passwort ändern" data-recid="' + e.recid + '" style="visibility: hidden">PW!</div>';
-                                }
-                            }
-                        ],
-                        searches: [
-                            { field: 'username', label: 'Benutzername', type: 'text' },
-                            { field: 'rufname', label: 'Rufname', type: 'text' },
-                            { field: 'familienname', label: 'Familienname', type: 'text' }
-                        ],
-                        sortData: [{ field: 'klasse', direction: 'asc' }, { field: 'familienname', direction: 'asc' }, { field: 'rufname', direction: 'asc' }],
-                        onAdd: (event) => { that.onAddStudent() },
-                        onChange: (event) => { that.onUpdateStudent(event) },
-                        onDelete: (event) => { that.onDeleteStudent(event) },
-                        onClick: (event) => {
-                            if (event.column == 1) {
-                                w2ui[that.studentGridName].editField(event.recid, event.column);
-                            }
-                        },
-                        onSelect: (event) => { event.done(() => { that.onSelectStudent(event) }) },
-                        onUnselect: (event) => { event.done(() => { that.onUnselectStudent(event) }) },
-                    });
-                }
+                    sortData: [{ field: 'klasse', direction: 'asc' }, { field: 'familienname', direction: 'asc' }, { field: 'rufname', direction: 'asc' }],
+                    onAdd: (event) => { that.onAddStudent() },
+                    onChange: (event) => { that.onUpdateStudent(event) },
+                    onDelete: (event) => { that.onDeleteStudent(event) },
+                    onClick: (event) => {
+                        if (event.column == 1) {
+                            w2ui[that.studentGridName].editField(event.recid, event.column);
+                        }
+                    },
+                    onSelect: (event) => { event.done(() => { that.onSelectStudent(event) }) },
+                    onUnselect: (event) => { event.done(() => { that.onUnselectStudent(event) }) },
+                });
                 this.loadTables();
             });
 
@@ -370,7 +367,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
 
         let field = classesGrid.columns[event.column]["field"];
 
-        if(data[field] != undefined) data[field] = event.value_new;
+        if (data[field] != undefined) data[field] = event.value_new;
 
         if (event.column == 3) {
             let teacher: TeacherData = event.value_new;
@@ -384,7 +381,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                 // if (teacherOld2 != null) teacherOld1.classes = teacherOld1.classes.filter(cd => cd.id != data.id);
                 data.lehrkraft_id = teacher.userData.id;
                 teacher.classes.push(data);
-               
+
                 event.value_new = teacher.userData.rufname + " " + teacher.userData.familienname;
             }
         }
@@ -567,7 +564,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
 
     loadTables() {
         let classesTable = w2ui[this.classesGridName];
-        if(classesTable == null){
+        if (classesTable == null) {
             return;
         }
         classesTable.clear();
@@ -653,7 +650,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
             delete data["w2ui"]["changes"][field];
             studentGrid.refreshCell(data["recid"], field);
             alert(message);
-        }); 
+        });
 
     }
 

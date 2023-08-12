@@ -17,6 +17,11 @@ type ColumnMapping = { [column: string]: number };
 
 export class StudentBulkImportMI extends AdminMenuItem {
 
+    destroy() {
+        w2ui[this.studentGridName].destroy();
+    }
+
+
     step: Step;
     $tableLeft: JQuery<HTMLElement>;
     $tableRight: JQuery<HTMLElement>;
@@ -52,50 +57,45 @@ export class StudentBulkImportMI extends AdminMenuItem {
         $tableRight.css('flex', '2');
 
         let that = this;
-        if (w2ui[this.studentGridName] != null) {
-            let grid: W2UI.W2Grid = w2ui[this.studentGridName];
-            grid.render();
-        } else {
-            $tableRight.w2grid({
-                name: this.studentGridName,
-                header: 'Schüler/innen',
-                selectType: "cell",
-                show: {
-                    header: true,
-                    toolbar: true,
-                    toolbarDelete: true,
-                    footer: true,
-                    selectColumn: true,
-                    toolbarSearch: false
-                },
-                toolbar: {
-                    items: [
-                    ]
-                },
-                recid: "id",
-                columns: [
-                    { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
-                    { field: 'rufname', caption: 'Rufname', size: '25%', sortable: true, resizable: true, editable: { type: 'text' } },
-                    { field: 'familienname', caption: 'Familienname', size: '25%', sortable: true, resizable: true, editable: { type: 'text' } },
-                    { field: 'username', caption: 'Benutzername', size: '25%', sortable: true, resizable: true, editable: { type: 'text' } },
-                    { field: 'password', caption: 'Passwort', size: '25%', sortable: false, editable: { type: 'text' } }
-                ],
-                searches: [
-                    { field: 'username', label: 'Benutzername', type: 'text' },
-                    { field: 'rufname', label: 'Rufname', type: 'text' },
-                    { field: 'familienname', label: 'Familienname', type: 'text' }
-                ],
-                sortData: [{ field: 'klasse', direction: 'asc' }, { field: 'familienname', direction: 'asc' }, { field: 'rufname', direction: 'asc' }],
-                onDelete: function (event) {
-                    if (!event.force || event.isStopped) return;
-                    let studentsGrid: W2UI.W2Grid = w2ui[that.studentGridName];
-                    let recIds: number[] = studentsGrid.getSelection().map((sel) => sel["recid"]).filter((value, index, array) => array.indexOf(value) === index);
-                    event.onComplete = () => {
-                        recIds.forEach((id) => studentsGrid.remove(id + ""));
-                    }
+        $tableRight.w2grid({
+            name: this.studentGridName,
+            header: 'Schüler/innen',
+            selectType: "cell",
+            show: {
+                header: true,
+                toolbar: true,
+                toolbarDelete: true,
+                footer: true,
+                selectColumn: true,
+                toolbarSearch: false
+            },
+            toolbar: {
+                items: [
+                ]
+            },
+            recid: "id",
+            columns: [
+                { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
+                { field: 'rufname', caption: 'Rufname', size: '25%', sortable: true, resizable: true, editable: { type: 'text' } },
+                { field: 'familienname', caption: 'Familienname', size: '25%', sortable: true, resizable: true, editable: { type: 'text' } },
+                { field: 'username', caption: 'Benutzername', size: '25%', sortable: true, resizable: true, editable: { type: 'text' } },
+                { field: 'password', caption: 'Passwort', size: '25%', sortable: false, editable: { type: 'text' } }
+            ],
+            searches: [
+                { field: 'username', label: 'Benutzername', type: 'text' },
+                { field: 'rufname', label: 'Rufname', type: 'text' },
+                { field: 'familienname', label: 'Familienname', type: 'text' }
+            ],
+            sortData: [{ field: 'klasse', direction: 'asc' }, { field: 'familienname', direction: 'asc' }, { field: 'rufname', direction: 'asc' }],
+            onDelete: function (event) {
+                if (!event.force || event.isStopped) return;
+                let studentsGrid: W2UI.W2Grid = w2ui[that.studentGridName];
+                let recIds: number[] = studentsGrid.getSelection().map((sel) => sel["recid"]).filter((value, index, array) => array.indexOf(value) === index);
+                event.onComplete = () => {
+                    recIds.forEach((id) => studentsGrid.remove(id + ""));
                 }
-            });
-        }
+            }
+        });
 
 
         this.showStep("Step 1 Paste");

@@ -43,6 +43,7 @@ export class Workspace {
     constructor(name: string, private main: MainBase, owner_id: number){
         this.name = name;
         this.owner_id = owner_id;
+        this.path = "";
         this.moduleStore = new ModuleStore(main, true, this.settings.libraries);
         this.evaluator = new Evaluator(this, main);
     }

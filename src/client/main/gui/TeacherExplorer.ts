@@ -185,14 +185,21 @@ export class TeacherExplorer {
             this.studentPanel.clear();
             this.restoreOwnWorkspaces();
             let workspace = this.main.workspaceList.find(w => w.id == p.template_workspace_id);
+            if(p.state == "running") workspace.readonly = true;
             projectExplorer.setWorkspaceActive(workspace);
             this.studentPanel.hide();
         } else {
             this.studentPanel.show();
             projectExplorer.fileListPanel.setCaption("---");
+            projectExplorer.fileListPanel.clear();
+            this.main.getMonacoEditor().setModel(monaco.editor.createModel("---", "text"));
+            this.main.getMonacoEditor().updateOptions({readOnly: true});
             let klass = this.classData.find(c => c.id == p.klasse_id);
             if (klass != null) {
                 this.renderStudents(klass.students);
+                if(klass.students.length > 0){
+                    this.studentPanel.select(klass.students[0], true, true);
+                }
             }
         }
 
@@ -289,6 +296,7 @@ export class TeacherExplorer {
                         try {
                             await new PruefungDialog(this.main, this.classData, p).open();
                             this.updateClassNameAndState(p);
+                            this.onSelectPruefung(p);
                         } catch (ex) {
     
                         }

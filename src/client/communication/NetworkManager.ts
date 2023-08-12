@@ -471,7 +471,7 @@ export class NetworkManager {
             let module = fileIdToLocalModuleMap[remoteFile.id];
             if (module != null && module.file.text != remoteFile.text) {
                 module.file.text = remoteFile.text;
-                module.model.setValue(remoteFile.text);
+                module.model.setValue(remoteFile.text); // Hier passierts!
                 module.file.saved = true;
                 module.lastSavedVersionId = module.model.getAlternativeVersionId()
                 module.file.version = remoteFile.version;

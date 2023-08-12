@@ -325,7 +325,7 @@ export class Module {
             id: f.id,
             is_copy_of_id: f.is_copy_of_id,
             repository_file_version: f.repository_file_version,
-            identical_to_repository_version: f.identical_to_repository_version,
+            identical_to_repository_version: f.identical_to_repository_version
         }
 
         let m: Module = new Module(f1, main);

@@ -197,6 +197,9 @@ export class AccordionPanel {
         path2.push(name2);
         name2 = "";
 
+        if(path1[0] == '_Prüfungen' && path2[0] != '_Prüfungen') return 1;
+        if(path2[0] == '_Prüfungen' && path1[0] != '_Prüfungen') return -1;
+
         let i = 0;
         while (i < path1.length && i < path2.length) {
             let cmp = path1[i].localeCompare(path2[i]);
@@ -453,18 +456,26 @@ export class AccordionPanel {
             pathHtml += '<div class="jo_folderline"></div>';
         }
 
+        
         element.$htmlFirstLine = jQuery(`<div class="jo_file jo_${element.iconClass} ${expandedCollapsed}">
         <div class="jo_folderlines">${pathHtml}</div>
-           <div class="jo_fileimage"></div>
-           <div class="jo_filename">${escapeHtml(element.name)}</div>
-           <div class="jo_textAfterName"></div>
-           <div class="jo_additionalButtonHomework"></div>
-           <div class="jo_additionalButtonStart"></div>
-           <div class="jo_additionalButtonRepository"></div>
-           ${this.withDeleteButton && !element.readonly ? '<div class="jo_delete img_delete jo_button jo_active' + (false ? " jo_delete_always" : "") + '"></div>' : ""}
-           ${!jo_mouseDetected ? '<div class="jo_settings_button img_ellipsis-dark jo_button jo_active"></div>' : ""}
-           </div>`);
+        <div class="jo_fileimage"></div>
+        <div class="jo_filename"></div>
+        <div class="jo_textAfterName"></div>
+        <div class="jo_additionalButtonHomework"></div>
+        <div class="jo_additionalButtonStart"></div>
+        <div class="jo_additionalButtonRepository"></div>
+        ${this.withDeleteButton && !element.readonly ? '<div class="jo_delete img_delete jo_button jo_active' + (false ? " jo_delete_always" : "") + '"></div>' : ""}
+        ${!jo_mouseDetected ? '<div class="jo_settings_button img_ellipsis-dark jo_button jo_active"></div>' : ""}
+        </div>`);
 
+        let name = escapeHtml(element.name);
+        let $filenameElement = element.$htmlFirstLine.find('.jo_filename');
+        $filenameElement.text(name);
+        if(name == '_Prüfungen'){
+            $filenameElement.css('joe_pruefungfolder');
+        }
+        
         if (!expanded && element.path.length > 0) {
             element.$htmlFirstLine.hide();
         }

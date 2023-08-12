@@ -942,9 +942,11 @@ export class ProjectExplorer {
                 teacherExplorer.currentOwnWorkspace = this.main.currentWorkspace;
             }
 
+            let isInPruefungMode = teacherExplorer.classPanelMode == "tests";
+
             if (ae.id != this.main.user.id) {
                 
-                if (teacherExplorer != null && teacherExplorer.classPanelMode == "tests") {
+                if (teacherExplorer != null && isInPruefungMode) {
                     response.workspaces.workspaces = response.workspaces.workspaces.filter(w => w.pruefung_id == pruefung.id);
                 }
 
@@ -960,8 +962,10 @@ export class ProjectExplorer {
                 this.main.networkManager.updateFrequencyInSeconds = this.main.networkManager.teacherUpdateFrequencyInSeconds;
                 this.main.networkManager.secondsTillNextUpdate = this.main.networkManager.teacherUpdateFrequencyInSeconds;
 
-                this.main.bottomDiv.homeworkManager.attachToWorkspaces(this.main.workspaceList);
-                this.main.bottomDiv.showHomeworkTab();
+                if(!isInPruefungMode){
+                    this.main.bottomDiv.homeworkManager.attachToWorkspaces(this.main.workspaceList);
+                    this.main.bottomDiv.showHomeworkTab();
+                }
             }
         }
 

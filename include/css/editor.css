@@ -1474,3 +1474,8 @@ body .monaco-editor-hover .monaco-tokenized-source {
     display: inline-block;
     margin-right: 2px;
 }
+
+.joe_pruefungfolder {
+    font-weight: bold;
+    color: rgb(135, 37, 37);
+}

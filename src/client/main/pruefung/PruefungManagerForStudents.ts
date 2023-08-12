@@ -72,12 +72,15 @@ export class PruefungManagerForStudents {
     }
     
     async stopPruefung(renderWorkspaces: boolean){
+        // await this.main.networkManager.sendUpdatesAsync();  // is done by fetchAndRenderOwnWorkspaces later on
+        
+        let currentPruefungId = this.pruefung.id;
         this.pruefung = null;
         if(this.timer != null) clearInterval(this.timer);
         this.timer = null;
         
         this.main.projectExplorer.workspaceListPanel.show();
-
+        
         if(renderWorkspaces){
             await this.main.projectExplorer.fetchAndRenderOwnWorkspaces();
         }

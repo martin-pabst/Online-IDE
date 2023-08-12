@@ -19,6 +19,8 @@ export type AccordionElement = {
     isFolder: boolean;
     path: string[];
 
+    isPruefungFolder: boolean;
+
     readonly: boolean;
 }
 
@@ -260,7 +262,8 @@ export class AccordionPanel {
             name: name,
             isFolder: true,
             path: path,
-            readonly: false
+            readonly: false,
+            isPruefungFolder: false
         }
 
         let $element = this.renderElement(ae, true);
@@ -301,7 +304,8 @@ export class AccordionPanel {
                     name: "Neu",
                     isFolder: false,
                     path: path, 
-                    readonly: false
+                    readonly: false,
+                    isPruefungFolder: false
                 }
 
                 let insertIndex = this.getElementIndex("", path, false);
@@ -471,10 +475,13 @@ export class AccordionPanel {
 
         let name = escapeHtml(element.name);
         let $filenameElement = element.$htmlFirstLine.find('.jo_filename');
-        $filenameElement.text(name);
-        if(name == '_Prüfungen'){
-            $filenameElement.css('joe_pruefungfolder');
+        if(name == '_Prüfungen' && element.isFolder){
+            name = 'Prüfungen';
+            element.isPruefungFolder = true;
+            $filenameElement.addClass('joe_pruefungfolder');
         }
+
+        $filenameElement.text(name);
         
         if (!expanded && element.path.length > 0) {
             element.$htmlFirstLine.hide();

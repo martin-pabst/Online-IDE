@@ -14,7 +14,8 @@ export class TeachersWithClassesMI extends AdminMenuItem {
     classesGrid: W2UI.W2Grid;
     teachersGrid: W2UI.W2Grid;
 
-    teacherDataList: TeacherData[] = [];
+    teacherData: TeacherData[] = [];
+    classesWithoutTacher: ClassData[];
 
     checkPermission(user: UserData): boolean {
         return user.is_schooladmin;
@@ -118,17 +119,17 @@ export class TeachersWithClassesMI extends AdminMenuItem {
                     { field: 'name', caption: 'Name', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
                     {
                         field: 'teacher', caption: 'Lehrkraft', size: '30%', sortable: true, resizable: true,
-                        editable: { type: 'list', items: that.teacherDataList, filter: false }
+                        editable: { type: 'list', items: that.teacherData, filter: false }
                     },
                     {
                         field: 'teacher2', caption: 'Zweitlehrkraft', size: '30%', sortable: true, resizable: true,
                         render: function (record: ClassData) {
-                            let teacher = that.teacherDataList.find(td => td.userData.id == record.zweitlehrkraft_id);
+                            let teacher = that.teacherData.find(td => td.userData.id == record.zweitlehrkraft_id);
                             if (teacher != null) {
                                 return '<div>' + teacher.userData.rufname + " " + teacher.userData.familienname + '</div>';
                             }
                         },
-                        editable: { type: 'list', items: that.teacherDataList.slice(0).concat([{
+                        editable: { type: 'list', items: that.teacherData.slice(0).concat([{
                             //@ts-ignore
                             userData: {id: -1, rufname: "Keine Zweitlehrkraft", familienname: ""},
                             classes: [],
@@ -240,7 +241,7 @@ export class TeachersWithClassesMI extends AdminMenuItem {
 
             this.teachersGrid.add(teacherData);
             this.teachersGrid.editField(ud.id + "", 1, undefined, { keyCode: 13 });
-            this.teacherDataList.push(teacherData);
+            this.teacherData.push(teacherData);
 
             this.selectTextInCell();
 
@@ -270,7 +271,7 @@ export class TeachersWithClassesMI extends AdminMenuItem {
             this.teachersGrid.toolbar.disable('passwordButton');
         }
 
-        let selectedTeachers: TeacherData[] = <TeacherData[]>this.teacherDataList.filter(
+        let selectedTeachers: TeacherData[] = <TeacherData[]>this.teacherData.filter(
             (cd: TeacherData) => recIds.indexOf(cd.userData.id) >= 0);
 
 
@@ -279,7 +280,7 @@ export class TeachersWithClassesMI extends AdminMenuItem {
         for (let sc of selectedTeachers) {
             for (let sd of sc.classes) {
                 sd["teacher"] = sc.userData.rufname + " " + sc.userData.familienname;
-                let teacher2 = this.teacherDataList.find(td => td.userData.id == sd.zweitlehrkraft_id);
+                let teacher2 = this.teacherData.find(td => td.userData.id == sd.zweitlehrkraft_id);
                 if(teacher2 != null){
                     sd["teacher2"] = sc.userData.rufname + " " + sc.userData.familienname;
                 }
@@ -299,11 +300,12 @@ export class TeachersWithClassesMI extends AdminMenuItem {
         let request: GetTeacherDataRequest = { school_id: this.administration.userData.schule_id };
 
         ajax("getTeacherData", request, (data: GetTeacherDataResponse) => {
-            this.teacherDataList = data.teacherData;
+            this.teacherData = data.teacherData;
+            this.classesWithoutTacher = data.classesWithoutTeacher;
 
             this.teachersGrid.clear();
 
-            for (let teacher of this.teacherDataList) {
+            for (let teacher of this.teacherData) {
                 teacher["id"] = teacher.userData.id;
                 teacher["username"] = teacher.userData.username;
                 teacher["familienname"] = teacher.userData.familienname;
@@ -311,13 +313,13 @@ export class TeachersWithClassesMI extends AdminMenuItem {
                 teacher["text"] = teacher.userData.rufname + " " + teacher.userData.familienname
             }
 
-            this.teachersGrid.add(this.teacherDataList);
+            this.teachersGrid.add(this.teacherData);
 
             this.teachersGrid.refresh();
 
             if (this.classesGrid != null) {
-                this.classesGrid.columns[2]["editable"].items = this.teacherDataList;
-                this.classesGrid.columns[3]["editable"].items = this.teacherDataList;
+                this.classesGrid.columns[2]["editable"].items = this.teacherData;
+                this.classesGrid.columns[3]["editable"].items = this.teacherData;
                 this.classesGrid.clear();
             }
 
@@ -350,9 +352,9 @@ export class TeachersWithClassesMI extends AdminMenuItem {
 
         ajax("CRUDUser", request, (response: CRUDResponse) => {
             recIds.forEach(id => this.teachersGrid.remove("" + id));
-            for (let i = 0; i < this.teacherDataList.length; i++) {
-                if (recIds.indexOf(this.teacherDataList[i].userData.id) >= 0) {
-                    this.teacherDataList.splice(i, 1);
+            for (let i = 0; i < this.teacherData.length; i++) {
+                if (recIds.indexOf(this.teacherData[i].userData.id) >= 0) {
+                    this.teacherData.splice(i, 1);
                     i--;
                 }
             }
@@ -475,7 +477,7 @@ export class TeachersWithClassesMI extends AdminMenuItem {
                 this.classesGrid.refresh();
                 return;
             } else {
-                let teacherOld1 = this.teacherDataList.find((td) => td.userData.id == data.lehrkraft_id);
+                let teacherOld1 = this.teacherData.find((td) => td.userData.id == data.lehrkraft_id);
                 if (teacherOld1 != null) teacherOld1.classes = teacherOld1.classes.filter(cd => cd.id != data.id);
                 // let teacherOld2 = this.teachersGrid.get(data.lehrkraft_id + "");
                 // if (teacherOld2 != null) teacherOld1.classes = teacherOld1.classes.filter(cd => cd.id != data.id);
@@ -493,7 +495,7 @@ export class TeachersWithClassesMI extends AdminMenuItem {
                 this.classesGrid.refresh();
                 return;
             } else {
-                let teacherOld1 = this.teacherDataList.find((td) => td.userData.id == data.zweitlehrkraft_id);
+                let teacherOld1 = this.teacherData.find((td) => td.userData.id == data.zweitlehrkraft_id);
                 if (teacherOld1 != null) teacherOld1.classes = teacherOld1.classes.filter(cd => cd.id != data.id);
                 // let teacherOld2 = this.teachersGrid.get(data.zweitlehrkraft_id + "");
                 // if (teacherOld2 != null) teacherOld1.classes = teacherOld1.classes.filter(cd => cd.id != data.id);

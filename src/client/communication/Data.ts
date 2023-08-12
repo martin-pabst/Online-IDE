@@ -125,7 +125,8 @@ export type GetTeacherDataRequest = {
 
 export type GetTeacherDataResponse = {
     success: boolean,
-    teacherData?: TeacherData[]
+    teacherData?: TeacherData[],
+    classesWithoutTeacher: ClassData[]
 }
 
 export type ClassData = {
@@ -142,8 +143,9 @@ export type ClassData = {
 export type SchoolData = {
     id: number,
     name: string,
+    text?: string, // only form w2ui...
     kuerzel: string,
-    classes: ClassData[]
+    classes: ClassData[],
     usersWithoutClass: UserData[]
 }
 

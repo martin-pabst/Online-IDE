@@ -748,6 +748,8 @@ export class ProjectExplorer {
                 }
             });
 
+            this.main.bottomDiv.gradingManager?.setValues(w); 
+
         } else {
             this.setModuleActive(null);
         }

@@ -244,7 +244,7 @@
 }
 
 .jo_homeworkTabheading {
-    visibility: hidden;
+    display: none;
 }
 
 .jo_homeworkTab {
@@ -324,5 +324,37 @@
 
 .jo_homework-file {
     color: var(--homework-file);
+}
+
+/* Grading */
+.jo_gradingTab.jo_active {
+    display: flex !important;
+    position: relative;
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+    margin: 0;
+    align-items: stretch;
+}
+
+.jo_grading_markcolumn {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin-left: 8px;
+}
+
+.jo_grading_mark, .jo_grading_points {
+    margin-right: 8px;
+    width: 60px;
+}
+
+.jo_grading_commentmarkdown{
+    flex: 1;
+    margin-left: 5px;
+    overflow: auto;
+    font-family: monospace;
+    margin: 3px;
 }
 

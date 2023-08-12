@@ -66,7 +66,11 @@ export type WorkspaceData = {
     pruefung_id: number,
     readonly: boolean,
 
-    spritesheet_id: number
+    spritesheet_id: number,
+
+    grade?: string,
+    points?: string,
+    comment?: string
 }
 
 export type Workspaces = {

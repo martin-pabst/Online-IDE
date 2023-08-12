@@ -10,6 +10,7 @@ import { MainBase } from "../MainBase.js";
 import { InterpreterState } from "../../interpreter/Interpreter.js";
 import { UserData } from "../../communication/Data.js";
 import { HomeworkManager } from "./HomeworkManager.js";
+import { GradingManager } from './GradingManager.js';
 
 export class BottomDiv {
 
@@ -17,6 +18,7 @@ export class BottomDiv {
     console: MyConsole;
     errorManager: ErrorManager;
     homeworkManager: HomeworkManager;
+    gradingManager: GradingManager;
 
     constructor(private main: MainBase, public $bottomDiv: JQuery<HTMLElement>, public $mainDiv: JQuery<HTMLElement>) {
 
@@ -32,6 +34,10 @@ export class BottomDiv {
 
         if (this.$bottomDiv.find('.jo_tabheadings>.jo_homeworkTabheading').length > 0) {
             this.homeworkManager = new HomeworkManager(<Main>main, $bottomDiv);
+        }
+
+        if (this.$bottomDiv.find('.jo_tabheadings>.jo_gradingTabheading').length > 0) {
+            this.gradingManager = new GradingManager(<Main>main, $bottomDiv);
         }
 
         this.errorManager = new ErrorManager(main, $bottomDiv, $mainDiv);
@@ -67,7 +73,7 @@ export class BottomDiv {
 
     showHomeworkTab() {
 
-        jQuery('.jo_homeworkTabheading').css('visibility', 'visible');
+        jQuery('.jo_homeworkTabheading').css('display', 'block');
         let mousePointer = window.PointerEvent ? "pointer" : "mouse";
         jQuery('.jo_homeworkTabheading').trigger(mousePointer + "down");
 
@@ -75,7 +81,7 @@ export class BottomDiv {
 
     hideHomeworkTab() {
 
-        jQuery('.jo_homeworkTabheading').css('visibility', 'hidden');
+        jQuery('.jo_homeworkTabheading').css('display', 'none');
         let mousePointer = window.PointerEvent ? "pointer" : "mouse";
         jQuery('.jo_tabheadings').children().first().trigger(mousePointer + "down");
 

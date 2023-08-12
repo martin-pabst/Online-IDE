@@ -25,6 +25,10 @@ export class Workspace {
 
     spritesheetId: number;
 
+    grade?: string;
+    points?: string;
+    comment?: string;
+
     moduleStore: ModuleStore;
     panelElement: AccordionElement;
     currentlyOpenModule: Module;
@@ -77,7 +81,10 @@ export class Workspace {
             settings: JSON.stringify(this.settings),
             spritesheet_id: this.spritesheetId,
             pruefung_id: this.pruefung_id,
-            readonly: this.readonly
+            readonly: this.readonly,
+            grade: this.grade,
+            points: this.points,
+            comment: this.comment
         }
 
         if(withFiles){
@@ -154,6 +161,10 @@ export class Workspace {
 
         w.spritesheetId = wd.spritesheet_id;
         w.readonly = wd.readonly;
+
+        w.grade = wd.grade;
+        w.points = wd.points;
+        w.comment = wd.comment;
 
         if(w.settings.libraries == null){
             w.settings.libraries = [];

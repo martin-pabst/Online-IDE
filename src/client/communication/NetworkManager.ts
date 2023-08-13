@@ -493,7 +493,8 @@ export class NetworkManager {
             iconClass: remoteWorkspace.repository_id == null ? "workspace" : "repository",
             isFolder: remoteWorkspace.isFolder,
             path: path,
-            readonly: remoteWorkspace.readonly
+            readonly: remoteWorkspace.readonly,
+            isPruefungFolder: false
         };
 
         this.main.projectExplorer.workspaceListPanel.addElement(panelElement, true);

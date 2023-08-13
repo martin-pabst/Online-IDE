@@ -1,6 +1,6 @@
 import { AccordionPanel, AccordionElement } from "./Accordion.js";
 import { Main } from "../Main.js";
-import { ClassData, UserData, CRUDUserRequest, CRUDClassRequest, GetWorkspacesResponse, GetWorkspacesRequest, Workspaces, Pruefung, PruefungCaptions } from "../../communication/Data.js";
+import { ClassData, UserData, CRUDUserRequest, CRUDClassRequest, GetWorkspacesResponse, GetWorkspacesRequest, Workspaces, Pruefung, PruefungCaptions, CRUDPruefungRequest, CRUDPruefungResponse } from "../../communication/Data.js";
 import { ajax, ajaxAsync } from "../../communication/AjaxHelper.js";
 import { Workspace } from "../../workspace/Workspace.js";
 import { Helper } from "./Helper.js";
@@ -119,6 +119,17 @@ export class TeacherExplorer {
 
         }
 
+        this.classPanel.deleteCallback = async (ea, callbackIfSuccessful) => {
+            if (this.classPanelMode == "tests") {
+                let request: CRUDPruefungRequest = {requestType: "delete", pruefung: ea}
+                let response: CRUDPruefungResponse = await ajaxAsync('/servlet/crudPruefung', request);
+                if(response.success){
+                    this.pruefungen.splice(this.pruefungen.indexOf(ea), 1);
+                    callbackIfSuccessful();
+                }
+            }
+        }
+
         toggleButtonTest.onChange(async (checked) => {
             $buttonNew.toggle(200);
             that.classPanelMode = checked ? "tests" : "classes";
@@ -134,6 +145,7 @@ export class TeacherExplorer {
                     if(this.pruefungen.length == 0){
                         this.studentPanel.hide();
                     }
+                    this.classPanel.withDeleteButton = true;
                     this.renderPruefungen();
                     this.main.getMonacoEditor().setModel(monaco.editor.createModel("Keine Datei vorhanden.", "text"));
                     if(this.pruefungen.length > 0){
@@ -142,6 +154,7 @@ export class TeacherExplorer {
                 } else {
                     this.main.projectExplorer.workspaceListPanel.show();
                     this.studentPanel.show();
+                    this.classPanel.withDeleteButton = false;
                     this.renderClasses(this.classData);
                     this.main.projectExplorer.onHomeButtonClicked();
                 }
@@ -224,7 +237,8 @@ export class TeacherExplorer {
                 externalElement: ud,
                 isFolder: false,
                 path: [],
-                readonly: false
+                readonly: false,
+                isPruefungFolder: false
             }
             this.studentPanel.addElement(ae, true);
         }
@@ -247,7 +261,8 @@ export class TeacherExplorer {
                 externalElement: cd,
                 isFolder: false,
                 path: [],
-                readonly: false
+                readonly: false,
+                isPruefungFolder: false
             }
             this.classPanel.addElement(ae, true);
         }
@@ -267,7 +282,8 @@ export class TeacherExplorer {
             isFolder: false,
             path: [],
             iconClass: "test",
-            readonly: false
+            readonly: false,
+            isPruefungFolder: false
         }
         this.classPanel.addElement(ae, true);
         this.updateClassNameAndState(p);
@@ -279,16 +295,18 @@ export class TeacherExplorer {
         if (ae != null) {
             let klasse = this.classData.find(c => c.id == p.klasse_id);
             if (klasse != null) {
-                let $text = jQuery('<span></span>');
-                $text.addClass('joe_pruefung_klasse');
+                let $text = ae.$htmlFirstLine.find(".joe_pruefung_klasse");
+                if($text.length == 0){
+                    $text = jQuery('<span class="joe_pruefung_klasse"></span>');
+                    $text.css('margin', '0 4px');
+                    ae.$htmlFirstLine.find(".jo_filename").append($text);
+                }
                 $text.text(`(${klasse.name})`);
-                $text.css('margin', '0 4px');
-                ae.$htmlFirstLine.find('.jo_textAfterName').empty().append($text);
             }
             let $buttonDiv = ae.$htmlFirstLine?.find('.jo_additionalButtonRepository');
             $buttonDiv.empty();
             if ($buttonDiv != null) {
-                let $button = jQuery('<div class="img_gear-dark jo_button jo_active" title="Bearbeiten..." style="top: 2px; position: relative"></div>');
+                let $button = jQuery('<div class="img_gear-dark jo_button jo_active jo_pruefung_settings" title="Bearbeiten..." style="top: 2px; position: relative"></div>');
                 $buttonDiv.append($button);
                 $buttonDiv.on('pointerdown', async (e) => {
                     e.stopPropagation();

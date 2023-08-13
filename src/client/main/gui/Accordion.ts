@@ -46,7 +46,7 @@ export class AccordionPanel {
 
     static currentlyDraggedElement: AccordionElement;
     static currentlyDraggedElementKind: string;
-
+    
     newElementCallback: (ae: AccordionElement, callbackIfSuccessful: (externalElement: any) => void) => void;
     newFolderCallback: (ae: AccordionElement, callbackIfSuccessful: (externalElement: any) => void) => void;
     renameCallback: (externalElement: any, newName: string, ae: AccordionElement) => string;
@@ -63,7 +63,7 @@ export class AccordionPanel {
 
     constructor(private accordion: Accordion, caption: string | JQuery<HTMLElement>, private flexWeight: string,
         private newButtonClass: string, private buttonNewTitle: string,
-        private defaultIconClass: string, private withDeleteButton: boolean, private withFolders: boolean,
+        private defaultIconClass: string, public withDeleteButton: boolean, private withFolders: boolean,
         private kind: "workspace" | "file" | "class" | "student", private enableDrag: boolean, private acceptDropKinds: string[]) {
 
         this._$caption = (typeof caption == "string") ? jQuery(`<div class="jo_captiontext">${caption}</div>`) : caption;

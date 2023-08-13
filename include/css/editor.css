@@ -867,12 +867,12 @@ body .monaco-editor-hover .monaco-tokenized-source {
     /* background-image: url('../assets/projectexplorer/start-dark.svg'); */
 }
 
-.jo_file>.jo_delete {
+.jo_file>.jo_delete, .jo_file .jo_pruefung_settings {
     display: none;
     flex-shrink: 0;
 }
 
-.jo_file:hover>.jo_delete, .jo_file>.jo_delete_always {
+.jo_file:hover>.jo_delete, .jo_file>.jo_delete_always, .jo_file:hover .jo_pruefung_settings {
     display: block;
     margin-top: 2px;
     width: 16px;
@@ -885,12 +885,12 @@ body .monaco-editor-hover .monaco-tokenized-source {
     margin: 2px 2px 0 2px;
 }
 
-.jo_file>.jo_delete:hover, .jo_file>div>.jo_startButton:hover {
+.jo_file>.jo_delete:hover, .jo_file>div>.jo_startButton:hover, .jo_file .jo_pruefung_settings:hover {
     filter: brightness(150%);
 }
 
-.jo_file>.jo_delete:active, .jo_file>div>.jo_startButton:active {
-    transform: scale(1.jo_2);
+.jo_file>.jo_delete:active, .jo_file>div>.jo_startButton:active, .jo_file .jo_pruefung_settings:active {
+    transform: scale(1.2);
 }
 
 .jo_file_dragover {
@@ -1478,4 +1478,8 @@ body .monaco-editor-hover .monaco-tokenized-source {
 .joe_pruefungfolder {
     font-weight: bold;
     color: #d13737;
+}
+
+.jo_pruefung_settings {
+    margin-top: 0px !important;
 }

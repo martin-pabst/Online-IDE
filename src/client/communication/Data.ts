@@ -70,7 +70,8 @@ export type WorkspaceData = {
 
     grade?: string,
     points?: string,
-    comment?: string
+    comment?: string,
+    attended_exam?: boolean
 }
 
 export type Workspaces = {

@@ -36,8 +36,9 @@ export class BottomDiv {
             this.homeworkManager = new HomeworkManager(<Main>main, $bottomDiv);
         }
 
-        if (this.$bottomDiv.find('.jo_tabheadings>.jo_gradingTabheading').length > 0) {
-            this.gradingManager = new GradingManager(<Main>main, $bottomDiv);
+        let $gradingTabHeading = this.$bottomDiv.find('.jo_tabheadings>.jo_gradingTabheading');
+        if ($gradingTabHeading.length > 0) {
+            this.gradingManager = new GradingManager(<Main>main, $bottomDiv, $gradingTabHeading);
         }
 
         this.errorManager = new ErrorManager(main, $bottomDiv, $mainDiv);

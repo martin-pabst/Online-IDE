@@ -177,7 +177,8 @@ export class ProjectExplorer {
                                     path: [],
                                     externalElement: m,
                                     iconClass: FileTypeManager.filenameToFileType(f.name).iconclass,
-                                    readonly: false
+                                    readonly: false,
+                                    isPruefungFolder: false
                                 }
                                 f.panelElement = element;
                                 that.fileListPanel.addElement(element, true);
@@ -477,7 +478,8 @@ export class ProjectExplorer {
                                     iconClass: newWorkspace.repository_id == null ? 'workspace' : 'repository',
                                     isFolder: false,
                                     path: path,
-                                    readonly: false
+                                    readonly: false,
+                                    isPruefungFolder: false
                                 };
 
                                 this.workspaceListPanel.addElement(newWorkspace.panelElement, true);
@@ -642,7 +644,8 @@ export class ProjectExplorer {
                     isFolder: false,
                     path: [],
                     iconClass: FileTypeManager.filenameToFileType(m.file.name).iconclass,
-                    readonly: workspace.readonly
+                    readonly: workspace.readonly,
+                    isPruefungFolder: false
                 };
 
                 this.fileListPanel.addElement(m.file.panelElement, true);
@@ -668,7 +671,8 @@ export class ProjectExplorer {
                 iconClass: w.repository_id == null ? 'workspace' : 'repository',
                 isFolder: w.isFolder,
                 path: path,
-                readonly: w.readonly
+                readonly: w.readonly,
+                isPruefungFolder: false
             };
 
             this.workspaceListPanel.addElement(w.panelElement, false);
@@ -954,8 +958,8 @@ export class ProjectExplorer {
 
             }
                         
-            this.main.restoreWorkspaces(response.workspaces, false);
             this.main.workspacesOwnerId = ae.id;
+            this.main.restoreWorkspaces(response.workspaces, false);
             
             if (ae.id != this.main.user.id) {
                 this.main.projectExplorer.setExplorerColor("rgba(255, 0, 0, 0.2");

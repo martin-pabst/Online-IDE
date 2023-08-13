@@ -28,6 +28,7 @@ export class Workspace {
     grade?: string;
     points?: string;
     comment?: string;
+    attended_exam?: boolean;
 
     moduleStore: ModuleStore;
     panelElement: AccordionElement;
@@ -84,7 +85,8 @@ export class Workspace {
             readonly: this.readonly,
             grade: this.grade,
             points: this.points,
-            comment: this.comment
+            comment: this.comment,
+            attended_exam: this.attended_exam
         }
 
         if(withFiles){
@@ -165,6 +167,7 @@ export class Workspace {
         w.grade = wd.grade;
         w.points = wd.points;
         w.comment = wd.comment;
+        w.attended_exam = wd.attended_exam;
 
         if(w.settings.libraries == null){
             w.settings.libraries = [];

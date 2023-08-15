@@ -9,6 +9,10 @@ import { ExportImportMI } from "./ExportImportMI.js";
 import { Pruefungen } from "./Pruefungen.js";
 import { SSEManager } from "../communication/SSEManager.js";
 
+import "/include/css/icons.css";
+import "/include/css/administration.css";
+
+
 export class Administration {
 
     activeMenuItem: AdminMenuItem = null;

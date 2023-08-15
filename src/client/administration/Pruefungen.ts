@@ -6,9 +6,6 @@ import { makeDiv } from "../tools/HtmlTools";
 import { AdminMenuItem } from "./AdminMenuItem";
 import { NewPruefungPopup } from "./NewPruefungPopup";
 
-import "/include/css/icons.css";
-import "/include/css/pruefungen.css";
-
 type GetPruefungForPrintingRequest = {
     pruefungId: number
 }

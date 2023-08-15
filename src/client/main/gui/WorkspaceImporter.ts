@@ -131,7 +131,8 @@ export class WorkspaceImporter {
                                     iconClass: "workspace",
                                     isFolder: false,
                                     path: that.path,
-                                    readonly: false
+                                    readonly: false,
+                                    isPruefungFolder: false
                                 }, true);
 
                                 for(let mo of wse.modules){

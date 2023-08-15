@@ -1,0 +1,363 @@
+body,
+html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    overflow: hidden;
+}
+
+body {
+    background-color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    color: black;
+}
+
+#outer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+#outer-heading {
+    width: 100%;
+    border-bottom: 1px solid gray;
+    font-size: 180%;
+    font-weight: bold;
+    color: darkblue;
+}
+
+#outer-heading>div {
+    margin: 10px;
+}
+
+#outer-bottom {
+    flex-grow: 1;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+}
+
+#menu {
+    padding-right: 12px;
+    border-right: 1px solid gray;
+}
+
+#menu>div {
+    padding: 5px;
+}
+
+#main {
+    flex-grow: 1;
+    flex-shrink: 0;
+    padding: 10px;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+#main-tables {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    position: relative;
+}
+
+#main-table-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-right: 10px;
+    min-width: 0;
+    width: min-content;
+    position: relative;
+}
+
+#main-table-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.jo_menuitem {
+    padding: 5px;
+    width: 100%;
+    border: 1px solid darkblue;
+    margin-bottom: 3px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.jo_menuitem:hover {
+    background-color: lightgray;
+}
+
+.jo_menuitem:active {
+    background-color: rgb(235, 235, 235);
+}
+
+.jo_menuitem.jo_active {
+    background-color: lightskyblue;
+    font-weight: bold;
+}
+
+.jo_belowAdminMenu {
+    font-size: 8pt;
+}
+
+.pw_button {
+    border: 1px solid gray;
+    background-color: rgb(175, 175, 175);
+    cursor: pointer;
+    width: fit-content;
+    margin-left: 5px !important;
+}
+
+.pw_button:hover {
+    background-color: lightblue;
+}
+
+.pw_button:active {
+    background-color: #ffffff;
+}
+
+.jo_bulk_heading {
+    font-size: 130%;
+    color: darkblue;
+}
+
+.jo_bulk_description {
+    font-size: small;
+    margin-top: 10px;
+    width: 100%;
+    overflow: auto;
+}
+
+.jo_bulk_importarea {
+    margin-top: 10px;
+    width: 100%;
+    height: 15em;
+    box-sizing: border-box;
+}
+
+.jo_bulk_buttondiv {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+}
+
+.jo_button {
+    padding: 5px;
+    border: 1px solid gray;
+    border-radius: 3px;
+    user-select: none;
+}
+
+.jo_button:hover {
+    filter: brightness(150%);
+    cursor: pointer;
+}
+
+.jo_button.jo_active:active {
+    transform: scale(1.2);
+}
+
+.jo_button:not(.jo_active) {
+    filter: grayscale();
+}
+
+.jo_buttonContinue {
+    background-color: rgb(135, 175, 65);
+}
+
+.jo_buttonWriteUsers {
+    background-color: rgb(255, 130, 80);
+}
+
+.jo_bulk_heading_protocol {
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+.jo_bulk_protocol {
+    width: 100%;
+    padding: 5px;
+    height: 10em;
+    overflow: auto;
+    border: 1px solid gray;
+    box-sizing: border-box;
+    font-size: small;
+}
+
+.jo_bulk_error {
+    color: red;
+}
+
+#jo_exportschools {
+    padding: 10px;
+}
+
+.jo_importSchoolsLoggingDiv{
+    margin-top: 10px;
+    height: 60vh;
+    overflow: auto;
+    border: 1px solid gray;
+    padding: 5px;
+}
+
+.jo_twc_topRight {
+    flex: 1;
+}
+
+.jo_twc_bottomRight {
+    flex: 1;
+    margin-top: 10px;
+}
+
+.jo_twc_right {
+    display: flex;
+    flex-direction: column;
+}
+
+
+#pruefungTable {
+    flex: 1;
+    margin: 5px;
+}
+
+#pruefungActions {
+    margin: 5px;
+    padding: 3px;
+}
+
+.jo_action_caption {
+    font-weight: bold;
+    margin-top: 5px;
+    margin-bottom: 3px;
+}
+
+.jo_inactive {
+    pointer-events: none;
+    filter: grayscale() contrast(50%);
+    background-color: gray;
+}
+
+#studentTable {
+    flex: 1;
+    margin: 5px;
+}
+
+.joe_guiButton {
+    font-weight: normal;
+    color: #ddd;
+    border: 1px solid #808080;
+    height: fit-content;
+    padding: 1px 3px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.joe_guiButton:hover{
+    border-color: #ccc;
+}
+
+.joe_guiButton:active{
+    color: #fff;
+}
+
+.joe_guiButton:not(.active){
+    filter:opacity(0.5) grayscale();
+}
+
+.joe_pruefung_state {
+    font-weight: bold;
+    color:rgb(65, 161, 41);
+}
+
+.joe_pruefung_printingDiv {
+    margin-top: 8px;
+    display: flex;
+    justify-content: left;
+}
+
+@media print {
+
+    .jo_pagebreak {
+        /* break-after: page; */
+        page-break-after: always;
+        color: red;
+    }
+    
+    #outer {
+        display: none;
+    }
+
+    .jo_twoColumnDiv {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .jo_leftColumn, .jo_rightColumn {
+        flex: 1
+    }
+
+    .jo_rightColumn {
+        margin-left: 0.5cm;
+    }
+
+    .jo_codeBlock {
+        font-family: monospace;
+        white-space: pre;
+    }
+
+    .jo_fileCaption {
+        font-weight: bold;
+        margin-top: 0.5em;
+    }
+
+    .jo_originalCaption {
+        font-weight: bold;
+    }
+
+}
+
+@media screen {
+    #print {
+        display: none;
+    }
+
+    .joe_pruefung_timerbar {
+        position: absolute;
+        right: 5px;
+        top: 5px;
+    }
+    
+    .joe_pruefung_timerspan {
+        height: 5px;
+        width: 30px;
+        background-color:rgb(85, 85, 219);
+        display: inline-block;
+        margin-right: 2px;
+    }
+
+    .jo_stateOnline {
+        color: green;
+        font-weight: bold;
+    }
+    
+    .jo_stateOffline {
+        color: red;
+        font-weight: bold;
+    }
+    
+}
+
+

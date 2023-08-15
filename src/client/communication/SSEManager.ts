@@ -1,7 +1,8 @@
 import { ajaxAsync } from "./AjaxHelper.js";
 
 
-type SSEEventType = "startPruefung" | "stopPruefung" | "doFileUpdate" | "broadcastDatabaseChange" | "checkIfAlive" | "close";
+type SSEEventType = "startPruefung" | "stopPruefung" | "doFileUpdate" | "broadcastDatabaseChange" | "checkIfAlive" | "close" | "onPruefungChanged"
+                     | "onGradeChangedInPruefungAdministration"| "onGradeChangedInMainWindow";
 
 type SSECallbackMethod = (data: any) => Promise<any>;
 
@@ -18,6 +19,8 @@ type SseCallbackRequest = {messageId: number, token: string, data: string};
 
 export class SSEManager {
     
+    static ownCsrfToken: string = null;
+
     static eventTypeToSubscriberInfoMap: Map<string, SSESubscriberInfo> = new Map();
     static eventSource: EventSource;
     
@@ -31,6 +34,8 @@ export class SSEManager {
 
     static open(csrfToken: string){
         
+        if(SSEManager.ownCsrfToken == csrfToken) return;
+
         SSEManager.close();
         
         try {
@@ -74,6 +79,7 @@ export class SSEManager {
         if(SSEManager.eventSource != null){
             SSEManager.eventSource.close();
             SSEManager.eventSource = null;   
+            SSEManager.ownCsrfToken = null;
         }
     }
 

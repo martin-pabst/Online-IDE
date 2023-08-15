@@ -608,6 +608,9 @@ export class ProjectExplorer {
     }
 
     onHomeButtonClicked() {
+        this.workspaceListPanel.$buttonNew.show();
+        this.workspaceListPanel.$newFolderAction.show();                
+
         this.main.teacherExplorer.restoreOwnWorkspaces();
         this.main.networkManager.updateFrequencyInSeconds = this.main.networkManager.ownUpdateFrequencyInSeconds;
         this.$homeAction.hide();
@@ -906,14 +909,14 @@ export class ProjectExplorer {
         }
     }
 
-    setExplorerColor(color: string) {
+    setExplorerColor(color: string, usersFullName?: string) {
         let caption: string;
 
         if (color == null) {
             color = "transparent";
             caption = "Meine WORKSPACES";
         } else {
-            caption = "Schüler-WS";
+            caption = usersFullName;
         }
 
         this.fileListPanel.$listElement.parent().css('background-color', color);
@@ -931,6 +934,7 @@ export class ProjectExplorer {
     }
 
     async fetchAndRenderWorkspaces(ae: UserData, teacherExplorer?: TeacherExplorer, pruefung: Pruefung = null) {
+
 
         await this.main.networkManager.sendUpdates();
 
@@ -962,7 +966,7 @@ export class ProjectExplorer {
             this.main.restoreWorkspaces(response.workspaces, false);
             
             if (ae.id != this.main.user.id) {
-                this.main.projectExplorer.setExplorerColor("rgba(255, 0, 0, 0.2");
+                this.main.projectExplorer.setExplorerColor("rgba(255, 0, 0, 0.2", ae.familienname + ", " + ae.rufname);
                 this.main.projectExplorer.$homeAction.show();
                 Helper.showHelper("homeButtonHelper", this.main);
                 this.main.networkManager.updateFrequencyInSeconds = this.main.networkManager.teacherUpdateFrequencyInSeconds;
@@ -972,6 +976,14 @@ export class ProjectExplorer {
                     this.main.bottomDiv.homeworkManager.attachToWorkspaces(this.main.workspaceList);
                     this.main.bottomDiv.showHomeworkTab();
                 }
+            }
+
+            if(pruefung != null){
+                this.workspaceListPanel.$buttonNew.hide();
+                this.workspaceListPanel.$newFolderAction.hide();
+            } else {
+                this.workspaceListPanel.$buttonNew.show();
+                this.workspaceListPanel.$newFolderAction.show();                
             }
         }
 

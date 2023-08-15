@@ -5,6 +5,7 @@ import { Workspace } from "../../workspace/Workspace.js";
 import { File, Module } from "../../compiler/parser/Module.js";
 import { stringToDate, dateToStringWithoutTime } from "../../tools/StringTools.js";
 import { Main } from "../Main.js";
+import { SSEManager } from '../../communication/SSEManager.js';
 
 export class GradingManager {
 
@@ -18,6 +19,8 @@ export class GradingManager {
 
     constructor(private main: Main, $bottomDiv: JQuery<HTMLElement>, public $tabHeading: JQuery<HTMLElement>) {
         this.$gradingTab = $bottomDiv.find('.jo_tabs>.jo_gradingTab');
+
+        SSEManager.subscribe("onGradeChangedInPruefungAdministration", () => {this.setValues(this.main.currentWorkspace)})
     }
 
     initGUI() {
@@ -67,6 +70,8 @@ export class GradingManager {
 
     setValues(ws: Workspace){
 
+        if(ws == null) return;
+        
         let hideGrading: boolean = false;
 
         if(!this.main.user.is_teacher){

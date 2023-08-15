@@ -1,8 +1,10 @@
-import { ajax, ajaxAsync, extractCsrfTokenFromGetRequest } from "../../communication/AjaxHelper";
-import { BaseResponse, CRUDPruefungRequest, CRUDPruefungResponse, GetPruefungStudentStatesRequest, GetPruefungStudentStatesResponse, GetPruefungenForLehrkraftResponse, KlassData, Pruefung, PruefungCaptions, PruefungState, StudentPruefungStateInfo, UpdatePruefungSchuelerDataRequest, WorkspaceShortData } from "../../communication/Data";
-import { GUIButton } from "../../main/gui/controls/GUIButton";
-import { makeDiv } from "../../tools/HtmlTools";
-import { NewPruefungPopup } from "../NewPruefungPopup";
+import { ajax, ajaxAsync, extractCsrfTokenFromGetRequest } from "../communication/AjaxHelper";
+import { BaseResponse, CRUDPruefungRequest, CRUDPruefungResponse, GetPruefungStudentStatesRequest, GetPruefungStudentStatesResponse, GetPruefungenForLehrkraftResponse, KlassData, Pruefung, PruefungCaptions, PruefungState, StudentPruefungStateInfo, UpdatePruefungSchuelerDataRequest, UserData, WorkspaceData, WorkspaceShortData } from "../communication/Data";
+import { SSEManager } from "../communication/SSEManager";
+import { GUIButton } from "../main/gui/controls/GUIButton";
+import { makeDiv } from "../tools/HtmlTools";
+import { AdminMenuItem } from "./AdminMenuItem";
+import { NewPruefungPopup } from "./NewPruefungPopup";
 
 import "/include/css/icons.css";
 import "/include/css/pruefungen.css";
@@ -39,7 +41,7 @@ type GetPruefungForPrintingResponse = {
 }
 
 
-class PruefungAdministration {
+export class Pruefungen extends AdminMenuItem {
 
     states: PruefungState[] = ["preparing", "running", "correcting", "opening"];
 
@@ -62,12 +64,13 @@ class PruefungAdministration {
 
     counter: number = 0;
 
-    async start() {
+    timerActive: boolean = false;
 
-        //@ts-ignore
-        w2utils.locale('de-de');
+    getButtonIdentifier(): string {
+        return "Prüfungen verwalten";
+    }
 
-        extractCsrfTokenFromGetRequest();
+    async onMenuButtonPressed($mainHeading: JQuery<HTMLElement>, $tableLeft: JQuery<HTMLElement>, $tableRight: JQuery<HTMLElement>, $mainFooter: JQuery<HTMLElement>): Promise<void> {
 
         let response: GetPruefungenForLehrkraftResponse = await ajaxAsync("/servlet/getPruefungenForLehrkraft", {});
         if (response == null) return;
@@ -96,7 +99,7 @@ class PruefungAdministration {
             p["klasse"] = this.klassen.find((c) => c.id == p.klasse_id)?.text;
         }
 
-        this.setupGUI();
+        this.setupGUI($tableLeft, $tableRight);
 
         this.onUnselectPruefung();
 
@@ -104,14 +107,37 @@ class PruefungAdministration {
 
         this.initTimer();
 
+        SSEManager.subscribe("onGradeChangedInMainWindow", (data: WorkspaceData) => {
+            let record: PSchuelerData = <any>this.studentTable.records.find((r: PSchuelerData) => r.id == data.owner_id);
+            if(record == null) return;
+            record.grade = data.grade;
+            record.points = data.points;
+            record.attended_exam = data.attended_exam;
+            this.studentTable.refreshRow(record["recid"]);
+        })
+
+    }
+    destroy() {
+        this.pruefungTable.destroy();
+        this.studentTable.destroy();
+        this.timerActive = false;
+        jQuery('.joe_pruefung_timerbar').remove();
+        SSEManager.unsubscribe("onGradeChangedInMainWindow");
+    }
+
+    checkPermission(user: UserData): boolean {
+        return user.is_teacher == true;
     }
 
 
     initTimer(){
 
-        let $timerBar = jQuery('.joe_pruefung_timerbar');
+        let $timerBar = makeDiv(null, 'joe_pruefung_timerbar', null, null, jQuery('#outer'));
+        this.timerActive = true;
 
         let timer = async () => {
+            if(!this.timerActive) return;
+
             setTimeout(timer, 1000);
             if(this.currentPruefung?.state == "running"){
                 $timerBar.empty();
@@ -158,8 +184,15 @@ class PruefungAdministration {
         }
     }
 
-    setupGUI() {
+    setupGUI($tableLeft: JQuery<HTMLElement>, $tableRight: JQuery<HTMLElement>) {
         let that = this;
+
+        $tableLeft.empty();
+        $tableRight.empty();
+
+        makeDiv("pruefungTable", null, null, null, $tableLeft);
+        makeDiv("pruefungActions", null, null, null, $tableLeft);
+        makeDiv("studentTable", null, null, null, $tableRight);
 
         w2ui["pruefungTable"]?.destroy();
         this.pruefungTable = $('#pruefungTable').w2grid({
@@ -583,8 +616,3 @@ class PruefungAdministration {
     }
 
 }
-
-
-$(() => {
-    new PruefungAdministration().start();
-})

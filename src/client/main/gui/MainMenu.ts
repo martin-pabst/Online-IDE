@@ -264,12 +264,8 @@ export class MainMenu {
         if (user != null && (user.is_admin || user.is_schooladmin || user.is_teacher)) {
             mainMenu.items[0].subMenu.items.push(
                 {
-                    identifier: "Schulen/Klassen/Benutzer ...",
+                    identifier: "Klassen/Benutzer/Prüfungen ...",
                     link: serverURL + "administration_mc.html?csrfToken=" + csrfToken
-                },
-                {
-                    identifier: "Prüfungen verwalten ...",
-                    link: serverURL + "pruefungen.html?csrfToken=" + csrfToken
                 }
             )
         }

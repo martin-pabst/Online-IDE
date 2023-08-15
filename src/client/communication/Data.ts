@@ -790,7 +790,7 @@ export type UploadSpriteResponse = {
 export type PruefungState = "preparing" | "running" | "correcting" | "opening";
 export var PruefungCaptions: {[index: string]: string} = {
     "preparing": "Vorbereitung",
-    "running": "Pr. läuft!",
+    "running": "Prüfung läuft",
     "correcting": "Korrektur",
     "opening": "Herausgabe"
 }

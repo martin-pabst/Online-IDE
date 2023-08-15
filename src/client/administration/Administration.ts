@@ -1,11 +1,13 @@
 import { AdminMenuItem } from "./AdminMenuItem.js";
 import { SchoolsWithAdminsMI } from "./SchoolsWithAdminsMI.js";
-import { ajax, extractCsrfTokenFromGetRequest } from "../communication/AjaxHelper.js";
+import { ajax, csrfToken, extractCsrfTokenFromGetRequest } from "../communication/AjaxHelper.js";
 import { GetUserDataResponse, UserData, ClassData } from "../communication/Data.js";
 import { TeachersWithClassesMI } from "./TeachersWithClasses.js";
 import { ClassesWithStudentsMI } from "./ClassesWithStudentsMI.js";
 import { StudentBulkImportMI } from "./StudentBulkImortMI.js";
 import { ExportImportMI } from "./ExportImportMI.js";
+import { Pruefungen } from "./Pruefungen.js";
+import { SSEManager } from "../communication/SSEManager.js";
 
 export class Administration {
 
@@ -16,7 +18,8 @@ export class Administration {
         new TeachersWithClassesMI(this),
         new ClassesWithStudentsMI(this),
         new StudentBulkImportMI(this),
-        new ExportImportMI(this)
+        new ExportImportMI(this),
+        new Pruefungen(this)
     ]
 
     userData: UserData;
@@ -25,6 +28,8 @@ export class Administration {
     start() {
 
         extractCsrfTokenFromGetRequest();
+
+        SSEManager.open(csrfToken);
 
         let that = this;
         //@ts-ignore

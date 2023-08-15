@@ -266,6 +266,10 @@ export class MainMenu {
                 {
                     identifier: "Schulen/Klassen/Benutzer ...",
                     link: serverURL + "administration_mc.html?csrfToken=" + csrfToken
+                },
+                {
+                    identifier: "Prüfungen verwalten ...",
+                    link: serverURL + "pruefungen.html?csrfToken=" + csrfToken
                 }
             )
         }

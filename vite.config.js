@@ -40,6 +40,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         admin: resolve(__dirname, 'administration_mc.html'),
+        pruefungen: resolve(__dirname, 'pruefungen.html'),
         api: resolve(__dirname, 'api_documentation.html'),
         spriteLibrary: resolve(__dirname, 'spriteLibrary.html'),
         statistics: resolve(__dirname, 'statistics.html'),

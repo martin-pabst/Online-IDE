@@ -10,7 +10,6 @@ import { GUIButton } from "./controls/GUIButton.js";
 import { getSelectedObject } from "../../tools/HtmlTools.js";
 import { ajaxAsync } from "../../communication/AjaxHelper.js";
 
-
 export class PruefungDialog {
 
     states: PruefungState[] = ["preparing", "running", "correcting", "opening"];
@@ -18,7 +17,7 @@ export class PruefungDialog {
     $stateDiv: JQuery<HTMLDivElement>;
     buttonBack: GUIButton;
     buttonForward: GUIButton;
-    
+
     $nameInput: JQuery<HTMLInputElement>;
 
     isNewPruefung: boolean;
@@ -36,7 +35,7 @@ export class PruefungDialog {
 
     timer: any;
 
-    constructor(private main: Main, private classData: ClassData[], private pruefung: Pruefung = null){
+    constructor(private main: Main, private classData: ClassData[], private pruefung: Pruefung = null) {
         this.pruefungCopy = Object.assign({}, this.pruefung);
     }
 
@@ -47,26 +46,26 @@ export class PruefungDialog {
         this.oldStateIndex = this.selectedStateIndex;
 
         this.dialog = new Dialog();
-       
+
         this.dialog.init();
         this.dialog.heading(this.pruefung == null ? "Neue Prüfung anlegen" : `Daten zur Prüfung "${this.pruefung.name}" bearbeiten`);
 
         let $inputGrid = jQuery(`<div style="display: grid; grid-template-columns: 150px 1fr; align-items: baseline"></div>`);
 
         $inputGrid.append(`<div>Name der Prüfung:</div>`);
-        this.$nameInput = <JQuery<HTMLInputElement>> jQuery(`<input type="text" style="width: 200px; margin: 10px 0 0 20px"></input>`);
+        this.$nameInput = <JQuery<HTMLInputElement>>jQuery(`<input type="text" style="width: 200px; margin: 10px 0 0 20px"></input>`);
         $inputGrid.append(this.$nameInput);
-        
-        if(this.pruefung != null){
+
+        if (this.pruefung != null) {
             this.$nameInput.val(this.pruefung.name);
         }
 
         $inputGrid.append(`<div>Klasse:</div>`);
-        this.$classSelect = <JQuery<HTMLSelectElement>> jQuery(`<select style="width: 100px; margin: 10px 0 0 20px"></select>`)
+        this.$classSelect = <JQuery<HTMLSelectElement>>jQuery(`<select style="width: 100px; margin: 10px 0 0 20px"></select>`)
         $inputGrid.append(this.$classSelect);
-        
-        setSelectItems(this.$classSelect, this.classData.map( cd => {
-            
+
+        setSelectItems(this.$classSelect, this.classData.map(cd => {
+
             return {
                 caption: cd.name,
                 object: cd,
@@ -76,7 +75,7 @@ export class PruefungDialog {
         }), this.pruefung == null ? undefined : this.pruefung.klasse_id);
 
         this.enableOrDisableClassSelect();
-        
+
         $inputGrid.append(`<div style="margin-top: 15px">Zustand:</div>`);
 
         this.$stateDiv = jQuery(`<div style="display: flex; flex-direction: column; width: 400px">
@@ -88,26 +87,26 @@ export class PruefungDialog {
             </div>
             </div>
         `)
-        
+
         let $leftRightButtonDiv = jQuery(`<div style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 5px"></div>`);
         this.buttonBack = new GUIButton("<- Zustand zurück", $leftRightButtonDiv);
-        this.buttonForward = new GUIButton("Zustand vor ->", $leftRightButtonDiv); 
+        this.buttonForward = new GUIButton("Zustand vor ->", $leftRightButtonDiv);
 
         this.$stateDiv.append($leftRightButtonDiv);
-        
+
         $inputGrid.append(this.$stateDiv);
 
         this.renderState(this.selectedStateIndex);
-        
+
         this.dialog.addDiv($inputGrid);
 
         this.buttonBack.onClick(() => {
-            if(this.selectedStateIndex == 1){
+            if (this.selectedStateIndex == 1) {
                 alert("Die Prüfung läuft schon. Sie kann nicht mehr in den Zustand " + PruefungCaptions[0] + " versetzt werden.");
                 return;
             }
-            if(this.selectedStateIndex == 2){
-                if(!confirm("Soll die Prüfung wirklich sofort erneut gestartet werden?")) return;
+            if (this.selectedStateIndex == 2) {
+                if (!confirm("Soll die Prüfung wirklich sofort erneut gestartet werden?")) return;
             }
 
             this.selectedStateIndex--;
@@ -117,8 +116,8 @@ export class PruefungDialog {
 
 
         this.buttonForward.onClick(() => {
-            if(this.selectedStateIndex == 0){
-                if(!confirm("Soll die Prüfung wirklich sofort gestartet werden?")) return;
+            if (this.selectedStateIndex == 0) {
+                if (!confirm("Soll die Prüfung wirklich sofort gestartet werden?")) return;
             }
             this.selectedStateIndex++;
             this.renderState(this.selectedStateIndex);
@@ -145,9 +144,9 @@ export class PruefungDialog {
                 }
             },
         ])
- 
-        
-        if(!this.isNewPruefung && this.pruefung.state == "running"){
+
+
+        if (!this.isNewPruefung && this.pruefung.state == "running") {
             this.startDisplayingStudentStates();
         } else {
             this.initFooter(this.dialog.$dialogFooter);
@@ -159,11 +158,13 @@ export class PruefungDialog {
         });
 
     }
-    
+
+   
+
     enableOrDisableClassSelect() {
         let classSelectDisabled: boolean = this.pruefung != null && this.pruefung.state != 'preparing';
 
-        if(classSelectDisabled){
+        if (classSelectDisabled) {
             this.$classSelect.prop('disabled', 'disabled');
         } else {
             this.$classSelect.prop('disabled', false);
@@ -172,7 +173,7 @@ export class PruefungDialog {
 
     async savePruefung() {
 
-        if(this.pruefung == null){
+        if (this.pruefung == null) {
             this.pruefung = {
                 id: -1,
                 klasse_id: -1,
@@ -186,19 +187,19 @@ export class PruefungDialog {
         this.pruefung.klasse_id = (<ClassData>getSelectedObject(this.$classSelect)).id;
         this.pruefung.state = this.states[this.selectedStateIndex];
 
-        if(this.isNewPruefung){
-            let request: CRUDPruefungRequest = {requestType: "create", pruefung: this.pruefung}
+        if (this.isNewPruefung) {
+            let request: CRUDPruefungRequest = { requestType: "create", pruefung: this.pruefung }
             let response: CRUDPruefungResponse = await ajaxAsync('/servlet/crudPruefung', request);
-            if(response.success){
+            if (response.success) {
                 this.pruefung.id = response.newPruefungWithIds.id;
                 this.pruefung.template_workspace_id = response.newPruefungWithIds.template_workspace_id;
             } else {
             }
         } else {
-            let request: CRUDPruefungRequest = {requestType: "update", pruefung: this.pruefung}
+            let request: CRUDPruefungRequest = { requestType: "update", pruefung: this.pruefung }
             let response: CRUDPruefungResponse = await ajaxAsync('/servlet/crudPruefung', request);
-            if(response.success){
-                if(this.pruefungCopy.state != this.pruefung.state){
+            if (response.success) {
+                if (this.pruefungCopy.state != this.pruefung.state) {
                     this.onStateChanged(this.pruefungCopy.state, this.pruefung.state);
                 }
                 this.pruefungCopy = Object.assign({}, this.pruefung);
@@ -209,51 +210,51 @@ export class PruefungDialog {
 
     }
 
-    
+
     onStateChanged(oldState: PruefungState, newState: PruefungState) {
 
-        if(oldState == "running" && newState != "running"){
+        if (oldState == "running" && newState != "running") {
             this.stopDisplayingStudentStates();
-        } else if(oldState != "running" && newState == "running"){
-            if(this.timer == null) this.startDisplayingStudentStates();
+        } else if (oldState != "running" && newState == "running") {
+            if (this.timer == null) this.startDisplayingStudentStates();
         }
 
         this.enableOrDisableClassSelect();
 
     }
 
-    close(){
-        if(this.timer != null){
+    close() {
+        if (this.timer != null) {
             this.stopDisplayingStudentStates();
         }
         this.dialog.close();
     }
 
-    renderState(stateIndex: number){
-        this.$stateDiv.find('.pruefungState').css({"border-bottom": "none", "color": "inherit"});
+    renderState(stateIndex: number) {
+        this.$stateDiv.find('.pruefungState').css({ "border-bottom": "none", "color": "inherit" });
         this.$stateDiv.find("#joe_z" + stateIndex).css({
             "border-bottom": "2px solid #30ff30",
             "color": "#fff"
         })
 
-         this.buttonForward.setActive(this.isTransitionAllowed(stateIndex + 1));
-         this.buttonBack.setActive(this.isTransitionAllowed(stateIndex - 1));
+        this.buttonForward.setActive(this.isTransitionAllowed(stateIndex + 1));
+        this.buttonBack.setActive(this.isTransitionAllowed(stateIndex - 1));
 
     }
-    
+
     /* only transitions preparing -> running <-> correcting <-> opening possible
        running -> preparing is possible only if template hasn't been copied to student-workspaces */
     isTransitionAllowed(newStateIndex: number): boolean {
-        if(newStateIndex == this.oldStateIndex) return true;
-        if(newStateIndex < 0 || newStateIndex > this.states.length - 1) return false;
+        if (newStateIndex == this.oldStateIndex) return true;
+        if (newStateIndex < 0 || newStateIndex > this.states.length - 1) return false;
 
-        if(newStateIndex == 0 && this.oldStateIndex == 1) return false;
+        if (newStateIndex == 0 && this.oldStateIndex == 1) return false;
 
         return true;
     }
 
-    startDisplayingStudentStates(){
-        
+    startDisplayingStudentStates() {
+
         let $footer = this.dialog.$dialogFooter;
         $footer.empty();
 
@@ -264,7 +265,7 @@ export class PruefungDialog {
         let $timerBar = jQuery(`<div class="joe_pruefung_timerbar"></div>`)
         $captionDiv.append($timerBar);
 
-        let $stateList = <JQuery<HTMLDivElement>> jQuery(`<div class="joe_pruefung_studentStateList"></div>`)
+        let $stateList = <JQuery<HTMLDivElement>>jQuery(`<div class="joe_pruefung_studentStateList"></div>`)
         $footer.append($stateList);
 
         let counter: number = 0;
@@ -272,14 +273,14 @@ export class PruefungDialog {
 
         this.timer = setInterval(async () => {
             $timerBar.empty();
-            for(let i = 0; i <  counter % 5; i++){
+            for (let i = 0; i < counter % 5; i++) {
                 $timerBar.append(`<span class="joe_pruefung_timerspan"></span>`)
             }
 
-            if(counter % 5 == 0){
-                let request: GetPruefungStudentStatesRequest = {pruefungId: this.pruefung.id}
+            if (counter % 5 == 0) {
+                let request: GetPruefungStudentStatesRequest = { pruefungId: this.pruefung.id }
 
-                let pruefungStates: GetPruefungStudentStatesResponse  = await ajaxAsync("/servlet/getPruefungStates", request);
+                let pruefungStates: GetPruefungStudentStatesResponse = await ajaxAsync("/servlet/getPruefungStates", request);
 
                 that.displayStudentState(pruefungStates, $stateList);
             }
@@ -289,11 +290,11 @@ export class PruefungDialog {
 
     }
 
-    displayStudentState(pruefungStates: GetPruefungStudentStatesResponse, $list: JQuery<HTMLDivElement>){
-        let klass = this.classData.find( c => c.id == this.pruefung.klasse_id);
+    displayStudentState(pruefungStates: GetPruefungStudentStatesResponse, $list: JQuery<HTMLDivElement>) {
+        let klass = this.classData.find(c => c.id == this.pruefung.klasse_id);
         $list.empty();
         let i = 0;
-        for(let student of klass.students){
+        for (let student of klass.students) {
             let column = (i % 2 == 0) ? 1 : 5;
             let state = pruefungStates.pruefungStudentStates[student.id];
 
@@ -304,12 +305,12 @@ export class PruefungDialog {
             $list.append($studentDiv);
             i++;
         }
-        
+
 
     }
 
-    stopDisplayingStudentStates(){
-        if(this.timer != null) clearInterval(this.timer);
+    stopDisplayingStudentStates() {
+        if (this.timer != null) clearInterval(this.timer);
         this.dialog.$dialogFooter.empty();
         this.initFooter(this.dialog.$dialogFooter);
         this.timer = null;
@@ -358,7 +359,7 @@ export class PruefungDialog {
         </div>
         `)
     }
-    
+
 
 }
 

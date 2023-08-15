@@ -8,7 +8,9 @@ export class GUIButton {
     isActive: boolean = true;
     listeners: Listener[] = [];
  
-    constructor(private _caption: string, public $parent: JQuery<HTMLElement>, backgroundColor: string = "#3059a9"){
+    constructor(private _caption: string, public $parent: JQuery<HTMLElement>, backgroundColor: string = "#3059a9",
+        onClick?: () => void
+    ){
         this.$html = jQuery(`<div class='joe_guiButton active'>${_caption}</div>`);        
         this.$parent?.append(this.$html);
         this.$html.on('pointerdown', (e) => {
@@ -18,6 +20,7 @@ export class GUIButton {
             }
         })
         this.$html.css('background-color', backgroundColor);
+        if(onClick != null) this.onClick(onClick);
     }
     
     onClick(listener: () => void){

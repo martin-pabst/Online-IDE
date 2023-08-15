@@ -1,0 +1,590 @@
+import { ajax, ajaxAsync, extractCsrfTokenFromGetRequest } from "../../communication/AjaxHelper";
+import { BaseResponse, CRUDPruefungRequest, CRUDPruefungResponse, GetPruefungStudentStatesRequest, GetPruefungStudentStatesResponse, GetPruefungenForLehrkraftResponse, KlassData, Pruefung, PruefungCaptions, PruefungState, StudentPruefungStateInfo, UpdatePruefungSchuelerDataRequest, WorkspaceShortData } from "../../communication/Data";
+import { GUIButton } from "../../main/gui/controls/GUIButton";
+import { makeDiv } from "../../tools/HtmlTools";
+import { NewPruefungPopup } from "../NewPruefungPopup";
+
+import "/include/css/icons.css";
+import "/include/css/pruefungen.css";
+
+type GetPruefungForPrintingRequest = {
+    pruefungId: number
+}
+
+type PFileData = {
+    id: number;
+    name: string;
+    text: string;
+    text_before_revision?: string
+}
+
+type PSchuelerData = {
+    id: number;
+    rufname: string;
+    familienname: string;
+    username: string;
+    grade?: string;
+    points?: string;
+    comment?: string;
+    attended_exam?: boolean;
+    files: PFileData[];
+
+    state?: string;
+
+}
+
+type GetPruefungForPrintingResponse = {
+    pSchuelerDataList: PSchuelerData[];
+    templates: PFileData[];
+}
+
+
+class PruefungAdministration {
+
+    states: PruefungState[] = ["preparing", "running", "correcting", "opening"];
+
+
+    pruefungen: Pruefung[];
+    klassen: KlassData[];
+    workspaces: WorkspaceShortData[];
+
+    pruefungTable: W2UI.W2Grid;
+    studentTable: W2UI.W2Grid;
+
+    $stateDiv: JQuery<HTMLDivElement>;
+    buttonBack: GUIButton;
+    buttonForward: GUIButton;
+
+    selectedStateIndex: number;
+    currentPruefung: Pruefung;
+
+    oldPruefung: Pruefung;
+
+    counter: number = 0;
+
+    async start() {
+
+        //@ts-ignore
+        w2utils.locale('de-de');
+
+        extractCsrfTokenFromGetRequest();
+
+        let response: GetPruefungenForLehrkraftResponse = await ajaxAsync("/servlet/getPruefungenForLehrkraft", {});
+        if (response == null) return;
+        this.pruefungen = response.pruefungen;
+        this.klassen = response.klassen;
+        this.workspaces = response.workspaces;
+        this.workspaces.forEach(ws => {
+            if (ws.path == null || ws.path.length == 0) {
+                ws.path = "";
+                ws.text = ws.name;
+            } else {
+                ws.text = ws.path + "/" + ws.name;
+            }
+        });
+        this.workspaces = this.workspaces.sort((wsa, wsb) => { return this.compareWithPath(wsa.name, wsa.path.split("/"), wsb.name, wsb.path.split("/")) });
+
+        this.workspaces.unshift({
+            name: "Kein Vorlage-Workspace",
+            text: "Kein Vorlage-Workspace",
+            id: null,
+            files: [],
+            path: ""
+        })
+
+        for (let p of this.pruefungen) {
+            p["klasse"] = this.klassen.find((c) => c.id == p.klasse_id)?.text;
+        }
+
+        this.setupGUI();
+
+        this.onUnselectPruefung();
+
+        this.fillPruefungTable();
+
+        this.initTimer();
+
+    }
+
+
+    initTimer(){
+
+        let $timerBar = jQuery('.joe_pruefung_timerbar');
+
+        let timer = async () => {
+            setTimeout(timer, 1000);
+            if(this.currentPruefung?.state == "running"){
+                $timerBar.empty();
+                for (let i = 0; i < 5 - this.counter % 5; i++) {
+                    $timerBar.append(`<span class="joe_pruefung_timerspan"></span>`)
+                }
+                
+                if (this.counter % 5 == 0) {
+                    let request: GetPruefungStudentStatesRequest = { pruefungId: this.currentPruefung.id }
+            
+                    let pruefungStates: GetPruefungStudentStatesResponse = await ajaxAsync("/servlet/getPruefungStates", request);
+            
+                    this.displayStudentStates(pruefungStates);
+                }
+                this.counter++;
+            
+            } else {
+                $timerBar.empty();
+            }
+        }
+
+        timer();
+    }
+
+    displayStudentStates(pruefungStates: GetPruefungStudentStatesResponse) {
+
+        for(let record of this.studentTable.records as PSchuelerData[]){
+            let isOnline = pruefungStates.pruefungStudentStates[record.id]?.running;
+            record.state = isOnline ? "online" : "offline";
+            this.studentTable.refreshCell(record["recid"], "state");     
+            
+            if(isOnline){
+                record.attended_exam = true;
+                this.studentTable.refreshCell(record["recid"], "attended_exam");     
+            }
+        }
+        
+    }
+    
+    resetStudentStates(){
+        for(let record of this.studentTable.records as PSchuelerData[]){
+            record.state = null;
+            this.studentTable.refreshCell(record["recid"], "state");            
+        }
+    }
+
+    setupGUI() {
+        let that = this;
+
+        w2ui["pruefungTable"]?.destroy();
+        this.pruefungTable = $('#pruefungTable').w2grid({
+            name: "pruefungTable",
+            header: 'Prüfungen',
+            multiSelect: false,
+            show: {
+                header: true,
+                toolbar: true,
+                toolbarDelete: true,
+                toolbarAdd: true,
+            },
+            recid: "id",
+            columns: [
+                { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
+                { field: 'name', caption: 'Bezeichnung', size: '25%', sortable: true, resizable: true, editable: { type: 'text' } },
+                {
+                    field: 'klasse_id', caption: 'Klasse', size: '10%', sortable: true, resizable: true,
+                    editable: { type: 'list', items: this.klassen, showAll: true, openOnFocus: true, align: 'left' },
+                    render: (e) => {
+                        return this.klassen.find(c => c.id == e.klasse_id).text
+                    }
+                },
+                {
+                    field: 'template_workspace_id', caption: 'Vorlage-Workspace', size: '40%', sortable: true, resizable: true,
+                    editable: {
+                        type: 'list', items: this.workspaces, showAll: true, openOnFocus: true, align: 'left',
+                        style: 'width: 400px'
+                    },
+                    render: (e) => {
+                        let ws = this.workspaces.find(c => c.id == e.template_workspace_id);
+                        return ws == null ? "Kein Vorlage-Workspace" : ws.name;
+                    }
+                },
+                {
+                    field: 'state', caption: 'Zustand', size: '25%', sortable: true, resizable: true,
+                    render: (e) => PruefungCaptions[e.state]
+                }
+            ],
+            sortData: [{ field: 'klasse', direction: 'ASC' }, { field: 'name', direction: 'ASC' }],
+            onSelect: (event) => { 
+                event.done((e) => { this.onSelectPruefung(e.recid) }) },
+            onDelete: (event) => {
+                let selected = this.pruefungTable.getSelection();
+                event.done((e) => {this.deletePruefung(<number>selected[0])})                  
+            },
+            onAdd: (event) => { this.addPruefung() },
+            onChange: (event) => { this.onUpdatePruefung(event) }
+        })
+
+        w2ui["studentTable"]?.destroy();
+
+        this.studentTable = $('#studentTable').w2grid({
+            name: "studentTable",
+            header: 'Schüler/innen',
+            show: {
+                header: true
+            },
+            recid: "id",
+            columns: [
+                { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
+                { field: 'familienname', caption: 'Familienname', size: '20%', sortable: true, resizable: true },
+                { field: 'rufname', caption: 'Rufname', size: '20%', sortable: true, resizable: true },
+                { field: 'username', caption: 'Username', size: '20%', sortable: true, resizable: true },
+                { field: 'grade', caption: 'Note', size: '13%', sortable: true, resizable: true, editable: { type: "text" } },
+                { field: 'points', caption: 'Punkte', size: '13%', sortable: true, resizable: true, editable: { type: "text" } },
+                {
+                    field: 'attended_exam', caption: 'anwesend', size: '13%', sortable: true, resizable: true,
+                    editable: { type: 'checkbox', style: 'text-align: center' }
+                },
+                // see https://w2ui.com/web/docs/2.0/w2grid.columns
+                { field: 'state', caption: 'Status', size: '20%', sortable: true, resizable: true,
+                render: (record: PSchuelerData) =>  {
+                    let state = record.state;
+                    if(state == null) state = "---";
+                    switch(state){
+                        case "online": return "<div class='jo_stateOnline'>online</div>";
+                        case "offline": return "<div class='jo_stateOffline'>offline</div>";
+                        case "---": return "---"
+                    }
+                    
+                }
+            },
+
+            ],
+            sortData: [{ field: 'familienname', direction: 'ASC' }, { field: 'rufname', direction: 'ASC' }],
+            onSelect: (event) => { event.done((e) => { }) },
+            onChange: (event) => { this.onUpdateStudent(event) }
+
+        })
+
+        // Actions
+        let $actionsDiv = jQuery('#pruefungActions');
+
+        makeDiv(null, 'jo_action_caption', "Aktionen für die ausgewählte Prüfung:", null, $actionsDiv);
+
+        this.$stateDiv = jQuery(`<div style="display: flex; flex-direction: column; width: 400px">
+            <div style="display: flex; flex-direction: row; justify-content: space-between">
+            <div class="pruefungState" id="joe_z0">Vorbereitung</div><div class="img_arrow-right-blue"></div>
+            <div class="pruefungState" id="joe_z1">Prüfung läuft</div><div class="img_arrow-leftright-blue"></div>
+            <div class="pruefungState" id="joe_z2">Korrektur</div><div class="img_arrow-leftright-blue"></div>
+            <div class="pruefungState" id="joe_z3">Herausgabe</div>
+            </div>
+            </div>
+        `)
+
+        let $leftRightButtonDiv = jQuery(`<div style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 5px"></div>`);
+        this.buttonBack = new GUIButton("<- Zustand zurück", $leftRightButtonDiv);
+        this.buttonForward = new GUIButton("Zustand vor ->", $leftRightButtonDiv);
+
+        this.$stateDiv.append($leftRightButtonDiv);
+
+        $actionsDiv.append(this.$stateDiv);
+
+        this.buttonBack.onClick(async () => {
+            if (this.selectedStateIndex == 1) {
+                alert("Die Prüfung läuft schon. Sie kann nicht mehr in den Zustand " + PruefungCaptions[0] + " versetzt werden.");
+                return;
+            }
+            if (this.selectedStateIndex == 2) {
+                if (!confirm("Soll die Prüfung wirklich sofort erneut gestartet werden?")) return;
+            }
+
+            let oldState = this.selectedStateIndex;
+
+            this.selectedStateIndex--;
+            this.currentPruefung.state = this.states[this.selectedStateIndex];
+            if (await this.savePruefung()) {
+                this.renderState();
+                this.resetStudentStates();
+            } else {
+                this.selectedStateIndex = oldState;
+                this.currentPruefung.state = this.states[this.selectedStateIndex];
+            }
+        })
+
+
+        this.buttonForward.onClick(async () => {
+            if (this.selectedStateIndex == 0) {
+                if (!confirm("Soll die Prüfung wirklich sofort gestartet werden?")) return;
+            }
+
+            let oldState = this.selectedStateIndex;
+
+            this.selectedStateIndex++;
+            this.currentPruefung.state = this.states[this.selectedStateIndex];
+            if (await this.savePruefung()) {
+                this.renderState();
+                this.resetStudentStates();
+            } else {
+                this.selectedStateIndex = oldState;
+                this.currentPruefung.state = this.states[this.selectedStateIndex];
+            }
+        })
+
+        let $printingDiv = makeDiv(null, "joe_pruefung_printingDiv");
+
+        $actionsDiv.append($printingDiv);
+
+        new GUIButton(" Alle Prüfungen drucken...", $printingDiv, "#5050ff", () => {
+            this.print();
+        });
+
+
+
+    }
+
+    async deletePruefung(pruefungId: number) {
+        let request: CRUDPruefungRequest = { requestType: "delete", pruefung: this.pruefungen.find(p => p.id = pruefungId) }
+        let response: CRUDPruefungResponse = await ajaxAsync('/servlet/crudPruefung', request);
+
+        this.onUnselectPruefung();
+        this.pruefungen.splice(this.pruefungen.findIndex( p => p.id == pruefungId), 1);
+    }
+
+    addPruefung() {
+        NewPruefungPopup.open(this.klassen, this.workspaces, () => {},
+        async (pruefung: Pruefung) => {
+            let request: CRUDPruefungRequest = { requestType: "create", pruefung: pruefung }
+            let response: CRUDPruefungResponse = await ajaxAsync('/servlet/crudPruefung', request);
+            if (response.success) {
+                this.pruefungTable.add(response.newPruefungWithIds);
+                this.pruefungen.push(response.newPruefungWithIds);
+            } 
+        })
+    }
+
+    async print() {
+        let request: GetPruefungForPrintingRequest = { pruefungId: this.currentPruefung.id };
+
+        let p: GetPruefungForPrintingResponse = await ajaxAsync("/servlet/getPruefungForPrinting", request);
+
+        if(p == null) return;
+
+        let $printingDiv = jQuery('#print');
+        $printingDiv.empty();
+
+        p.pSchuelerDataList = p.pSchuelerDataList.sort( (sda, sdb) => {
+            if(sda.familienname != sdb.familienname) return sda.familienname.localeCompare(sdb.familienname);
+            return sda.rufname.localeCompare(sdb.rufname);
+        })
+        
+        let klasse = this.klassen.find(k => k.id == this.currentPruefung.klasse_id).text    ;
+        $printingDiv.append(`<h1>Klasse ${klasse}, ${this.currentPruefung.name}</h1>`);
+
+        for(let sd of p.pSchuelerDataList){
+            $printingDiv.append(`<h2>${sd.familienname}, ${sd.rufname}</h2>`);
+            for(let f of sd.files){
+
+                makeDiv(null, 'jo_fileCaption', 'Datei: ' + f.name, null, $printingDiv);
+
+                if(f.text_before_revision != null){
+                    let $twoColumnDiv = makeDiv(null, 'jo_twoColumnDiv', null, null, $printingDiv);
+                    let $leftDiv = makeDiv(null, 'jo_leftColumn', null, null, $twoColumnDiv);
+                    let $rightDiv = makeDiv(null, 'jo_rightColumn', null, null, $twoColumnDiv);
+
+                    makeDiv(null, 'jo_originalCaption', 'Datei der Schülerin/des Schülers:', null, $leftDiv);
+                    makeDiv(null, 'jo_originalCaption', 'Korrektur:', null, $rightDiv);
+
+                    let $codeLeft = makeDiv(null, 'jo_codeBlock', null ,null, $leftDiv);
+                    this.insertCodeIntoDiv(f.text_before_revision, $codeLeft);
+
+                    let $codeRight = makeDiv(null, 'jo_codeBlock', null ,null, $rightDiv);
+                    this.insertCodeIntoDiv(f.text, $codeRight);
+                    
+                } else {
+                    let $leftDiv = makeDiv(null, 'jo_leftColumn', null, null, $printingDiv);
+
+                    let $codeLeft = makeDiv(null, 'jo_codeBlock', null ,null, $leftDiv);
+                    this.insertCodeIntoDiv(f.text, $codeLeft);
+
+                }
+
+            }
+
+            makeDiv(null, 'jo_pagebreak', null, null, $printingDiv);
+        }
+
+        window.print();
+
+    }
+
+    insertCodeIntoDiv(code: string, div: JQuery<HTMLElement>) {
+        let lines = code.split("\n");
+        for(let line of lines){
+            makeDiv(null, null, line, null, div);
+        }
+    }
+
+    onUpdatePruefung(event: any) {
+
+        let data: Pruefung = <Pruefung>this.pruefungTable.records[event.index];
+
+        let field = this.pruefungTable.columns[event.column]["field"];
+
+        let oldData: any;
+
+        switch (field) {
+            case "name":
+                oldData = data[field];
+                data[field] = event.value_new;
+                break;
+            case "klasse_id":
+                oldData = data[field];
+                data[field] = event.value_new.id;
+                break;
+            case "template_workspace_id":
+                oldData = data[field];
+                data[field] = event.value_new.id;
+                break;
+        }
+
+        let request: CRUDPruefungRequest = { requestType: "update", pruefung: data }
+        ajax('/crudPruefung', request, (response: CRUDPruefungResponse) => {
+            if (response.success == true) {
+                delete data["w2ui"]["changes"][field];
+                this.pruefungTable.refreshCell(data["recid"], field);
+
+            } else {
+                data[field] = event.value_original;
+                delete data["w2ui"]["changes"][field];
+                this.pruefungTable.refreshCell(data["recid"], field);
+            }
+        });
+
+        
+
+    }
+
+    onUpdateStudent(event: any) {
+
+        let data = <PSchuelerData>this.studentTable.records[event.index];
+
+        let field = this.studentTable.columns[event.column]["field"];
+
+        let oldData = data[field];
+        data[field] = event.value_new;
+
+        let request: UpdatePruefungSchuelerDataRequest = { 
+            pruefungId: this.currentPruefung.id,
+            schuelerId: data.id,
+            grade: data.grade,
+            points: data.points,
+            attended_exam: data.attended_exam,
+            attributesToUpdate: field
+         }
+
+        ajax('/updatePruefungSchuelerData', request, (response: BaseResponse) => {
+            if (response.success == true) {
+                delete data["w2ui"]["changes"][field];
+                this.studentTable.refreshCell(data["recid"], field);
+
+            } else {
+                data[field] = event.value_original;
+                delete data["w2ui"]["changes"][field];
+                this.studentTable.refreshCell(data["recid"], field);
+            }
+        });
+
+    }
+
+    renderState() {
+        this.$stateDiv.find('.pruefungState').css({ "border-bottom": "none", "color": "inherit", "font-weight": "unset" });
+        this.$stateDiv.find("#joe_z" + this.selectedStateIndex).css({
+            "border-bottom": "2px solid #30ff30",
+            "color": "#0000b0",
+            "font-weight": "bold"
+        })
+
+        this.buttonForward.setActive(this.isTransitionAllowed(this.selectedStateIndex + 1));
+        this.buttonBack.setActive(this.isTransitionAllowed(this.selectedStateIndex - 1));
+
+    }
+
+    /* only transitions preparing -> running <-> correcting <-> opening possible
+   running -> preparing is possible only if template hasn't been copied to student-workspaces */
+    isTransitionAllowed(newStateIndex: number): boolean {
+        if (newStateIndex == this.selectedStateIndex) return true;
+        if (newStateIndex < 0 || newStateIndex > this.states.length - 1) return false;
+
+        if (newStateIndex == 0 && this.selectedStateIndex == 1) return false;
+
+        return true;
+    }
+
+
+    async fillPruefungTable() {
+        this.pruefungTable.add(this.pruefungen);
+        this.pruefungTable.refresh();
+    }
+
+    async onSelectPruefung(pruefungId: number) {
+        let request: GetPruefungForPrintingRequest = { pruefungId: pruefungId };
+
+        let p: GetPruefungForPrintingResponse = await ajaxAsync("/servlet/getPruefungForPrinting", request);
+
+        this.studentTable.unlock();
+        this.studentTable.clear();
+        this.studentTable.add(p.pSchuelerDataList);
+        this.studentTable.refresh();
+
+        this.currentPruefung = this.pruefungen.find(p => p.id = pruefungId);
+        this.selectedStateIndex = this.states.indexOf(this.currentPruefung.state);
+        this.renderState();
+        jQuery('#pruefungActions').removeClass('jo_inactive');
+
+        console.log(this.studentTable.records);
+    }
+
+    onUnselectPruefung(){
+        jQuery('#pruefungActions').addClass('jo_inactive');
+        this.studentTable.clear();
+        this.studentTable.lock("Keine Prüfung ausgewählt", false);
+    }
+
+    async savePruefung(): Promise<boolean> {
+
+        let request: CRUDPruefungRequest = { requestType: "update", pruefung: this.currentPruefung }
+        let response: CRUDPruefungResponse = await ajaxAsync('/servlet/crudPruefung', request);
+
+        return response.success;
+
+    }
+
+
+    compareWithPath(name1: string, path1: string[], name2: string, path2: string[]) {
+
+        path1 = path1.slice();
+        path1.push(name1);
+        name1 = "";
+
+        path2 = path2.slice();
+        path2.push(name2);
+        name2 = "";
+
+        if (path1[0] == '_Prüfungen' && path2[0] != '_Prüfungen') return 1;
+        if (path2[0] == '_Prüfungen' && path1[0] != '_Prüfungen') return -1;
+
+        let i = 0;
+        while (i < path1.length && i < path2.length) {
+            let cmp = path1[i].localeCompare(path2[i]);
+            if (cmp != 0) return cmp;
+            i++;
+        }
+
+        if (path1.length < path2.length) return -1;
+        if (path1.length > path2.length) return 1;
+
+        return name1.localeCompare(name2);
+
+
+        // let nameWithPath1 = path1.join("/");
+        // if (nameWithPath1 != "" && name1 != "") nameWithPath1 += "/";
+        // nameWithPath1 += name1;
+
+        // let nameWithPath2 = path2.join("/");
+        // if (nameWithPath2 != "" && name2 != "") nameWithPath2 += "/";
+        // nameWithPath2 += name2;
+
+        // return nameWithPath1.localeCompare(nameWithPath2);
+    }
+
+}
+
+
+$(() => {
+    new PruefungAdministration().start();
+})

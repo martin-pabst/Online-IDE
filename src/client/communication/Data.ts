@@ -1,5 +1,10 @@
+import { Klass } from "../compiler/types/Class.js"
 import { SerializedClassDiagram } from "../main/gui/diagrams/classdiagram/ClassDiagram.js"
 
+export interface BaseResponse {
+    success: boolean;
+    message: string;
+}
 
 export type UserSettings = {
     helperHistory: {
@@ -842,4 +847,32 @@ export type ReportPruefungStudentStateResponse = {
     success: boolean,
     pruefungState: string,
     message: string
+}
+
+export type KlassData = {
+    id: number;
+    text: string;
+}
+
+export type WorkspaceShortData = {
+    id: number, 
+    path: string,
+    name: string, 
+    text?: string,
+    files: string[]
+}
+
+export type GetPruefungenForLehrkraftResponse = {
+    pruefungen: Pruefung[];
+    klassen: KlassData[];    
+    workspaces: WorkspaceShortData[];
+}
+
+export type UpdatePruefungSchuelerDataRequest = {
+    schuelerId: number;
+    pruefungId: number;
+    grade: string;
+    points: string;
+    attended_exam: boolean;
+    attributesToUpdate: string;
 }

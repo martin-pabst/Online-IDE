@@ -1902,16 +1902,24 @@ export class CodeGenerator {
             collectionElementType = collectionType.arrayOfType;
             kind = "array";
         } else if (collectionType instanceof Klass && collectionType.getImplementedInterface("Iterable") != null) {
-            if (collectionType.module.isSystemModule) {
+
+            let ct1: Klass = collectionType;
+
+            // This is a bad hack to enable simplified for-loops with classes extending system collection classes
+            if(collectionType.baseClass != null && collectionType.baseClass.getImplementedInterface("Iterable") != null && collectionType.baseClass.module.isSystemModule){
+                ct1 = collectionType.baseClass;
+            }
+
+            if (ct1.module.isSystemModule) {
                 kind = "internalList";
             } else {
                 kind = "userDefinedIterable";
             }
-            let iterableInterface = collectionType.getImplementedInterface("Iterable");
-            if (collectionType.typeVariables.length == 0) {
+            let iterableInterface = ct1.getImplementedInterface("Iterable");
+            if (ct1.typeVariables.length == 0) {
                 collectionElementType = objectType;
             } else {
-                collectionElementType = collectionType.typeVariables[0].type;
+                collectionElementType = ct1.typeVariables[0].type;
             }
         } else if (collectionType instanceof Klass && collectionType.identifier == "Group") {
             kind = "group";

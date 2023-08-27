@@ -1,4 +1,4 @@
-import { ajaxAsync } from "./AjaxHelper.js";
+import { ajaxAsync, csrfToken } from "./AjaxHelper.js";
 
 
 type SSEEventType = "startPruefung" | "stopPruefung" | "doFileUpdate" | "broadcastDatabaseChange" | "checkIfAlive" | "close" | "onPruefungChanged"
@@ -32,14 +32,14 @@ export class SSEManager {
         SSEManager.eventTypeToSubscriberInfoMap.delete(eventType);
     }
 
-    static open(csrfToken: string){
+    static open(csrfToken1: string){
         
-        if(SSEManager.ownCsrfToken == csrfToken) return;
+        if(SSEManager.ownCsrfToken == csrfToken1) return;
 
         SSEManager.close();
         
         try {
-            SSEManager.eventSource = new EventSource("/servlet/sse?csrfToken=" + csrfToken, {withCredentials: true});
+            SSEManager.eventSource = new EventSource("/servlet/sse?csrfToken=" + csrfToken1, {withCredentials: true});
             
             SSEManager.eventSource.onmessage = (event) => {
                 let ssm: ServerSentMessage = JSON.parse(event.data);
@@ -69,8 +69,21 @@ export class SSEManager {
                 }
             };
 
+            SSEManager.eventSource.onerror = (event) => {
+                
+                console.log("SSE connection lost. Trying to reconnect in 4 seconds...");
+                SSEManager.close();
+                
+                setTimeout(() => {
+                    if(SSEManager.eventSource == null){
+                        console.log("Reconnecting...");
+                        SSEManager.open(csrfToken);
+                    }
+                }, 4000);
+            }
+
         } catch(ex){
-            console.log(ex);
+            console.log('Exception in SSEManager: ' + ex);
         }
 
     }

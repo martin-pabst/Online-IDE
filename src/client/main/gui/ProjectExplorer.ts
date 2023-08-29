@@ -17,6 +17,7 @@ import { SpritesheetData } from "../../spritemanager/SpritesheetData.js";
 import { FileTypeManager } from './FileTypeManager.js';
 import { ajax, ajaxAsync } from '../../communication/AjaxHelper.js';
 import { TeacherExplorer } from './TeacherExplorer.js';
+import { DatabaseSSEListener } from '../../tools/database/DatabaseSSEListener.js';
 
 
 export class ProjectExplorer {
@@ -719,6 +720,8 @@ export class ProjectExplorer {
     }
 
     setWorkspaceActive(w: Workspace, scrollIntoView: boolean = false) {
+
+        DatabaseSSEListener.closeSSE();
 
         this.workspaceListPanel.select(w, false, scrollIntoView);
 

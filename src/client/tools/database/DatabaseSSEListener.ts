@@ -6,7 +6,7 @@ import { Interpreter } from "../../interpreter/Interpreter.js";
 import { ConnectionHelper } from "../../runtimelibrary/database/Connection.js";
 import jQuery from 'jquery';
 
-type JavaRegisterDatabaseSSEListenerRequest = { token: string, registerUnregister: "register" | "unregister" }
+type JavaRegisterDatabaseSSEListenerRequest = { token: string, registerOrUnregister: "register" | "unregister" }
 type JavaRegisterDatabaseSSEListenerResponse = { success: boolean, message: string }
 
 type DatabaseChangedSSEMessage = {
@@ -29,7 +29,7 @@ export class DatabaseSSEListener {
     constructor(private networkManager: NetworkManager,
         private token: string, private databaseId: number, private onServerSentStatementsCallback: OnServerStatementsCallback) {
 
-        let request: JavaRegisterDatabaseSSEListenerRequest = { token: token, registerUnregister: "register" }
+        let request: JavaRegisterDatabaseSSEListenerRequest = { token: token, registerOrUnregister: "register" }
         ajaxAsync(networkManager.sqlIdeURL + "jRegisterSSEListener", request);
 
         DatabaseSSEListener.subscribe(this)
@@ -44,8 +44,8 @@ export class DatabaseSSEListener {
 
     close() {
         DatabaseSSEListener.unsubscribe(this);
-        let request: JavaRegisterDatabaseSSEListenerRequest = { token: this.token, registerUnregister: "unregister" }
-        ajaxAsync(this.networkManager.sqlIdeURL + "servlet/jRegisterSSEListener", request);
+        let request: JavaRegisterDatabaseSSEListenerRequest = { token: this.token, registerOrUnregister: "unregister" }
+        ajaxAsync(this.networkManager.sqlIdeURL + "jRegisterSSEListener", request);
     }
 
 
@@ -68,18 +68,23 @@ export class DatabaseSSEListener {
             DatabaseSSEListener.sseEventSource.onmessage = (event) => {
                 let ssm: ServerSentMessage = JSON.parse(event.data);
 
-                if (ssm.eventType == "checkIfAlive") {
-                    ajaxAsync(networkManager.sqlIdeURL + "sseKeepAlive?keepAliveToken=" + ssm.data, "");
-                    return;
-                }
+                switch(ssm.eventType){
+                    case 'checkIfAlive': 
+                        ajaxAsync(networkManager.sqlIdeURL + "sseKeepAlive?keepAliveToken=" + ssm.data, "");
+                        return;
+                    case 'close':
+                        DatabaseSSEListener.closeSSE();
+                        return;
+                    case 'onOpen':
+                        return;
+                    case 'broadcastDatabaseChange':
+                        for (let subscriber of DatabaseSSEListener.subscribers) {
+                            subscriber.onMessage(ssm.data);
+                        }
+                        return;
+                }    
 
-                if (ssm.eventType == "close") {
-                    DatabaseSSEListener.closeSSE();
-                }
 
-                for (let subscriber of DatabaseSSEListener.subscribers) {
-                    subscriber.onMessage(ssm.data);
-                }
 
             }
 

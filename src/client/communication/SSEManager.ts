@@ -2,7 +2,7 @@ import { ajaxAsync, csrfToken } from "./AjaxHelper.js";
 
 
 type SSEEventType = "startPruefung" | "stopPruefung" | "doFileUpdate" | "broadcastDatabaseChange" | "checkIfAlive" | "close" | "onPruefungChanged"
-                     | "onGradeChangedInPruefungAdministration"| "onGradeChangedInMainWindow";
+                     | "onGradeChangedInPruefungAdministration"| "onGradeChangedInMainWindow" | "onOpen";
 
 type SSECallbackMethod = (data: any) => Promise<any>;
 

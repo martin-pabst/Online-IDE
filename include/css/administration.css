@@ -281,11 +281,20 @@ body {
     color:rgb(65, 161, 41);
 }
 
-.joe_pruefung_printingDiv {
+.joe_pruefung_actionsDiv {
     margin-top: 8px;
     display: flex;
+    flex-direction: column;
     justify-content: left;
 }
+
+.joe_pruefung_actionButtonsDiv {
+    margin-top: 4px;
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+}
+
 
 @media print {
 
@@ -356,7 +365,21 @@ body {
         color: red;
         font-weight: bold;
     }
-    
+
+    .jo_pruefung_state_cell {
+        display: flex;
+        flex-direction: row;
+        align-items: left;
+    }
+
+    .jo_pruefung_state_cell_icon {
+        margin-right: 2px;
+        flex-shrink: 0;
+    }
+
+    .jo_pruefung_state_text {
+        text-overflow: ellipsis;
+    }
 }
 
 

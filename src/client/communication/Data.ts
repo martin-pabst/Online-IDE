@@ -799,6 +799,7 @@ export var PruefungCaptions: {[index: string]: string} = {
 export type Pruefung = {
     id: number,
     name: string,
+    datum?: string,
     klasse_id: number,
     template_workspace_id: number,
     state: PruefungState;

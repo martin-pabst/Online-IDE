@@ -7,7 +7,7 @@
    version="1.1"
    id="svg4"
    sodipodi:docname="test-state-opening.svg"
-   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -26,21 +26,33 @@
      showgrid="true"
      inkscape:zoom="90.774833"
      inkscape:cx="6.874152"
-     inkscape:cy="7.8766325"
+     inkscape:cy="7.8711244"
      inkscape:window-width="3840"
-     inkscape:window-height="2066"
+     inkscape:window-height="2054"
      inkscape:window-x="-11"
      inkscape:window-y="-11"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg4">
     <inkscape:grid
        type="xygrid"
-       id="grid237" />
+       id="grid237"
+       originx="0"
+       originy="0"
+       spacingy="1"
+       spacingx="1"
+       units="px"
+       visible="true" />
   </sodipodi:namedview>
   <path
-     fill-rule="evenodd"
-     clip-rule="evenodd"
-     d="M11.02 3.77V5.33L12.02 4.34V2.5L11.52 2H2.52002L2.02002 2.5V2.98599L2 3.00003V13.29L2.36 13.75L7.36 15.47L8 15V13.9999H11.52L12.02 13.4999V12.9999V11.6899L11.02 10.6899V12.9999H8V4.71003L7.67 4.25003L4.03619 3H7.02002H11.02V3.77ZM7 14.28L3 12.94V3.72003L7 5.06003V14.28ZM13.52 8.48005H8.54999V7.48005H13.48L11.88 5.88005L12.59 5.18005L15.06 7.64005V8.35005L12.57 10.8301L11.87 10.1301L13.52 8.48005Z"
-     fill="#C5C5C5"
-     id="path2" />
+     d="m 12.589844,5.1796875 -0.708985,0.7011719 1.59961,1.5996093 H 8.5507813 v 1.0000001 h 4.9687497 l -1.65039,1.6503902 0.701172,0.699219 2.490234,-2.4804686 V 7.640625 Z"
+     style="clip-rule:evenodd;fill:#c5c5c5;fill-rule:evenodd"
+     id="path9" />
+  <path
+     d="m 12.589844,5.1796875 2.470703,2.4609375 v 0.7089844 l -2.490234,2.4804686 -0.701172,-0.699219 1.65039,-1.6503902 H 8.5507813 V 7.4804687 h 4.9296877 l -1.59961,-1.5996093 z"
+     style="clip-rule:evenodd;fill:#8b53ff;fill-rule:evenodd;fill-opacity:1"
+     id="path8" />
+  <path
+     d="m 2.5195313,2 -0.5,0.5 V 2.9863281 L 2,3 V 13.289063 L 2.359375,13.75 l 5,1.720703 L 8,15 v -1 h 3.519531 l 0.5,-0.5 V 13 11.689453 l -1,-1 V 13 H 8 V 4.7109375 L 7.6699219,4.25 4.0371094,3 h 2.9824218 3.9999998 v 0.7695313 1.5605468 l 1,-0.9902344 V 2.5 l -0.5,-0.5 z M 3,3.7207031 7,5.0605469 V 14.279297 L 3,12.939453 Z"
+     style="clip-rule:evenodd;fill:#c5c5c5;fill-rule:evenodd"
+     id="path6" />
 </svg>

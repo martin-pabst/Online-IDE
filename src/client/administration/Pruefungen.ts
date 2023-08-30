@@ -69,6 +69,11 @@ export class Pruefungen extends AdminMenuItem {
 
     async onMenuButtonPressed($mainHeading: JQuery<HTMLElement>, $tableLeft: JQuery<HTMLElement>, $tableRight: JQuery<HTMLElement>, $mainFooter: JQuery<HTMLElement>): Promise<void> {
 
+        //@ts-ignore
+        w2utils.settings.dateEndYear = 2050;
+        //@ts-ignore
+        w2utils.settings.dateStartYear = 1990;
+
         let response: GetPruefungenForLehrkraftResponse = await ajaxAsync("/servlet/getPruefungenForLehrkraft", {});
         if (response == null) return;
         this.pruefungen = response.pruefungen;
@@ -87,7 +92,7 @@ export class Pruefungen extends AdminMenuItem {
         this.workspaces.unshift({
             name: "Kein Vorlage-Workspace",
             text: "Kein Vorlage-Workspace",
-            id: null,
+            id: -1,
             files: [],
             path: ""
         })
@@ -106,7 +111,7 @@ export class Pruefungen extends AdminMenuItem {
 
         SSEManager.subscribe("onGradeChangedInMainWindow", (data: WorkspaceData) => {
             let record: PSchuelerData = <any>this.studentTable.records.find((r: PSchuelerData) => r.id == data.owner_id);
-            if(record == null) return;
+            if (record == null) return;
             record.grade = data.grade;
             record.points = data.points;
             record.attended_exam = data.attended_exam;
@@ -127,30 +132,30 @@ export class Pruefungen extends AdminMenuItem {
     }
 
 
-    initTimer(){
+    initTimer() {
 
         let $timerBar = makeDiv(null, 'joe_pruefung_timerbar', null, null, jQuery('#outer'));
         this.timerActive = true;
 
         let timer = async () => {
-            if(!this.timerActive) return;
+            if (!this.timerActive) return;
 
             setTimeout(timer, 1000);
-            if(this.currentPruefung?.state == "running"){
+            if (this.currentPruefung?.state == "running") {
                 $timerBar.empty();
                 for (let i = 0; i < 5 - this.counter % 5; i++) {
                     $timerBar.append(`<span class="joe_pruefung_timerspan"></span>`)
                 }
-                
+
                 if (this.counter % 5 == 0) {
                     let request: GetPruefungStudentStatesRequest = { pruefungId: this.currentPruefung.id }
-            
+
                     let pruefungStates: GetPruefungStudentStatesResponse = await ajaxAsync("/servlet/getPruefungStates", request);
-            
+
                     this.displayStudentStates(pruefungStates);
                 }
                 this.counter++;
-            
+
             } else {
                 $timerBar.empty();
             }
@@ -161,23 +166,23 @@ export class Pruefungen extends AdminMenuItem {
 
     displayStudentStates(pruefungStates: GetPruefungStudentStatesResponse) {
 
-        for(let record of this.studentTable.records as PSchuelerData[]){
+        for (let record of this.studentTable.records as PSchuelerData[]) {
             let isOnline = pruefungStates.pruefungStudentStates[record.id]?.running;
             record.state = isOnline ? "online" : "offline";
-            this.studentTable.refreshCell(record["recid"], "state");     
-            
-            if(isOnline){
+            this.studentTable.refreshCell(record["recid"], "state");
+
+            if (isOnline) {
                 record.attended_exam = true;
-                this.studentTable.refreshCell(record["recid"], "attended_exam");     
+                this.studentTable.refreshCell(record["recid"], "attended_exam");
             }
         }
-        
+
     }
-    
-    resetStudentStates(){
-        for(let record of this.studentTable.records as PSchuelerData[]){
+
+    resetStudentStates() {
+        for (let record of this.studentTable.records as PSchuelerData[]) {
             record.state = null;
-            this.studentTable.refreshCell(record["recid"], "state");            
+            this.studentTable.refreshCell(record["recid"], "state");
         }
     }
 
@@ -205,7 +210,7 @@ export class Pruefungen extends AdminMenuItem {
             recid: "id",
             columns: [
                 { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
-                { field: 'name', caption: 'Bezeichnung', size: '25%', sortable: true, resizable: true, editable: { type: 'text' } },
+                { field: 'name', caption: 'Bezeichnung', size: '15%', sortable: true, resizable: true, editable: { type: 'text' } },
                 {
                     field: 'klasse_id', caption: 'Klasse', size: '10%', sortable: true, resizable: true,
                     editable: { type: 'list', items: this.klassen, showAll: true, openOnFocus: true, align: 'left' },
@@ -213,8 +218,10 @@ export class Pruefungen extends AdminMenuItem {
                         return this.klassen.find(c => c.id == e.klasse_id).text
                     }
                 },
+                {field: 'datum', caption: 'Datum', size: '15%', sortable: true, resizable: true, editable: {type: 'date'}, 
+                render: (e) => {return e.datum == null ? '----' : e.datum;} },
                 {
-                    field: 'template_workspace_id', caption: 'Vorlage-Workspace', size: '40%', sortable: true, resizable: true,
+                    field: 'template_workspace_id', caption: 'Vorlage-Workspace', size: '25%', sortable: true, resizable: true,
                     editable: {
                         type: 'list', items: this.workspaces, showAll: true, openOnFocus: true, align: 'left',
                         style: 'width: 400px'
@@ -225,20 +232,38 @@ export class Pruefungen extends AdminMenuItem {
                     }
                 },
                 {
-                    field: 'state', caption: 'Zustand', size: '25%', sortable: true, resizable: true,
-                    render: (e) => PruefungCaptions[e.state]
+                    field: 'state', caption: 'Zustand', size: '15%', sortable: true, resizable: true,
+                    render: (e, extra) => `<div class="jo_pruefung_state_cell">
+                    <div class="jo_pruefung_state_cell_icon img_test-state-${e.state}"></div>
+                    <div class="jo_pruefung_state_text">${PruefungCaptions[e.state]}</div></div>` 
                 }
             ],
             sortData: [{ field: 'klasse', direction: 'ASC' }, { field: 'name', direction: 'ASC' }],
-            onSelect: (event) => { 
-                event.done((e) => { this.onSelectPruefung(e.recid) }) },
+            onSelect: (event) => {
+                event.done((e) => { this.onSelectPruefung(e.recid) })
+            },
             onDelete: (event) => {
                 let selected = this.pruefungTable.getSelection();
-                event.done((e) => {this.deletePruefung(<number>selected[0])})                  
+                event.done((e) => { this.deletePruefung(<number>selected[0]) })
             },
             onAdd: (event) => { this.addPruefung() },
             onChange: (event) => { this.onUpdatePruefung(event) }
         })
+
+        //@ts-ignore
+        let oldGetCellEditable: (ind: number, col_ind: number) => any = this.pruefungTable.getCellEditable;
+        console.log("🚀 ~ file: Pruefungen.ts:245 ~ Pruefungen ~ setupGUI ~ oldGetCellEditable:", oldGetCellEditable)
+
+        //@ts-ignore
+        this.pruefungTable.getCellEditable = (ind: number, col_ind: number) => {
+            let record = this.pruefungTable.records[ind];
+            if (col_ind != 1 && col_ind != 3 && record['state'] != 'preparing') {
+                return null;
+            } else {
+                return oldGetCellEditable.call(this.pruefungTable, ind, col_ind);
+            }
+        }
+
 
         w2ui["studentTable"]?.destroy();
 
@@ -261,18 +286,19 @@ export class Pruefungen extends AdminMenuItem {
                     editable: { type: 'checkbox', style: 'text-align: center' }
                 },
                 // see https://w2ui.com/web/docs/2.0/w2grid.columns
-                { field: 'state', caption: 'Status', size: '20%', sortable: true, resizable: true,
-                render: (record: PSchuelerData) =>  {
-                    let state = record.state;
-                    if(state == null) state = "---";
-                    switch(state){
-                        case "online": return "<div class='jo_stateOnline'>online</div>";
-                        case "offline": return "<div class='jo_stateOffline'>offline</div>";
-                        case "---": return "---"
+                {
+                    field: 'state', caption: 'Status', size: '20%', sortable: true, resizable: true,
+                    render: (record: PSchuelerData) => {
+                        let state = record.state;
+                        if (state == null) state = "---";
+                        switch (state) {
+                            case "online": return "<div class='jo_stateOnline'>online</div>";
+                            case "offline": return "<div class='jo_stateOffline'>offline</div>";
+                            case "---": return "---"
+                        }
+
                     }
-                    
-                }
-            },
+                },
 
             ],
             sortData: [{ field: 'familienname', direction: 'ASC' }, { field: 'rufname', direction: 'ASC' }],
@@ -284,7 +310,7 @@ export class Pruefungen extends AdminMenuItem {
         // Actions
         let $actionsDiv = jQuery('#pruefungActions');
 
-        makeDiv(null, 'jo_action_caption', "Aktionen für die ausgewählte Prüfung:", null, $actionsDiv);
+        makeDiv(null, 'jo_action_caption', "Zustand der ausgewählten Prüfung:", null, $actionsDiv);
 
         this.$stateDiv = jQuery(`<div style="display: flex; flex-direction: column; width: 400px">
             <div style="display: flex; flex-direction: row; justify-content: space-between">
@@ -304,7 +330,10 @@ export class Pruefungen extends AdminMenuItem {
 
         $actionsDiv.append(this.$stateDiv);
 
+        let lastTimeClicked: number = 0;
         this.buttonBack.onClick(async () => {
+            if(performance.now() - lastTimeClicked < 1000) return;
+            lastTimeClicked = performance.now();
             if (this.selectedStateIndex == 1) {
                 alert("Die Prüfung läuft schon. Sie kann nicht mehr in den Zustand " + PruefungCaptions[0] + " versetzt werden.");
                 return;
@@ -324,10 +353,14 @@ export class Pruefungen extends AdminMenuItem {
                 this.selectedStateIndex = oldState;
                 this.currentPruefung.state = this.states[this.selectedStateIndex];
             }
+
+            that.updatePruefungTable();
         })
 
 
         this.buttonForward.onClick(async () => {
+            if(performance.now() - lastTimeClicked < 1000) return;
+            lastTimeClicked = performance.now();
             if (this.selectedStateIndex == 0) {
                 if (!confirm("Soll die Prüfung wirklich sofort gestartet werden?")) return;
             }
@@ -343,13 +376,19 @@ export class Pruefungen extends AdminMenuItem {
                 this.selectedStateIndex = oldState;
                 this.currentPruefung.state = this.states[this.selectedStateIndex];
             }
+
+            that.updatePruefungTable();
+
         })
 
-        let $printingDiv = makeDiv(null, "joe_pruefung_printingDiv");
+        let $actions2Div = makeDiv(null, "joe_pruefung_actionsDiv", "", null, $actionsDiv);
 
-        $actionsDiv.append($printingDiv);
+        makeDiv(null, 'jo_action_caption', "Aktionen für die ausgewählte Prüfung:", null, $actions2Div);
 
-        new GUIButton(" Alle Prüfungen drucken...", $printingDiv, "#5050ff", () => {
+        let $actionButtonsDiv = makeDiv(null, "joe_pruefung_actionButtonsDiv", "",  null, $actions2Div);
+
+
+        new GUIButton(" Alle Arbeiten drucken...", $actionButtonsDiv, "#5050ff", () => {
             this.print();
         });
 
@@ -357,24 +396,28 @@ export class Pruefungen extends AdminMenuItem {
 
     }
 
+    updatePruefungTable() {
+        this.pruefungTable.refresh();
+    }
+
     async deletePruefung(pruefungId: number) {
         let request: CRUDPruefungRequest = { requestType: "delete", pruefung: this.pruefungen.find(p => p.id = pruefungId) }
         let response: CRUDPruefungResponse = await ajaxAsync('/servlet/crudPruefung', request);
 
         this.onUnselectPruefung();
-        this.pruefungen.splice(this.pruefungen.findIndex( p => p.id == pruefungId), 1);
+        this.pruefungen.splice(this.pruefungen.findIndex(p => p.id == pruefungId), 1);
     }
 
     addPruefung() {
-        NewPruefungPopup.open(this.klassen, this.workspaces, () => {},
-        async (pruefung: Pruefung) => {
-            let request: CRUDPruefungRequest = { requestType: "create", pruefung: pruefung }
-            let response: CRUDPruefungResponse = await ajaxAsync('/servlet/crudPruefung', request);
-            if (response.success) {
-                this.pruefungTable.add(response.newPruefungWithIds);
-                this.pruefungen.push(response.newPruefungWithIds);
-            } 
-        })
+        NewPruefungPopup.open(this.klassen, this.workspaces, () => { },
+            async (pruefung: Pruefung) => {
+                let request: CRUDPruefungRequest = { requestType: "create", pruefung: pruefung }
+                let response: CRUDPruefungResponse = await ajaxAsync('/servlet/crudPruefung', request);
+                if (response.success) {
+                    this.pruefungTable.add(response.newPruefungWithIds);
+                    this.pruefungen.push(response.newPruefungWithIds);
+                }
+            })
     }
 
     async print() {
@@ -382,26 +425,28 @@ export class Pruefungen extends AdminMenuItem {
 
         let p: GetPruefungForPrintingResponse = await ajaxAsync("/servlet/getPruefungForPrinting", request);
 
-        if(p == null) return;
+        if (p == null) return;
 
         let $printingDiv = jQuery('#print');
         $printingDiv.empty();
 
-        p.pSchuelerDataList = p.pSchuelerDataList.sort( (sda, sdb) => {
-            if(sda.familienname != sdb.familienname) return sda.familienname.localeCompare(sdb.familienname);
+        p.pSchuelerDataList = p.pSchuelerDataList.sort((sda, sdb) => {
+            if (sda.familienname != sdb.familienname) return sda.familienname.localeCompare(sdb.familienname);
             return sda.rufname.localeCompare(sdb.rufname);
         })
-        
-        let klasse = this.klassen.find(k => k.id == this.currentPruefung.klasse_id).text    ;
-        $printingDiv.append(`<h1>Klasse ${klasse}, ${this.currentPruefung.name}</h1>`);
 
-        for(let sd of p.pSchuelerDataList){
-            $printingDiv.append(`<h2>${sd.familienname}, ${sd.rufname}</h2>`);
-            for(let f of sd.files){
+        let klasse = this.klassen.find(k => k.id == this.currentPruefung.klasse_id).text;
+
+        let datumText = this.currentPruefung.datum == null ? "" : ", am " + this.currentPruefung.datum;
+
+        for (let sd of p.pSchuelerDataList) {
+            $printingDiv.append(`<h1>${sd.familienname}, ${sd.rufname} (Klasse ${klasse})</h1>`);
+            $printingDiv.append(`<h1>${this.currentPruefung.name}${datumText}</h1>`);
+            for (let f of sd.files) {
 
                 makeDiv(null, 'jo_fileCaption', 'Datei: ' + f.name, null, $printingDiv);
 
-                if(f.text_before_revision != null){
+                if (f.text_before_revision != null) {
                     let $twoColumnDiv = makeDiv(null, 'jo_twoColumnDiv', null, null, $printingDiv);
                     let $leftDiv = makeDiv(null, 'jo_leftColumn', null, null, $twoColumnDiv);
                     let $rightDiv = makeDiv(null, 'jo_rightColumn', null, null, $twoColumnDiv);
@@ -409,16 +454,16 @@ export class Pruefungen extends AdminMenuItem {
                     makeDiv(null, 'jo_originalCaption', 'Datei der Schülerin/des Schülers:', null, $leftDiv);
                     makeDiv(null, 'jo_originalCaption', 'Korrektur:', null, $rightDiv);
 
-                    let $codeLeft = makeDiv(null, 'jo_codeBlock', null ,null, $leftDiv);
+                    let $codeLeft = makeDiv(null, 'jo_codeBlock', null, null, $leftDiv);
                     this.insertCodeIntoDiv(f.text_before_revision, $codeLeft);
 
-                    let $codeRight = makeDiv(null, 'jo_codeBlock', null ,null, $rightDiv);
+                    let $codeRight = makeDiv(null, 'jo_codeBlock', null, null, $rightDiv);
                     this.insertCodeIntoDiv(f.text, $codeRight);
-                    
+
                 } else {
                     let $leftDiv = makeDiv(null, 'jo_leftColumn', null, null, $printingDiv);
 
-                    let $codeLeft = makeDiv(null, 'jo_codeBlock', null ,null, $leftDiv);
+                    let $codeLeft = makeDiv(null, 'jo_codeBlock', null, null, $leftDiv);
                     this.insertCodeIntoDiv(f.text, $codeLeft);
 
                 }
@@ -434,7 +479,7 @@ export class Pruefungen extends AdminMenuItem {
 
     insertCodeIntoDiv(code: string, div: JQuery<HTMLElement>) {
         let lines = code.split("\n");
-        for(let line of lines){
+        for (let line of lines) {
             makeDiv(null, null, line, null, div);
         }
     }
@@ -453,10 +498,24 @@ export class Pruefungen extends AdminMenuItem {
                 data[field] = event.value_new;
                 break;
             case "klasse_id":
+                if (data.state != this.states[0]) {
+                    alert('Die Klasse kann nur im Zustand "Vorbereitung" noch geändert werden.');
+                    event.isCancelled = true;
+                    return;
+                }
                 oldData = data[field];
                 data[field] = event.value_new.id;
                 break;
+            case "datum":
+                oldData = data[field];
+                data[field] = event.value_new;
+                break;
             case "template_workspace_id":
+                if (data.state != this.states[0]) {
+                    alert('Der Vorlagenworkspace kann nur im Zustand "Vorbereitung" noch geändert werden.');
+                    event.isCancelled = true;
+                    return;
+                }
                 oldData = data[field];
                 data[field] = event.value_new.id;
                 break;
@@ -475,7 +534,7 @@ export class Pruefungen extends AdminMenuItem {
             }
         });
 
-        
+
 
     }
 
@@ -488,14 +547,14 @@ export class Pruefungen extends AdminMenuItem {
         let oldData = data[field];
         data[field] = event.value_new;
 
-        let request: UpdatePruefungSchuelerDataRequest = { 
+        let request: UpdatePruefungSchuelerDataRequest = {
             pruefungId: this.currentPruefung.id,
             schuelerId: data.id,
             grade: data.grade,
             points: data.points,
             attended_exam: data.attended_exam,
             attributesToUpdate: field
-         }
+        }
 
         ajax('/updatePruefungSchuelerData', request, (response: BaseResponse) => {
             if (response.success == true) {
@@ -541,8 +600,8 @@ export class Pruefungen extends AdminMenuItem {
         this.pruefungTable.refresh();
     }
 
-    async onSelectPruefung(pruefungId: number) {
-        let request: GetPruefungForPrintingRequest = { pruefungId: pruefungId };
+    async onSelectPruefung(recId: number) {
+        let request: GetPruefungForPrintingRequest = { pruefungId: recId };
 
         let p: GetPruefungForPrintingResponse = await ajaxAsync("/servlet/getPruefungForPrinting", request);
 
@@ -551,13 +610,13 @@ export class Pruefungen extends AdminMenuItem {
         this.studentTable.add(p.pSchuelerDataList);
         this.studentTable.refresh();
 
-        this.currentPruefung = this.pruefungen.find(p => p.id = pruefungId);
+        this.currentPruefung = <any>this.pruefungTable.records.find(p => p["recid"] == recId);
         this.selectedStateIndex = this.states.indexOf(this.currentPruefung.state);
         this.renderState();
         jQuery('#pruefungActions').removeClass('jo_inactive');
     }
 
-    onUnselectPruefung(){
+    onUnselectPruefung() {
         jQuery('#pruefungActions').addClass('jo_inactive');
         this.studentTable.clear();
         this.studentTable.lock("Keine Prüfung ausgewählt", false);

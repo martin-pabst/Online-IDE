@@ -45,7 +45,6 @@ export class SSEManager {
                 let ssm: ServerSentMessage = JSON.parse(event.data);
 
                 if(ssm.eventType == "keepAlive"){
-                    console.log("SSEManager: Received keepAlive-Message");
                     return;
                 } 
 

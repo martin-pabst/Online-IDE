@@ -189,11 +189,7 @@ export class Login {
                 
                 that.main.user = user;
 
-<<<<<<< HEAD
                 this.main.networkManager.sqlIdeURL = response.sqlIdeForOnlineIdeClient + "/servlet/";
-=======
-                this.main.networkManager.sqlIdeURL = response.sqlIdeForOnlineIdeClient;
->>>>>>> 5bf4cc0afd0459db9bdb1fba32f2bb3a540bd16c
 
                 this.main.waitForGUICallback = () => {
                     

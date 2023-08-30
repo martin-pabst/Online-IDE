@@ -4,6 +4,8 @@ import { PasswordChanger } from "./UserMenu.js";
 import { ajax, csrfToken } from "../../communication/AjaxHelper.js";
 import { WorkspaceImporter } from "./WorkspaceImporter.js";
 import jQuery from 'jquery';
+import { Workspace } from "../../workspace/Workspace.js";
+import { downloadFile } from "../../tools/HtmlTools.js";
 
 declare var BUILD_DATE: string;
 declare var APP_VERSION: string;
@@ -49,6 +51,22 @@ export class MainMenu {
                             {
                                 identifier: "Workspace importieren",
                                 action: () => { new WorkspaceImporter(this.main).show(); }
+                            },
+                            {
+                                identifier: "Aktuellen Workspace exportieren",
+                                action: () => { 
+                                    let ws: Workspace = this.main.currentWorkspace;
+                                    if(ws == null){
+                                        alert('Kein Workspace ausgewählt.');
+                                    }
+                                    let name: string = ws.name.replace(/\//g, "_");
+                                    let pruefung = this.main.pruefungManagerForStudents?.pruefung;
+                                    let user = this.main.user;
+                                    if(pruefung != null){
+                                        name = pruefung.name.replace(/\//g, "_") + " (" + user.familienname + " " + user.rufname + "; " + user.username + ")";
+                                    }
+                                    downloadFile(ws.toExportedWorkspace(), name + ".json");
+                                 }
                             },
                             {
                                 identifier: "Speichern und Beenden",

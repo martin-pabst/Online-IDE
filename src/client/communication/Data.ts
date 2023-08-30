@@ -179,7 +179,8 @@ export type LoginResponse = {
     classdata: ClassData[], // null if !is_teacher
     workspaces: Workspaces,
     isTestuser: boolean,
-    activePruefung: Pruefung
+    activePruefung: Pruefung,
+    sqlIdeForOnlineIdeClient: string
 }
 
 export type LogoutRequest = {

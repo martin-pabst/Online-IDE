@@ -11,7 +11,11 @@ import { SSEManager } from "./SSEManager.js";
 
 export class NetworkManager {
     
-    sqlIdeURL = "http://localhost:6500/servlet/";
+    
+    sqlIdeURL: string;  // comes from the server with LoginResponse
+    
+    // = "https://sql.onlinecoding.de/servlet/";
+    // sqlIdeURL = "http://localhost:6500/servlet/";
     // sqlIdeURL = "https://www.sql-ide.de/servlet/";
     
     timerhandle: any;

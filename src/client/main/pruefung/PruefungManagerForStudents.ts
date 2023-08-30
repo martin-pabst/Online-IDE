@@ -36,10 +36,12 @@ export class PruefungManagerForStudents {
         }
 
     }
-    
+
     startPruefung(pruefung: Pruefung) {
         
         if(this.pruefung != null) return;
+
+        this.pruefung = pruefung;
 
         this.main.networkManager.sendUpdates(() => {
             
@@ -56,9 +58,14 @@ export class PruefungManagerForStudents {
 
             projectExplorer.setWorkspaceActive(pruefungWorkspace);
             
-            this.pruefung = pruefung;
+            // this.pruefung = pruefung;
 
             jQuery('#pruefunglaeuft').css('display', 'block');
+            if(this.timer != null){
+                clearInterval(this.timer);
+                this.timer = null;
+            } 
+
             this.timer = setInterval(async () => {
                 let request: ReportPruefungStudentStateRequest = {pruefungId: this.pruefung.id, clientState: "", running: true}
                 let response: ReportPruefungStudentStateResponse = await ajaxAsync('/servlet/reportPruefungState',  request)
@@ -73,13 +80,17 @@ export class PruefungManagerForStudents {
     
     async stopPruefung(renderWorkspaces: boolean){
         // await this.main.networkManager.sendUpdatesAsync();  // is done by fetchAndRenderOwnWorkspaces later on
-        
-        if(this.pruefung == null) return;
 
-        let currentPruefungId = this.pruefung.id;
-        this.pruefung = null;
+        console.log("Stopping pruefung...");
+
         if(this.timer != null) clearInterval(this.timer);
         this.timer = null;
+
+        if(this.pruefung == null){
+            return;
+        } 
+
+        this.pruefung = null;
         
         this.main.projectExplorer.workspaceListPanel.show();
         

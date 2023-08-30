@@ -2,7 +2,7 @@ import { ajaxAsync, csrfToken } from "./AjaxHelper.js";
 
 
 type SSEEventType = "startPruefung" | "stopPruefung" | "doFileUpdate" | "broadcastDatabaseChange" | "checkIfAlive" | "close" | "onPruefungChanged"
-                     | "onGradeChangedInPruefungAdministration"| "onGradeChangedInMainWindow" | "onOpen";
+                     | "onGradeChangedInPruefungAdministration"| "onGradeChangedInMainWindow" | "onOpen" | "keepAlive";
 
 type SSECallbackMethod = (data: any) => Promise<any>;
 
@@ -43,6 +43,11 @@ export class SSEManager {
             
             SSEManager.eventSource.onmessage = (event) => {
                 let ssm: ServerSentMessage = JSON.parse(event.data);
+
+                if(ssm.eventType == "keepAlive"){
+                    console.log("SSEManager: Received keepAlive-Message");
+                    return;
+                } 
 
                 if(ssm.eventType == "checkIfAlive"){
                     ajaxAsync("/servlet/sseKeepAlive?keepAliveToken=" + ssm.data, "");

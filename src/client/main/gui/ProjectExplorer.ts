@@ -341,6 +341,7 @@ export class ProjectExplorer {
                     if (error == null) {
                         that.main.removeWorkspace(workspace);
                         that.fileListPanel.clear();
+                        that.main.getMonacoEditor().setModel(null);
                         that.fileListPanel.setCaption('Bitte Workspace selektieren');
                         this.$synchronizeAction.hide();
                         successfulNetworkCommunicationCallback();
@@ -955,11 +956,11 @@ export class ProjectExplorer {
                 teacherExplorer.currentOwnWorkspace = this.main.currentWorkspace;
             }
 
-            let isInPruefungMode = teacherExplorer.classPanelMode == "tests";
+            let isTeacherAndInPruefungMode = teacherExplorer?.classPanelMode == "tests";
 
             if (ae.id != this.main.user.id) {
                 
-                if (teacherExplorer != null && isInPruefungMode) {
+                if (isTeacherAndInPruefungMode) {
                     response.workspaces.workspaces = response.workspaces.workspaces.filter(w => w.pruefung_id == pruefung.id);
                 }
 
@@ -975,7 +976,7 @@ export class ProjectExplorer {
                 this.main.networkManager.updateFrequencyInSeconds = this.main.networkManager.teacherUpdateFrequencyInSeconds;
                 this.main.networkManager.secondsTillNextUpdate = this.main.networkManager.teacherUpdateFrequencyInSeconds;
 
-                if(!isInPruefungMode){
+                if(!isTeacherAndInPruefungMode){
                     this.main.bottomDiv.homeworkManager.attachToWorkspaces(this.main.workspaceList);
                     this.main.bottomDiv.showHomeworkTab();
                 }

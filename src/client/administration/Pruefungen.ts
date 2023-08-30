@@ -555,8 +555,6 @@ export class Pruefungen extends AdminMenuItem {
         this.selectedStateIndex = this.states.indexOf(this.currentPruefung.state);
         this.renderState();
         jQuery('#pruefungActions').removeClass('jo_inactive');
-
-        console.log(this.studentTable.records);
     }
 
     onUnselectPruefung(){

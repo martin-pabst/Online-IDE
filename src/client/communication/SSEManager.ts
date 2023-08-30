@@ -71,7 +71,7 @@ export class SSEManager {
 
             SSEManager.eventSource.onerror = (event) => {
                 
-                console.log("SSE connection lost. Trying to reconnect in 4 seconds...");
+                console.log("SSE connection lost. Trying to reconnect in 10 seconds...");
                 SSEManager.close();
                 
                 setTimeout(() => {
@@ -79,7 +79,7 @@ export class SSEManager {
                         console.log("Reconnecting...");
                         SSEManager.open(csrfToken);
                     }
-                }, 4000);
+                }, 10000);
             }
 
         } catch(ex){

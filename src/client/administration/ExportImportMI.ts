@@ -74,7 +74,7 @@ export class ExportImportMI extends AdminMenuItem {
         $tableRight.append(jQuery(`
         <div id="jo_exportschools">
         <div>
-            <a href="exportSchools"><b>Markierte Schulen exportieren</b></a>
+            <a href="servlet/exportSchools?csrfToken=${csrfToken}"><b>Markierte Schulen exportieren</b></a>
         </div>
         <div style="margin-top: 10px">
             <b>Schulen importieren:</b>
@@ -233,7 +233,7 @@ export class ExportImportMI extends AdminMenuItem {
             return;
         }
 
-        jQuery('#jo_exportschools a').attr('href', 'servlet/exportSchools?ids=' + recIds.join(','));
+        jQuery('#jo_exportschools a').attr('href', 'servlet/exportSchools?ids=' + recIds.join(',') + "&csrfToken=" + csrfToken);
 
 
     }

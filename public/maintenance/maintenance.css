@@ -1,0 +1,9 @@
+html {
+    font-family: sans-serif;
+}
+
+.baustelle {
+    width: 300px;
+    float: left;
+    margin: 20px;
+}

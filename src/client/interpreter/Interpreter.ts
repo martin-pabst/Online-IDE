@@ -665,6 +665,7 @@ export class Interpreter {
         this.inputManager.hide();
         this.setState(InterpreterState.paused);
         this.timerStopped = true;
+        this.stepFinished = true;
 
         if (this.worldHelper != null) {
             this.worldHelper.spriteAnimations = [];

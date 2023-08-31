@@ -252,7 +252,6 @@ export class Pruefungen extends AdminMenuItem {
 
         //@ts-ignore
         let oldGetCellEditable: (ind: number, col_ind: number) => any = this.pruefungTable.getCellEditable;
-        console.log("🚀 ~ file: Pruefungen.ts:245 ~ Pruefungen ~ setupGUI ~ oldGetCellEditable:", oldGetCellEditable)
 
         //@ts-ignore
         this.pruefungTable.getCellEditable = (ind: number, col_ind: number) => {

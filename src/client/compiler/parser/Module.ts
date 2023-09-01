@@ -539,7 +539,9 @@ export class Module {
     }
 
     getBreakpointPositionsFromEditor() {
-        for (let decoration of this.main.getMonacoEditor().getModel().getAllDecorations()) {
+        let monacoEditorModel = this.main.getMonacoEditor().getModel();
+        if(monacoEditorModel == null) return;
+        for (let decoration of monacoEditorModel.getAllDecorations()) {
             if (decoration.options.marginClassName == "margin_breakpoint") {
                 let breakpoint = this.decoratorIdToBreakpointMap[decoration.id];
                 if (breakpoint != null) {

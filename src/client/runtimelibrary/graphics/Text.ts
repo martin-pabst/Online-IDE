@@ -311,7 +311,7 @@ export class TextHelper extends FilledShapeHelper {
         let height = 0;
 
         if (this.text != null) {
-            let tm = PIXI.TextMetrics.measureText(this.text, this.textStyle);
+            let tm = PIXI.TextMetrics.measureText( "" + this.text, this.textStyle);
 
             width = tm.width;
             height = tm.height;

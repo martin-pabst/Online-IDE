@@ -64,25 +64,72 @@ export class DecimalFormat {
 
         let sign = signPart == '-' ? -1 : 1;
 
-        let ret: string = '';
+        let retPraefix: string = '';
 
         if (sign == -1) {
             if (this.pattern.negativePraefix == null) {
-                ret = '-' + this.pattern.positivePraefix;
+                retPraefix = '-' + this.pattern.positivePraefix;
             } else {
-                ret = this.pattern.negativePraefix;
+                retPraefix = this.pattern.negativePraefix;
             }
         } else {
-            ret = this.pattern.positivePraefix;
+            retPraefix = this.pattern.positivePraefix;
         }
 
+        let retExponential = '';
+        
+        let retInteger = '';
+        let retFraction = '';
+        
         let exp = integerPart.length - 1;
         if (expNumberWithSignPart != null) exp += Number.parseInt(expNumberWithSignPart);
         if (exp > this.pattern.maximumIntegerDigits) {
             // exponential view
-            ret += integerPart.substring(0, 1) + '.' + integerPart.substring(1) + fractionPart == null ? '' : fractionPart;
-            ret += 'E' + exp.toString();
+            retExponential = integerPart.substring(0, 1) + '.' + integerPart.substring(1) + fractionPart == null ? '' : fractionPart;
+            retExponential += 'E' + exp.toString();
         } else {
+
+            if (fractionPart != null) {
+                retFraction = '.';
+                let neededFractionDigits = this.pattern.minimumFractionDigits - fractionPart.length;
+                if (neededFractionDigits > 0) {
+                    fractionPart += DecimalFormat.stringWithNulls.substring(0, neededFractionDigits);
+                }
+
+                if(this.pattern.maximumFractionDigits < fractionPart.length){
+                    let fNumber: number = Number.parseInt("1" + fractionPart.substring(0, this.pattern.maximumFractionDigits));
+                    let nextDigit = Number.parseInt(fractionPart.substring(this.pattern.maximumFractionDigits, this.pattern.maximumFractionDigits + 1));
+                    if(nextDigit >= 5){
+                        fNumber += 1;
+                    }
+                    let fString: string = "" + fNumber;
+                    if(fString.startsWith("2")){ 
+                        integerPart = "" + (Number.parseInt(integerPart) + 1);
+                    }
+                    fractionPart = fString.substring(1, fString.length);
+                    fractionPart = fractionPart.substring(0, this.pattern.maximumFractionDigits);
+                }
+
+                // group integer part
+                if (this.pattern.groupingSize > 0) {
+                    let groupedFractionPart = "";
+                    let startGroup = 0;
+                    let endGroup = startGroup + this.pattern.groupingSize;
+                    while (endGroup <= fractionPart.length) {
+                        groupedFractionPart = groupedFractionPart + fractionPart.substring(startGroup, endGroup);
+                        if (endGroup < fractionPart.length) groupedFractionPart += ",";
+                        startGroup += this.pattern.groupingSize;
+                        endGroup += this.pattern.groupingSize
+                    }
+                    if (startGroup < fractionPart.length) {
+                        groupedFractionPart += fractionPart.substring(startGroup);
+                    }
+                    fractionPart = groupedFractionPart;
+                }
+
+                retFraction += fractionPart;
+            }
+
             let neededIntegerDigits = this.pattern.minimumIntegerDigits - integerPart.length;
             if (neededIntegerDigits > 0) {
                 integerPart = DecimalFormat.stringWithNulls.substring(0, neededIntegerDigits) + integerPart;
@@ -105,36 +152,11 @@ export class DecimalFormat {
                 integerPart = groupedIntegerPart;
             }
 
-            ret = integerPart;
+            retInteger = integerPart;
 
-            if (fractionPart != null) {
-                ret += '.';
-                let neededFractionDigits = this.pattern.minimumFractionDigits - fractionPart.length;
-                if (neededFractionDigits > 0) {
-                    fractionPart += DecimalFormat.stringWithNulls.substring(0, neededFractionDigits);
-                }
-
-                // group integer part
-                if (this.pattern.groupingSize > 0) {
-                    let groupedFractionPart = "";
-                    let startGroup = 0;
-                    let endGroup = startGroup + this.pattern.groupingSize;
-                    while (endGroup <= fractionPart.length) {
-                        groupedFractionPart = groupedFractionPart + fractionPart.substring(startGroup, endGroup);
-                        if (endGroup < fractionPart.length) groupedFractionPart += ",";
-                        startGroup += this.pattern.groupingSize;
-                        endGroup += this.pattern.groupingSize
-                    }
-                    if (startGroup < fractionPart.length) {
-                        groupedFractionPart += fractionPart.substring(startGroup);
-                    }
-                    fractionPart = groupedFractionPart;
-                }
-
-                ret += fractionPart;
-            }
         }
 
+        let ret = retPraefix + retExponential + retInteger + retFraction;
 
         if (sign == -1 && this.pattern.negativeSuffix != null) {
             ret += this.pattern.negativeSuffix;
@@ -146,7 +168,7 @@ export class DecimalFormat {
     }
 
     private comes(token: string, skip: boolean = true): boolean {
-        let ret = this.formatString.indexOf(token, this.position) == 0;
+        let ret = this.formatString.indexOf(token, this.position) == this.position;
         if (ret && skip) this.position += token.length;
         return ret;
     }
@@ -206,6 +228,8 @@ export class DecimalFormat {
             }
             break;
         }
+        this.pattern.groupingSize = integerGrouping;
+
         while (this.comes("0", false)) {
             while (this.comes("0", true)) {
                 integerGrouping++;

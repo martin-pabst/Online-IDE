@@ -110,23 +110,6 @@ export class DecimalFormat {
                     fractionPart = fractionPart.substring(0, this.pattern.maximumFractionDigits);
                 }
 
-                // group integer part
-                if (this.pattern.groupingSize > 0) {
-                    let groupedFractionPart = "";
-                    let startGroup = 0;
-                    let endGroup = startGroup + this.pattern.groupingSize;
-                    while (endGroup <= fractionPart.length) {
-                        groupedFractionPart = groupedFractionPart + fractionPart.substring(startGroup, endGroup);
-                        if (endGroup < fractionPart.length) groupedFractionPart += ",";
-                        startGroup += this.pattern.groupingSize;
-                        endGroup += this.pattern.groupingSize
-                    }
-                    if (startGroup < fractionPart.length) {
-                        groupedFractionPart += fractionPart.substring(startGroup);
-                    }
-                    fractionPart = groupedFractionPart;
-                }
-
                 retFraction += fractionPart;
             }
 
@@ -219,9 +202,13 @@ export class DecimalFormat {
 
     private parseInteger() {
         let integerGrouping = 0;
+        let groupingStarted = false;
         while (this.comes("#", false)) {
-            while (this.comes("#", true)) integerGrouping++;
+            while (this.comes("#", true)){
+                if(groupingStarted) integerGrouping++;
+            }  
             if (this.comes(",", true)) {
+                groupingStarted = true;
                 this.pattern.groupingSize = integerGrouping;
                 integerGrouping = 0;
                 continue;

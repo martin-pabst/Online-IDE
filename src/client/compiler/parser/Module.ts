@@ -109,6 +109,7 @@ import { ChangeListenerClass } from "../../runtimelibrary/graphics/gui/ChangeLis
 import { GuiComponentClass } from "../../runtimelibrary/graphics/gui/GuiComponent.js";
 import { GuiTextComponentClass } from "../../runtimelibrary/graphics/gui/GuiTextComponent.js";
 import { CollectionsClass } from "../../runtimelibrary/collections/Collections.js";
+import { DecimalFormatClass } from "../../runtimelibrary/DecimalFormatClass.js";
 
 export type ExportedWorkspace = {
     name: string;
@@ -864,6 +865,7 @@ export class BaseModule extends Module {
         this.typeStore.addType(new MathClass(this));
         this.typeStore.addType(new FilesClass(this));
         this.typeStore.addType(new RandomClass(this));
+        this.typeStore.addType(new DecimalFormatClass(this));
         this.typeStore.addType(new Vector2Class(this));
         this.typeStore.addType(new MathToolsClass(this));
         this.typeStore.addType(new KeyClass(this));

@@ -383,6 +383,7 @@ export class FloatPrimitiveType extends PrimitiveType {
             [TokenType.minus]: { "none": floatPrimitiveType, "short": floatPrimitiveType, "Short": floatPrimitiveType, "Integer": floatPrimitiveType, "int": floatPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
             [TokenType.multiplication]: { "short": floatPrimitiveType, "Short": floatPrimitiveType, "Integer": floatPrimitiveType, "int": floatPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
             [TokenType.division]: { "short": floatPrimitiveType, "Short": floatPrimitiveType, "Integer": floatPrimitiveType, "int": floatPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
+            [TokenType.modulo]: { "short": floatPrimitiveType, "Short": floatPrimitiveType, "Integer": floatPrimitiveType, "int": floatPrimitiveType, "float": floatPrimitiveType, "Float": floatPrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
             [TokenType.doublePlus]: { "none": floatPrimitiveType },
             [TokenType.doubleMinus]: { "none": floatPrimitiveType },
             [TokenType.negation]: { "none": floatPrimitiveType },
@@ -459,6 +460,9 @@ export class FloatPrimitiveType extends PrimitiveType {
             case TokenType.division:
                 return value / <number>(secondOperand.value);
 
+            case TokenType.modulo:
+                return value % <number>(secondOperand.value);
+
             case TokenType.doublePlus:
                 return value++;
 
@@ -513,6 +517,7 @@ export class DoublePrimitiveType extends PrimitiveType {
             [TokenType.minus]: { "none": doublePrimitiveType, "int": doublePrimitiveType, "short": doublePrimitiveType, "Short": doublePrimitiveType, "Integer": doublePrimitiveType, "float": doublePrimitiveType, "Float": doublePrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
             [TokenType.multiplication]: { "int": doublePrimitiveType, "short": doublePrimitiveType, "Short": doublePrimitiveType, "Integer": doublePrimitiveType, "float": doublePrimitiveType, "Float": doublePrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
             [TokenType.division]: { "int": doublePrimitiveType, "short": doublePrimitiveType, "Short": doublePrimitiveType, "Integer": doublePrimitiveType, "float": doublePrimitiveType, "Float": doublePrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
+            [TokenType.modulo]: { "int": doublePrimitiveType, "short": doublePrimitiveType, "Short": doublePrimitiveType, "Integer": doublePrimitiveType, "float": doublePrimitiveType, "Float": doublePrimitiveType, "double": doublePrimitiveType, "Double": doublePrimitiveType },
             [TokenType.doublePlus]: { "none": doublePrimitiveType },
             [TokenType.doubleMinus]: { "none": doublePrimitiveType },
             [TokenType.negation]: { "none": doublePrimitiveType },
@@ -588,6 +593,9 @@ export class DoublePrimitiveType extends PrimitiveType {
 
             case TokenType.division:
                 return value / <number>(secondOperand.value);
+
+            case TokenType.modulo:
+                return value % <number>(secondOperand.value);
 
             case TokenType.doublePlus:
                 return value++;

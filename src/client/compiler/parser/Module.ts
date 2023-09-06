@@ -1037,6 +1037,13 @@ export class ModuleStore {
         }
     }
 
+    rename(oldName: string, newName: string) {
+        let module = this.moduleMap[oldName];
+        if(module == null) return;
+        this.moduleMap[oldName] = undefined;
+        this.moduleMap[newName] = module;
+    }
+
     addLibraryModule(identifier: string){
         switch(identifier){
             case "gng": this.putModule(new GNGModule(this.main, this));

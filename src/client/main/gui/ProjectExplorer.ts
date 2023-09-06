@@ -97,12 +97,15 @@ export class ProjectExplorer {
             (module: Module, newName: string, ae: AccordionElement) => {
                 newName = newName.substr(0, 80);
                 let file = module.file;
+                
+                this.main.currentWorkspace.moduleStore.rename(file.name, newName);
 
                 file.name = newName;
                 file.saved = false;
                 let fileType = FileTypeManager.filenameToFileType(newName);
                 that.fileListPanel.setElementClass(ae, fileType.iconclass)
                 monaco.editor.setModelLanguage(module.model, fileType.language);
+
 
                 that.main.networkManager.sendUpdates();
                 return newName;

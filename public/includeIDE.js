@@ -42,7 +42,16 @@ includeJsAndCss(scripts, () => {
     };
 });
 
+/**
+ * 
+ * @param {string} jo_doc 
+ */
 function initScripts(jo_doc) {
+
+    jo_doc = jo_doc.replace(/&lt;script/g, '<script');
+    jo_doc = jo_doc.replace(/&lt;\/script&gt;/g, '</script>');
+    jo_doc = jo_doc.replace(/"&gt;/g, '">');
+
     let scriptPosition = jo_doc.indexOf('<script');
     let scripts = jo_doc.substr(scriptPosition);
     let config = jo_doc.substr(0, scriptPosition);

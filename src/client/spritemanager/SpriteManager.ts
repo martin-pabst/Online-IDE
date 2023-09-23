@@ -146,7 +146,9 @@ export class SpriteManager {
         })
 
         $buttonExportAll.on("click", () => { that.exportSpritesheet(); })
-        $buttonImportAll.on("change", (event) => { that.importSpritesheet(event.target.files); })
+        $buttonImportAll.on("change", (event) => { 
+            that.importSpritesheet(event.target.files); 
+        })
 
         // Sprite list
         let $spritelistOuter = makeDiv(null, "jo_sm_spritelistOuter", null, null, $spritemanagerDiv);
@@ -166,7 +168,7 @@ export class SpriteManager {
 
     async importSpritesheet(fileList: FileList) {
 
-        this.userSpritesheet.spritesheet.unpackZip(fileList[0]);
+        await this.userSpritesheet.spritesheet.unpackZip(fileList[0]);
 
         this.userSpritesheet.extractImagesFromSheet();
 

@@ -5,7 +5,7 @@ import { Interpreter } from "../../interpreter/Interpreter.js";
 import { ConnectionHelper } from "../../runtimelibrary/database/Connection.js";
 import jQuery from 'jquery';
 
-export class DatabaseLongPollingListener {
+export class DatabaseOldLongPollingListener {
 
     identifier: number = Math.floor(Math.random() * 999999999);
     isClosed: boolean = false;

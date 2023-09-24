@@ -1,7 +1,7 @@
 import { ajaxAsync, csrfToken } from "./AjaxHelper.js";
 
 
-type SSEEventType = "startPruefung" | "stopPruefung" | "doFileUpdate" | "broadcastDatabaseChange" | "checkIfAlive" | "close" | "onPruefungChanged"
+export type SSEEventTypeOld = "startPruefung" | "stopPruefung" | "doFileUpdate" | "broadcastDatabaseChange" | "checkIfAlive" | "close" | "onPruefungChanged"
                      | "onGradeChangedInPruefungAdministration"| "onGradeChangedInMainWindow" | "onOpen" | "keepAlive";
 
 type SSECallbackMethod = (data: any) => Promise<any>;
@@ -13,36 +13,36 @@ type SSESubscriberInfo = {
     messageHandler: SSEMessageHandler
 }
 
-export type ServerSentMessage = {eventType: SSEEventType, messageId?: number, token?: string, data?: any};
+export type ServerSentMessageOld = {eventType: SSEEventTypeOld, messageId?: number, token?: string, data?: any};
 
 type SseCallbackRequest = {messageId: number, token: string, data: string};
 
-export class SSEManager {
+export class SSEManagerOld {
     
     static ownCsrfToken: string = null;
 
     static eventTypeToSubscriberInfoMap: Map<string, SSESubscriberInfo> = new Map();
     static eventSource: EventSource;
     
-    public static subscribe(eventType: SSEEventType, handler: SSEMessageHandler) {
-        SSEManager.eventTypeToSubscriberInfoMap.set(eventType, { eventType: eventType, messageHandler: handler });
+    public static subscribe(eventType: SSEEventTypeOld, handler: SSEMessageHandler) {
+        SSEManagerOld.eventTypeToSubscriberInfoMap.set(eventType, { eventType: eventType, messageHandler: handler });
     }
     
-    public static unsubscribe(eventType: SSEEventType){
-        SSEManager.eventTypeToSubscriberInfoMap.delete(eventType);
+    public static unsubscribe(eventType: SSEEventTypeOld){
+        SSEManagerOld.eventTypeToSubscriberInfoMap.delete(eventType);
     }
 
     static open(csrfToken1: string){
         
-        if(SSEManager.ownCsrfToken == csrfToken1) return;
+        if(SSEManagerOld.ownCsrfToken == csrfToken1) return;
 
-        SSEManager.close();
+        SSEManagerOld.close();
         
         try {
-            SSEManager.eventSource = new EventSource("/servlet/sse?csrfToken=" + csrfToken1, {withCredentials: true});
+            SSEManagerOld.eventSource = new EventSource("/servlet/sse?csrfToken=" + csrfToken1, {withCredentials: true});
             
-            SSEManager.eventSource.onmessage = (event) => {
-                let ssm: ServerSentMessage = JSON.parse(event.data);
+            SSEManagerOld.eventSource.onmessage = (event) => {
+                let ssm: ServerSentMessageOld = JSON.parse(event.data);
 
                 if(ssm.eventType == "keepAlive"){
                     return;
@@ -54,10 +54,10 @@ export class SSEManager {
                 }
 
                 if(ssm.eventType == "close"){
-                    SSEManager.close();
+                    SSEManagerOld.close();
                 }
 
-                let subscriber = SSEManager.eventTypeToSubscriberInfoMap.get(ssm.eventType);
+                let subscriber = SSEManagerOld.eventTypeToSubscriberInfoMap.get(ssm.eventType);
                 if(subscriber != null){
 
                     let callback: SSECallbackMethod = undefined;
@@ -73,15 +73,15 @@ export class SSEManager {
                 }
             };
 
-            SSEManager.eventSource.onerror = (event) => {
+            SSEManagerOld.eventSource.onerror = (event) => {
                 
                 console.log("SSE connection lost. Trying to reconnect in 10 seconds...");
                 
                 setTimeout(() => {
-                    if(SSEManager.eventSource == null){
-                        SSEManager.close();
+                    if(SSEManagerOld.eventSource == null){
+                        SSEManagerOld.close();
                         console.log("Reconnecting...");
-                        SSEManager.open(csrfToken);
+                        SSEManagerOld.open(csrfToken);
                     }
                 }, 10000);
             }
@@ -93,10 +93,10 @@ export class SSEManager {
     }
 
     public static close(){
-        if(SSEManager.eventSource != null){
-            SSEManager.eventSource.close();
-            SSEManager.eventSource = null;   
-            SSEManager.ownCsrfToken = null;
+        if(SSEManagerOld.eventSource != null){
+            SSEManagerOld.eventSource.close();
+            SSEManagerOld.eventSource = null;   
+            SSEManagerOld.ownCsrfToken = null;
         }
     }
 

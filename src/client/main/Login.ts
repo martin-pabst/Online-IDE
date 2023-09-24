@@ -7,9 +7,9 @@ import { InterpreterState } from "../interpreter/Interpreter.js";
 import { SoundTools } from "../tools/SoundTools.js";
 import { UserMenu } from "./gui/UserMenu.js";
 import { escapeHtml } from "../tools/StringTools.js";
-import { SSEManager } from '../communication/SSEManager.js';
 import { PruefungManagerForStudents } from './pruefung/PruefungManagerForStudents.js';
-import { DatabaseSSEListener } from '../tools/database/DatabaseSSEListener.js';
+import { PushClientManager } from '../communication/pushclient/PushClientManager.js';
+import { DatabaseNewLongPollingListener } from '../tools/database/DatabaseNewLongPollingListener.js';
 
 export class Login {
 
@@ -124,8 +124,8 @@ export class Login {
                 });
             });
 
-            SSEManager.close();
-            DatabaseSSEListener.closeSSE();
+            PushClientManager.getInstance().close();
+            DatabaseNewLongPollingListener.close();
 
         });
 

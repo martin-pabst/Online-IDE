@@ -7,7 +7,7 @@ import { AccordionElement, AccordionPanel } from "../main/gui/Accordion.js";
 import {WorkspaceSettings } from "../communication/Data.js";
 import { CacheManager } from "../tools/database/CacheManager.js";
 import jQuery from 'jquery';
-import { SSEManager } from "./SSEManager.js";
+import { PushClientManager } from "./pushclient/PushClientManager.js";
 
 export class NetworkManager {
     
@@ -89,7 +89,7 @@ export class NetworkManager {
     }
 
     initializeSSE() {
-        SSEManager.subscribe("doFileUpdate", (data) => {
+        PushClientManager.getInstance().subscribe("doFileUpdate", (data) => {
             this.sendUpdates(() => {}, true, false, true);
         })
 

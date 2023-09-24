@@ -5,10 +5,9 @@ import { Module } from "../../compiler/parser/Module.js";
 import { Klass } from "../../compiler/types/Class.js";
 import { Method, Parameterlist } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
-import { DatabaseLongPollingListener } from "../../tools/database/DatabaseLongPollingListener.js";
 import { stringPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
 import { PreparedStatementHelper } from "./DatabasePreparedStatement.js";
-import { DatabaseSSEListener } from "../../tools/database/DatabaseSSEListener.js";
+import { DatabaseNewLongPollingListener } from "../../tools/database/DatabaseNewLongPollingListener.js";
 
 export class ConnectionClass extends Klass {
 
@@ -74,7 +73,7 @@ export class ConnectionHelper {
     database: DatabaseTool;
     databaseData: DatabaseData;
     token: string;
-    databaseSSEListener: DatabaseSSEListener;
+    databaseSSEListener: DatabaseNewLongPollingListener;
 
     constructor(private main: Main) {
 
@@ -91,7 +90,7 @@ export class ConnectionHelper {
                 that.database = new DatabaseTool(that.main);
                 that.database.initializeWorker(dbData.templateDump, dbData.statements, (error) => {
 
-                    that.databaseSSEListener = new DatabaseSSEListener(that.main.networkManager,
+                    that.databaseSSEListener = new DatabaseNewLongPollingListener(that.main.networkManager,
                         that.token, dbData.id, (firstNewStatementIndex, newStatements, rollbackToVersion) => {
                             that.onServerSentStatements(firstNewStatementIndex, newStatements, rollbackToVersion);
                         })

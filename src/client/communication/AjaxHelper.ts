@@ -1,6 +1,6 @@
 import { LoginRequest, PerformanceData } from "./Data.js";
 import jQuery from 'jquery';
-import { SSEManager } from "./SSEManager.js";
+import { PushClientManager } from "./pushclient/PushClientManager.js";
 // export var credentials: { username: string, password: string } = { username: null, password: null };
 
 export class PerformanceCollector {
@@ -70,7 +70,7 @@ export function ajax(url: string, request: any, successCallback: (response: any)
             if(response["csrfToken"] != null)
             {
                 csrfToken = response["csrfToken"];
-                SSEManager.open(csrfToken);
+                PushClientManager.getInstance().open();
             }
             
 
@@ -147,7 +147,7 @@ export async function ajaxAsync(url: string, data: any): Promise<any>{
 
         if(obj["token"] != null){
             csrfToken = obj["token"];
-            SSEManager.open(csrfToken);
+            PushClientManager.getInstance().open();
         }
 
         if(obj == null){

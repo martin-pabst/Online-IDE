@@ -1,5 +1,5 @@
 import { csrfToken } from "../AjaxHelper";
-import { PushClientManager, ServerSentMessage } from "./PushClientManager";
+import { BasePushClientManager, ServerSentMessage } from "./BasePushClientManager.js";
 import { PushClientStrategy } from "./PushClientStrategy";
 
 export class PushClientWebsocketStrategy extends PushClientStrategy {
@@ -10,7 +10,7 @@ export class PushClientWebsocketStrategy extends PushClientStrategy {
 
     isClosed: boolean;
 
-    constructor(manager: PushClientManager) {
+    constructor(manager: BasePushClientManager) {
         super("websocket strategy", manager);
     }
 
@@ -27,11 +27,13 @@ export class PushClientWebsocketStrategy extends PushClientStrategy {
             this.websocket.onopen = (event) => {}
     
             this.websocket.onclose = (event) => {
+                console.log("Websocket has been closed, code: " + event.code + ", reason: " + event.reason);
                 this.manager.onStrategyFailed(this);
                 this.isClosed = true;
             }
     
             this.websocket.onerror = (event) => { 
+                console.log("Error on websocket, type: " + event.type);
                 this.websocket.close();
                 this.manager.onStrategyFailed(this);
                 this.isClosed = true;

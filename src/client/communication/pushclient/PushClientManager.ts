@@ -1,36 +1,14 @@
 import { csrfToken } from "../AjaxHelper";
+import { BasePushClientManager, PushEventType, PushMessageHandler, ServerSentMessage } from "./BasePushClientManager.js";
 import { PushClientLongPollingStrategy } from "./PushClientLongPollingStrategy";
 import { PushClientStrategy } from "./PushClientStrategy";
 import { PushClientWebsocketStrategy } from "./PushClientWebsocketStrategy";
 
-type PushEventType = "startPruefung" | "stopPruefung" | "doFileUpdate" | "broadcastDatabaseChange" | "checkIfAlive" | "close" | "onPruefungChanged"
-                     | "onGradeChangedInPruefungAdministration"| "onGradeChangedInMainWindow" | "onOpen" | "keepAlive";
 
-export type ServerSentMessage = {eventType: PushEventType, data?: any};
-
-export type PushMessageHandler = (data: any) => void;
-
-export type PushSubscriberInfo = {
-    eventType: PushEventType;
-    handler: PushMessageHandler;
-}
-
-export class PushClientManager {
+export class PushClientManager extends BasePushClientManager {
 
     private static instance: PushClientManager;
 
-    strategies: PushClientStrategy[] = [];
-    currentStrategy: PushClientStrategy;
-
-    eventTypeToSubscriberInfoMap: Map<string, PushSubscriberInfo> = new Map();
-
-    public subscribe(eventType: PushEventType, handler: PushMessageHandler) {
-        this.eventTypeToSubscriberInfoMap.set(eventType, { eventType: eventType, handler: handler });
-    }
-    
-    public unsubscribe(eventType: PushEventType){
-        this.eventTypeToSubscriberInfoMap.delete(eventType);
-    }
 
     public static subscribe(eventType: PushEventType, handler: PushMessageHandler) {
         PushClientManager.getInstance().subscribe(eventType, handler);
@@ -41,17 +19,6 @@ export class PushClientManager {
     }
 
 
-    private constructor(){
-        this.strategies = [
-            new PushClientWebsocketStrategy(this),
-            new PushClientLongPollingStrategy(this)
-        ]
-
-        for(let i = this.strategies.length - 2; i >= 0; i--){
-            this.strategies[i].nextStrategy = this.strategies[i+1];
-        }
-    }
-
     public static getInstance(): PushClientManager {
         if(PushClientManager.instance == null){
             PushClientManager.instance = new PushClientManager();
@@ -59,42 +26,6 @@ export class PushClientManager {
         return PushClientManager.instance;
     }
 
-    open(){
-        if(this.currentStrategy == null){
-            this.currentStrategy = this.strategies[0];
-            this.currentStrategy.open();
-        }
-    }
-
-    onMessage(message: ServerSentMessage){
-        this.eventTypeToSubscriberInfoMap.get(message.eventType)?.handler(message.data);
-    }
-
-    onStrategyFailed(failedStrategy: PushClientStrategy){
-        if(failedStrategy != this.currentStrategy) return;
-
-        let oldStrategy = this.currentStrategy;
-        this.currentStrategy = this.currentStrategy.nextStrategy;
-
-        console.log(`${oldStrategy.name} failed. `);
-
-        if(this.currentStrategy != null){
-            setTimeout(() => {
-                this.currentStrategy.open();                
-            }, 3000);
-        } else {
-            console.log(`${oldStrategy.name} was the last resort, unfortunately this client has no means to receive push-messages from server.`);
-        }
-
-
-    }
-
-    close() {
-        if(this.currentStrategy != null){
-            this.currentStrategy.close();
-            this.currentStrategy = null;
-        }
-    }
 
 
 }

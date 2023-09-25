@@ -1,10 +1,10 @@
-import { PushClientManager } from "./PushClientManager";
+import { BasePushClientManager } from "./BasePushClientManager.js";
 
 export abstract class PushClientStrategy {
 
     nextStrategy: PushClientStrategy;
 
-    constructor(public name: string, public manager: PushClientManager){
+    constructor(public name: string, public manager: BasePushClientManager){
 
     }
 

@@ -238,27 +238,27 @@ export class TurtleClass extends Klass {
                 let o: RuntimeObject = parameters[0].value;
                 let sh: TurtleHelper = o.intrinsicData["Actor"];
 
-                return sh.getPosition().x;
+                return sh.getPosition().y;
 
             }, false, false, 'Gibt die y-Koordinate der aktuellen Turtleposition zurück.', false));
 
-            this.addMethod(new Method("moveTo", new Parameterlist([
-                { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-                { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
-            ]), voidPrimitiveType,
-                (parameters) => {
-    
-                    let o: RuntimeObject = parameters[0].value;
-                    let sh: TurtleHelper = o.intrinsicData["Actor"];
-                    let x: number = parameters[1].value;
-                    let y: number = parameters[2].value;
-    
-                    if (sh.testdestroyed("moveTo")) return;
-    
-                    sh.moveTo(x, y);
-    
-                }, false, false, "Bewirkt, dass die Turtle zum Punkt (x, y) geht.", false));
-    
+        this.addMethod(new Method("moveTo", new Parameterlist([
+            { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+        ]), voidPrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: TurtleHelper = o.intrinsicData["Actor"];
+                let x: number = parameters[1].value;
+                let y: number = parameters[2].value;
+
+                if (sh.testdestroyed("moveTo")) return;
+
+                sh.moveTo(x, y);
+
+            }, false, false, "Bewirkt, dass die Turtle zum Punkt (x, y) geht.", false));
+
 
 
     }

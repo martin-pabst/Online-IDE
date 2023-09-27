@@ -1,6 +1,6 @@
 import { Module } from "../../compiler/parser/Module.js";
 import { Klass } from "../../compiler/types/Class.js";
-import { doublePrimitiveType, intPrimitiveType, booleanPrimitiveType, stringPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
+import { doublePrimitiveType, intPrimitiveType, booleanPrimitiveType, stringPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
 import { Method, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { FilledShapeHelper } from "./FilledShape.js";
@@ -220,6 +220,45 @@ export class TurtleClass extends Klass {
 
             }, false, false, 'Gibt die Länge des letzten gezeichneten Streckenzugs zurück.', false));
 
+        this.addMethod(new Method("getX", new Parameterlist([
+        ]), doublePrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: TurtleHelper = o.intrinsicData["Actor"];
+
+                return sh.getPosition().x;
+
+            }, false, false, 'Gibt die x-Koordinate der aktuellen Turtleposition zurück.', false));
+
+        this.addMethod(new Method("getY", new Parameterlist([
+        ]), doublePrimitiveType,
+            (parameters) => {
+
+                let o: RuntimeObject = parameters[0].value;
+                let sh: TurtleHelper = o.intrinsicData["Actor"];
+
+                return sh.getPosition().x;
+
+            }, false, false, 'Gibt die y-Koordinate der aktuellen Turtleposition zurück.', false));
+
+            this.addMethod(new Method("moveTo", new Parameterlist([
+                { identifier: "x", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+                { identifier: "y", type: doublePrimitiveType, declaration: null, usagePositions: null, isFinal: true },
+            ]), voidPrimitiveType,
+                (parameters) => {
+    
+                    let o: RuntimeObject = parameters[0].value;
+                    let sh: TurtleHelper = o.intrinsicData["Actor"];
+                    let x: number = parameters[1].value;
+                    let y: number = parameters[2].value;
+    
+                    if (sh.testdestroyed("moveTo")) return;
+    
+                    sh.moveTo(x, y);
+    
+                }, false, false, "Bewirkt, dass die Turtle zum Punkt (x, y) geht.", false));
+    
 
 
     }
@@ -679,7 +718,7 @@ export class TurtleHelper extends FilledShapeHelper {
         if (this.lineElements.length < 2) return false;
 
         let rightLe: LineElement = this.lineElements[0];
-        
+
         let left: Punkt;
         let right: Punkt = rightLe;
 
@@ -736,6 +775,10 @@ export class TurtleHelper extends FilledShapeHelper {
         let dx = l2.x - l1.x;
         let dy = l2.y - l1.y;
         return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    getPosition(): LineElement {
+        return this.lineElements[this.lineElements.length - 1];
     }
 
 

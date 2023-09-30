@@ -2,10 +2,11 @@ import { csrfToken } from "../../communication/AjaxHelper.js";
 import { DatabaseLongPollingListenerRequest, JMessageFromServer, JWebSocketMessageConnect, JWebSocketMessageDisconnect, JWebSocketMessageExecuteStatement, LongPollingListenerResponse, SendingStatementsMessageFromServer, WebSocketRequestConnect } from "../../communication/Data.js";
 import { NetworkManager } from "../../communication/NetworkManager.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
+import { SqlIdeUrlHolder } from "../../main/SqlIdeUrlHolder.js";
 import { ConnectionHelper } from "../../runtimelibrary/database/Connection.js";
 import jQuery from 'jquery';
 
-export class DatabaseLongPollingListener {
+export class DatabaseOldLongPollingListener {
 
     identifier: number = Math.floor(Math.random() * 999999999);
     isClosed: boolean = false;
@@ -32,7 +33,7 @@ export class DatabaseLongPollingListener {
             headers: headers,
             data: JSON.stringify(request),
             contentType: 'application/json',
-            url: that.networkManager.sqlIdeURL + "jRegisterLongPollingListener",
+            url: SqlIdeUrlHolder.sqlIdeURL + "registerLongpollingListener",
             success: function (resp: string) {
                 if (resp != null && !that.isClosed && resp != "") {
                     let response: LongPollingListenerResponse = JSON.parse(resp);

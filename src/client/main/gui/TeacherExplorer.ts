@@ -5,7 +5,7 @@ import { ajaxAsync, csrfToken } from "../../communication/AjaxHelper.js";
 import { Workspace } from "../../workspace/Workspace.js";
 import { GUIToggleButton } from "./controls/GUIToggleButton.js";
 import jQuery from "jquery";
-import { SSEManager } from "../../communication/SSEManager.js";
+import { PushClientManager } from "../../communication/pushclient/PushClientManager.js";
 
 export class TeacherExplorer {
 
@@ -40,7 +40,7 @@ export class TeacherExplorer {
 
         this.renderClasses(this.classData);
 
-        SSEManager.subscribe("onPruefungChanged", async () => {
+        PushClientManager.subscribe("onPruefungChanged", async () => {
             if (this.classPanelMode == "tests") {
                 await this.fetchPruefungen()
                 this.renderPruefungen();

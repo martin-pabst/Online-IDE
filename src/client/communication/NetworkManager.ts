@@ -1,22 +1,19 @@
-import { Main } from "../main/Main.js";
-import { ajax, csrfToken, PerformanceCollector } from "./AjaxHelper.js";
-import { WorkspaceData, FileData, SendUpdatesRequest, SendUpdatesResponse, CreateOrDeleteFileOrWorkspaceRequest, CRUDResponse, UpdateUserSettingsRequest, UpdateUserSettingsResponse, DuplicateWorkspaceRequest, DuplicateWorkspaceResponse, ClassData, DistributeWorkspaceRequest, DistributeWorkspaceResponse, CollectPerformanceDataRequest, SetRepositorySecretRequest, SetRepositorySecretResponse, GetDatabaseRequest, getDatabaseResponse, DatabaseData, GetTemplateRequest, ObtainSqlTokenRequest, ObtainSqlTokenResponse, JAddStatementRequest, JAddStatementResponse, JRollbackStatementRequest, JRollbackStatementResponse } from "./Data.js";
-import { Workspace } from "../workspace/Workspace.js";
-import { Module } from "../compiler/parser/Module.js";
-import { AccordionElement, AccordionPanel } from "../main/gui/Accordion.js";
-import {WorkspaceSettings } from "../communication/Data.js";
-import { CacheManager } from "../tools/database/CacheManager.js";
 import jQuery from 'jquery';
-import { SSEManager } from "./SSEManager.js";
+import { Module } from "../compiler/parser/Module.js";
+import { AccordionElement } from "../main/gui/Accordion.js";
+import { Main } from "../main/Main.js";
+import { SqlIdeUrlHolder } from "../main/SqlIdeUrlHolder.js";
+import { CacheManager } from "../tools/database/CacheManager.js";
+import { Workspace } from "../workspace/Workspace.js";
+import { ajax, csrfToken, PerformanceCollector } from "./AjaxHelper.js";
+import { ClassData, CreateOrDeleteFileOrWorkspaceRequest, CRUDResponse, DatabaseData, DistributeWorkspaceRequest, DistributeWorkspaceResponse, DuplicateWorkspaceRequest, DuplicateWorkspaceResponse, FileData, GetDatabaseRequest, getDatabaseResponse, GetTemplateRequest, JAddStatementRequest, JAddStatementResponse, JRollbackStatementRequest, JRollbackStatementResponse, ObtainSqlTokenRequest, ObtainSqlTokenResponse, SendUpdatesRequest, SendUpdatesResponse, SetRepositorySecretRequest, SetRepositorySecretResponse, UpdateUserSettingsRequest, UpdateUserSettingsResponse, WorkspaceData } from "./Data.js";
+import { PushClientManager } from "./pushclient/PushClientManager.js";
 
 export class NetworkManager {
-    
-    
-    sqlIdeURL: string;  // comes from the server with LoginResponse
-    
+        
     // = "https://sql.onlinecoding.de/servlet/";
-    // sqlIdeURL = "http://localhost:6500/servlet/";
-    // sqlIdeURL = "https://www.sql-ide.de/servlet/";
+    // SqlIdeUrlHolder.sqlIdeURL = "http://localhost:6500/servlet/";
+    // SqlIdeUrlHolder.sqlIdeURL = "https://www.sql-ide.de/servlet/";
     
     timerhandle: any;
     
@@ -89,7 +86,7 @@ export class NetworkManager {
     }
 
     initializeSSE() {
-        SSEManager.subscribe("doFileUpdate", (data) => {
+        PushClientManager.getInstance().subscribe("doFileUpdate", (data) => {
             this.sendUpdates(() => {}, true, false, true);
         })
 
@@ -559,7 +556,7 @@ export class NetworkManager {
             token: token
         }
 
-        ajax(this.sqlIdeURL +  "jGetDatabase", request, (response: getDatabaseResponse) => {
+        ajax(SqlIdeUrlHolder.sqlIdeURL +  "jGetDatabase", request, (response: getDatabaseResponse) => {
             if (response.success) {
 
                 let database = response.database;
@@ -613,7 +610,7 @@ export class NetworkManager {
             headers: headers,
             data: JSON.stringify(request),
             contentType: 'application/json',
-            url: this.sqlIdeURL + "jGetTemplate",
+            url: SqlIdeUrlHolder.sqlIdeURL + "jGetTemplate",
             xhrFields: { responseType: 'arraybuffer' },
             success: function (response: any) {
                 callback(new Uint8Array(response));
@@ -635,7 +632,7 @@ export class NetworkManager {
             statements: statements
         }
 
-        ajax(this.sqlIdeURL +  "jAddDatabaseStatement", request, (response: JAddStatementResponse) => {
+        ajax(SqlIdeUrlHolder.sqlIdeURL +  "jAddDatabaseStatement", request, (response: JAddStatementResponse) => {
             callback(response.statements_before, response.new_version, response.message);
         }, (message) => {callback([], 0, message)})
 
@@ -650,7 +647,7 @@ export class NetworkManager {
             current_version: current_version
         }
 
-        ajax(this.sqlIdeURL +  "jRollbackDatabaseStatement", request, (response: JRollbackStatementResponse) => {
+        ajax(SqlIdeUrlHolder.sqlIdeURL +  "jRollbackDatabaseStatement", request, (response: JRollbackStatementResponse) => {
             callback(response.message);
         })
 

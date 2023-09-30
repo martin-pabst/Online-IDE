@@ -7,10 +7,10 @@ import { ClassesWithStudentsMI } from "./ClassesWithStudentsMI.js";
 import { StudentBulkImportMI } from "./StudentBulkImortMI.js";
 import { ExportImportMI } from "./ExportImportMI.js";
 import { Pruefungen } from "./Pruefungen.js";
-import { SSEManager } from "../communication/SSEManager.js";
 
 import "/include/css/icons.css";
 import "/include/css/administration.css";
+import { PushClientManager } from "../communication/pushclient/PushClientManager.js";
 
 
 export class Administration {
@@ -33,7 +33,7 @@ export class Administration {
 
         extractCsrfTokenFromGetRequest();
 
-        SSEManager.open(csrfToken);
+        PushClientManager.getInstance().open();
 
         let that = this;
         //@ts-ignore

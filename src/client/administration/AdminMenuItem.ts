@@ -25,12 +25,12 @@ export abstract class AdminMenuItem {
             } else {
                 i--;
                 if (i > 0) {
-                    setTimeout(f, 100);
+                    setTimeout(f, 300);
                 }
             }
         };
 
-        setTimeout(f, 100);
+        setTimeout(f, 300);
     }
 
 }

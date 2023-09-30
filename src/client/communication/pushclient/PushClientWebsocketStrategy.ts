@@ -43,6 +43,7 @@ export class PushClientWebsocketStrategy extends PushClientStrategy {
                     this.open();
                 } else {
                     this.manager.onStrategyFailed(this);
+                    this.isClosed = true;
                 }
                 
             }
@@ -68,6 +69,7 @@ export class PushClientWebsocketStrategy extends PushClientStrategy {
 
         } catch (ex){
             this.manager.onStrategyFailed(this);
+            this.isClosed = true;
         }
 
     }
@@ -85,7 +87,7 @@ export class PushClientWebsocketStrategy extends PushClientStrategy {
     }
 
 
-    close() {
+    async close() {
         this.isClosed = true;
         this.websocket.close();
     }

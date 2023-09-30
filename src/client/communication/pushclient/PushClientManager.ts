@@ -17,7 +17,7 @@ export class PushClientManager extends BasePushClientManager {
 
     public static getInstance(): PushClientManager {
         if(PushClientManager.instance == null){
-            PushClientManager.instance = new PushClientManager();
+            PushClientManager.instance = new PushClientManager("");
         }
         return PushClientManager.instance;
     }

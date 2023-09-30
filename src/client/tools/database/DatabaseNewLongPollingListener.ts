@@ -1,6 +1,7 @@
 import { csrfToken } from "../../communication/AjaxHelper.js";
 import { NetworkManager } from "../../communication/NetworkManager.js";
 import { ServerSentMessage } from "../../communication/pushclient/BasePushClientManager.js";
+import { SqlIdeUrlHolder } from "../../main/SqlIdeUrlHolder.js";
 
 type JavaRegisterDatabaseSSEListenerRequest = { token: string, registerOrUnregister: "register" | "unregister" }
 type JavaRegisterDatabaseSSEListenerResponse = { success: boolean, message: string }
@@ -37,12 +38,14 @@ export class DatabaseNewLongPollingListener {
 
         if(this.isClosed) return;
 
+        console.log("opening...");
+
         let headers: [string, string][] = [["content-type", "text/json"]];
 
-        headers.push(["x-token-pm", csrfToken]);
+        headers.push(["x-token-pm", "JJ" + csrfToken]);
 
         try {
-            fetch("/servlet/registerLongpollingListener", {
+            fetch(SqlIdeUrlHolder.sqlIdeURL + "registerLongpollingListener", {
                 method: "POST",
                 headers: headers,
                 body: JSON.stringify({ token: this.token })
@@ -50,8 +53,11 @@ export class DatabaseNewLongPollingListener {
 
                 switch (response.status) {
                     case 200:
-                        response.json().then(data => this.onMessage(data));
-                        this.reopen();
+                        response.json().then(data => {
+                            console.log("http 200: " + data);
+                            this.onMessage(data);
+                            this.reopen();
+                        })
                         break;
                     case 502:   // timeout!
                         this.reopen();
@@ -63,11 +69,11 @@ export class DatabaseNewLongPollingListener {
 
             }).catch((reason) => {
                 console.log(reason);
-                this.reopen();
+                this.reopen(10000);
             })
 
         } catch (ex) {
-            this.reopen();
+            this.reopen(10000);
         }
 
     }
@@ -93,7 +99,7 @@ export class DatabaseNewLongPollingListener {
 
         let headers: [string, string][] = [["content-type", "text/json"]];
 
-        headers.push(["x-token-pm", csrfToken]);
+        headers.push(["x-token-pm", "JJ" + csrfToken]);
 
         try {
             fetch("/servlet/unregisterLongpollingListener", {

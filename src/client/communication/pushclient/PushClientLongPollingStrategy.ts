@@ -48,7 +48,7 @@ export class PushClientLongPollingStrategy extends PushClientStrategy {
             })
 
         } catch (ex) {
-            this.reopen();
+            this.reopen(10000);
         }
 
     }
@@ -62,13 +62,13 @@ export class PushClientLongPollingStrategy extends PushClientStrategy {
     }
 
 
-    close() {
+    async close() {
         this.isClosed = true;
         let headers: [string, string][] = [["content-type", "text/json"]];
 
         headers.push(["x-token-pm", this.csrfToken]);
 
-        fetch("/servlet/unregisterLongpollingListener", {
+        await fetch("/servlet/unregisterLongpollingListener", {
             method: "POST",
             headers: headers,
             body: JSON.stringify({})

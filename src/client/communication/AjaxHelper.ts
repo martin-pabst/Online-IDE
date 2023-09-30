@@ -41,6 +41,7 @@ export class PerformanceCollector {
 
 export var csrfToken: string = "";
 
+
 export function ajax(url: string, request: any, successCallback: (response: any) => void,
 
     errorCallback?: (message: string) => void) {

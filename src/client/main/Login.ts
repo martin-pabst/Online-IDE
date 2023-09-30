@@ -10,6 +10,7 @@ import { escapeHtml } from "../tools/StringTools.js";
 import { PruefungManagerForStudents } from './pruefung/PruefungManagerForStudents.js';
 import { PushClientManager } from '../communication/pushclient/PushClientManager.js';
 import { DatabaseNewLongPollingListener } from '../tools/database/DatabaseNewLongPollingListener.js';
+import { SqlIdeUrlHolder } from './SqlIdeUrlHolder.js';
 
 export class Login {
 
@@ -189,7 +190,7 @@ export class Login {
                 
                 that.main.user = user;
 
-                this.main.networkManager.sqlIdeURL = response.sqlIdeForOnlineIdeClient + "/servlet/";
+                SqlIdeUrlHolder.sqlIdeURL = response.sqlIdeForOnlineIdeClient + "/servlet/";
 
                 this.main.waitForGUICallback = () => {
                     

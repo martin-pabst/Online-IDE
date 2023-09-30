@@ -10,6 +10,10 @@ export class PushClientWebsocketStrategy extends PushClientStrategy {
 
     isClosed: boolean;
 
+    openedTimestamp: number;
+
+    currentTimer: any;
+
     constructor(manager: BasePushClientManager) {
         super("websocket strategy", manager);
     }
@@ -24,12 +28,23 @@ export class PushClientWebsocketStrategy extends PushClientStrategy {
 
             this.websocket = new WebSocket(url);
     
-            this.websocket.onopen = (event) => {}
+            this.websocket.onopen = (event) => {
+                this.openedTimestamp = performance.now();
+            }
     
             this.websocket.onclose = (event) => {
                 console.log("Websocket has been closed, code: " + event.code + ", reason: " + event.reason);
-                this.manager.onStrategyFailed(this);
+
                 this.isClosed = true;
+                
+                if(event.code == 1001 && performance.now() - this.openedTimestamp > 1e4){
+                    // timeout? => reopen
+                    console.log("Reason was timeout, dt > 10s => Reopen!");
+                    this.open();
+                } else {
+                    this.manager.onStrategyFailed(this);
+                }
+                
             }
     
             this.websocket.onerror = (event) => { 
@@ -45,6 +60,10 @@ export class PushClientWebsocketStrategy extends PushClientStrategy {
                 this.manager.onMessage(msg);
             }
 
+            if(this.currentTimer != null){
+                clearTimeout(this.currentTimer);
+            }
+
             this.doPing();
 
         } catch (ex){
@@ -54,10 +73,12 @@ export class PushClientWebsocketStrategy extends PushClientStrategy {
     }
 
     doPing(){
-        setTimeout(() => {
+        this.currentTimer = setTimeout(() => {
             if(!this.isClosed){
                 this.websocket.send("ping");
                 this.doPing();
+            } else {
+                this.currentTimer = null;
             }            
         }, 25000);
 

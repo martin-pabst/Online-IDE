@@ -1,10 +1,6 @@
-import { ajaxAsync, csrfToken } from "../../communication/AjaxHelper.js";
-import { DatabaseLongPollingListenerRequest, JMessageFromServer, JWebSocketMessageConnect, JWebSocketMessageDisconnect, JWebSocketMessageExecuteStatement, LongPollingListenerResponse, SendingStatementsMessageFromServer, WebSocketRequestConnect } from "../../communication/Data.js";
+import { csrfToken } from "../../communication/AjaxHelper.js";
 import { NetworkManager } from "../../communication/NetworkManager.js";
-import { ServerSentMessage } from "../../communication/pushclient/PushClientManager.js";
-import { Interpreter } from "../../interpreter/Interpreter.js";
-import { ConnectionHelper } from "../../runtimelibrary/database/Connection.js";
-import jQuery from 'jquery';
+import { ServerSentMessage } from "../../communication/pushclient/BasePushClientManager.js";
 
 type JavaRegisterDatabaseSSEListenerRequest = { token: string, registerOrUnregister: "register" | "unregister" }
 type JavaRegisterDatabaseSSEListenerResponse = { success: boolean, message: string }

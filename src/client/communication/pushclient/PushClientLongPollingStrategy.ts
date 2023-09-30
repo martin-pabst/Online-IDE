@@ -1,6 +1,5 @@
 import { csrfToken } from "../AjaxHelper";
 import { BasePushClientManager } from "./BasePushClientManager.js";
-import { PushClientManager } from "./PushClientManager";
 import { PushClientStrategy } from "./PushClientStrategy";
 
 export class PushClientLongPollingStrategy extends PushClientStrategy {

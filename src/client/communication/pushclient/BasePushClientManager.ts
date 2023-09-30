@@ -1,4 +1,3 @@
-import { csrfToken } from "../AjaxHelper";
 import { PushClientLongPollingStrategy } from "./PushClientLongPollingStrategy";
 import { PushClientStrategy } from "./PushClientStrategy";
 import { PushClientWebsocketStrategy } from "./PushClientWebsocketStrategy";

@@ -745,6 +745,7 @@ export class Interpreter {
                 // No static variable initializers
                 this.return;
             }
+            return;
         }
         this.stepOverNestingLevel = 10000;
         let oldStepOverNestingLevel = this.stepOverNestingLevel;

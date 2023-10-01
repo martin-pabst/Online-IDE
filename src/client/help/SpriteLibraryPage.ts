@@ -21,7 +21,7 @@ declare var SpriteLibrary: SpriteLibraryEntry[];
 export class SpriteLibraryPage {
     start() {
 
-        extractCsrfTokenFromGetRequest();
+        await extractCsrfTokenFromGetRequest(true);
 
         let $entries = jQuery('#entries');
         let $set: JQuery<HTMLElement>;

@@ -11,7 +11,7 @@ import { extractCsrfTokenFromGetRequest } from "../communication/AjaxHelper.js";
 export class ApiDoc {
     start() {
 
-        extractCsrfTokenFromGetRequest();
+        await extractCsrfTokenFromGetRequest(true);
 
         this.initEditor();
         this.initTypes();

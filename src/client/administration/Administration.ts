@@ -29,11 +29,9 @@ export class Administration {
     userData: UserData;
     classes: ClassData[];
 
-    start() {
+    async start() {
 
-        extractCsrfTokenFromGetRequest();
-
-        PushClientManager.getInstance().open();
+        await extractCsrfTokenFromGetRequest(true);
 
         let that = this;
         //@ts-ignore

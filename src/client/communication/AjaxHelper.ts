@@ -118,7 +118,7 @@ export function showNetworkBusy(busy: boolean) {
 }
 
 
-export function extractCsrfTokenFromGetRequest(){
+export async function extractCsrfTokenFromGetRequest(retrieveNewCsrfToken: boolean = false){
     let url = window.location.href;
     let tokenIndex = url.indexOf("csrfToken=");
     if(tokenIndex >= 0){
@@ -127,7 +127,12 @@ export function extractCsrfTokenFromGetRequest(){
             csrfToken = token;
         }
     }
+
+    if(retrieveNewCsrfToken){
+        await ajaxAsync("/servlet/retrieveNewCsrfToken", {});
+    }
 }
+
 
 
 export async function ajaxAsync(url: string, data: any): Promise<any>{

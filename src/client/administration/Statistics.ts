@@ -12,7 +12,7 @@ class Statistics {
 
     start(){
 
-        extractCsrfTokenFromGetRequest();
+        await extractCsrfTokenFromGetRequest(true);
 
         let request: GetStatisticsRequest = {now: false};
         let that = this;

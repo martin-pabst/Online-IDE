@@ -10,7 +10,7 @@ class Statistics {
     rawLabels: string[];
     timeFormat = 'YYYY-MM-DD HH:mm';
 
-    start(){
+    async start(){
 
         await extractCsrfTokenFromGetRequest(true);
 

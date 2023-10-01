@@ -19,7 +19,7 @@ type SpriteLibraryEntry = {
 declare var SpriteLibrary: SpriteLibraryEntry[];
 
 export class SpriteLibraryPage {
-    start() {
+    async start() {
 
         await extractCsrfTokenFromGetRequest(true);
 

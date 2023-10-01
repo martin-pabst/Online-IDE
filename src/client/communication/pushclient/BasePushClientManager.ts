@@ -58,16 +58,18 @@ export class BasePushClientManager {
         let oldStrategy = this.currentStrategy;
         this.currentStrategy = this.currentStrategy.nextStrategy;
 
-        console.log(`${oldStrategy.name} failed. `);
+        let text: string = `${oldStrategy.name} failed. `;
 
         if(this.currentStrategy != null){
+                text += `=> Trying ${this.currentStrategy.name} in 3 seconds...`;
             setTimeout(() => {
                 this.currentStrategy.open();                
             }, 3000);
         } else {
-            console.log(`${oldStrategy.name} was the last resort, unfortunately this client has no means to receive push-messages from server.`);
+            text += `It was the last resort, unfortunately this client has no means to receive push-messages from server.`;
         }
 
+        console.log(text);
 
     }
 

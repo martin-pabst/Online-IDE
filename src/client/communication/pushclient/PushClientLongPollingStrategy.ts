@@ -14,7 +14,9 @@ export class PushClientLongPollingStrategy extends PushClientStrategy {
 
     open(): void {
 
-        if (this.isClosed) return;
+        console.log(`Opening ${this.name}`);
+
+        this.isClosed = false;
 
         let headers: [string, string][] = [["content-type", "text/json"]];
 
@@ -28,12 +30,17 @@ export class PushClientLongPollingStrategy extends PushClientStrategy {
                 body: JSON.stringify({})
             }).then((response) => {
 
+                if(response.status != 200){
+                    console.log(`Long-polling listener got http-status: ${response.status} (${response.statusText})`);
+                }
+
                 switch (response.status) {
                     case 200:
                         response.json().then(data => this.manager.onMessage(data));
                         this.reopen();
                         break;
                     case 502:   // timeout!
+                    case 504:   // gateway timeout!
                         this.reopen();
                         break;
                     default:
@@ -41,9 +48,8 @@ export class PushClientLongPollingStrategy extends PushClientStrategy {
                         break;
                 }
 
-
             }).catch((reason) => {
-                console.log(reason);
+                console.log(`Long-polling listener failed due to reason: ${reason}`);
                 this.reopen(10000);
             })
 
@@ -53,11 +59,13 @@ export class PushClientLongPollingStrategy extends PushClientStrategy {
 
     }
 
-    reopen(timeout: number = 4000) {
-
+    reopen(timeout: number = 500) {
+        if (this.isClosed) return;
+        console.log(`Reopen long-polling listener in ${timeout/1000} seconds...`);
         setTimeout(() => {
+            if (this.isClosed) return;
             this.open();
-        }, 4000);
+        }, timeout);
 
     }
 

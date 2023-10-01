@@ -20,6 +20,7 @@ export class DatabaseNewLongPollingListener {
     private static openListeners: DatabaseNewLongPollingListener[] = [];
 
     isClosed: boolean;
+    abortController: AbortController;
 
     constructor(private networkManager: NetworkManager,
         private token: string, private databaseId: number, private onServerSentStatementsCallback: OnServerStatementsCallback) {
@@ -40,12 +41,15 @@ export class DatabaseNewLongPollingListener {
 
         console.log("opening...");
 
+        this.abortController = new AbortController();
+
         let headers: [string, string][] = [["content-type", "text/json"]];
 
         headers.push(["x-token-pm", "JJ" + csrfToken]);
 
         try {
             fetch(SqlIdeUrlHolder.sqlIdeURL + "registerLongpollingListener", {
+                signal: this.abortController.signal,
                 method: "POST",
                 headers: headers,
                 body: JSON.stringify({ token: this.token })
@@ -68,12 +72,16 @@ export class DatabaseNewLongPollingListener {
                 }
 
             }).catch((reason) => {
-                console.log(reason);
-                this.reopen(10000);
+                if((""+reason).indexOf("abort") < 0){
+                    console.log(reason);
+                    this.reopen(10000);
+                }
+            }).finally(() => {
+                this.abortController = null;
             })
 
         } catch (ex) {
-            this.reopen(10000);
+            console.log("Exception opening DatabaseLongPollingListener: " + ex);
         }
 
     }
@@ -96,6 +104,8 @@ export class DatabaseNewLongPollingListener {
 
     close() {
         this.isClosed = true;
+
+        this.abortController?.abort();
 
         let headers: [string, string][] = [["content-type", "text/json"]];
 

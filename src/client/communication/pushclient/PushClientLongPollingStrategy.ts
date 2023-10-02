@@ -7,6 +7,11 @@ export class PushClientLongPollingStrategy extends PushClientStrategy {
     isClosed: boolean;
     csrfToken: string;
 
+    shortestTimeoutMs: number = 120000;   // 50 s
+    timeOpened: number = null;
+
+    continuationToken: string = null;
+
     constructor(manager: BasePushClientManager) {
         super("long-polling strategy", manager);
         this.isClosed = false;
@@ -14,14 +19,18 @@ export class PushClientLongPollingStrategy extends PushClientStrategy {
 
     open(): void {
 
-        console.log(`Opening ${this.name}`);
-
         this.isClosed = false;
+        this.timeOpened = performance.now();
 
         let headers: [string, string][] = [["content-type", "text/json"]];
 
         headers.push(["x-token-pm", csrfToken]);
         this.csrfToken = csrfToken;
+        headers.push(["x-timeout", this.shortestTimeoutMs + ""]);
+
+        if (this.continuationToken != null) {
+            headers.push(["x-continuationToken", this.continuationToken])
+        }
 
         try {
             fetch("/servlet/registerLongpollingListener", {
@@ -30,38 +39,44 @@ export class PushClientLongPollingStrategy extends PushClientStrategy {
                 body: JSON.stringify({})
             }).then((response) => {
 
-                if(response.status != 200){
+                if (response.status != 200) {
                     console.log(`Long-polling listener got http-status: ${response.status} (${response.statusText})`);
                 }
 
+                let timeMs = Math.round(performance.now() - this.timeOpened) - 4000;
+                if (timeMs < this.shortestTimeoutMs) this.shortestTimeoutMs = timeMs;
+
                 switch (response.status) {
                     case 200:
-                        response.json().then(data => this.manager.onMessage(data));
+                        response.json().then(data => {
+                            this.manager.onMessage(data)
+                            this.continuationToken = data.continuationToken;
+                        });
                         this.reopen();
                         break;
                     case 502:   // timeout!
                     case 504:   // gateway timeout!
-                        this.reopen();
+                        this.reopen(1000, false);
                         break;
                     default:
-                        this.reopen(10000);
+                        this.reopen(10000, false);
                         break;
                 }
 
             }).catch((reason) => {
                 console.log(`Long-polling listener failed due to reason: ${reason}`);
-                this.reopen(10000);
+                this.reopen(10000, false);
             })
 
         } catch (ex) {
-            this.reopen(10000);
+            this.reopen(10000, false);
         }
 
     }
 
-    reopen(timeout: number = 500) {
+    reopen(timeout: number = 500, silently: boolean = true) {
         if (this.isClosed) return;
-        console.log(`Reopen long-polling listener in ${timeout/1000} seconds...`);
+        console.log(`Reopen long-polling listener in ${timeout / 1000} seconds...`);
         setTimeout(() => {
             if (this.isClosed) return;
             this.open();

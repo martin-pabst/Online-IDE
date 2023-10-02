@@ -20,8 +20,6 @@ export class PushClientWebsocketStrategy extends PushClientStrategy {
 
     open(): void {
 
-        console.log(`Opening ${this.name}`);
-
         this.isClosed = false;
 
         try {

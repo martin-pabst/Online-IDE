@@ -32,8 +32,8 @@ export class BasePushClientManager {
 
     protected constructor(public baseURL: string){
         this.strategies = [
+            new PushClientLongPollingStrategy(this),
             new PushClientWebsocketStrategy(this),
-            new PushClientLongPollingStrategy(this)
         ]
 
         for(let i = this.strategies.length - 2; i >= 0; i--){
@@ -49,10 +49,15 @@ export class BasePushClientManager {
         }
     }
 
-    onMessage(message: ServerSentMessage){
-        if(message.eventType == "keepAlive") return;
+    onMessage(messages: ServerSentMessage[]){
 
-        this.eventTypeToSubscriberInfoMap.get(message.eventType)?.handler(message.data);
+        for(let message of messages){            
+            if(message.eventType == "keepAlive") return;
+    
+            this.eventTypeToSubscriberInfoMap.get(message.eventType)?.handler(message.data);
+        }
+
+
     }
 
     onStrategyFailed(failedStrategy: PushClientStrategy){

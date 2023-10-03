@@ -57,7 +57,7 @@ export class PushClientWebsocketStrategy extends PushClientStrategy {
     
             this.websocket.onmessage = (event) => {
                 if(event.data == "pong") return;
-                const msg: ServerSentMessage = JSON.parse(event.data);
+                const msg: ServerSentMessage[] = JSON.parse(event.data);
                 this.manager.onMessage(msg);
             }
 

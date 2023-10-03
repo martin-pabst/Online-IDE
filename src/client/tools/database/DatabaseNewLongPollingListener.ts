@@ -123,15 +123,18 @@ export class DatabaseNewLongPollingListener {
         }
     }
 
-    onMessage(ssm: ServerSentMessage) {
+    onMessage(ssm: ServerSentMessage[]) {
 
-        switch (ssm.eventType) {
-            case 'close':
-                return;
-            case 'broadcastDatabaseChange':
-                this.onDBMessage(ssm.data);
-                return;
+        for(let message of ssm){
+            switch (message.eventType) {
+                case 'close':
+                    return;
+                case 'broadcastDatabaseChange':
+                    this.onDBMessage(message.data);
+                    return;
+            }
         }
+
     }
 
 

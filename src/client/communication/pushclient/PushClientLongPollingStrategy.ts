@@ -7,10 +7,9 @@ export class PushClientLongPollingStrategy extends PushClientStrategy {
     isClosed: boolean;
     csrfToken: string;
 
-    shortestTimeoutMs: number = 120000;   // 50 s
+    shortestTimeoutMs: number = 60000;   // 60 s
     timeOpened: number = null;
 
-    continuationToken: string = null;
 
     constructor(manager: BasePushClientManager) {
         super("long-polling strategy", manager);
@@ -28,10 +27,6 @@ export class PushClientLongPollingStrategy extends PushClientStrategy {
         this.csrfToken = csrfToken;
         headers.push(["x-timeout", this.shortestTimeoutMs + ""]);
 
-        if (this.continuationToken != null) {
-            headers.push(["x-continuationToken", this.continuationToken])
-        }
-
         try {
             fetch("/servlet/registerLongpollingListener", {
                 method: "POST",
@@ -43,14 +38,15 @@ export class PushClientLongPollingStrategy extends PushClientStrategy {
                     console.log(`Long-polling listener got http-status: ${response.status} (${response.statusText})`);
                 }
 
-                let timeMs = Math.round(performance.now() - this.timeOpened) - 4000;
-                if (timeMs < this.shortestTimeoutMs) this.shortestTimeoutMs = timeMs;
+                if(response.status != 200){
+                    let timeMs = Math.round(performance.now() - this.timeOpened) - 4000;
+                    if (timeMs < this.shortestTimeoutMs) this.shortestTimeoutMs = timeMs;
+                }
 
                 switch (response.status) {
                     case 200:
                         response.json().then(data => {
                             this.manager.onMessage(data)
-                            this.continuationToken = data.continuationToken;
                         });
                         this.reopen();
                         break;

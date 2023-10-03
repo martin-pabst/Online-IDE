@@ -36,9 +36,6 @@ export class PushClientLongPollingStrategy extends PushClientStrategy {
 
                 if (response.status != 200) {
                     console.log(`Long-polling listener got http-status: ${response.status} (${response.statusText})`);
-                }
-
-                if(response.status != 200){
                     let timeMs = Math.round(performance.now() - this.timeOpened) - 4000;
                     if (timeMs < this.shortestTimeoutMs) this.shortestTimeoutMs = timeMs;
                 }

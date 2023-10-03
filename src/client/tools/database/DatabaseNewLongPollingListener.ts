@@ -22,6 +22,9 @@ export class DatabaseNewLongPollingListener {
     isClosed: boolean;
     abortController: AbortController;
 
+    shortestTimeoutMs: number = 60000;   // 60 s
+    timeOpened: number = null;
+
     constructor(private networkManager: NetworkManager,
         private token: string, private databaseId: number, private onServerSentStatementsCallback: OnServerStatementsCallback) {
         
@@ -39,13 +42,12 @@ export class DatabaseNewLongPollingListener {
 
         if(this.isClosed) return;
 
-        console.log("opening...");
-
         this.abortController = new AbortController();
 
         let headers: [string, string][] = [["content-type", "text/json"]];
 
         headers.push(["x-token-pm", "JJ" + csrfToken]);
+        headers.push(["x-timeout", this.shortestTimeoutMs + ""]);
 
         try {
             fetch(SqlIdeUrlHolder.sqlIdeURL + "registerLongpollingListener", {
@@ -54,6 +56,11 @@ export class DatabaseNewLongPollingListener {
                 headers: headers,
                 body: JSON.stringify({ token: this.token })
             }).then((response) => {
+
+                if (response.status != 200) {
+                    let timeMs = Math.round(performance.now() - this.timeOpened) - 4000;
+                    if (timeMs < this.shortestTimeoutMs) this.shortestTimeoutMs = timeMs;
+                }
 
                 switch (response.status) {
                     case 200:

@@ -32,8 +32,8 @@ export class BasePushClientManager {
 
     protected constructor(public baseURL: string){
         this.strategies = [
-            new PushClientLongPollingStrategy(this),
             new PushClientWebsocketStrategy(this),
+            new PushClientLongPollingStrategy(this)
         ]
 
         for(let i = this.strategies.length - 2; i >= 0; i--){

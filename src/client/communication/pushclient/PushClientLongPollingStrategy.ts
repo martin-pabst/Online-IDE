@@ -69,7 +69,9 @@ export class PushClientLongPollingStrategy extends PushClientStrategy {
 
     reopen(timeout: number = 500, silently: boolean = true) {
         if (this.isClosed) return;
-        console.log(`Reopen long-polling listener in ${timeout / 1000} seconds...`);
+        if(timeout > 500){
+            console.log(`Reopen long-polling listener in ${timeout / 1000} seconds...`);
+        }
         setTimeout(() => {
             if (this.isClosed) return;
             this.open();

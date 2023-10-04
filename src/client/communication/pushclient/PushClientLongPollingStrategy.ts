@@ -10,6 +10,9 @@ export class PushClientLongPollingStrategy extends PushClientStrategy {
     shortestTimeoutMs: number = 60000;   // 60 s
     timeOpened: number = null;
 
+    abortController: AbortController;
+
+
 
     constructor(manager: BasePushClientManager) {
         super("long-polling strategy", manager);
@@ -19,6 +22,9 @@ export class PushClientLongPollingStrategy extends PushClientStrategy {
     open(): void {
 
         this.isClosed = false;
+
+        this.abortController = new AbortController();
+
         this.timeOpened = performance.now();
 
         let headers: [string, string][] = [["content-type", "text/json"]];
@@ -29,6 +35,7 @@ export class PushClientLongPollingStrategy extends PushClientStrategy {
 
         try {
             fetch("/servlet/registerLongpollingListener", {
+                signal: this.abortController.signal,
                 method: "POST",
                 headers: headers,
                 body: JSON.stringify({})
@@ -59,6 +66,8 @@ export class PushClientLongPollingStrategy extends PushClientStrategy {
             }).catch((reason) => {
                 console.log(`Long-polling listener failed due to reason: ${reason}`);
                 this.reopen(10000, false);
+            }).finally(() => {
+                this.abortController = null;
             })
 
         } catch (ex) {
@@ -82,6 +91,8 @@ export class PushClientLongPollingStrategy extends PushClientStrategy {
 
     async close() {
         this.isClosed = true;
+        this.abortController?.abort();
+
         let headers: [string, string][] = [["content-type", "text/json"]];
 
         headers.push(["x-token-pm", this.csrfToken]);

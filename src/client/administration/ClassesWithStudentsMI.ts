@@ -441,16 +441,13 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
             let cd: ClassData = request.data;
             cd.id = response.id;
             classesGrid.add(cd);
+
+            cd.lehrkraft_id = userData.id;
+            cd.schule_id = userData.schule_id;
+            cd.students = [];
+
             classesGrid.editField(cd.id + "", 1, undefined, { keyCode: 13 });
-            this.allClassesList.push({
-                id: cd.id,
-                lehrkraft_id: userData.id,
-                zweitlehrkraft_id: null,
-                schule_id: userData.schule_id,
-                name: cd.name,
-                aktiv: cd.aktiv,
-                students: []
-            })
+            this.allClassesList.push(cd)
 
             this.selectTextInCell();
         });

@@ -87,7 +87,7 @@ export class Interpreter {
 
     isFirstStatement: boolean = true;
 
-    showProgrampointerUptoStepsPerSecond = 15;
+    showProgrampointerUptoStepsPerSecond = 1000;
 
     worldHelper: WorldHelper;
     gngEreignisbehandlungHelper: GNGEreignisbehandlungHelper;
@@ -706,6 +706,7 @@ export class Interpreter {
 
     lastPrintedModule: Module = null;
     showProgramPointerAndVariables() {
+        this.debugger.blur(false);
         if (this.currentProgram == null) return;
         let node = this.currentProgram.statements[this.currentProgramPosition];
         if (node == null) return;
@@ -1580,12 +1581,24 @@ export class Interpreter {
 
     runningStates: InterpreterState[] = [InterpreterState.paused, InterpreterState.running, InterpreterState.waitingForInput, InterpreterState.waitingForDB];
 
+    setStepsPerSecond(stepsPerSecond: number) {
+        this.stepsPerSecond = stepsPerSecond;
+        this.blurDebuggerIfNecessary();
+    }
+
+    blurDebuggerIfNecessary(){
+        this.debugger.blur(this.state == InterpreterState.running && this.stepsPerSecond > this.showProgrampointerUptoStepsPerSecond);
+    }
+
+
     setState(state: InterpreterState) {
 
         // console.log("Set state " + InterpreterState[state]);
-
+        
         let oldState = this.state;
         this.state = state;
+        
+        this.blurDebuggerIfNecessary();
 
         if (state == InterpreterState.error || state == InterpreterState.done) {
             this.closeAllWebsockets();
@@ -1894,5 +1907,6 @@ export class Interpreter {
         this.databaseConnectionHelpers.push(ch); 
     }
 
+    
 
 }

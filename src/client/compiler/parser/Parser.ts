@@ -256,6 +256,7 @@ export class Parser {
                 if (tt == operator) return true;
             }
         }
+        return false;
     }
 
     isEnd(): boolean {

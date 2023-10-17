@@ -10,9 +10,9 @@ class Statistics {
     rawLabels: string[];
     timeFormat = 'YYYY-MM-DD HH:mm';
 
-    start(){
+    async start(){
 
-        extractCsrfTokenFromGetRequest();
+        await extractCsrfTokenFromGetRequest(true);
 
         let request: GetStatisticsRequest = {now: false};
         let that = this;

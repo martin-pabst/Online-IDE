@@ -160,7 +160,7 @@ export class SpeedControl {
     }
     
     setInterpreterSpeed(stepsPerSecond: number){
-        this.interpreter.stepsPerSecond = stepsPerSecond;
+        this.interpreter.setStepsPerSecond(stepsPerSecond);
 
         this.interpreter.hideProgrampointerPosition();
 

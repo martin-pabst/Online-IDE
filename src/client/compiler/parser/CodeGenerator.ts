@@ -42,7 +42,11 @@ export class CodeGenerator {
     breakNodeStack: JumpAlwaysStatement[][];
     continueNodeStack: JumpAlwaysStatement[][];
 
+    isAdhocCompilation: boolean;
+
     startAdhocCompilation(module: Module, moduleStore: ModuleStore, symbolTable: SymbolTable, heap: Heap): Error[] {
+
+        this.isAdhocCompilation = true;
 
         this.moduleStore = moduleStore;
         this.module = module;
@@ -69,6 +73,8 @@ export class CodeGenerator {
     }
 
     start(module: Module, moduleStore: ModuleStore) {
+
+        this.isAdhocCompilation = false;
 
         this.moduleStore = moduleStore;
         this.module = module;
@@ -1543,8 +1549,11 @@ export class CodeGenerator {
             if (this.heap[variable.identifier]) {
                 this.pushError("Die Variable " + node.identifier + " darf im selben Sichtbarkeitsbereich (Scope) nicht mehrmals definiert werden.", node.position);
             }
-
-            this.heap[variable.identifier] = variable;
+            
+            //Not needed in commandline-mode?
+            if(!this.isAdhocCompilation){
+                this.heap[variable.identifier] = variable;
+            }
             // only for code completion:
             this.currentSymbolTable.variableMap.set(node.identifier, variable);
 

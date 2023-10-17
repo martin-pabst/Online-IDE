@@ -303,12 +303,15 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
                 usersWithoutClass: []
             },
         };
+        console.log("Hier!");
 
         ajax("CRUDSchool", request, (response: CRUDResponse) => {
             let cd: SchoolData = request.data;
             cd.id = response.id;
             this.schoolGrid.add(cd);
-            this.schoolGrid.editField(cd.id + "", 1, undefined, { keyCode: 13 });
+            // this.schoolGrid.scrollIntoView(cd.id);
+            //@ts-ignore
+            this.schoolGrid.editField(cd.id, 1, undefined, { keyCode: 13 });
 
             this.selectTextInCell();
         });

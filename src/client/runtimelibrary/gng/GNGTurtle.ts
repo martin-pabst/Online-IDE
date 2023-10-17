@@ -31,7 +31,7 @@ export class GNGTurtleClass extends Klass {
         }, false, Visibility.protected, false, "x-Position der Figur"));
 
         this.addAttribute(new Attribute("winkel", intPrimitiveType, (value: Value) => { 
-            value.value = value.object.intrinsicData["Actor"].turtleAngleDeg 
+            value.value = - value.object.intrinsicData["Actor"].turtleAngleDeg 
         }, false, Visibility.protected, false, "Blickrichtung der Figur in Grad"));
 
         this.addAttribute(new Attribute("größe", intPrimitiveType, (value: Value) => { 

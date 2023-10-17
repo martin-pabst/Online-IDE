@@ -535,6 +535,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
     width: 100%;
     background-color: var(--backgroundDark);
     border-top: 1px solid var(--slider);
+    box-sizing: border-box;
 }
 
 #errors {

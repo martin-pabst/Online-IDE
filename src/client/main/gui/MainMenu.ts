@@ -256,7 +256,7 @@ export class MainMenu {
                                 link: "https://www.learnj.de/doku.php?id=javaonline:ueber"
                             },
                             {
-                                identifier: "<div class='jo_menu_version'>Version " + APP_VERSION + " vom " + BUILD_DATE + "</div>",
+                                identifier: "<div class='jo_menu_version'>Version " + APP_VERSION + " vom " + BUILD_DATE + " </div>",
                                 noHoverAnimation: true
                             }
 

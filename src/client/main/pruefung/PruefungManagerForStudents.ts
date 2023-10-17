@@ -1,6 +1,6 @@
 import { ajaxAsync } from "../../communication/AjaxHelper.js";
 import { Pruefung, ReportPruefungStudentStateRequest, ReportPruefungStudentStateResponse, WorkspaceData } from "../../communication/Data.js";
-import { SSEManager } from "../../communication/SSEManager.js";
+import { PushClientManager } from "../../communication/pushclient/PushClientManager.js";
 import { Workspace } from "../../workspace/Workspace.js";
 import { Main } from "../Main.js";
 import jQuery from "jquery";
@@ -14,18 +14,18 @@ export class PruefungManagerForStudents {
     timer: any;
 
     constructor(private main: Main){
-        SSEManager.subscribe("startPruefung", (message: MessagePruefungStart ) => {
+        PushClientManager.subscribe("startPruefung", (message: MessagePruefungStart ) => {
             this.startPruefung(message.pruefung);
         })
-        SSEManager.subscribe("stopPruefung", (message: MessagePruefungStart ) => {
+        PushClientManager.subscribe("stopPruefung", (message: MessagePruefungStart ) => {
             this.stopPruefung(true);
         })
     }
 
     close(){
         if(this.pruefung != null){
-            SSEManager.unsubscribe("startPruefung");
-            SSEManager.unsubscribe("stopPruefung");
+            PushClientManager.unsubscribe("startPruefung");
+            PushClientManager.unsubscribe("stopPruefung");
             if(this.timer != null) clearInterval(this.timer);
             this.main.networkManager.sendUpdates(() => {
                 let projectExplorer = this.main.projectExplorer;

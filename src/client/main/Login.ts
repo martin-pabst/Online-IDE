@@ -7,9 +7,10 @@ import { InterpreterState } from "../interpreter/Interpreter.js";
 import { SoundTools } from "../tools/SoundTools.js";
 import { UserMenu } from "./gui/UserMenu.js";
 import { escapeHtml } from "../tools/StringTools.js";
-import { SSEManager } from '../communication/SSEManager.js';
 import { PruefungManagerForStudents } from './pruefung/PruefungManagerForStudents.js';
-import { DatabaseSSEListener } from '../tools/database/DatabaseSSEListener.js';
+import { PushClientManager } from '../communication/pushclient/PushClientManager.js';
+import { DatabaseNewLongPollingListener } from '../tools/database/DatabaseNewLongPollingListener.js';
+import { SqlIdeUrlHolder } from './SqlIdeUrlHolder.js';
 
 export class Login {
 
@@ -124,8 +125,8 @@ export class Login {
                 });
             });
 
-            SSEManager.close();
-            DatabaseSSEListener.closeSSE();
+            PushClientManager.getInstance().close();
+            DatabaseNewLongPollingListener.close();
 
         });
 
@@ -189,7 +190,7 @@ export class Login {
                 
                 that.main.user = user;
 
-                this.main.networkManager.sqlIdeURL = response.sqlIdeForOnlineIdeClient + "/servlet/";
+                SqlIdeUrlHolder.sqlIdeURL = response.sqlIdeForOnlineIdeClient + "/servlet/";
 
                 this.main.waitForGUICallback = () => {
                     

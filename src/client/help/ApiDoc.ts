@@ -9,9 +9,9 @@ import jQuery from 'jquery';
 import { extractCsrfTokenFromGetRequest } from "../communication/AjaxHelper.js";
 
 export class ApiDoc {
-    start() {
+    async start() {
 
-        extractCsrfTokenFromGetRequest();
+        await extractCsrfTokenFromGetRequest(true);
 
         this.initEditor();
         this.initTypes();

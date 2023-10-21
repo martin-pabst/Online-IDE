@@ -314,11 +314,12 @@ export class StudentBulkImportMI extends AdminMenuItem {
     showStep1Paste() {
 
         let description: string = `
-        Zum Importieren wird eine Tabelle mit den Spalten Rufname, Familienname, Username und Passwort benötigt, 
+        Zum Importieren wird eine Tabelle mit den Spalten Rufname, Familienname, Username und (optional:) Passwort benötigt, 
         wobei die Daten in den Zellen jeweils mit Tab-Zeichen getrennt sind. Sie erhalten dieses Format beispielsweise, 
         indem Sie eine Tabelle in Excel in die Zwischenablage kopieren. <br> Falls die erste Zeile Spaltenköpfe mit
         den korrekten Bezeichnern (Rufname, Familienname, Username, Passwort) enthält, kümmert sich der Import-Algorithmus
-        um die richtige Reihenfolge und blendet ggf. auch überflüssige Spalten aus. <br>
+        um die richtige Reihenfolge und blendet ggf. auch überflüssige Spalten aus. Falls eine Zeile kein Passwort enthält, 
+        setzt die Online-IDE ein Zufallspasswort.<br>
         Bitte fügen Sie den Inhalt der Tabelle per Copy-Paste in dieses Eingabefeld ein:`
 
         this.$tableLeft.append($('<div class="jo_bulk_heading">Schritt 1: Daten einlesen</div>'));
@@ -380,12 +381,17 @@ export class StudentBulkImportMI extends AdminMenuItem {
         let id: number = 1;
 
         for (let line of lines) {
+            let password: string = this.getRandomPassword();
+            if(columnMapping["passwort"] && line[columnMapping["passwort"]] != null){
+                password = line[columnMapping["passwort"]].trim()
+            } 
+
             userData.push({
                 id: id++,
                 familienname: line[columnMapping["familienname"]],
                 rufname: line[columnMapping["rufname"]],
                 username: line[columnMapping["username"]].trim(),
-                password: line[columnMapping["passwort"]].trim(),
+                password: password,
                 is_admin: false,
                 is_schooladmin: false,
                 is_teacher: false,
@@ -396,6 +402,15 @@ export class StudentBulkImportMI extends AdminMenuItem {
 
         return userData;
 
+    }
+
+    getRandomPassword(): string {
+        let goodCharacters: string = "abcdefghkmnpqrstuvwxyABCDEFGHKLMNPQRSTUVW123456789#!$";
+        let pw: string = '';
+        for(let i = 0; i< 8; i++){
+            pw += goodCharacters.charAt(Math.trunc(Math.random() * goodCharacters.length));
+        }        
+        return pw;
     }
 
     getColumnMapping(lines: string[][]): { columnMapping: ColumnMapping, line1HasHeaders: boolean } {

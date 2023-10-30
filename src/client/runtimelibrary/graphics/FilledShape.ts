@@ -345,7 +345,7 @@ export abstract class FilledShapeHelper extends ShapeHelper {
             this.borderColor = c.color;
             this.borderAlpha = alpha == null ? c.alpha : alpha;
         } else {
-            this.borderColor = color;
+            this.borderColor = color % 0x1000000;
             this.borderAlpha = alpha;
         }
 
@@ -360,7 +360,7 @@ export abstract class FilledShapeHelper extends ShapeHelper {
             this.fillColor = c.color;
             this.fillAlpha = alpha == null ? c.alpha : alpha;
         } else {
-            this.fillColor = color;
+            this.fillColor = color % 1000000;
             if (alpha != null) this.fillAlpha = alpha;
         }
 

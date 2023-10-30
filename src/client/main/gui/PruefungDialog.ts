@@ -6,7 +6,7 @@ import { Main } from "../Main.js";
 import { MainBase } from "../MainBase.js";
 import { CheckboxState, Dialog } from "./Dialog.js";
 import jQuery from "jquery";
-import { GUIButton } from "./controls/GUIButton.js";
+import { GUIButton } from "../../tools/components/GUIButton.js";
 import { getSelectedObject } from "../../tools/HtmlTools.js";
 import { ajaxAsync } from "../../communication/AjaxHelper.js";
 

@@ -522,8 +522,7 @@ export class ProjectExplorer {
                                     if (error == null) {
                                         let networkManager = this.main.networkManager;
                                         let dt = networkManager.updateFrequencyInSeconds * networkManager.forcedUpdateEvery;
-                                        alert("Der Workspace " + workspace.name + " wurde an die Klasse " + klasse.name + " ausgeteilt. Er wird in maximal " +
-                                            dt + " s bei jedem Schüler ankommen.");
+                                        alert("Der Workspace " + workspace.name + " wurde an die Klasse " + klasse.name + " ausgeteilt. Er wird sofort in der Workspaceliste der Schüler/innen erscheinen.\n Falls das bei einer Schülerin/einem Schüler nicht klappt, bitten Sie sie/ihn, sich kurz aus- und wieder einzuloggen.");
                                     } else {
                                         alert(error);
                                     }

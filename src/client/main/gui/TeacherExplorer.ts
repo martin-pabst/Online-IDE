@@ -3,7 +3,7 @@ import { Main } from "../Main.js";
 import { ClassData, UserData, Pruefung, PruefungCaptions } from "../../communication/Data.js";
 import { ajaxAsync, csrfToken } from "../../communication/AjaxHelper.js";
 import { Workspace } from "../../workspace/Workspace.js";
-import { GUIToggleButton } from "./controls/GUIToggleButton.js";
+import { GUIToggleButton } from "../../tools/components/GUIToggleButton.js";
 import jQuery from "jquery";
 import { PushClientManager } from "../../communication/pushclient/PushClientManager.js";
 

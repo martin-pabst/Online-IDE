@@ -360,7 +360,7 @@ export abstract class FilledShapeHelper extends ShapeHelper {
             this.fillColor = c.color;
             this.fillAlpha = alpha == null ? c.alpha : alpha;
         } else {
-            this.fillColor = color % 1000000;
+            this.fillColor = color % 0x1000000;
             if (alpha != null) this.fillAlpha = alpha;
         }
 

@@ -664,7 +664,8 @@ export class TurtleHelper extends FilledShapeHelper {
                 if (sh instanceof FilledShapeHelper && sh.fillColor == farbe) return true;
                 // if(sh instanceof TurtleHelper) TODO
             }
-        }
+        } 
+        return false;
     }
 
     touchesShape(shape: ShapeHelper) {

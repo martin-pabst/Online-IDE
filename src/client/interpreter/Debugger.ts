@@ -77,6 +77,8 @@ export class Debugger {
     showData(currentProgram: Program, textPosition: TextPosition,
         stack: Value[], stackframe: number, heap: Heap) {
 
+        if(this.$debuggerDiv.is(':hidden')) return;
+
         if (currentProgram.module.file == null) return; // inside command line
 
         let elementsToKeep: HTMLElement[] = [];

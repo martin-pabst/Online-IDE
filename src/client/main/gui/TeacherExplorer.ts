@@ -182,6 +182,8 @@ export class TeacherExplorer {
     renderStudents(userDataList: UserData[]) {
         this.studentPanel.clear();
 
+        this.studentPanel.setCaption(userDataList.length + " Schüler/innen");
+
         userDataList.sort((a, b) => {
             if (a.familienname > b.familienname) return -1;
             if (b.familienname > a.familienname) return 1;
@@ -208,6 +210,7 @@ export class TeacherExplorer {
 
     renderClasses(classDataList: ClassData[]) {
         this.studentPanel.clear();
+        this.studentPanel.setCaption("Schüler/innen");
         this.classPanel.clear();
 
         classDataList.sort((a, b) => {

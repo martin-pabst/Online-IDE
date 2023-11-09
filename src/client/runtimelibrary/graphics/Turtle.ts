@@ -301,6 +301,7 @@ export class TurtleHelper extends FilledShapeHelper {
     renderJobPresent: boolean = false;
 
     angleHasChanged: boolean = true;
+    lastLengthSign: number = -2;
 
     constructor(xStart: number, yStart: number, private showTurtle: boolean,
         interpreter: Interpreter, runtimeObject: RuntimeObject) {
@@ -397,6 +398,12 @@ export class TurtleHelper extends FilledShapeHelper {
     newAngleDeg: number;
 
     forward(length: number) {
+
+        if(Math.sign(length) != this.lastLengthSign){
+            this.angleHasChanged = true;
+        }
+
+        this.lastLengthSign = Math.sign(length);
 
         let lastLineElement: LineElement = this.lineElements[this.lineElements.length - 1];
 

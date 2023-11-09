@@ -35,21 +35,34 @@ export class DistributeToStudentsDialog {
         let $studentList = jQuery('.jo_ds_student_list');
         let that = this;
 
+        let students: UserData[] = [];
+
         for(let klass of this.classes){
             for(let student of klass.students){
-                let $studentLine = jQuery('<div class="jo_ds_student_line">');
-                let $studentClass = jQuery(`<div class="jo_ds_student_class">${klass.name}</div>`);                
-                let $studentName = jQuery(`<div class="jo_ds_student_name">${student.rufname} ${student.familienname}</div>`);
-                $studentLine.append($studentClass, $studentName);
-                $studentList.append($studentLine);
-                $studentLine.on('mousedown', () => {
-                    $studentLine.toggleClass('jo_active');
-                     that.studentCount += $studentLine.hasClass('jo_active') ? 1 : -1;
-                     jQuery('.jo_ds_selected_message').text(`${that.studentCount} Schüler/inn/en selektiert`);
-                });
-                $studentLine.data('student', student);
-                $studentLine.data('klass', klass);
+                students.push(student);
+                student["klass"] = klass;
             }
+        }
+
+        students.sort((a, b) => {
+            if(a.klasse_id != b.klasse_id) return a.klasse_id - b.klasse_id;
+            if(a.familienname != b.familienname) return a.familienname.localeCompare(b.familienname);
+            return a.rufname.localeCompare(b.rufname);
+        })
+
+        for(let student of students){
+            let $studentLine = jQuery('<div class="jo_ds_student_line">');
+            let $studentClass = jQuery(`<div class="jo_ds_student_class">${student["klass"].name}</div>`);                
+            let $studentName = jQuery(`<div class="jo_ds_student_name">${student.rufname} ${student.familienname}</div>`);
+            $studentLine.append($studentClass, $studentName);
+            $studentList.append($studentLine);
+            $studentLine.on('mousedown', () => {
+                $studentLine.toggleClass('jo_active');
+                 that.studentCount += $studentLine.hasClass('jo_active') ? 1 : -1;
+                 jQuery('.jo_ds_selected_message').text(`${that.studentCount} Schüler/inn/en selektiert`);
+            });
+            $studentLine.data('student', student);
+            $studentLine.data('klass', student["klass"]);
         }
 
         jQuery('.jo_ds_filterdiv>input').on('input', () => {

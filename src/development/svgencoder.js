@@ -1,8 +1,8 @@
 // var fs = require('fs');
 import * as fs from 'fs';
+var externalQuotesValue = 'double';
 var quotes = getQuotes();
-var externalQuotesValue = 'single';
-var symbols = /[\r\n%#()<>?\[\\\]^`{|}]/g;
+var symbols = /[\"\ =\:\/\r\n%#()<>?\[\\\]^`{|}]/g;
 let path = './include/icons';
 let filenameToURLMap = {};
 let filenames = [];
@@ -78,12 +78,12 @@ function addNameSpace(data) {
 //----------------------------------------
 function encodeSVG(data) {
     // Use single quotes instead of double to avoid encoding.
-    if (externalQuotesValue === 'double') {
-        data = data.replace(/"/g, '\'');
-    }
-    else {
-        data = data.replace(/'/g, '"');
-    }
+    // if (externalQuotesValue === 'double') {
+    //     data = data.replace(/"/g, '\'');
+    // }
+    // else {
+    //     data = data.replace(/'/g, '"');
+    // }
     data = data.replace(/>\s{1,}</g, "><");
     data = data.replace(/\s{2,}/g, " ");
     return data.replace(symbols, encodeURIComponent);

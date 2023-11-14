@@ -110,6 +110,7 @@ import { GuiComponentClass } from "../../runtimelibrary/graphics/gui/GuiComponen
 import { GuiTextComponentClass } from "../../runtimelibrary/graphics/gui/GuiTextComponent.js";
 import { CollectionsClass } from "../../runtimelibrary/collections/Collections.js";
 import { DecimalFormatClass } from "../../runtimelibrary/DecimalFormatClass.js";
+import { BigIntegerClass } from "../../runtimelibrary/BigInteger.js";
 
 export type ExportedWorkspace = {
     name: string;
@@ -839,6 +840,7 @@ export class BaseModule extends Module {
 
 
         this.typeStore.addType(new PositionClass(this));
+        this.typeStore.addType(new BigIntegerClass(this));
 
         // Collections Framework
         this.typeStore.addType(new IteratorClass(this));

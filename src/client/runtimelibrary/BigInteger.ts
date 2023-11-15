@@ -60,7 +60,7 @@ export class BigIntegerClass extends Klass {
 
                 return result;
 
-            }, false, false, 'Dividiert das aktuelle Objekt durch das übergebene BigInteger-Objekt und gibt ein neues BigInteger-Objekt zurück, dessen Wert der ganzzahlige Anteil des errechneten Quotienten ist. Die Methode add ändert nicht das aktuelle BigInteger-Objekt!', false));
+            }, false, false, 'Dividiert das aktuelle Objekt durch das übergebene BigInteger-Objekt und gibt ein neues BigInteger-Objekt zurück, dessen Wert der ganzzahlige Anteil des errechneten Quotienten ist. Die Methode divide ändert nicht das aktuelle BigInteger-Objekt!', false));
 
         this.addMethod(new Method("multiply", new Parameterlist([
             { identifier: "val", type: this, declaration: null, usagePositions: null, isFinal: true, isEllipsis: false }
@@ -78,7 +78,7 @@ export class BigIntegerClass extends Klass {
 
                 return result;
 
-            }, false, false, 'Multipliziert das aktuelle Objekt mit dem übergebenen BigInteger-Objekt und gibt ein neues BigInteger-Objekt zurück, dessen Wert das Produkt der beiden Zahlen ist. Die Methode add ändert nicht das aktuelle BigInteger-Objekt!', false));
+            }, false, false, 'Multipliziert das aktuelle Objekt mit dem übergebenen BigInteger-Objekt und gibt ein neues BigInteger-Objekt zurück, dessen Wert das Produkt der beiden Zahlen ist. Die Methode multiply ändert nicht das aktuelle BigInteger-Objekt!', false));
 
         this.addMethod(new Method("remainder", new Parameterlist([
             { identifier: "val", type: this, declaration: null, usagePositions: null, isFinal: true, isEllipsis: false }
@@ -96,7 +96,7 @@ export class BigIntegerClass extends Klass {
 
                 return result;
 
-            }, false, false, 'Dividiert das aktuelle Objekt durch das übergebenen BigInteger-Objekt und gibt ein neues BigInteger-Objekt zurück, dessen Wert der Rest der Division ist. Die Methode add ändert nicht das aktuelle BigInteger-Objekt!', false));
+            }, false, false, 'Dividiert das aktuelle Objekt durch das übergebenen BigInteger-Objekt und gibt ein neues BigInteger-Objekt zurück, dessen Wert der Rest der Division ist. Die Methode remainder ändert nicht das aktuelle BigInteger-Objekt!', false));
 
         this.addMethod(new Method("toString", new Parameterlist([
         ]), stringPrimitiveType,

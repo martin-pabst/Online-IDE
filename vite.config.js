@@ -13,8 +13,12 @@ var d = new Date();
 var curr_date = d.getDate();
 var curr_month = d.getMonth() + 1; //Months are zero based
 var curr_year = d.getFullYear();
-var hour = d.getHours();
-var minute = d.getMinutes();
+var hour = "" + d.getHours();
+while(hour.length  < 2) hour = "0" + hour;
+
+var minute = "" + d.getMinutes();
+while(minute.length < 2) minute = "0" + minute;
+
 var buildDate = curr_date + "." + curr_month + "." + curr_year + ", " + hour + ":" + minute + " Uhr";
 
 export default defineConfig({

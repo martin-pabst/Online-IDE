@@ -11,6 +11,7 @@ import { Pruefungen } from "./Pruefungen.js";
 import "/include/css/lib/w2ui-2.0.css"
 import "/include/css/icons.css";
 import "/include/css/administration.css";
+import { w2utils } from "../lib/w2ui-2.0.es6.js";
 
 
 export class Administration {

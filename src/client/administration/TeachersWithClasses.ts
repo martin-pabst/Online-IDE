@@ -51,7 +51,6 @@ export class TeachersWithClassesMI extends AdminMenuItem {
                 footer: true,
                 selectColumn: true,
                 toolbarSearch: false
-
             },
             toolbar: {
                 items: [
@@ -88,8 +87,8 @@ export class TeachersWithClassesMI extends AdminMenuItem {
                 { field: 'familienname', label: 'Familienname', type: 'text' }
             ],
             sortData: [{ field: 'familienname', direction: 'asc' }, { field: 'rufname', direction: 'asc' }],
-            onSelect: (event) => { event.done(() => { that.onSelectTeacher() }) },
-            onUnselect: (event) => { that.onUnSelectTeacher(event) },
+            onSelect: (event) => { event.done(()=>{that.onSelectTeacher()}) },
+            // onUnselect: (event) => { that.onUnSelectTeacher(event) },
             onAdd: (event) => { that.onAddTeacher() },
             onChange: (event) => { that.onUpdateTeacher(event) },
             onDelete: (event) => { that.onDeleteTeacher(event) },

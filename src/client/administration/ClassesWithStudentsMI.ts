@@ -4,6 +4,7 @@ import { ajax } from "../communication/AjaxHelper.js";
 import { Administration } from "./Administration.js";
 import { TeachersWithClassesMI } from "./TeachersWithClasses.js";
 import { PasswordPopup } from "./PasswordPopup.js";
+import { w2form, w2popup } from "../lib/w2ui-2.0.es6.js";
 
 declare var w2prompt: any;
 declare var w2alert: any;
@@ -59,17 +60,17 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                 },
                 recid: "id",
                 columns: [
-                    { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
-                    { field: 'name', caption: 'Bezeichnung', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
+                    { field: 'id', text: 'ID', size: '20px', sortable: true, hidden: true },
+                    { field: 'name', text: 'Bezeichnung', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
                     {
-                        field: 'numberOfStudents', caption: 'Schüler/innen', size: '30%', sortable: false, resizable: true,
+                        field: 'numberOfStudents', text: 'Schüler/innen', size: '30%', sortable: false, resizable: true,
                         render: function (record: ClassData) {
                             return '<div>' + record.students.length + '</div>';
                         }
                     },
                     {
-                        field: 'teacher', caption: 'Lehrkraft', size: '30%', sortable: true, resizable: true,
-                        editable: { type: 'list', items: that.teacherDataList, filter: false },
+                        field: 'teacher', text: 'Lehrkraft', size: '30%', sortable: true, resizable: true,
+                        editable: { type: 'list', items: that.teacherDataList, showAll: true, openOnFocus: true },
                         render: function (record: ClassData) {
                             let teacher = that.teacherDataList.find(td => td.userData.id == record.lehrkraft_id);
                             if (teacher != null) {
@@ -78,7 +79,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                         }
                     },
                     {
-                        field: 'teacher2', caption: 'Zweitlehrkraft', size: '30%', sortable: true, resizable: true,
+                        field: 'teacher2', text: 'Zweitlehrkraft', size: '30%', sortable: true, resizable: true,
                         render: function (record: ClassData) {
                             let teacher = that.teacherDataList.find(td => td.userData.id == record.zweitlehrkraft_id);
                             if (teacher != null) {
@@ -92,11 +93,11 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                                 classes: [],
                                 id: -1,
                                 text: "Keine Zweitlehrkraft"
-                            }]), filter: false
+                            }]), showAll: false, openOnFocus: true
                         }
                     },
                     {
-                        field: 'aktiv', caption: 'aktiv', size: '10%', sortable: false, resizable: false, style: 'text-align: center',
+                        field: 'aktiv', text: 'aktiv', size: '10%', sortable: false, resizable: false, style: 'text-align: center',
                         editable: { type: 'checkbox', style: 'text-align: center' }
                     }
                 ],
@@ -141,15 +142,15 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                     },
                     recid: "id",
                     columns: [
-                        { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
+                        { field: 'id', text: 'ID', size: '20px', sortable: true, hidden: true },
                         {
-                            field: 'klasse', caption: 'Klasse', size: '10%', sortable: true, resizable: true
+                            field: 'klasse', text: 'Klasse', size: '10%', sortable: true, resizable: true
                         },
-                        { field: 'username', caption: 'Benutzername', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
-                        { field: 'rufname', caption: 'Rufname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
-                        { field: 'familienname', caption: 'Familienname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
+                        { field: 'username', text: 'Benutzername', size: '30%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
+                        { field: 'rufname', text: 'Rufname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
+                        { field: 'familienname', text: 'Familienname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
                         {
-                            field: 'id', caption: 'PW', size: '40px', sortable: false, render: (e) => {
+                            field: 'id', text: 'PW', size: '40px', sortable: false, render: (e) => {
                                 return '<div class="pw_button" title="Passwort ändern" data-recid="' + e.recid + '" style="visibility: hidden">PW!</div>';
                             }
                         }
@@ -164,8 +165,8 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                     onChange: (event) => { that.onUpdateStudent(event) },
                     onDelete: (event) => { that.onDeleteStudent(event) },
                     onClick: (event) => {
-                        if (event.column == 1) {
-                            w2ui[that.studentGridName].editField(event.recid, event.column);
+                        if (event.detail.column == 1) {
+                            w2ui[that.studentGridName].editField(event.recid, event.detail.column);
                         }
                     },
                     onSelect: (event) => { event.done(() => { that.onSelectStudent(event) }) },
@@ -326,7 +327,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
     }
 
     onDeleteClass(event: any) {
-        if (!event.force || event.isStopped) return;
+        if (!event.detail.force || event.isStopped) return;
 
         let recIds: number[];
 
@@ -363,14 +364,16 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
     onUpdateClass(event: any) {
         let classesGrid: W2UI.W2Grid = w2ui[this.classesGridName];
 
-        let data: ClassData = <ClassData>classesGrid.records[event.index];
+        let data: ClassData = <ClassData>classesGrid.records[event.detail.index];
 
-        let field = classesGrid.columns[event.column]["field"];
+        let field = classesGrid.columns[event.detail.column]["field"];
 
-        if (data[field] != undefined) data[field] = event.value_new;
+        if (data[field] != undefined) data[field] = event.detail.value.new;
 
-        if (event.column == 3) {
-            let teacher: TeacherData = event.value_new;
+        let newValue = event.detail.value.new;
+
+        if (event.detail.column == 3) {
+            let teacher: TeacherData = event.detail.value.new;
             if (teacher == null || typeof teacher == "string") {
                 classesGrid.refresh();
                 return;
@@ -381,17 +384,16 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                 // if (teacherOld2 != null) teacherOld1.classes = teacherOld1.classes.filter(cd => cd.id != data.id);
                 data.lehrkraft_id = teacher.userData.id;
                 teacher.classes.push(data);
-
-                event.value_new = teacher.userData.rufname + " " + teacher.userData.familienname;
+                newValue = teacher.userData.rufname + " " + teacher.userData.familienname;
             }
         }
 
-        if (event.column == 4) {
-            let teacher: TeacherData = event.value_new;
+        if (event.detail.column == 4) {
+            let teacher: TeacherData = event.detail.value.new;
             if (teacher == null || typeof teacher == "string") {
                 return;
             } else {
-                event.value_new = teacher.userData.rufname + " " + teacher.userData.familienname;
+                newValue = teacher.userData.rufname + " " + teacher.userData.familienname;
                 data.zweitlehrkraft_id = teacher.userData.id == -1 ? null : teacher.userData.id;
             }
         }
@@ -403,20 +405,24 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
 
         ajax("CRUDClass", request, (response: CRUDResponse) => {
             // console.log(data);
-            delete data["w2ui"]["changes"][field];
-            classesGrid.refreshCell(data["recid"], field);
+            if(data["w2ui"]){
+                delete data["w2ui"]["changes"][field];
+                classesGrid.refreshCell(data["recid"], field);
+            }
 
             let classData = this.allClassesList.find(c => "" + c.id == data["recid"]);
             if (classData != null) {
-                classData[field] = event.value_new;
+                classData[field] = newValue;
                 if (field == "name") {
-                    classData.text = event.value_new;
+                    classData.text = newValue;
                 }
             }
         }, () => {
-            data[field] = event.value_original;
-            delete data["w2ui"]["changes"][field];
-            classesGrid.refreshCell(data["recid"], field);
+            data[field] = event.detail.value.original;
+            if(data["w2ui"]){
+                delete data["w2ui"]["changes"][field];
+                classesGrid.refreshCell(data["recid"], field);
+            }
         });
     }
 
@@ -571,7 +577,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
     }
 
     onDeleteStudent(event: any) {
-        if (!event.force || event.isStopped) return;
+        if (!event.detail.force || event.isStopped) return;
 
         let recIds: number[];
 
@@ -614,22 +620,22 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
     onUpdateStudent(event: any) {
         let studentGrid: W2UI.W2Grid = w2ui[this.studentGridName];
 
-        let data: UserData = <UserData>studentGrid.records[event.index];
+        let data: UserData = <UserData>studentGrid.records[event.detail.index];
 
-        let value_new_presented = event.value_new;
+        let value_new_presented = event.detail.value.new;
         let value_old_database: number = data.klasse_id;
 
-        if (event.column == 1) {
-            let classData: ClassData = event.value_new;
+        if (event.detail.column == 1) {
+            let classData: ClassData = event.detail.value.new;
             value_new_presented = classData.name;
-            if (event.value_new.id == null) {
+            if (event.detail.value.new.id == null) {
                 event.preventDefault();
                 return;
             }
-            data.klasse_id = event.value_new.id;
+            data.klasse_id = event.detail.value.new.id;
         }
 
-        let field = studentGrid.columns[event.column]["field"];
+        let field = studentGrid.columns[event.detail.column]["field"];
         data[field] = value_new_presented;
 
 
@@ -642,7 +648,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
             delete data["w2ui"]["changes"][field];
             studentGrid.refreshCell(data["recid"], field);
         }, (message: string) => {
-            data[field] = event.value_original;
+            data[field] = event.detail.value.original;
             data.klasse_id = value_old_database;
             delete data["w2ui"]["changes"][field];
             studentGrid.refreshCell(data["recid"], field);
@@ -711,7 +717,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
     initChooseClassPopup() {
         let that = this;
         if (!w2ui.chooseClassForm) {
-            jQuery().w2form({
+            w2ui.chooseClassForm = new w2form({
                 name: 'chooseClassForm',
                 style: 'border: 0px; background-color: transparent;',
                 formHTML:
@@ -755,27 +761,15 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
         w2ui["chooseClassForm"].fields[0].options.items = classList;
 
         //@ts-ignore
-        jQuery().w2popup('open', {
+        w2popup.open({
             title: 'Neue Klasse wählen',
             body: '<div id="form" style="width: 100%; height: 100%;"></div>',
             style: 'padding: 15px 0px 0px 0px',
             width: 500,
             height: 300,
-            showMax: true,
-            onToggle: function (event) {
-                jQuery(w2ui.chooseClassForm.box).hide();
-                event.onComplete = function () {
-                    jQuery(w2ui.chooseClassForm.box).show();
-                    w2ui.chooseClassForm.resize();
-                }
-            },
-            onOpen: function (event) {
-                event.onComplete = function () {
-                    // specifying an onOpen handler instead is equivalent to specifying an onBeforeOpen handler, which would make this code execute too early and hence not deliver.
-                    //@ts-ignore
-                    jQuery('#w2ui-popup #form').w2render('chooseClassForm');
-                }
-            }
+            showMax: true
+        }).then(() => {
+            w2ui.chooseClassForm.render("#w2ui-popup #form")
         });
     }
 

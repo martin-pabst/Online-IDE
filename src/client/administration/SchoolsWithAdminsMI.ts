@@ -49,11 +49,11 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
             },
             recid: "id",
             columns: [
-                { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
-                { field: 'name', caption: 'Bezeichnung', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
-                { field: 'kuerzel', caption: 'Kürzel', size: '10%', sortable: true, resizable: true, editable: { type: 'text', maxlength: "10" } },
-                { field: 'numberOfClasses', caption: 'Klassen', size: '30%', sortable: true, resizable: true },
-                { field: 'numberOfUsers', caption: 'User', size: '30%', sortable: true, resizable: true },
+                { field: 'id', text: 'ID', size: '20px', sortable: true, hidden: true },
+                { field: 'name', text: 'Bezeichnung', size: '30%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
+                { field: 'kuerzel', text: 'Kürzel', size: '10%', sortable: true, resizable: true, editable: { type: 'text', maxlength: "10" } },
+                { field: 'numberOfClasses', text: 'Klassen', size: '30%', sortable: true, resizable: true },
+                { field: 'numberOfUsers', text: 'User', size: '30%', sortable: true, resizable: true },
             ],
             searches: [
                 { field: 'name', label: 'Bezeichnung', type: 'text' }
@@ -66,7 +66,7 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
                 });
             },
             onUnselect: (event) => { that.onUnSelectSchool(event) },
-            onAdd: (event) => { that.onAddSchool() },
+            onAdd: (event) => { that.onAddSchool(event) },
             onChange: (event) => { that.onUpdateSchool(event) },
             onDelete: (event) => { that.onDeleteSchool(event) },
         })
@@ -110,13 +110,13 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
             },
             recid: "id",
             columns: [
-                { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
-                { field: 'username', caption: 'Benutzername', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
-                { field: 'rufname', caption: 'Rufname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
-                { field: 'familienname', caption: 'Familienname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
-                { field: 'is_schooladmin', caption: 'Admin', size: '10%', sortable: true, resizable: false, editable: { type: 'checkbox', style: 'text-align: center' } },
+                { field: 'id', text: 'ID', size: '20px', sortable: true, hidden: true },
+                { field: 'username', text: 'Benutzername', size: '30%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
+                { field: 'rufname', text: 'Rufname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
+                { field: 'familienname', text: 'Familienname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
+                { field: 'is_schooladmin', text: 'Admin', size: '10%', sortable: true, resizable: false, editable: { type: 'checkbox', style: 'text-align: center' } },
                 {
-                    field: 'id', caption: 'PW', size: '40px', sortable: false, render: (e) => {
+                    field: 'id', text: 'PW', size: '40px', sortable: false, render: (e) => {
                         return '<div class="pw_button" title="Passwort ändern" data-recid="' + e.recid + '" style="visibility: hidden">PW!</div>';
                     }
                 }
@@ -244,7 +244,7 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
     }
 
     onDeleteSchool(event: any) {
-        if (!event.force || event.isStopped) return;
+        if (!event.detail.force || event.isStopped) return;
 
         let recIds: number[] = <number[]>this.schoolGrid.getSelection();
 
@@ -273,9 +273,9 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
 
     onUpdateSchool(event: any) {
 
-        let data: SchoolData = <SchoolData>this.schoolGrid.records[event.index];
-        let field = this.schoolGrid.columns[event.column]["field"];
-        data[field] = event.value_new;
+        let data: SchoolData = <SchoolData>this.schoolGrid.records[event.detail.index];
+        let field = this.schoolGrid.columns[event.detail.column]["field"];
+        data[field] = event.detail.value.new;
 
         let request: CRUDSchoolRequest = {
             type: "update",
@@ -287,12 +287,12 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
             delete data["w2ui"]["changes"];
             this.schoolGrid.refreshCell(data["recid"], field);
         }, () => {
-            data[field] = event.value_original;
+            data[field] = event.detail.value.original;
             this.schoolGrid.refresh();
         });
     }
 
-    onAddSchool() {
+    onAddSchool(event) {
         let request: CRUDSchoolRequest = {
             type: "create",
             data: {
@@ -309,11 +309,15 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
             let cd: SchoolData = request.data;
             cd.id = response.id;
             this.schoolGrid.add(cd);
-            // this.schoolGrid.scrollIntoView(cd.id);
-            //@ts-ignore
-            this.schoolGrid.editField(cd.id, 1, undefined, { keyCode: 13 });
+            setTimeout(() => {                
+                let index = this.schoolGrid.records.findIndex(r => r["id"] == cd.id);
+                //@ts-ignore
+                this.schoolGrid.scrollIntoView(index, undefined, true);
+                //@ts-ignore
+                this.schoolGrid.editField(cd.id, 1, undefined, { keyCode: 13 });
+            }, 100);
 
-            this.selectTextInCell();
+            // this.selectTextInCell();
         });
     }
 
@@ -409,7 +413,7 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
     }
 
     onDeleteTeacher(event: any) {
-        if (!event.force || event.isStopped) return;
+        if (!event.detail.force || event.isStopped) return;
 
         let recIds: number[] = <number[]>this.teacherGrid.getSelection();
 
@@ -447,9 +451,9 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
 
     onUpdateTeacher(event: any) {
 
-        let data: UserData = <UserData>this.teacherGrid.records[event.index];
-        let field: string = this.teacherGrid.columns[event.column]["field"];
-        data[field] = event.value_new;
+        let data: UserData = <UserData>this.teacherGrid.records[event.detail.index];
+        let field: string = this.teacherGrid.columns[event.detail.column]["field"];
+        data[field] = event.detail.value.new;
 
         let request: CRUDUserRequest = {
             type: "update",
@@ -466,7 +470,7 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
             // //@ts-ignore
             // this.adminGrid.last.inEditMode = false;
         }, () => {
-            data[field] = event.value_original;
+            data[field] = event.detail.value.original;
             // this.adminGrid.refresh();
         });
 

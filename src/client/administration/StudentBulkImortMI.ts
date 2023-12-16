@@ -75,11 +75,11 @@ export class StudentBulkImportMI extends AdminMenuItem {
             },
             recid: "id",
             columns: [
-                { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
-                { field: 'rufname', caption: 'Rufname', size: '25%', sortable: true, resizable: true, editable: { type: 'text' } },
-                { field: 'familienname', caption: 'Familienname', size: '25%', sortable: true, resizable: true, editable: { type: 'text' } },
-                { field: 'username', caption: 'Benutzername', size: '25%', sortable: true, resizable: true, editable: { type: 'text' } },
-                { field: 'password', caption: 'Passwort', size: '25%', sortable: false, editable: { type: 'text' } }
+                { field: 'id', text: 'ID', size: '20px', sortable: true, hidden: true },
+                { field: 'rufname', text: 'Rufname', size: '25%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
+                { field: 'familienname', text: 'Familienname', size: '25%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
+                { field: 'username', text: 'Benutzername', size: '25%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
+                { field: 'password', text: 'Passwort', size: '25%', sortable: false, editable: { type: 'text' } }
             ],
             searches: [
                 { field: 'username', label: 'Benutzername', type: 'text' },
@@ -88,7 +88,7 @@ export class StudentBulkImportMI extends AdminMenuItem {
             ],
             sortData: [{ field: 'klasse', direction: 'asc' }, { field: 'familienname', direction: 'asc' }, { field: 'rufname', direction: 'asc' }],
             onDelete: function (event) {
-                if (!event.force || event.isStopped) return;
+                if (!event.detail.force || event.isStopped) return;
                 let studentsGrid: W2UI.W2Grid = w2ui[that.studentGridName];
                 let recIds: number[] = studentsGrid.getSelection().map((sel) => sel["recid"]).filter((value, index, array) => array.indexOf(value) === index);
                 event.onComplete = () => {

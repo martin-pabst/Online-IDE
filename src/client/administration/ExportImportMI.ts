@@ -45,11 +45,11 @@ export class ExportImportMI extends AdminMenuItem {
             },
             recid: "id",
             columns: [
-                { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
-                { field: 'name', caption: 'Bezeichnung', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
-                { field: 'kuerzel', caption: 'Kürzel', size: '10%', sortable: true, resizable: true, editable: { type: 'text', maxlength: "10" } },
-                { field: 'numberOfClasses', caption: 'Klassen', size: '30%', sortable: true, resizable: true },
-                { field: 'numberOfUsers', caption: 'User', size: '30%', sortable: true, resizable: true },
+                { field: 'id', text: 'ID', size: '20px', sortable: true, hidden: true },
+                { field: 'name', text: 'Bezeichnung', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
+                { field: 'kuerzel', text: 'Kürzel', size: '10%', sortable: true, resizable: true, editable: { type: 'text', maxlength: "10" } },
+                { field: 'numberOfClasses', text: 'Klassen', size: '30%', sortable: true, resizable: true },
+                { field: 'numberOfUsers', text: 'User', size: '30%', sortable: true, resizable: true },
             ],
             searches: [
                 { field: 'name', label: 'Bezeichnung', type: 'text' }
@@ -144,7 +144,7 @@ export class ExportImportMI extends AdminMenuItem {
 
 
     onDeleteSchools(event: any) {
-        if (!event.force || event.isStopped) return;
+        if (!event.detail.force || event.isStopped) return;
 
         let recIds: number[] = <number[]>this.schoolGrid.getSelection();
 
@@ -185,9 +185,9 @@ export class ExportImportMI extends AdminMenuItem {
 
     onUpdateSchool(event: any) {
 
-        let data: SchoolData = <SchoolData>this.schoolGrid.records[event.index];
-        let field = this.schoolGrid.columns[event.column]["field"];
-        data[field] = event.value_new;
+        let data: SchoolData = <SchoolData>this.schoolGrid.records[event.detail.index];
+        let field = this.schoolGrid.columns[event.detail.column]["field"];
+        data[field] = event.detail.value.new;
 
         let request: CRUDSchoolRequest = {
             type: "update",
@@ -199,7 +199,7 @@ export class ExportImportMI extends AdminMenuItem {
             delete data["w2ui"]["changes"];
             this.schoolGrid.refreshCell(data["recid"], field);
         }, () => {
-            data[field] = event.value_original;
+            data[field] = event.detail.value.original;
             this.schoolGrid.refresh();
         });
     }
@@ -220,9 +220,14 @@ export class ExportImportMI extends AdminMenuItem {
             let cd: SchoolData = request.data;
             cd.id = response.id;
             this.schoolGrid.add(cd);
-            this.schoolGrid.editField(cd.id + "", 1, undefined, { keyCode: 13 });
+            setTimeout(() => {                
+                let index = this.schoolGrid.records.findIndex(r => r["id"] == cd.id);
+                //@ts-ignore
+                this.schoolGrid.scrollIntoView(index, undefined, true);
+                //@ts-ignore
+                this.schoolGrid.editField(cd.id + "", 1, undefined, { keyCode: 13 });
+            }, 100);
 
-            this.selectTextInCell();
         });
     }
 

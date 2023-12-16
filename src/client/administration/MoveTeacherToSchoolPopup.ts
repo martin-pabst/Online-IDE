@@ -1,4 +1,5 @@
 import { SchoolData } from "../communication/Data";
+import { w2form, w2popup } from "../lib/w2ui-2.0.es6";
 
 export class MoveTeacherToSchoolPopup {
 
@@ -14,15 +15,14 @@ export class MoveTeacherToSchoolPopup {
             MoveTeacherToSchoolPopup.callbackOK = callbackOK;
             MoveTeacherToSchoolPopup.callbackCancel = callbackCancel;
             
-            w2ui["MoveTeacherForm"]?.destroy();
-            $().w2form({
+            let form = new w2form({
                 name: 'MoveTeacherForm',
                 style: 'border: 0px; background-color: transparent;',
                 fields: [
                     { field: 'oldSchool', type: 'text', required: false, disabled: true,
-                    html: { caption: 'Bisherige Schule', attr: 'style="width: 300px"' } },
+                    html: { label: 'Bisherige Schule', attr: 'style="width: 300px"' } },
                     { field: 'newSchool', type: 'list',
-                    html: { caption: 'Neue Schule', attr: 'style="width: 300px"' }, options: { items: schoolDataList.sort((a, b) => a.text.localeCompare(b.text)) } }
+                    html: { label: 'Neue Schule', attr: 'style="width: 300px"' }, options: { items: schoolDataList.sort((a, b) => a.text.localeCompare(b.text)) } }
                 ],
                 record: {
                     oldSchool: oldSchool.name,
@@ -42,21 +42,16 @@ export class MoveTeacherToSchoolPopup {
 
 
 
-        $().w2popup({
+        w2popup.open({
             title: 'Lehrkraft verschieben: ' + name,
             body: '<div id="form" style="width: 100%; height: 100%;"></div>',
             style: 'padding: 15px 0px 0px 0px',
             width: 500,
             height: 300,
             showMax: false,
-            onOpen: function (event) {
-                event.onComplete = function () {
-                    // specifying an onOpen handler instead is equivalent to specifying an onBeforeOpen handler, which would make this code execute too early and hence not deliver.
-                    //@ts-ignore
-                    $('#w2ui-popup #form').w2render('MoveTeacherForm');
-                }
-            }
-        });
+        }).then(() => {
+            form.render("#w2ui-popup #form");
+        })
 
 
     }

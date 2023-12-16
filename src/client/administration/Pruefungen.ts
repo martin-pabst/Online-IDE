@@ -1,6 +1,7 @@
 import { ajax, ajaxAsync } from "../communication/AjaxHelper";
 import { BaseResponse, CRUDPruefungRequest, CRUDPruefungResponse, GetPruefungStudentStatesRequest, GetPruefungStudentStatesResponse, GetPruefungenForLehrkraftResponse, KlassData, Pruefung, PruefungCaptions, PruefungState, StudentPruefungStateInfo, UpdatePruefungSchuelerDataRequest, UserData, WorkspaceData, WorkspaceShortData } from "../communication/Data";
 import { PushClientManager } from "../communication/pushclient/PushClientManager";
+import { w2utils } from "../lib/w2ui-2.0.es6";
 import { GUIButton } from "../tools/components/GUIButton";
 import { makeDiv } from "../tools/HtmlTools";
 import { AdminMenuItem } from "./AdminMenuItem";
@@ -209,19 +210,19 @@ export class Pruefungen extends AdminMenuItem {
             },
             recid: "id",
             columns: [
-                { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
-                { field: 'name', caption: 'Bezeichnung', size: '15%', sortable: true, resizable: true, editable: { type: 'text' } },
+                { field: 'id', text: 'ID', size: '20px', sortable: true, hidden: true },
+                { field: 'name', text: 'Bezeichnung', size: '15%', sortable: true, resizable: true, editable: { type: 'text' } },
                 {
-                    field: 'klasse_id', caption: 'Klasse', size: '10%', sortable: true, resizable: true,
+                    field: 'klasse_id', text: 'Klasse', size: '10%', sortable: true, resizable: true,
                     editable: { type: 'list', items: this.klassen, showAll: true, openOnFocus: true, align: 'left' },
                     render: (e) => {
                         return this.klassen.find(c => c.id == e.klasse_id).text
                     }
                 },
-                {field: 'datum', caption: 'Datum', size: '15%', sortable: true, resizable: true, editable: {type: 'date'}, 
-                render: (e) => {return e.datum == null ? '----' : e.datum;} },
+                {field: 'datum', text: 'Datum', size: '15%', sortable: true, resizable: true, editable: {type: 'date'}, 
+                render: (e) => {return e.datum == null ? '----' : w2utils.formatDate(e.datum, 'dd.mm.yyyy');} },
                 {
-                    field: 'template_workspace_id', caption: 'Vorlage-Workspace', size: '25%', sortable: true, resizable: true,
+                    field: 'template_workspace_id', text: 'Vorlage-Workspace', size: '25%', sortable: true, resizable: true,
                     editable: {
                         type: 'list', items: this.workspaces, showAll: true, openOnFocus: true, align: 'left',
                         style: 'width: 400px'
@@ -240,7 +241,7 @@ export class Pruefungen extends AdminMenuItem {
             ],
             sortData: [{ field: 'klasse', direction: 'ASC' }, { field: 'name', direction: 'ASC' }],
             onSelect: (event) => {
-                event.done((e) => { this.onSelectPruefung(e.recid) })
+                event.done((e) => { this.onSelectPruefung(e.detail.clicked.recid) })
             },
             onDelete: (event) => {
                 let selected = this.pruefungTable.getSelection();
@@ -274,19 +275,19 @@ export class Pruefungen extends AdminMenuItem {
             },
             recid: "id",
             columns: [
-                { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
-                { field: 'familienname', caption: 'Familienname', size: '20%', sortable: true, resizable: true },
-                { field: 'rufname', caption: 'Rufname', size: '20%', sortable: true, resizable: true },
-                { field: 'username', caption: 'Username', size: '20%', sortable: true, resizable: true },
-                { field: 'grade', caption: 'Note', size: '13%', sortable: true, resizable: true, editable: { type: "text" } },
-                { field: 'points', caption: 'Punkte', size: '13%', sortable: true, resizable: true, editable: { type: "text" } },
+                { field: 'id', text: 'ID', size: '20px', sortable: true, hidden: true },
+                { field: 'familienname', text: 'Familienname', size: '20%', sortable: true, resizable: true, sortMode: 'i18n' },
+                { field: 'rufname', text: 'Rufname', size: '20%', sortable: true, resizable: true, sortMode: 'i18n' },
+                { field: 'username', text: 'Username', size: '20%', sortable: true, resizable: true, sortMode: 'i18n' },
+                { field: 'grade', text: 'Note', size: '13%', sortable: true, resizable: true, editable: { type: "text" } },
+                { field: 'points', text: 'Punkte', size: '13%', sortable: true, resizable: true, editable: { type: "text" } },
                 {
-                    field: 'attended_exam', caption: 'anwesend', size: '13%', sortable: true, resizable: true,
+                    field: 'attended_exam', text: 'anwesend', size: '13%', sortable: true, resizable: true,
                     editable: { type: 'checkbox', style: 'text-align: center' }
                 },
                 // see https://w2ui.com/web/docs/2.0/w2grid.columns
                 {
-                    field: 'state', caption: 'Status', size: '20%', sortable: true, resizable: true,
+                    field: 'state', text: 'Status', size: '20%', sortable: true, resizable: true,
                     render: (record: PSchuelerData) => {
                         let state = record.state;
                         if (state == null) state = "---";
@@ -436,7 +437,8 @@ export class Pruefungen extends AdminMenuItem {
 
         let klasse = this.klassen.find(k => k.id == this.currentPruefung.klasse_id).text;
 
-        let datumText = this.currentPruefung.datum == null ? "" : ", am " + this.currentPruefung.datum;
+        let datumText = this.currentPruefung.datum == null ? "" : ", am " + 
+        w2utils.formatDate(this.currentPruefung.datum, 'dd.mm.yyyy');
 
         for (let sd of p.pSchuelerDataList) {
             $printingDiv.append(`<h1>${sd.familienname}, ${sd.rufname} (Klasse ${klasse})</h1>`);
@@ -485,16 +487,16 @@ export class Pruefungen extends AdminMenuItem {
 
     onUpdatePruefung(event: any) {
 
-        let data: Pruefung = <Pruefung>this.pruefungTable.records[event.index];
+        let data: Pruefung = <Pruefung>this.pruefungTable.records[event.detail.index];
 
-        let field = this.pruefungTable.columns[event.column]["field"];
+        let field = this.pruefungTable.columns[event.detail.column]["field"];
 
         let oldData: any;
 
         switch (field) {
             case "name":
                 oldData = data[field];
-                data[field] = event.value_new;
+                data[field] = event.detail.value.new;
                 break;
             case "klasse_id":
                 if (data.state != this.states[0]) {
@@ -503,11 +505,11 @@ export class Pruefungen extends AdminMenuItem {
                     return;
                 }
                 oldData = data[field];
-                data[field] = event.value_new.id;
+                data[field] = event.detail.value.new.id;
                 break;
             case "datum":
                 oldData = data[field];
-                data[field] = event.value_new;
+                data[field] = event.detail.value.new;
                 break;
             case "template_workspace_id":
                 if (data.state != this.states[0]) {
@@ -516,7 +518,7 @@ export class Pruefungen extends AdminMenuItem {
                     return;
                 }
                 oldData = data[field];
-                data[field] = event.value_new.id;
+                data[field] = event.detail.value.new.id;
                 break;
         }
 
@@ -527,7 +529,7 @@ export class Pruefungen extends AdminMenuItem {
                 this.pruefungTable.refreshCell(data["recid"], field);
 
             } else {
-                data[field] = event.value_original;
+                data[field] = event.detail.value.original;
                 delete data["w2ui"]["changes"][field];
                 this.pruefungTable.refreshCell(data["recid"], field);
             }
@@ -539,12 +541,12 @@ export class Pruefungen extends AdminMenuItem {
 
     onUpdateStudent(event: any) {
 
-        let data = <PSchuelerData>this.studentTable.records[event.index];
+        let data = <PSchuelerData>this.studentTable.records[event.detail.index];
 
-        let field = this.studentTable.columns[event.column]["field"];
+        let field = this.studentTable.columns[event.detail.column]["field"];
 
         let oldData = data[field];
-        data[field] = event.value_new;
+        data[field] = event.detail.value.new;
 
         let request: UpdatePruefungSchuelerDataRequest = {
             pruefungId: this.currentPruefung.id,
@@ -561,7 +563,7 @@ export class Pruefungen extends AdminMenuItem {
                 this.studentTable.refreshCell(data["recid"], field);
 
             } else {
-                data[field] = event.value_original;
+                data[field] = event.detail.value.original;
                 delete data["w2ui"]["changes"][field];
                 this.studentTable.refreshCell(data["recid"], field);
             }

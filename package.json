@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@types/chart.js": "^2.9.25",
-    "@types/w2ui": "^1.4.32",
+    "@types/w2ui": "^1.4.37",
     "jquery": "^3.6.3",
     "pixi.js": "7.2.0",
     "pixi3d": "^2.4.0"

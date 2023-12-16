@@ -1,3 +1,5 @@
+import { w2form, w2popup } from "../lib/w2ui-2.0.es6";
+
 export class PasswordPopup {
 
     static callbackCancel: () => void;
@@ -9,8 +11,7 @@ export class PasswordPopup {
         PasswordPopup.callbackOK = callbackOK;
         PasswordPopup.callbackCancel = callbackCancel;
 
-        if (w2ui["PasswordForm"] == null) {
-            $().w2form({
+        let form = new w2form({
                 name: 'PasswordForm',
                 style: 'border: 0px; background-color: transparent;',
                 formHTML:
@@ -44,24 +45,16 @@ export class PasswordPopup {
                 }
             });
 
-        }
-
-
-        $().w2popup({
+        w2popup.open({
             title: 'Passwort ändern für ' + passwordFor,
             body: '<div id="form" style="width: 100%; height: 100%;"></div>',
             style: 'padding: 15px 0px 0px 0px',
             width: 500,
             height: 300,
-            showMax: false,
-            onOpen: function (event) {
-                event.onComplete = function () {
-                    // specifying an onOpen handler instead is equivalent to specifying an onBeforeOpen handler, which would make this code execute too early and hence not deliver.
-                    //@ts-ignore
-                    $('#w2ui-popup #form').w2render('PasswordForm');
-                }
-            }
-        });
+            showMax: false
+        }).then(() => {
+            form.render("#w2ui-popup #form");
+        })
 
 
     }

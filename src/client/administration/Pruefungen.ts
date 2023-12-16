@@ -1,7 +1,7 @@
 import { ajax, ajaxAsync } from "../communication/AjaxHelper";
 import { BaseResponse, CRUDPruefungRequest, CRUDPruefungResponse, GetPruefungStudentStatesRequest, GetPruefungStudentStatesResponse, GetPruefungenForLehrkraftResponse, KlassData, Pruefung, PruefungCaptions, PruefungState, StudentPruefungStateInfo, UpdatePruefungSchuelerDataRequest, UserData, WorkspaceData, WorkspaceShortData } from "../communication/Data";
 import { PushClientManager } from "../communication/pushclient/PushClientManager";
-import { w2utils } from "../lib/w2ui-2.0.es6";
+import { w2grid, w2ui, w2utils } from "../lib/w2ui-2.0.es6";
 import { GUIButton } from "../tools/components/GUIButton";
 import { makeDiv } from "../tools/HtmlTools";
 import { AdminMenuItem } from "./AdminMenuItem";
@@ -48,8 +48,8 @@ export class Pruefungen extends AdminMenuItem {
     klassen: KlassData[];
     workspaces: WorkspaceShortData[];
 
-    pruefungTable: W2UI.W2Grid;
-    studentTable: W2UI.W2Grid;
+    pruefungTable: w2grid;
+    studentTable: w2grid;
 
     $stateDiv: JQuery<HTMLDivElement>;
     buttonBack: GUIButton;
@@ -198,7 +198,7 @@ export class Pruefungen extends AdminMenuItem {
         makeDiv("studentTable", null, null, null, $tableRight);
 
         w2ui["pruefungTable"]?.destroy();
-        this.pruefungTable = $('#pruefungTable').w2grid({
+        this.pruefungTable = new w2grid({
             name: "pruefungTable",
             header: 'Prüfungen',
             multiSelect: false,
@@ -251,6 +251,8 @@ export class Pruefungen extends AdminMenuItem {
             onChange: (event) => { this.onUpdatePruefung(event) }
         })
 
+        this.pruefungTable.render($('#pruefungTable')[0]);
+
         //@ts-ignore
         let oldGetCellEditable: (ind: number, col_ind: number) => any = this.pruefungTable.getCellEditable;
 
@@ -267,7 +269,7 @@ export class Pruefungen extends AdminMenuItem {
 
         w2ui["studentTable"]?.destroy();
 
-        this.studentTable = $('#studentTable').w2grid({
+        this.studentTable = new w2grid({
             name: "studentTable",
             header: 'Schüler/innen',
             show: {
@@ -306,6 +308,8 @@ export class Pruefungen extends AdminMenuItem {
             onChange: (event) => { this.onUpdateStudent(event) }
 
         })
+
+        this.studentTable.render($('#studentTable')[0]);
 
         // Actions
         let $actionsDiv = jQuery('#pruefungActions');

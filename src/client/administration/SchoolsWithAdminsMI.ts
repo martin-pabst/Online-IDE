@@ -3,6 +3,7 @@ import { UserData, CRUDUserRequest, CRUDSchoolRequest, CRUDResponse, SchoolData,
 import { ajax } from "../communication/AjaxHelper.js";
 import { PasswordPopup } from "./PasswordPopup.js";
 import { MoveTeacherToSchoolPopup } from "./MoveTeacherToSchoolPopup.js";
+import { w2grid } from "../lib/w2ui-2.0.es6.js";
 
 declare var w2prompt: any;
 declare var w2alert: any;
@@ -13,11 +14,8 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
         this.teacherGrid.destroy();
     }
 
-    schoolGridName = "schoolsGrid";
-    teacherGridName = "adminsGrid";
-
-    schoolGrid: W2UI.W2Grid;
-    teacherGrid: W2UI.W2Grid;
+    schoolGrid: w2grid;
+    teacherGrid: w2grid;
 
     schoolDataList: SchoolData[] = [];
 
@@ -33,8 +31,8 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
         $tableRight: JQuery<HTMLElement>, $mainFooter: JQuery<HTMLElement>) {
         let that = this;
 
-        $tableLeft.w2grid({
-            name: this.schoolGridName,
+        this.schoolGrid = new w2grid({
+            name: "schoolgrid",
             header: 'Schulen',
             // selectType: "cell",
             multiSelect: false,
@@ -71,14 +69,12 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
             onDelete: (event) => { that.onDeleteSchool(event) },
         })
 
-        this.schoolGrid = w2ui[this.schoolGridName];
-
-
+        this.schoolGrid.render($tableLeft[0]);
 
         this.loadTablesFromSchoolObject();
 
-        $tableRight.w2grid({
-            name: this.teacherGridName,
+        this.teacherGrid = new w2grid({
+            name: "teachergrid",
             header: 'Lehrkräfte',
             // selectType: "cell",
             show: {
@@ -135,23 +131,19 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
 
         });
 
-        this.teacherGrid = w2ui[this.teacherGridName];
-
+        this.teacherGrid.render($tableRight[0]);
 
     }
 
     onSelectTeacher(event: any) {
-
-        let adminGrid = w2ui[this.teacherGridName];
-
         // let selection = adminGrid.getSelection().map((str) => str.recid).filter((value, index, array) => array.indexOf(value) === index);
 
-        if (event != null && adminGrid.getSelection().length == 1) {
+        if (event != null && this.teacherGrid.getSelection().length == 1) {
             //@ts-ignore
-            adminGrid.toolbar.enable('passwordButton');
+            this.teacherGrid.toolbar.enable('passwordButton');
         } else {
             //@ts-ignore
-            adminGrid.toolbar.disable('passwordButton');
+            this.teacherGrid.toolbar.disable('passwordButton');
         }
 
     }
@@ -510,7 +502,6 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
             this.teacherGrid.editField(ud.id + "", 1, undefined, { keyCode: 13 });
             school.usersWithoutClass.push(ud);
 
-            this.selectTextInCell();
             this.initializePasswordButtons();
         });
     }

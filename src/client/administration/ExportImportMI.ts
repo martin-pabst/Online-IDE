@@ -2,6 +2,7 @@ import { AdminMenuItem } from "./AdminMenuItem.js";
 import { UserData, CRUDUserRequest, CRUDSchoolRequest, CRUDResponse, SchoolData, GetSchoolDataRequest, GetSchoolDataResponse, ImportSchoolsResponse, GetMessagesResponse, GetMessagesRequest } from "../communication/Data.js";
 import { ajax, csrfToken } from "../communication/AjaxHelper.js";
 import { PasswordPopup } from "./PasswordPopup.js";
+import { w2grid } from "../lib/w2ui-2.0.es6.js";
 
 declare var w2prompt: any;
 declare var w2alert: any;
@@ -11,9 +12,7 @@ export class ExportImportMI extends AdminMenuItem {
         this.schoolGrid.destroy();
     }
 
-    schoolGridName = "schoolsGridForImport";
-
-    schoolGrid: W2UI.W2Grid;
+    schoolGrid: w2grid;
 
     schoolDataList: SchoolData[] = [];
 
@@ -29,8 +28,8 @@ export class ExportImportMI extends AdminMenuItem {
         $tableRight: JQuery<HTMLElement>, $mainFooter: JQuery<HTMLElement>) {
         let that = this;
 
-        $tableLeft.w2grid({
-            name: this.schoolGridName,
+        this.schoolGrid = new w2grid({
+            name: "schoolGridExportImport",
             header: 'Schulen',
             // selectType: "cell",
             multiSelect: true,
@@ -63,9 +62,7 @@ export class ExportImportMI extends AdminMenuItem {
             onDelete: (event) => { that.onDeleteSchools(event) },
         })
 
-        this.schoolGrid = w2ui[this.schoolGridName];
-
-
+        this.schoolGrid.render($tableLeft[0]);
 
         this.loadTablesFromSchoolObject();
 

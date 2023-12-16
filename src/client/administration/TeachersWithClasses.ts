@@ -3,7 +3,7 @@ import { UserData, CRUDUserRequest, CRUDSchoolRequest, CRUDResponse, SchoolData,
 import { ajax, ajaxAsync } from "../communication/AjaxHelper.js";
 import { PasswordPopup } from "./PasswordPopup.js";
 import { SelectTeacherPopup } from "./SelectTeacherPopup.js";
-import { w2alert, w2utils } from "../lib/w2ui-2.0.es6.js";
+import { w2alert, w2grid, w2utils } from "../lib/w2ui-2.0.es6.js";
 
 
 export class TeachersWithClassesMI extends AdminMenuItem {
@@ -15,14 +15,9 @@ export class TeachersWithClassesMI extends AdminMenuItem {
         this.$tableRight.removeClass('jo_twc_right');
     }
 
-
-    classesGridName = "tgClassesGrid";
-    classesWithoutTeachersGridName = "tgClassesWithoutTeachersGrid";
-    teachersGridName = "TgTeachersGrid";
-
-    classesGrid: W2UI.W2Grid;
-    teachersGrid: W2UI.W2Grid;
-    classesWithoutTeachersGrid: W2UI.W2Grid;
+    classesGrid: w2grid;
+    teachersGrid: w2grid;
+    classesWithoutTeachersGrid: w2grid;
 
     teacherData: TeacherData[] = [];
     classesWithoutTeacher: ClassData[];
@@ -43,8 +38,8 @@ export class TeachersWithClassesMI extends AdminMenuItem {
         let that = this;
         this.$tableRight = $tableRight;
 
-        $tableLeft.w2grid({
-            name: this.teachersGridName,
+        this.teachersGrid = new w2grid({
+            name: "teachersGrid",
             header: 'Lehrkräfte',
             // selectType: "cell",
             multiSelect: false,
@@ -100,7 +95,7 @@ export class TeachersWithClassesMI extends AdminMenuItem {
             onDelete: (event) => { that.onDeleteTeacher(event) },
         })
 
-        this.teachersGrid = w2ui[this.teachersGridName];
+        this.teachersGrid.render($tableLeft[0]);
 
         await this.loadTablesFromTeacherObject();
 
@@ -112,8 +107,8 @@ export class TeachersWithClassesMI extends AdminMenuItem {
         $tableRight.addClass('jo_twc_right');
         $tableRight.append($topRight, $bottomRight);
 
-        $topRight.w2grid({
-            name: this.classesGridName,
+        this.classesGrid = new w2grid({
+            name: "classesGrid",
             header: 'Klassen',
             // selectType: "cell",
             multiSelect: true,
@@ -161,10 +156,10 @@ export class TeachersWithClassesMI extends AdminMenuItem {
             onDelete: (event) => { that.onDeleteClass(event) },
         });
 
-        this.classesGrid = w2ui[this.classesGridName];
+        this.classesGrid.render($topRight[0]);
 
-        $bottomRight.w2grid({
-            name: this.classesWithoutTeachersGridName,
+        this.classesWithoutTeachersGrid = new w2grid({
+            name: "classesWithoutTeacher",
             header: 'Klassen ohne Lehrkräfte',
             // selectType: "cell",
             multiSelect: true,
@@ -201,7 +196,7 @@ export class TeachersWithClassesMI extends AdminMenuItem {
             onDelete: (event) => { that.onDeleteClassWithoutTeacher(event) },
         });
 
-        this.classesWithoutTeachersGrid = w2ui[this.classesWithoutTeachersGridName];
+        this.classesWithoutTeachersGrid.render($bottomRight[0]);
 
         this.fillClassesWithoutTeacherGrid();
 
@@ -329,8 +324,6 @@ export class TeachersWithClassesMI extends AdminMenuItem {
             this.teachersGrid.add(teacherData);
             this.teachersGrid.editField(ud.id + "", 1, undefined, { keyCode: 13 });
             this.teacherData.push(teacherData);
-
-            this.selectTextInCell();
 
             this.initializePasswordButtons();
 
@@ -522,7 +515,6 @@ export class TeachersWithClassesMI extends AdminMenuItem {
             this.classesGrid.editField(cd.id + "", 1, undefined, { keyCode: 13 });
             teacherData.classes.push(cd);
 
-            this.selectTextInCell();
         });
     }
 
@@ -545,12 +537,12 @@ export class TeachersWithClassesMI extends AdminMenuItem {
 
         ajax("CRUDClass", request, (response: CRUDResponse) => {
             recIds.forEach(id => {
-                let cd: ClassData = <ClassData>this.classesGrid.get(id + "");
-                this.classesGrid.remove("" + id)
-                let ld: TeacherData = <TeacherData>this.teachersGrid.get(cd.lehrkraft_id + "");
-                if (ld != null) {
-                    ld.classes = ld.classes.filter((cl) => cl.id != cd.id);
+
+                for(let teacher of this.teachersGrid.records){
+                    let te = <TeacherData> teacher;
+                    te.classes = te.classes.filter((cl) => cl.id != id);
                 }
+
             });
             this.classesGrid.refresh();
         }, () => {

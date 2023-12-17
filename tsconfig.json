@@ -11,6 +11,7 @@
     "esModuleInterop": true,
     "noEmit": true,
     "skipLibCheck": true,
+    "allowJs": true,
 
     "noUnusedLocals": false,
     "noImplicitReturns": false,

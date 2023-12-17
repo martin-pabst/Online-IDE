@@ -6,6 +6,7 @@ import { TeachersWithClassesMI } from "./TeachersWithClasses.js";
 import { PasswordPopup } from "./PasswordPopup.js";
 import { UserMenu } from "../main/gui/UserMenu.js";
 import { setSelectItems, getSelectedObject } from "../tools/HtmlTools.js";
+import { w2grid } from "../lib/w2ui-2.0.es6.js";
 
 declare var w2prompt: any;
 declare var w2alert: any;
@@ -18,9 +19,10 @@ type ColumnMapping = { [column: string]: number };
 export class StudentBulkImportMI extends AdminMenuItem {
 
     destroy() {
-        w2ui[this.studentGridName].destroy();
+        this.studentGrid.destroy();
     }
 
+    studentGrid: w2grid;
 
     step: Step;
     $tableLeft: JQuery<HTMLElement>;
@@ -28,8 +30,6 @@ export class StudentBulkImportMI extends AdminMenuItem {
 
     $importTextArea: JQuery<HTMLElement>;
     $protocol: JQuery<HTMLElement>;
-
-    studentGridName = "bulkImportStudentsGrid";
 
     selectedClass: ClassData;
     usersToWrite: UserData[];
@@ -57,8 +57,8 @@ export class StudentBulkImportMI extends AdminMenuItem {
         $tableRight.css('flex', '2');
 
         let that = this;
-        $tableRight.w2grid({
-            name: this.studentGridName,
+        this.studentGrid = new w2grid({
+            name: "studentgrid",
             header: 'Schüler/innen',
             selectType: "cell",
             show: {
@@ -75,11 +75,11 @@ export class StudentBulkImportMI extends AdminMenuItem {
             },
             recid: "id",
             columns: [
-                { field: 'id', caption: 'ID', size: '20px', sortable: true, hidden: true },
-                { field: 'rufname', caption: 'Rufname', size: '25%', sortable: true, resizable: true, editable: { type: 'text' } },
-                { field: 'familienname', caption: 'Familienname', size: '25%', sortable: true, resizable: true, editable: { type: 'text' } },
-                { field: 'username', caption: 'Benutzername', size: '25%', sortable: true, resizable: true, editable: { type: 'text' } },
-                { field: 'password', caption: 'Passwort', size: '25%', sortable: false, editable: { type: 'text' } }
+                { field: 'id', text: 'ID', size: '20px', sortable: true, hidden: true },
+                { field: 'rufname', text: 'Rufname', size: '25%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
+                { field: 'familienname', text: 'Familienname', size: '25%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
+                { field: 'username', text: 'Benutzername', size: '25%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
+                { field: 'password', text: 'Passwort', size: '25%', sortable: false, editable: { type: 'text' } }
             ],
             searches: [
                 { field: 'username', label: 'Benutzername', type: 'text' },
@@ -88,15 +88,15 @@ export class StudentBulkImportMI extends AdminMenuItem {
             ],
             sortData: [{ field: 'klasse', direction: 'asc' }, { field: 'familienname', direction: 'asc' }, { field: 'rufname', direction: 'asc' }],
             onDelete: function (event) {
-                if (!event.force || event.isStopped) return;
-                let studentsGrid: W2UI.W2Grid = w2ui[that.studentGridName];
-                let recIds: number[] = studentsGrid.getSelection().map((sel) => sel["recid"]).filter((value, index, array) => array.indexOf(value) === index);
+                if (!event.detail.force || event.isStopped) return;
+                let recIds: number[] = this.studentsGrid.getSelection().map((sel) => sel["recid"]).filter((value, index, array) => array.indexOf(value) === index);
                 event.onComplete = () => {
-                    recIds.forEach((id) => studentsGrid.remove(id + ""));
+                    recIds.forEach((id) => this.studentsGrid.remove(id + ""));
                 }
             }
         });
 
+        this.studentGrid.render($tableRight[0]);
 
         this.showStep("Step 1 Paste");
 
@@ -167,8 +167,7 @@ export class StudentBulkImportMI extends AdminMenuItem {
 
         $buttonWriteUsers.on('click', () => {
 
-            let studentGrid: W2UI.W2Grid = w2ui[this.studentGridName];
-            studentGrid.clear();
+            this.studentGrid.clear();
             this.showStep("Step 1 Paste");
 
         })
@@ -278,10 +277,9 @@ export class StudentBulkImportMI extends AdminMenuItem {
     }
 
     checkData(classData: ClassData) {
-        let studentGrid: W2UI.W2Grid = w2ui[this.studentGridName];
-        studentGrid.mergeChanges();
+        this.studentGrid.mergeChanges();
 
-        this.usersToWrite = <UserData[]>studentGrid.records
+        this.usersToWrite = <UserData[]>this.studentGrid.records
 
         let request: BulkCreateUsersRequest = {
             onlyCheckUsernames: true,
@@ -368,10 +366,9 @@ export class StudentBulkImportMI extends AdminMenuItem {
 
         let userData: UserData[] = this.makeUserData(lines, columnMapping);
         if (userData.length > 0) {
-            let studentsGrid: W2UI.W2Grid = w2ui[this.studentGridName];
-            studentsGrid.clear();
-            studentsGrid.add(userData);
-            studentsGrid.refresh();
+            this.studentGrid.clear();
+            this.studentGrid.add(userData);
+            this.studentGrid.refresh();
         }
     }
 
@@ -473,11 +470,10 @@ export class StudentBulkImportMI extends AdminMenuItem {
     }
 
     enableGrid(enabled: boolean) {
-        let studentGrid: W2UI.W2Grid = w2ui[this.studentGridName];
         if (enabled) {
-            studentGrid.unlock();
+            this.studentGrid.unlock();
         } else {
-            studentGrid.lock("", false);
+            this.studentGrid.lock("", false);
         }
     }
 

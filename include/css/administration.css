@@ -86,6 +86,10 @@ body {
     min-width: 0;
 }
 
+.w2ui-grid-header {
+    background-color: #b0cbf7 !important;
+}
+
 .jo_menuitem {
     padding: 5px;
     width: 100%;
@@ -104,7 +108,7 @@ body {
 }
 
 .jo_menuitem.jo_active {
-    background-color: lightskyblue;
+    background-color: #b0cbf7;
     font-weight: bold;
 }
 

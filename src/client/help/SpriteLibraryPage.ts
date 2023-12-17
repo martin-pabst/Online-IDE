@@ -4,19 +4,19 @@ import jQuery from 'jquery';
 import {SpriteLibrary} from '../runtimelibrary/graphics/SpriteLibrary.js';
 import { extractCsrfTokenFromGetRequest } from '../communication/AjaxHelper.js';
 
-type SpriteLibraryEntry = {
-    filename: string,
-    name: string,
-    index?: number,
-    scale?: number,
-    indexName?: string,
-    tilesX?: number,
-    tilesY?: number,
-    minIndex?: number,
-    skipAtEnd?: number
-}
+// type SpriteLibraryEntry = {
+//     filename: string,
+//     name: string,
+//     index?: number,
+//     scale?: number,
+//     indexName?: string,
+//     tilesX?: number,
+//     tilesY?: number,
+//     minIndex?: number,
+//     skipAtEnd?: number
+// }
 
-declare var SpriteLibrary: SpriteLibraryEntry[];
+// declare var SpriteLibrary: SpriteLibraryEntry[];
 
 export class SpriteLibraryPage {
     async start() {

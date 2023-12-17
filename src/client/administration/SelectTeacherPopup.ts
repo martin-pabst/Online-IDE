@@ -1,4 +1,5 @@
 import { SchoolData, TeacherData } from "../communication/Data";
+import { w2form, w2popup } from "../lib/w2ui-2.0.es6";
 
 export class SelectTeacherPopup {
 
@@ -14,8 +15,7 @@ export class SelectTeacherPopup {
 
             teacherList.forEach(td => td["text"] = td.userData.familienname + ", " + td.userData.rufname + " (" + td.userData.username + ")");
             
-            w2ui["SelectTeacherForm"]?.destroy();
-            $().w2form({
+            let form = new w2form({
                 name: 'SelectTeacherForm',
                 style: 'border: 0px; background-color: transparent;',
                 fields: [
@@ -42,7 +42,7 @@ export class SelectTeacherPopup {
 
 
 
-        $().w2popup({
+        w2popup.open({
             title: 'Zuordnen einer Lehrkraft zur Klasse ' + className,
             body: '<div id="form" style="width: 100%; height: 100%;"></div>',
             style: 'padding: 15px 0px 0px 0px',
@@ -56,7 +56,9 @@ export class SelectTeacherPopup {
                     $('#w2ui-popup #form').w2render('SelectTeacherForm');
                 }
             }
-        });
+        }).then(() => {
+            form.render('#w2ui-popup #form');
+        })
 
 
     }

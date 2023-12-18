@@ -3,7 +3,7 @@ import { UserData, CRUDUserRequest, CRUDSchoolRequest, CRUDResponse, SchoolData,
 import { ajax } from "../communication/AjaxHelper.js";
 import { PasswordPopup } from "./PasswordPopup.js";
 import { MoveTeacherToSchoolPopup } from "./MoveTeacherToSchoolPopup.js";
-import { w2grid } from "../lib/w2ui-2.0.es6.js";
+import { w2grid, w2utils } from "../lib/w2ui-2.0.es6.js";
 
 declare var w2prompt: any;
 declare var w2alert: any;
@@ -215,17 +215,14 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
                     type: "update",
                     data: admin,
                 }
-                //@ts-ignore
                 w2utils.lock(jQuery('body'), "Bitte warten, das Hashen <br> des Passworts kann <br>bis zu 1 Minute<br> dauern...", true);
 
                 ajax("CRUDUser", request, (response: CRUDResponse) => {
 
-                    //@ts-ignore
                     w2utils.unlock(jQuery('body'));
                     w2alert('Das Passwort für ' + admin.rufname + " " + admin.familienname + " (" + admin.username + ") wurde erfolgreich geändert.");
 
                 }, () => {
-                    //@ts-ignore
                     w2utils.unlock(jQuery('body'));
                     w2alert('Fehler beim Ändern des Passworts!');
                 });

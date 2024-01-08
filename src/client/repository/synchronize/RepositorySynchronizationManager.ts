@@ -129,14 +129,16 @@ export class SynchronizationManager {
         ajax("getRepository", request, (response: GetRepositoryResponse) => {
 
             that.attachToRepository(response.repository);
-            if(response.repository.spritesheetId != workspace.spritesheetId){
-                workspace.spritesheetId = response.repository.spritesheetId;
-                let spritesheet = new SpritesheetData();
-                spritesheet.initializeSpritesheetForWorkspace(workspace, this.main).then(() => {
-                    for (let m of workspace.moduleStore.getModules(false)) {
-                        m.file.dirty = true;
-                    }
-                });
+            if (response.repository.spritesheet_id && response.repository.spritesheet_id != workspace.spritesheetId) {
+                {
+                    workspace.spritesheetId = response.repository.spritesheet_id;
+                    let spritesheet = new SpritesheetData();
+                    spritesheet.initializeSpritesheetForWorkspace(workspace, this.main).then(() => {
+                        for (let m of workspace.moduleStore.getModules(false)) {
+                            m.file.dirty = true;
+                        }
+                    });
+                }
             }
 
         }, (message: string) => {
@@ -202,9 +204,9 @@ export class SynchronizationManager {
 
         this.rightSynchroWorkspace.files.forEach(sfile => {
             let fileElement: FileElement = null;
-            if (sfile.idInsideRepository != null){
+            if (sfile.idInsideRepository != null) {
                 fileElement = synchroFileMap["r" + sfile.idInsideRepository];
-            }  else {
+            } else {
                 fileElement = synchroFileMap["w" + sfile.idInsideWorkspace];
             }
             if (fileElement == null) {
@@ -257,8 +259,8 @@ export class SynchronizationManager {
             this.$backToCurrentRepositoryVersionButton.show();
             this.$writeRepositoryChangesButton.hide();
         }
-        
-        jQuery('#jo_synchro_main_heading_text').text(`Synchronisieren mit Repository "${this.currentRepository.name}"${this.repositoryIsWritable?"" : " (read-only)"}`);
+
+        jQuery('#jo_synchro_main_heading_text').text(`Synchronisieren mit Repository "${this.currentRepository.name}"${this.repositoryIsWritable ? "" : " (read-only)"}`);
 
         let lastFileSelected: boolean = false;
         if (lastSynchroFileLeft != null || lastSynchroFileRight != null) {
@@ -306,7 +308,7 @@ export class SynchronizationManager {
 
         clearInterval(this.timer);
 
-        if(this.currentRepository == null) return;   // Testuser...
+        if (this.currentRepository == null) return;   // Testuser...
 
         let request: LeaseRepositoryLockRequest = { repository_id: this.currentRepository.id };
         ajax('leaseRepositoryLock', request, (response: LeaseRepositoryLockResponse) => {

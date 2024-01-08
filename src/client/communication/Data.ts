@@ -421,7 +421,7 @@ export type Repository = {
     secret_read?: string,
     secret_write?: string,
 
-    spritesheetId: number
+    spritesheet_id: number
 
 }
 

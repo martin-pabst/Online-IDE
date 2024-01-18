@@ -26,11 +26,11 @@ export class NullType extends Type {
     }
 
     compute(operation: TokenType, firstOperand: Value, secondOperand: Value) {
-        if(operation == TokenType.equal ) 
-        return firstOperand.value == secondOperand.value;
+        if (operation == TokenType.equal)
+            return firstOperand.value == secondOperand.value;
 
-        if(operation == TokenType.notEqual ) 
-        return firstOperand.value != secondOperand.value;
+        if (operation == TokenType.notEqual)
+            return firstOperand.value != secondOperand.value;
 
         return null;
     }
@@ -929,6 +929,18 @@ export class StringPrimitiveType extends Klass {
             ))
         }
 
+        this.addMethod(new Method("toCharArray", new Parameterlist([ ]), new ArrayType(charPrimitiveType),
+            (parameters) => {
+                let strings = Array.from(<string>(parameters[0].value));
+                let values: Value[] = [];
+                for (let s of strings) {
+                    values.push({ type: charPrimitiveType, value: s });
+                }
+
+                return values;
+
+            }, false, false, "Wandelt die Zeichenkette in ein Array von Zeichen um."));
+
 
     }
 
@@ -1001,7 +1013,8 @@ export class CharPrimitiveType extends PrimitiveType {
             [TokenType.lower]: { "char": booleanPrimitiveType, "int": booleanPrimitiveType },
             [TokenType.greater]: { "char": booleanPrimitiveType, "int": booleanPrimitiveType },
             [TokenType.lowerOrEqual]: { "char": booleanPrimitiveType, "int": booleanPrimitiveType },
-            [TokenType.greaterOrEqual]: { "char": booleanPrimitiveType, "int": booleanPrimitiveType }
+            [TokenType.greaterOrEqual]: { "char": booleanPrimitiveType, "int": booleanPrimitiveType },
+            [TokenType.modulo]: { "char": intPrimitiveType, "int": intPrimitiveType }
 
         };
 
@@ -1065,6 +1078,10 @@ export class CharPrimitiveType extends PrimitiveType {
             case TokenType.notEqual:
                 return value != <string>(secondOperand.value);
 
+            case TokenType.modulo:
+                let firstOperandAsInt = typeof value == "number" ? value : value.charCodeAt(0);
+                let secondOperandAsInt = typeof secondOperand.value == "number" ? secondOperand.value : secondOperand.value.charCodeAt(0);
+                return firstOperandAsInt % secondOperandAsInt;
         }
 
 

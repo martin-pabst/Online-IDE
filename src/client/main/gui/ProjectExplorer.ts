@@ -793,7 +793,7 @@ export class ProjectExplorer {
             this.main.getMonacoEditor().updateOptions({ readOnly: true });
             this.fileListPanel.setCaption('Keine Datei vorhanden');
         } else {
-            this.main.getMonacoEditor().updateOptions({ readOnly: this.main.currentWorkspace.readonly });
+            this.main.getMonacoEditor().updateOptions({ readOnly: this.main.currentWorkspace.readonly && !this.main.user.is_teacher });
             this.main.getMonacoEditor().setModel(m.model);
             if (this.main.getBottomDiv() != null) this.main.getBottomDiv().errorManager.showParenthesisWarning(m.bracketError);
 

@@ -59,9 +59,11 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
             sortData: [{ field: 'name', direction: 'asc' }, { field: 'kuerzel', direction: 'asc' },
             { field: 'numberOfClasses', direction: 'asc' }, { field: 'numberOfUsers', direction: 'asc' }],
             onSelect: (event) => {
-                event.done(() => {
-                    that.onSelectSchool();
-                });
+                // event.done(() => {
+                    setTimeout(() => {
+                        that.onSelectSchool();
+                    }, 100);
+                // });
             },
             onUnselect: (event) => { that.onUnSelectSchool(event) },
             onAdd: (event) => { that.onAddSchool(event) },
@@ -292,19 +294,19 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
                 usersWithoutClass: []
             },
         };
-        console.log("Hier!");
 
         ajax("CRUDSchool", request, (response: CRUDResponse) => {
             let cd: SchoolData = request.data;
             cd.id = response.id;
             this.schoolGrid.add(cd);
+            this.schoolGrid.refresh();
             setTimeout(() => {                
                 let index = this.schoolGrid.records.findIndex(r => r["id"] == cd.id);
                 //@ts-ignore
                 this.schoolGrid.scrollIntoView(index, undefined, true);
                 //@ts-ignore
                 this.schoolGrid.editField(cd.id, 1, undefined, { keyCode: 13 });
-            }, 100);
+            }, 1000);
 
             // this.selectTextInCell();
         });

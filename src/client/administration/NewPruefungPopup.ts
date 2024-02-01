@@ -20,16 +20,16 @@ export class NewPruefungPopup {
             fields: [
                 {
                     field: 'name', type: 'text', required: true,
-                    html: { caption: 'Name der Prüfung', attr: 'style="width: 300px"' }
+                    html: { label: 'Name der Prüfung', attr: 'style="width: 300px"' }
                 },
                 {
                     field: 'klasse', type: 'list',
-                    html: { caption: 'Klasse', attr: 'style="width: 300px"' },
+                    html: { label: 'Klasse', attr: 'style="width: 300px"' },
                     options: { items: classList.sort((a, b) => a.text.localeCompare(b.text)) }
                 },
                 {
                     field: 'template', type: 'list',
-                    html: { caption: 'Vorlage-Workspace', attr: 'style="width: 300px"' },
+                    html: { label: 'Vorlage-Workspace', attr: 'style="width: 300px"' },
                     options: { items: workspaces }
                 },
             ],
@@ -42,6 +42,7 @@ export class NewPruefungPopup {
                 "cancel": function () {
                     w2popup.close();
                     NewPruefungPopup.callbackCancel();
+                    form.destroy();
                 },
                 "ok": function () {
                     w2popup.close();
@@ -54,6 +55,7 @@ export class NewPruefungPopup {
                             name: this.record["name"]
                         }
                     );
+                    form.destroy();
                 }
             }
         });

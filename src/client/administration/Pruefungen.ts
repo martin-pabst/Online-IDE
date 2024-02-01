@@ -1,7 +1,7 @@
 import { ajax, ajaxAsync } from "../communication/AjaxHelper";
 import { BaseResponse, CRUDPruefungRequest, CRUDPruefungResponse, GetPruefungStudentStatesRequest, GetPruefungStudentStatesResponse, GetPruefungenForLehrkraftResponse, KlassData, Pruefung, PruefungCaptions, PruefungState, StudentPruefungStateInfo, UpdatePruefungSchuelerDataRequest, UserData, WorkspaceData, WorkspaceShortData } from "../communication/Data";
 import { PushClientManager } from "../communication/pushclient/PushClientManager";
-import { w2grid, w2ui, w2utils } from "../lib/w2ui-2.0.es6";
+import { w2event, w2grid, w2ui, w2utils } from "../lib/w2ui-2.0.es6";
 import { GUIButton } from "../tools/components/GUIButton";
 import { makeDiv } from "../tools/HtmlTools";
 import { AdminMenuItem } from "./AdminMenuItem";
@@ -219,8 +219,12 @@ export class Pruefungen extends AdminMenuItem {
                         return this.klassen.find(c => c.id == e.klasse_id).text
                     }
                 },
-                {field: 'datum', text: 'Datum', size: '15%', sortable: true, resizable: true, editable: {type: 'date'}, 
-                render: (e) => {return e.datum == null ? '----' : w2utils.formatDate(e.datum, 'dd.mm.yyyy');} },
+                {
+                    field: 'datum', text: 'Datum', size: '15%', sortable: true, resizable: true, editable: { type: 'date' },
+                    render: (e) => {
+                        return e.datum == null ? '----' : e.datum;
+                    }
+                },
                 {
                     field: 'template_workspace_id', text: 'Vorlage-Workspace', size: '25%', sortable: true, resizable: true,
                     editable: {
@@ -236,18 +240,20 @@ export class Pruefungen extends AdminMenuItem {
                     field: 'state', caption: 'Zustand', size: '15%', sortable: true, resizable: true,
                     render: (e, extra) => `<div class="jo_pruefung_state_cell">
                     <div class="jo_pruefung_state_cell_icon img_test-state-${e.state}"></div>
-                    <div class="jo_pruefung_state_text">${PruefungCaptions[e.state]}</div></div>` 
+                    <div class="jo_pruefung_state_text">${PruefungCaptions[e.state]}</div></div>`
                 }
             ],
             sortData: [{ field: 'klasse', direction: 'ASC' }, { field: 'name', direction: 'ASC' }],
             onSelect: (event) => {
-                event.done((e) => { this.onSelectPruefung(e.detail.clicked.recid) })
+                setTimeout(() => {
+                    this.onSelectPruefung(event.detail.clicked.recid)
+                }, 100);
             },
             onDelete: (event) => {
                 let selected = this.pruefungTable.getSelection();
                 event.done((e) => { this.deletePruefung(<number>selected[0]) })
             },
-            onAdd: (event) => { this.addPruefung() },
+            onAdd: (event) => {  this.addPruefung() },
             onChange: (event) => { this.onUpdatePruefung(event) }
         })
 
@@ -336,7 +342,7 @@ export class Pruefungen extends AdminMenuItem {
 
         let lastTimeClicked: number = 0;
         this.buttonBack.onClick(async () => {
-            if(performance.now() - lastTimeClicked < 1000) return;
+            if (performance.now() - lastTimeClicked < 1000) return;
             lastTimeClicked = performance.now();
             if (this.selectedStateIndex == 1) {
                 alert("Die Prüfung läuft schon. Sie kann nicht mehr in den Zustand " + PruefungCaptions[0] + " versetzt werden.");
@@ -363,7 +369,7 @@ export class Pruefungen extends AdminMenuItem {
 
 
         this.buttonForward.onClick(async () => {
-            if(performance.now() - lastTimeClicked < 1000) return;
+            if (performance.now() - lastTimeClicked < 1000) return;
             lastTimeClicked = performance.now();
             if (this.selectedStateIndex == 0) {
                 if (!confirm("Soll die Prüfung wirklich sofort gestartet werden?")) return;
@@ -389,7 +395,7 @@ export class Pruefungen extends AdminMenuItem {
 
         makeDiv(null, 'jo_action_caption', "Aktionen für die ausgewählte Prüfung:", null, $actions2Div);
 
-        let $actionButtonsDiv = makeDiv(null, "joe_pruefung_actionButtonsDiv", "",  null, $actions2Div);
+        let $actionButtonsDiv = makeDiv(null, "joe_pruefung_actionButtonsDiv", "", null, $actions2Div);
 
 
         new GUIButton(" Alle Arbeiten drucken...", $actionButtonsDiv, "#5050ff", () => {
@@ -441,8 +447,8 @@ export class Pruefungen extends AdminMenuItem {
 
         let klasse = this.klassen.find(k => k.id == this.currentPruefung.klasse_id).text;
 
-        let datumText = this.currentPruefung.datum == null ? "" : ", am " + 
-        w2utils.formatDate(this.currentPruefung.datum, 'dd.mm.yyyy');
+        let datumText = this.currentPruefung.datum == null ? "" : ", am " +
+            w2utils.formatDate(this.currentPruefung.datum, 'dd.mm.yyyy');
 
         for (let sd of p.pSchuelerDataList) {
             $printingDiv.append(`<h1>${sd.familienname}, ${sd.rufname} (Klasse ${klasse})</h1>`);
@@ -563,12 +569,16 @@ export class Pruefungen extends AdminMenuItem {
 
         ajax('/updatePruefungSchuelerData', request, (response: BaseResponse) => {
             if (response.success == true) {
-                delete data["w2ui"]["changes"][field];
+                if (data["w2ui"] && data["w2ui"]["changes"]) {
+                    delete data["w2ui"]["changes"][field];
+                }
                 this.studentTable.refreshCell(data["recid"], field);
 
             } else {
                 data[field] = event.detail.value.original;
-                delete data["w2ui"]["changes"][field];
+                if (data["w2ui"] && data["w2ui"]["changes"]) {
+                    delete data["w2ui"]["changes"][field];
+                }
                 this.studentTable.refreshCell(data["recid"], field);
             }
         });
@@ -613,7 +623,7 @@ export class Pruefungen extends AdminMenuItem {
         this.studentTable.unlock();
         this.studentTable.clear();
         this.studentTable.add(p.pSchuelerDataList);
-        this.studentTable.refresh();
+        // this.studentTable.refresh();
 
         this.currentPruefung = <any>this.pruefungTable.records.find(p => p["recid"] == recId);
         this.selectedStateIndex = this.states.indexOf(this.currentPruefung.state);

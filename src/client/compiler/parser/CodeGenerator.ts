@@ -419,12 +419,18 @@ export class CodeGenerator {
             if (methodNode != null && !methodNode.isAbstract && !methodNode.isStatic) {
                 this.compileMethod(methodNode);
                 let m: Method = methodNode.resolvedType;
-                if (m != null && m.annotation == "@Override") {
-                    if (klass.baseClass != null) {
-                        if (klass.baseClass.getMethodBySignature(m.signature) == null) {
-                            this.pushError("Die Methode " + m.signature + " ist mit @Override annotiert, überschreibt aber keine Methode gleicher Signatur einer Oberklasse.", methodNode.position, "warning");
+                if(m != null){
+                    if (m.annotation == "@Override") {
+                        if (klass.baseClass != null) {
+                            if (klass.baseClass.getMethodBySignature(m.signature) == null) {
+                                this.pushError("Die Methode " + m.signature + " ist mit @Override annotiert, überschreibt aber keine Methode gleicher Signatur einer Oberklasse.", methodNode.position, "warning");
+                            }
                         }
                     }
+                    if (m.identifier == classNode.identifier && !m.isConstructor) {
+                        this.pushError("Die Methode " + m.signature + " trägt den Bezeichner der Klasse, ist aber kein Konstruktor. Das ist ungünstig.", methodNode.position, "warning" );
+                    }
+
                 }
 
             }

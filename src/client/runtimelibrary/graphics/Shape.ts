@@ -947,6 +947,7 @@ export abstract class ShapeHelper extends ActorHelper {
 
 
     getFirstCollidingSprite(index?: number): RuntimeObject {
+        console.log(index);
         this.displayObject.updateTransform();
         if (this.hitPolygonDirty) this.transformHitPolygon();
 
@@ -956,7 +957,7 @@ export abstract class ShapeHelper extends ActorHelper {
             let spriteIndex = shapeHelper["index"];
             if(!spriteIndex) continue;
 
-            if(index != null && index != spriteIndex) return;
+            if(index != null && index != spriteIndex) continue;
 
             let bb = this.displayObject.getBounds();
             let bb1 = shapeHelper.displayObject.getBounds();

@@ -531,76 +531,89 @@ export class MyCompletionItemProvider implements monaco.languages.CompletionItem
             ]);
         }
 
-        if (!this.isConsole && (symbolTable == null || symbolTable.classContext == null)) {
-            keywordCompletionItems = keywordCompletionItems.concat([
-                {
-                    label: "class",
-                    filterText: "class",
-                    insertText: "class ${1:Bezeichner} {\n\t$0\n}\n",
-                    detail: "Klassendefinition",
-                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                    kind: monaco.languages.CompletionItemKind.Snippet,
-                    range: undefined
-                },
-                {
-                    label: "public class",
-                    filterText: "public class",
-                    insertText: "public class ${1:Bezeichner} {\n\t$0\n}\n",
-                    detail: "Öffentliche Klassendefinition",
-                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                    kind: monaco.languages.CompletionItemKind.Snippet,
-                    range: undefined
-                }
-
-            ]);
-        } else if (!this.isConsole && symbolTable?.method == null) {
-            keywordCompletionItems = keywordCompletionItems.concat([
-                {
-                    label: "public",
-                    filterText: "public",
-                    insertText: "public ",
-                    detail: "Schlüsselwort public",
-                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                    kind: monaco.languages.CompletionItemKind.Snippet,
-                    range: undefined
-                },
-                {
-                    label: "public void method(){}",
-                    filterText: "public",
-                    insertText: "public ${1:void} ${2:Bezeichner}(${3:Parameter}) {\n\t$0\n}\n",
-                    detail: "Methodendefinition",
-                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                    kind: monaco.languages.CompletionItemKind.Snippet,
-                    range: undefined
-                },
-                {
-                    label: "protected",
-                    filterText: "protected",
-                    insertText: "protected ",
-                    detail: "Schlüsselwort protected",
-                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                    kind: monaco.languages.CompletionItemKind.Snippet,
-                    range: undefined
-                },
-                {
-                    label: "static",
-                    filterText: "static",
-                    insertText: "static ",
-                    detail: "Schlüsselwort static",
-                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                    kind: monaco.languages.CompletionItemKind.Snippet,
-                    range: undefined
-                },
-                {
-                    label: "private",
-                    filterText: "private",
-                    insertText: "private ",
-                    detail: "Schlüsselwort private",
-                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                    kind: monaco.languages.CompletionItemKind.Snippet,
-                    range: undefined
-                }
-            ]);
+        if(!this.isConsole){
+            if ((symbolTable == null || symbolTable.classContext == null)) {
+                keywordCompletionItems = keywordCompletionItems.concat([
+                    {
+                        label: "class",
+                        filterText: "class",
+                        insertText: "class ${1:Bezeichner} {\n\t$0\n}\n",
+                        detail: "Klassendefinition",
+                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                        kind: monaco.languages.CompletionItemKind.Snippet,
+                        range: undefined
+                    },
+                    {
+                        label: "public class",
+                        filterText: "public class",
+                        insertText: "public class ${1:Bezeichner} {\n\t$0\n}\n",
+                        detail: "Öffentliche Klassendefinition",
+                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                        kind: monaco.languages.CompletionItemKind.Snippet,
+                        range: undefined
+                    }
+    
+                ]);
+            } else if (symbolTable?.classContext != null && symbolTable?.method == null) {
+                keywordCompletionItems = keywordCompletionItems.concat([
+                    {
+                        label: "public",
+                        filterText: "public",
+                        insertText: "public ",
+                        detail: "Schlüsselwort public",
+                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                        kind: monaco.languages.CompletionItemKind.Snippet,
+                        range: undefined
+                    },
+                    {
+                        label: "public void method(){}",
+                        filterText: "public",
+                        insertText: "public ${1:void} ${2:Bezeichner}(${3:Parameter}) {\n\t$0\n}\n",
+                        detail: "Methodendefinition",
+                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                        kind: monaco.languages.CompletionItemKind.Snippet,
+                        range: undefined,
+                        sortText: "aaMethod"
+                    },
+                    {
+                        label: "public " + symbolTable.classContext.identifier  + "(){}  // Konstruktor",
+                        filterText: "public",
+                        insertText: "public " + symbolTable.classContext.identifier  + "(${1:Parameter}) {\n\t$0\n}\n",
+                        detail: "Konstruktor",
+                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                        kind: monaco.languages.CompletionItemKind.Snippet,
+                        range: undefined,
+                        sortText: "aaConstructor"
+                    },
+                    {
+                        label: "protected",
+                        filterText: "protected",
+                        insertText: "protected ",
+                        detail: "Schlüsselwort protected",
+                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                        kind: monaco.languages.CompletionItemKind.Snippet,
+                        range: undefined
+                    },
+                    {
+                        label: "static",
+                        filterText: "static",
+                        insertText: "static ",
+                        detail: "Schlüsselwort static",
+                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                        kind: monaco.languages.CompletionItemKind.Snippet,
+                        range: undefined
+                    },
+                    {
+                        label: "private",
+                        filterText: "private",
+                        insertText: "private ",
+                        detail: "Schlüsselwort private",
+                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                        kind: monaco.languages.CompletionItemKind.Snippet,
+                        range: undefined
+                    }
+                ]);
+            }
         }
 
         if (symbolTable != null && symbolTable.method != null) {

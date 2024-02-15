@@ -795,7 +795,8 @@ export class Interpreter {
 
             if (this.currentProgram == null) {
                 console.log("Interpeter.nextStep: Current program is null!");
-                this.return;
+                this.setState(InterpreterState.done);
+                return;
             }
 
             if (this.currentProgramPosition > this.currentProgram.statements.length - 1) {

@@ -157,8 +157,15 @@ export class CodeGenerator {
                 stepFinished: false,
                 method: mainMethod,
                 staticClass: staticClass
-            }, {
-                type: TokenType.closeStackframe,
+            }, 
+            // {
+            //     type: TokenType.closeStackframe,
+            //     position: mainMethod.usagePositions.get(this.module)[0]
+            // }
+            {
+                type: TokenType.programEnd,
+                stepFinished: true,
+                pauseAfterProgramEnd: true,
                 position: mainMethod.usagePositions.get(this.module)[0]
             }
             ], false);

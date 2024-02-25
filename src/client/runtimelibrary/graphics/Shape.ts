@@ -945,17 +945,21 @@ export abstract class ShapeHelper extends ActorHelper {
         this.displayObject.visible = visible;
     }
 
-
-    getFirstCollidingSprite(index?: number): RuntimeObject {
-        console.log(index);
-        this.displayObject.updateTransform();
-        if (this.hitPolygonDirty) this.transformHitPolygon();
-
-        for (let shapeHelper of this.worldHelper.shapes) {
+    getFirstCollidingSpriteHelper(index: number | undefined, shapeHelpers: ShapeHelper[]): RuntimeObject {
+        for (let shapeHelper of shapeHelpers) {
             if(shapeHelper == this) continue;
             
             let spriteIndex = shapeHelper["index"];
-            if(!spriteIndex) continue;
+            if(!spriteIndex){
+                if(shapeHelper["shapes"]){
+                    let runtimeObjects = <RuntimeObject[]>shapeHelper["shapes"];
+                    let firstCollidingSprite = this.getFirstCollidingSpriteHelper(index, runtimeObjects.map(ro => ro.intrinsicData["Actor"]));
+
+                    if(firstCollidingSprite) return firstCollidingSprite;
+                } 
+
+                continue;
+            }
 
             if(index != null && index != spriteIndex) continue;
 
@@ -976,7 +980,14 @@ export abstract class ShapeHelper extends ActorHelper {
 
         }
 
-        return null;
+    }
+
+
+    getFirstCollidingSprite(index?: number): RuntimeObject {
+        this.displayObject.updateTransform();
+        if (this.hitPolygonDirty) this.transformHitPolygon();
+
+        return this.getFirstCollidingSpriteHelper(index, this.worldHelper.shapes);
 
     }
 

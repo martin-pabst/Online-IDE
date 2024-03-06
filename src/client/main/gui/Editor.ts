@@ -202,7 +202,7 @@ export class Editor implements monaco.languages.RenameProvider {
         let mouseWheelListener = (event: WheelEvent) => {
             if (event.ctrlKey === true) {
 
-                that.changeEditorFontSize(Math.sign(event.deltaY), true);
+                that.changeEditorFontSize(Math.sign(-event.deltaY), true);
 
                 event.preventDefault();
             }

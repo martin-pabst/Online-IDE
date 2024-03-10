@@ -43,7 +43,16 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
                 toolbarDelete: true,
                 footer: true,
                 selectColumn: true,
-                toolbarSearch: false
+                toolbarSearch: true
+            },
+            defaultOperator: {
+                'text'    : 'contains',
+                'number'  : '=',
+                'date'    : 'is',
+                'list'    : 'is',
+                'enum'    : 'in',
+                'hex'     : 'begins',
+                'color'   : 'begins'
             },
             recid: "id",
             columns: [

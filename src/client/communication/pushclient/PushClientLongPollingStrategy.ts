@@ -58,6 +58,9 @@ export class PushClientLongPollingStrategy extends PushClientStrategy {
                     case 504:   // gateway timeout!
                         this.reopen(1000, false);
                         break;
+                    case 401:
+                        console.log("PushClientLongPollingStrategy: Got http status code 401, therefore stopping.");
+                        break;
                     default:
                         this.reopen(10000, false);
                         break;

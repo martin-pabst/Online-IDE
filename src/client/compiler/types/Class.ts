@@ -177,10 +177,15 @@ export class Klass extends Type {
 
         for (let a of this.attributes) {
             if (a.type instanceof Klass || a.type instanceof Interface) {
+                let type: Type = a.type;
+                if (["ArrayList", "List", "LinkedList"].indexOf(type.identifier) >= 0 && type instanceof Klass && type.typeVariables.length == 1) {
+                    type = type.typeVariables[0].type;
+                }
+
                 let cda = cdMap.get(a.type);
                 if (cda == null) {
                     cda = {
-                        klass: a.type,
+                        klass: <Klass>type,
                         multiples: false,
                         identifier: a.identifier
                     };
@@ -191,10 +196,11 @@ export class Klass extends Type {
                 }
             } else {
                 let type: Type = a.type;
-                while (type instanceof ArrayType) {
-                    type = type.arrayOfType;
-                }
+
                 if (type instanceof Klass || type instanceof Interface) {
+                    while(type.identifier == "ArrayList"){
+                        debugger;
+                    }
                     let cda = cdMap.get(type);
                     if (cda == null) {
                         cda = {

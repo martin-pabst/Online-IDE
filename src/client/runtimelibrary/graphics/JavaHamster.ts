@@ -304,7 +304,7 @@ export class JavaHamsterWorldHelper extends FilledShapeHelper {
     }
 
     isOutside(x: number, y: number) {
-        return x <= 0 || y <= 0 || x >= this.sizeX || y >= this.sizeY;
+        return x < 0 || y < 0 || x >= this.sizeX || y >= this.sizeY;
     }
 
     clearAll() {

@@ -624,8 +624,8 @@ class HamsterSpriteHelper {
 
     forward() {
         let direction = HamsterSpriteHelper.directions[this.direction];
-        let newX = (this.x + direction.dx + this.world.sizeX) % this.world.sizeX;
-        let newY = (this.y + direction.dy + this.world.sizeY) % this.world.sizeY;
+        let newX = (this.x + direction.dx); // + this.world.sizeX); // % this.world.sizeX;
+        let newY = (this.y + direction.dy); // + this.world.sizeY); // % this.world.sizeY;
 
         if (this.world.isOutside(newX, newY)) {
             this.throwException(`Die neue Position (${newX}, ${newY}) ist außerhalb der Welt. Der Hamster kann daher nicht weitergehen.`);
@@ -710,8 +710,8 @@ class HamsterSpriteHelper {
 
     nextCellFree(): boolean {
         let direction = HamsterSpriteHelper.directions[this.direction];
-        let newX = (this.x + direction.dx + this.world.sizeX) % this.world.sizeX;
-        let newY = (this.y + direction.dy + this.world.sizeY) % this.world.sizeY;
+        let newX = (this.x + direction.dx); // + this.world.sizeX); // % this.world.sizeX;
+        let newY = (this.y + direction.dy); // + this.world.sizeY); // % this.world.sizeY;
         if (this.world.isOutside(newX, newY)) return false;
         return !this.world.isWall(newX, newY);
     }

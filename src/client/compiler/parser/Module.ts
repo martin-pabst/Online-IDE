@@ -234,7 +234,14 @@ export class Module {
         if (uriCounter > 0) path += " (" + uriCounter + ")";
         this.uri = monaco.Uri.from({ path: path, scheme: 'inmemory' });
         let fileType = FileTypeManager.filenameToFileType(file.name);
+        
+        while(monaco.editor.getModel(this.uri) != null){
+            path += "x";
+            this.uri = monaco.Uri.from({ path: path, scheme: 'inmemory' });
+        }
+
         this.model = monaco.editor.createModel(file.text, fileType.language, this.uri);
+
         this.model.updateOptions({ tabSize: 3, bracketColorizationOptions: {enabled: true} });
         let formatter = new Formatter();
 

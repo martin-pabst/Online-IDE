@@ -61,6 +61,9 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
                 { field: 'kuerzel', text: 'Kürzel', size: '10%', sortable: true, resizable: true, editable: { type: 'text', maxlength: "10" } },
                 { field: 'numberOfClasses', text: 'Klassen', size: '30%', sortable: true, resizable: true },
                 { field: 'numberOfUsers', text: 'User', size: '30%', sortable: true, resizable: true },
+                { field: 'userMinutesLastMonth', text: 'Hours(m)', size: '20%', sortable: true, resizable: true },
+                { field: 'userMinutesLastYear', text: 'Hours(m)', size: '20%', sortable: true, resizable: true },
+                { field: 'userMinutesOverall', text: 'Hours(all)', size: '20%', sortable: true, resizable: true },
             ],
             searches: [
                 { field: 'name', label: 'Bezeichnung', type: 'text' }
@@ -300,7 +303,10 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
                 name: "Name der Schule",
                 kuerzel: "kuerzel",
                 classes: [],
-                usersWithoutClass: []
+                usersWithoutClass: [],
+                userMinutesLastMonth: 0,
+                userMinutesLastYear: 0,
+                userMinutesOverall: 0
             },
         };
 
@@ -399,13 +405,14 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
                 school.classes.forEach(c => n += c.students.length);
                 n += school.usersWithoutClass.length;
                 school["numberOfUsers"] = n;
+                school["userHours"] = school.userMinutesLastMonth + "/" + school.userMinutesLastYear + "/" + school.userMinutesOverall;
             }
 
             this.schoolGrid.add(this.schoolDataList);
 
             this.schoolGrid.refresh();
         }, (error) => {
-            w2alert('Fehler beim Holen der Daten: ' + error);
+            alert('Fehler beim Holen der Daten: ' + error);
             debugger;
         });
 

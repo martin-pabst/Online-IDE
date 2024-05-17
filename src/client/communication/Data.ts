@@ -156,7 +156,10 @@ export type SchoolData = {
     text?: string, // only form w2ui...
     kuerzel: string,
     classes: ClassData[],
-    usersWithoutClass: UserData[]
+    usersWithoutClass: UserData[],
+    userMinutesLastMonth: number,
+    userMinutesLastYear: number,
+    userMinutesOverall: number
 }
 
 export type TeacherData = {

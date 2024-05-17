@@ -209,7 +209,10 @@ export class ExportImportMI extends AdminMenuItem {
                 name: "Name der Schule",
                 kuerzel: "kuerzel",
                 classes: [],
-                usersWithoutClass: []
+                usersWithoutClass: [],
+                userMinutesLastMonth: 0,
+                userMinutesLastYear: 0,
+                userMinutesOverall: 0
             },
         };
 

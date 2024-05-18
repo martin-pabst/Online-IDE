@@ -62,7 +62,7 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
                 { field: 'numberOfClasses', text: 'Klassen', size: '30%', sortable: true, resizable: true },
                 { field: 'numberOfUsers', text: 'User', size: '30%', sortable: true, resizable: true },
                 { field: 'userMinutesLastMonth', text: 'Hours(m)', size: '20%', sortable: true, resizable: true },
-                { field: 'userMinutesLastYear', text: 'Hours(m)', size: '20%', sortable: true, resizable: true },
+                { field: 'userMinutesLastYear', text: 'Hours(y)', size: '20%', sortable: true, resizable: true },
                 { field: 'userMinutesOverall', text: 'Hours(all)', size: '20%', sortable: true, resizable: true },
             ],
             searches: [

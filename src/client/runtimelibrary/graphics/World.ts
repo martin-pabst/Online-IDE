@@ -451,7 +451,6 @@ export class WorldHelper {
 
     $containerOuter: JQuery<HTMLElement>;
     $containerInner: JQuery<HTMLElement>;
-    $controlsContainer: JQuery<HTMLElement>;
     app: PIXI.Application;
     stage: WorldContainer;
 
@@ -564,10 +563,7 @@ export class WorldHelper {
 
         this.$containerOuter = jQuery('<div></div>');
         this.$containerInner = jQuery('<div></div>');
-        this.$controlsContainer = jQuery('<div class="graphical_controls"></div>');
-        this.$containerOuter.append(this.$containerInner, this.$controlsContainer);
-
-        new ResizeObserver(() => {that.computeGraphicalControlsMatrix()}).observe(this.$containerInner[0]);
+        this.$containerOuter.append(this.$containerInner);
 
         $graphicsDiv.append(this.$containerOuter);
 
@@ -763,19 +759,6 @@ export class WorldHelper {
         this.currentHeight = Math.abs(p2.y - p1.y);
 
     }
-
-    computeGraphicalControlsMatrix(){
-        let ccWidth = this.$containerInner.width();
-        let ccHeight = this.$containerInner.height();
-
-        let ccm = new PIXI.Matrix();
-        ccm.scale(ccWidth/this.width, ccHeight/this.height);
-        let inv = this.stage.projectionTransform.clone().invert();
-        ccm.append(this.stage.projectionTransform);
-
-        this.$controlsContainer.css('transform', `matrix(${ccm.a}, ${ccm.b}, ${ccm.c}, ${ccm.d}, ${ccm.tx}, ${ccm.ty})`);
-    }
-
 
     hasActors(): boolean {
         return this.actActors.length > 0 || this.keyPressedActors.length > 0 || this.keyUpActors.length > 0

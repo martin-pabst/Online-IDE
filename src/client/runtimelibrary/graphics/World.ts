@@ -95,7 +95,6 @@ export class WorldClass extends Klass {
                 wh.stage.projectionTransform.prepend(matrix);
 
                 wh.computeCurrentWorldBounds();
-                wh.computeGraphicalControlsMatrix();
                 wh.shapesNotAffectedByWorldTransforms.forEach((shape) => shape.move(-x, -y));
 
             }, false, false, 'Verschiebt alle Objekte der Welt um x nach rechts und y nach unten.', false));
@@ -154,7 +153,6 @@ export class WorldClass extends Klass {
                     wh.stage.projectionTransform.prepend(matrix);
 
                     wh.computeCurrentWorldBounds();
-                    wh.computeGraphicalControlsMatrix();
                     wh.shapesNotAffectedByWorldTransforms.forEach((shape) => shape.move(-moveX, -moveY));
                 }
 
@@ -185,7 +183,6 @@ export class WorldClass extends Klass {
                 wh.stage.projectionTransform.prepend(matrix);
 
                 wh.computeCurrentWorldBounds();
-                wh.computeGraphicalControlsMatrix();
                 wh.shapesNotAffectedByWorldTransforms.forEach(
                     (shape) => {
                         shape.rotate(-angle, x, y);
@@ -214,7 +211,6 @@ export class WorldClass extends Klass {
                 wh.stage.projectionTransform.translate(x, y);
                 wh.stage.projectionTransform.prepend(matrix);
                 wh.computeCurrentWorldBounds();
-                wh.computeGraphicalControlsMatrix();
                 wh.shapesNotAffectedByWorldTransforms.forEach((shape) => shape.scale(1 / factor, x, y));
 
             }, false, false, 'Streckt die Welt um den angegebenen Faktor. Zentrum der Streckung ist (x/y).', false));
@@ -239,7 +235,6 @@ export class WorldClass extends Klass {
                 wh.stage.projectionTransform.translate(-left, -top);
                 wh.stage.projectionTransform.scale(wh.initialWidth / width, wh.initialHeight / height);
                 wh.computeCurrentWorldBounds();
-                wh.computeGraphicalControlsMatrix();
                 wh.shapesNotAffectedByWorldTransforms.forEach((shape) => {
                     shape.scale(width / wh.initialWidth, left, top);
                     shape.move(left, top);

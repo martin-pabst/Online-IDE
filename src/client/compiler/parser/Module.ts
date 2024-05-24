@@ -395,7 +395,7 @@ export class Module {
 
     toggleBreakpoint(lineNumber: number, rerender: boolean) {
         this.getBreakpointPositionsFromEditor();
-        if (this.getBreakpoint(lineNumber, true) == null) {
+        if (this.getAndRemoveBreakpoint(lineNumber) == null) {
             this.setBreakpoint(lineNumber, 1);
         }
         if (rerender) {
@@ -403,7 +403,7 @@ export class Module {
         }
     }
 
-    getBreakpoint(line: number, remove: boolean = false): Breakpoint {
+    getAndRemoveBreakpoint(line: number): Breakpoint {
 
         for (let i = 0; i < this.breakpoints.length; i++) {
             let b = this.breakpoints[i];
@@ -551,7 +551,7 @@ export class Module {
         let monacoEditorModel = this.main.getMonacoEditor().getModel();
         if(monacoEditorModel == null) return;
         for (let decoration of monacoEditorModel.getAllDecorations()) {
-            if (decoration.options.marginClassName == "margin_breakpoint") {
+            if (decoration.options.marginClassName == "jo_margin_breakpoint") {
                 let breakpoint = this.decoratorIdToBreakpointMap[decoration.id];
                 if (breakpoint != null) {
                     breakpoint.line = decoration.range.startLineNumber;

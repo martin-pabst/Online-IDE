@@ -437,9 +437,13 @@ export class Editor implements monaco.languages.RenameProvider {
 
             const line = model.getLineContent(position.lineNumber);
             let doInsert: boolean = true;
-            let charBefore: string = "x";
-            if(position.column > 1){
-                charBefore = line.charAt(position.column - 3);
+            let charBefore1: string = "x";
+            if(position.column > 3){
+                charBefore1 = line.charAt(position.column - 3);
+            }
+            let charBefore2: string = "x";
+            if(position.column > 4){
+                charBefore2 = line.charAt(position.column - 4);
             }
             let charAfter: string = "x";
             if(position.column - 1 < line.length){
@@ -447,12 +451,26 @@ export class Editor implements monaco.languages.RenameProvider {
             }
 
             if(!isSelected){
-                if(charBefore != '"'){
+                if(charBefore1 != '"' && charAfter != '"'){
                     insertTextAndSetCursor(position, '"', position.lineNumber, position.column);
-                } else if(charAfter == '"'){
-                    let pos1 = {...position, column: position.column + 1};
-                    insertTextAndSetCursor(pos1, '\n\n"""', position.lineNumber + 1, 1);
-                }
+                } 
+                // else if(charAfter == '"'){
+                    // let pos1 = {...position, column: position.column + 1};
+                    // insertTextAndSetCursor(pos1, '\n\n"""', position.lineNumber + 1, 1);
+                // }
+                else if(charBefore1 == '"' && charAfter == '"'){
+                    this.editor.executeEdits("new-bullets", [
+                        { range: {
+                            startColumn: position.column,
+                            startLineNumber: position.lineNumber,
+                            endColumn: position.column + 1,
+                            endLineNumber: position.lineNumber
+                        }, 
+                        text: "" }
+                    ]);
+                } else if(charBefore1 == '"' && charBefore2 == '"' && charAfter != '"'){
+                    insertTextAndSetCursor(position, '\n\n""";', position.lineNumber + 1, 1);
+                } 
             }
 
 

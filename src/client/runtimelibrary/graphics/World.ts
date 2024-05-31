@@ -240,7 +240,7 @@ export class WorldClass extends Klass {
                     shape.move(left, top);
                 });
 
-            }, false, false, 'Streckt die Welt um den angegebenen Faktor. Zentrum der Streckung ist (x/y).', false));
+            }, false, false, 'Setzt das Koordinatensystem der Welt so, dass (left, top) die linke obere Ecke des sichtbaren Bereiches ist, width seine Breite und height seine Höhe.', false));
 
 
         this.addMethod(new Method("setDefaultGroup", new Parameterlist([

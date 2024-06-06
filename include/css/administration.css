@@ -327,7 +327,7 @@ body {
 
     .jo_codeBlock {
         font-family: monospace;
-        white-space: pre;
+        white-space: pre-wrap;
     }
 
     .jo_fileCaption {

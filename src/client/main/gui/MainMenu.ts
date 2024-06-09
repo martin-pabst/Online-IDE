@@ -256,6 +256,14 @@ export class MainMenu {
                                 link: "https://www.learnj.de/doku.php?id=javaonline:ueber"
                             },
                             {
+                                identifier: "Impressum...",
+                                link: "https://www.learnj.de/doku.php?id=ide:impressum"
+                            },
+                            {
+                                identifier: "Datenschutzerklärung...",
+                                link: "https://www.learnj.de/doku.php?id=ide:datenschutzerklaerung"
+                            },
+                            {
                                 identifier: "<div class='jo_menu_version'>Version " + APP_VERSION + " vom " + BUILD_DATE + " </div>",
                                 noHoverAnimation: true
                             }

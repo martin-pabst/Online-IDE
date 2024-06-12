@@ -95,6 +95,10 @@ export class TimerClass extends Klass {
         this.timerStarted = false;
     }
 
+    clearEntries(){
+        this.timerEntries = [];
+    }
+
     processTimerEntries() {
 
         if(!this.timerStarted){
@@ -105,6 +109,15 @@ export class TimerClass extends Klass {
             let interpreter = this.module?.main?.getInterpreter();
 
             if (interpreter != null) {
+                switch (interpreter.state) {
+                    case InterpreterState.done:
+                    case InterpreterState.error:
+                    case InterpreterState.not_initialized:
+                        this.timerEntries = [];
+                        this.timerRunning = false;
+                        break;
+                }
+
                 if (!this.timerRunning && interpreter.state == InterpreterState.running) {
                     let t: number = performance.now();
                     for (let timerentry of this.timerEntries) {
@@ -114,15 +127,6 @@ export class TimerClass extends Klass {
                             timerentry.lastTimeFired = t;
                         }
                     }
-                }
-
-                switch (interpreter.state) {
-                    case InterpreterState.done:
-                    case InterpreterState.error:
-                    case InterpreterState.not_initialized:
-                        this.timerEntries = [];
-                        this.timerRunning = false;
-                        break;
                 }
 
             }

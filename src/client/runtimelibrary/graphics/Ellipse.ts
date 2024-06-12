@@ -4,9 +4,7 @@ import { doublePrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
 import { Method, Parameterlist } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { FilledShapeHelper } from "./FilledShape.js";
-import { WorldHelper } from "./World.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
-import { ShapeHelper } from "./Shape.js";
 import * as PIXI from 'pixi.js';
 
 export class EllipseClass extends Klass {

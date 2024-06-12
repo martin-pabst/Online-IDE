@@ -676,6 +676,7 @@ export class Interpreter {
         this.main.hideProgramPointerPosition();
 
         this.getTimerClass().stopTimer();
+        this.getTimerClass().clearEntries();
         if (this.worldHelper != null) {
             this.worldHelper.cacheAsBitmap();
         }

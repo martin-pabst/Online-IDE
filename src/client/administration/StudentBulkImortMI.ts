@@ -402,6 +402,11 @@ export class StudentBulkImportMI extends AdminMenuItem {
     }
 
     getRandomPassword(): string {
+        let lowercaseCharacters = "abcdefghkmnpqrstuvwxy";
+        let uppercaseCharacters = "ABCDEFGHKLMNPQRSTUVW";
+        let digits = "123456789";
+        let others = "#!§$%&/()=[]{}*+:;,.-<>";
+
         let goodCharacters: string = "abcdefghkmnpqrstuvwxyABCDEFGHKLMNPQRSTUVW123456789#!$";
         let pw: string = '';
         for(let i = 0; i< 8; i++){

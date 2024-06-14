@@ -401,19 +401,33 @@ export class StudentBulkImportMI extends AdminMenuItem {
 
     }
 
-    getRandomPassword(): string {
-        let lowercaseCharacters = "abcdefghkmnpqrstuvwxy";
-        let uppercaseCharacters = "ABCDEFGHKLMNPQRSTUVW";
-        let digits = "123456789";
-        let others = "#!§$%&/()=[]{}*+:;,.-<>";
+    getRandomPassword(minimumLength: number = 8, minimumNumberOfCategries: number = 3): string {
+        let categoryList: string[] = ["abcdefghkmnpqrstuvwxy", "ABCDEFGHKLMNPQRSTUVW", "123456789", "#!§$%&/()=[]{}*+:;,.-<>"];
 
-        let goodCharacters: string = "abcdefghkmnpqrstuvwxyABCDEFGHKLMNPQRSTUVW123456789#!$";
+        let goodCharacters: string = categoryList.join("");
+
+        let goodPasswordFound: boolean = false;
         let pw: string = '';
-        for(let i = 0; i< 8; i++){
-            pw += goodCharacters.charAt(Math.trunc(Math.random() * goodCharacters.length));
-        }        
+
+        while(!goodPasswordFound){
+            pw = '';
+            let categories: Map<number, boolean> = new Map();
+            for(let i = 0; i< minimumLength; i++){
+                let c = goodCharacters.charAt(Math.trunc(Math.random() * goodCharacters.length));
+                pw += c;
+                for(let i = 0; i < categoryList.length; i++){
+                    let category = categoryList[i];
+                    if(category.indexOf(c) >= 0){
+                        categories.set(i, true);
+                    }
+                }
+            }        
+            goodPasswordFound = categories.size >= minimumNumberOfCategries;
+        }
+
         return pw;
     }
+
 
     getColumnMapping(lines: string[][]): { columnMapping: ColumnMapping, line1HasHeaders: boolean } {
 

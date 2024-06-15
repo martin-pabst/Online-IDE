@@ -299,9 +299,9 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                     w2alert('Das Passwort für ' + student.rufname + " " + student.familienname + " (" + student.username + ") wurde erfolgreich geändert.");
                     this.studentGrid.searchReset();
                     that.preparePasswordButtons();
-                }, () => {
+                }, (message: string) => {
                     w2utils.unlock(jQuery('body'));
-                    w2alert('Fehler beim Ändern des Passworts!');
+                    w2alert('Fehler beim Ändern des Passworts: ' + message);
                     this.studentGrid.searchReset();
                     that.preparePasswordButtons();
                 });

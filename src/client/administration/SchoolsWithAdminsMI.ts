@@ -236,9 +236,9 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
                     w2utils.unlock(jQuery('body'));
                     w2alert('Das Passwort für ' + admin.rufname + " " + admin.familienname + " (" + admin.username + ") wurde erfolgreich geändert.");
 
-                }, () => {
+                }, (message: string) => {
                     w2utils.unlock(jQuery('body'));
-                    w2alert('Fehler beim Ändern des Passworts!');
+                    w2alert('Fehler beim Ändern des Passworts: ' + message);
                 });
             });
 

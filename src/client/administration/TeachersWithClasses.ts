@@ -277,9 +277,9 @@ export class TeachersWithClassesMI extends AdminMenuItem {
 
                     w2utils.unlock(jQuery('body'));
                     w2alert('Das Passwort für ' + teacher.rufname + " " + teacher.familienname + " (" + teacher.username + ") wurde erfolgreich geändert.");
-                }, () => {
+                }, (message: string) => {
                     w2utils.unlock(jQuery('body'));
-                    w2alert('Fehler beim Ändern des Passworts!');
+                    w2alert('Fehler beim Ändern des Passworts: ' + message);
                 });
             });
 

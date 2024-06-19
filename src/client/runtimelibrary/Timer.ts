@@ -87,16 +87,19 @@ export class TimerClass extends Klass {
     startTimer(){
         if(!this.timerStarted){
             this.timerStarted = true;
+            this.timerRunning = false;
             this.processTimerEntries();
         }
     }
     
     stopTimer(){
         this.timerStarted = false;
+        this.timerRunning = false;
     }
 
     clearEntries(){
         this.timerEntries = [];
+        this.timerRunning = false;
     }
 
     processTimerEntries() {

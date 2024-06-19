@@ -2618,6 +2618,11 @@ export class CodeGenerator {
             }
         }
 
+
+        if(!node.operands || node.operands.length == 0 && superclassType.getConstructor([], Visibility.protected).methodList.length == 0){
+            return { type: null, isAssignable: false };
+        }; 
+
         // Push this-object to stack:
         this.pushStatements({
             type: TokenType.pushLocalVariableToStack,
@@ -2643,6 +2648,8 @@ export class CodeGenerator {
         }
 
         let methods = superclassType.getConstructor(parameterTypes, Visibility.protected);
+
+
 
         this.module.pushMethodCallPosition(node.position, node.commaPositions, superclassType.getMethods(Visibility.protected, superclassType.identifier),
             node.rightBracketPosition);

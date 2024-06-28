@@ -18,12 +18,12 @@ export class GNGRechteckClass extends Klass {
 
         this.addAttribute(new Attribute("breite", intPrimitiveType, (value: Value) => { 
             let sh = value.object.intrinsicData["Actor"];
-            value.value = Math.round(Math.abs(sh.width * sh.displayObject.scale.x)); 
+            value.value = sh ? Math.round(Math.abs(sh.width * sh.displayObject.scale.x)) : 0; 
         }, false, Visibility.protected, false, "Breite des Rechtecks"));
 
         this.addAttribute(new Attribute("höhe", intPrimitiveType, (value: Value) => { 
             let sh = value.object.intrinsicData["Actor"];
-            value.value = Math.round(Math.abs(sh.height * sh.displayObject.scale.x)); 
+            value.value = sh ? Math.round(Math.abs(sh.height * sh.displayObject.scale.x)) : 0; 
         }, false, Visibility.protected, false, "Höhe des Rechtecks"));
 
 

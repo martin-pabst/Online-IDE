@@ -356,7 +356,7 @@ export class HamsterClass extends Klass {
 
     constructor(module: Module) {
 
-        super("Hamster", module, "JavaHamster-Marienkäfer");
+        super("Hamster", module, "JavaHamster-Hamster");
 
         this.setBaseClass(<Klass>module.typeStore.getType("Object"));
 
@@ -496,7 +496,7 @@ export class HamsterClass extends Klass {
 
                 return;
 
-            }, false, false, "Dreht Hamster legt ein Korn in der Zelle ab, in der er sich gerade befindet.", false));
+            }, false, false, "Der Hamster legt ein Korn in der Zelle ab, in der er sich gerade befindet.", false));
 
         this.addMethod(new Method("nimm", new Parameterlist([]
         ), voidPrimitiveType,
@@ -510,7 +510,7 @@ export class HamsterClass extends Klass {
 
                 return;
 
-            }, false, false, "Dreht Hamster nimmt ein Korn aus der Zelle, in der er sich gerade befindet.", false));
+            }, false, false, "Der Hamster nimmt ein Korn aus der Zelle, in der er sich gerade befindet.", false));
 
         this.addMethod(new Method("vornFrei", new Parameterlist([]
         ), booleanPrimitiveType,

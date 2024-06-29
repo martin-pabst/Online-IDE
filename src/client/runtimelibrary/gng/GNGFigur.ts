@@ -72,7 +72,7 @@ export class GNGFigurClass extends Klass {
                 o.intrinsicData["isInitialTriangle"] = true;
 
                 rh.scale(0.4, center.x, center.y);
-                rh.displayObject.updateTransform();
+                rh.displayObject.updateTransform(); 
 
                 helper.registerEvents(o);
 

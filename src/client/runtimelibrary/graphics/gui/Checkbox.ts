@@ -224,7 +224,7 @@ export class CheckBoxHelper extends GuiTextComponentHelper {
         return ro;
     }
 
-
+ 
     render(): void {
 
         this.textCompomentPrerender();

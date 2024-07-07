@@ -18,7 +18,7 @@ export function setBooleanPrimitiveTypeCopy(bpt: Type) {
 }
 
 // Used for class diagrams:
-export type CompostionData = { klass: Klass | Interface, multiples: boolean, identifier: string };
+export type CompostionData = { klass: Klass | Interface, identifier: string };
 
 /**
  * For Generic types
@@ -173,20 +173,23 @@ export class Klass extends Type {
     getCompositeData(): CompostionData[] {
 
         let cd: CompostionData[] = [];
-        let cdMap: Map<Klass | Interface, CompostionData> = new Map();
+        let cdMap: Map<Klass | Interface | ArrayType, CompostionData> = new Map();
 
         for (let a of this.attributes) {
-            if (a.type instanceof Klass || a.type instanceof Interface) {
-                let type: Type = a.type;
+            let type: Type = a.type;
+            if (a.type instanceof Klass || a.type instanceof Interface || a.type instanceof ArrayType) {
                 if (["ArrayList", "List", "LinkedList"].indexOf(type.identifier) >= 0 && type instanceof Klass && type.typeVariables.length == 1) {
                     type = type.typeVariables[0].type;
+                }
+
+                while(type instanceof ArrayType){
+                    type = type.arrayOfType;
                 }
 
                 let cda = cdMap.get(a.type);
                 if (cda == null) {
                     cda = {
                         klass: <Klass>type,
-                        multiples: false,
                         identifier: a.identifier
                     };
                     cdMap.set(a.type, cda);
@@ -198,21 +201,16 @@ export class Klass extends Type {
                 let type: Type = a.type;
 
                 if (type instanceof Klass || type instanceof Interface) {
-                    while(type.identifier == "ArrayList"){
-                        debugger;
-                    }
                     let cda = cdMap.get(type);
                     if (cda == null) {
                         cda = {
                             klass: type,
-                            multiples: true,
                             identifier: a.identifier
                         };
                         cdMap.set(type, cda);
                         cd.push(cda);
                     } else {
                         cda.identifier += ", " + a.identifier;
-                        cda.multiples = true;
                     }
                 }
             }

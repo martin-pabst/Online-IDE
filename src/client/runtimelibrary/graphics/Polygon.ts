@@ -112,7 +112,7 @@ export class PolygonClass extends Klass {
                 
                 let points: convexhull.Point[] = [];
                 points = this.extractPoints(shapeHelper, points);
-                points = convexhull.makeHull(points);
+                // points = convexhull.makeHull(points);
 
 
                 let pointsNumber: number[] = [];

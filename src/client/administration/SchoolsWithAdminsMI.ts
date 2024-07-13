@@ -4,6 +4,7 @@ import { ajax } from "../communication/AjaxHelper.js";
 import { PasswordPopup } from "./PasswordPopup.js";
 import { MoveTeacherToSchoolPopup } from "./MoveTeacherToSchoolPopup.js";
 import { w2grid, w2utils } from "../lib/w2ui-2.0.es6.js";
+import { StudentBulkImportMI } from "./StudentBulkImortMI.js";
 
 declare var w2prompt: any;
 declare var w2alert: any;
@@ -506,7 +507,7 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
                 is_admin: false,
                 is_schooladmin: false,
                 is_teacher: true,
-                password: Math.round(Math.random() * 10000000) + "x"
+                password: StudentBulkImportMI.getRandomPassword()
             },
         };
 

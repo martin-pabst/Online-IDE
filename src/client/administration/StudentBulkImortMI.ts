@@ -378,7 +378,7 @@ export class StudentBulkImportMI extends AdminMenuItem {
         let id: number = 1;
 
         for (let line of lines) {
-            let password: string = this.getRandomPassword();
+            let password: string = StudentBulkImportMI.getRandomPassword();
             if(columnMapping["passwort"] && line[columnMapping["passwort"]] != null){
                 password = line[columnMapping["passwort"]].trim()
             } 
@@ -401,7 +401,7 @@ export class StudentBulkImportMI extends AdminMenuItem {
 
     }
 
-    getRandomPassword(minimumLength: number = 8, minimumNumberOfCategries: number = 3): string {
+    static getRandomPassword(minimumLength: number = 8, minimumNumberOfCategries: number = 3): string {
         let categoryList: string[] = ["abcdefghkmnpqrstuvwxy", "ABCDEFGHKLMNPQRSTUVW", "123456789", "#!§$%&/()=[]{}*+:;,.-<>"];
 
         let goodCharacters: string = categoryList.join("");

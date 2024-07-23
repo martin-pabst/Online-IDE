@@ -146,9 +146,10 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                         {
                             field: 'klasse', text: 'Klasse', size: '10%', sortable: true, resizable: true
                         },
-                        { field: 'username', text: 'Benutzername', size: '30%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
-                        { field: 'rufname', text: 'Rufname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
-                        { field: 'familienname', text: 'Familienname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
+                        { field: 'username', text: 'Benutzername', size: '25%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
+                        { field: 'rufname', text: 'Rufname', size: '25%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
+                        { field: 'familienname', text: 'Familienname', size: '25%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
+                        { field: 'locked', text: 'Locked', size: '15%', sortable: true, resizable: false, editable: { type: 'checkbox', style: 'text-align: center' } },
                         {
                             field: 'id', text: 'PW', size: '40px', sortable: false, render: (e) => {
                                 return '<div class="pw_button" title="Passwort ändern" data-recid="' + e.recid + '" style="visibility: hidden">PW!</div>';
@@ -654,6 +655,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                 is_admin: false,
                 is_schooladmin: false,
                 is_teacher: false,
+                locked: false,
                 password: StudentBulkImportMI.getRandomPassword()
             },
         };

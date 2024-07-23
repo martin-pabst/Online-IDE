@@ -91,6 +91,7 @@ export type UserData = {
     is_teacher: boolean,
     is_admin: boolean,
     is_schooladmin: boolean,
+    locked: boolean,
     username: string,
     familienname: string,
     rufname: string,

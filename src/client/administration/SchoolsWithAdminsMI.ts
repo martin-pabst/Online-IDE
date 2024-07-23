@@ -3,11 +3,10 @@ import { UserData, CRUDUserRequest, CRUDSchoolRequest, CRUDResponse, SchoolData,
 import { ajax } from "../communication/AjaxHelper.js";
 import { PasswordPopup } from "./PasswordPopup.js";
 import { MoveTeacherToSchoolPopup } from "./MoveTeacherToSchoolPopup.js";
-import { w2grid, w2utils } from "../lib/w2ui-2.0.es6.js";
+import { w2grid, w2utils, w2alert } from "../lib/w2ui-2.0.es6.js";
 import { StudentBulkImportMI } from "./StudentBulkImortMI.js";
 
-declare var w2prompt: any;
-declare var w2alert: any;
+// declare var w2prompt: any;
 
 export class SchoolsWithAdminsMI extends AdminMenuItem {
     destroy() {
@@ -122,10 +121,11 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
             recid: "id",
             columns: [
                 { field: 'id', text: 'ID', size: '20px', sortable: true, hidden: true },
-                { field: 'username', text: 'Benutzername', size: '30%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
-                { field: 'rufname', text: 'Rufname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
-                { field: 'familienname', text: 'Familienname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
+                { field: 'username', text: 'Benutzername', size: '25%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
+                { field: 'rufname', text: 'Rufname', size: '25%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
+                { field: 'familienname', text: 'Familienname', size: '25%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
                 { field: 'is_schooladmin', text: 'Admin', size: '10%', sortable: true, resizable: false, editable: { type: 'checkbox', style: 'text-align: center' } },
+                { field: 'locked', text: 'Locked', size: '15%', sortable: true, resizable: false, editable: { type: 'checkbox', style: 'text-align: center' } },
                 {
                     field: 'id', text: 'PW', size: '40px', sortable: false, render: (e) => {
                         return '<div class="pw_button" title="Passwort ändern" data-recid="' + e.recid + '" style="visibility: hidden">PW!</div>';
@@ -507,6 +507,7 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
                 is_admin: false,
                 is_schooladmin: false,
                 is_teacher: true,
+                locked: false,
                 password: StudentBulkImportMI.getRandomPassword()
             },
         };

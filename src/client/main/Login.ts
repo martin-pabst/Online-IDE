@@ -11,19 +11,20 @@ import { PruefungManagerForStudents } from './pruefung/PruefungManagerForStudent
 import { PushClientManager } from '../communication/pushclient/PushClientManager.js';
 import { DatabaseNewLongPollingListener } from '../tools/database/DatabaseNewLongPollingListener.js';
 import { SqlIdeUrlHolder } from './SqlIdeUrlHolder.js';
+import { AutoLogout } from './AutoLogout.js';
 
 export class Login {
 
     constructor(private main: Main) {
-
+        new AutoLogout(this);
     }
 
     initGUI(isLoginWithTicket: boolean) {
 
         let that = this;
-        if(!isLoginWithTicket){
-            jQuery('#login').css('display','flex');
-            jQuery('#bitteWarten').css('display','none');
+        if (!isLoginWithTicket) {
+            jQuery('#login').css('display', 'flex');
+            jQuery('#bitteWarten').css('display', 'none');
             this.startAnimations();
         }
 
@@ -92,58 +93,63 @@ export class Login {
         });
 
         jQuery('#buttonLogout').on('click', () => {
-
-            if(that.main.user.is_testuser){
-                that.showLoginForm();
-                return;
-            }
-
-            this.main.interpreter.closeAllWebsockets();
-
-            jQuery('#bitteWartenText').html('Bitte warten, der letzte Bearbeitungsstand wird noch gespeichert ...');
-            jQuery('#bitteWarten').css('display', 'flex');
-
-            if (this.main.workspacesOwnerId != this.main.user.id) {
-                this.main.projectExplorer.onHomeButtonClicked();
-            }
-
-            this.main.networkManager.sendUpdates(() => {
-                
-                this.main.pruefungManagerForStudents?.stopPruefung(false);
-
-                this.main.rightDiv.classDiagram.clearAfterLogout();
-
-                let logoutRequest: LogoutRequest = {
-                    currentWorkspaceId: this.main.currentWorkspace?.pruefung_id == null ? this.main.currentWorkspace?.id : null
-                }
-
-                ajax('logout', logoutRequest, () => {
-                    // window.location.href = 'index.html';
-
-                    that.showLoginForm();
-
-                });
-            });
-
-            PushClientManager.getInstance().close();
-            DatabaseNewLongPollingListener.close();
-
+            that.logout();
         });
 
 
     }
 
-    sendLoginRequest(ticket: string){
+    logout() {
+        if (this.main.user.is_testuser) {
+            this.showLoginForm();
+            return;
+        }
+
+        this.main.interpreter.closeAllWebsockets();
+
+        jQuery('#bitteWartenText').html('Bitte warten, der letzte Bearbeitungsstand wird noch gespeichert ...');
+        jQuery('#bitteWarten').css('display', 'flex');
+
+        if (this.main.workspacesOwnerId != this.main.user.id) {
+            this.main.projectExplorer.onHomeButtonClicked();
+        }
+
+        this.main.networkManager.sendUpdates(() => {
+
+            this.main.pruefungManagerForStudents?.stopPruefung(false);
+
+            this.main.rightDiv.classDiagram.clearAfterLogout();
+
+            let logoutRequest: LogoutRequest = {
+                currentWorkspaceId: this.main.currentWorkspace?.pruefung_id == null ? this.main.currentWorkspace?.id : null
+            }
+
+            let that = this;
+            ajax('logout', logoutRequest, () => {
+                // window.location.href = 'index.html';
+
+                that.showLoginForm();
+
+            });
+        });
+
+        PushClientManager.getInstance().close();
+        DatabaseNewLongPollingListener.close();
+
+
+    }
+
+    sendLoginRequest(ticket: string) {
         let that = this;
 
         let servlet = "login";
 
-        let loginRequest: LoginRequest|TicketLoginRequest = {
+        let loginRequest: LoginRequest | TicketLoginRequest = {
             username: <string>jQuery('#login-username').val(),
             password: <string>jQuery('#login-password').val()
         }
 
-        if(ticket != null){
+        if (ticket != null) {
             servlet = "ticketLogin";
             loginRequest = {
                 ticket: ticket
@@ -187,28 +193,28 @@ export class Login {
                         classDiagram: null
                     }
                 }
-                
+
                 that.main.user = user;
 
                 SqlIdeUrlHolder.sqlIdeURL = response.sqlIdeForOnlineIdeClient + "/servlet/";
 
                 this.main.waitForGUICallback = () => {
-                    
+
                     that.main.mainMenu.initGUI(user, "");
 
                     that.main.bottomDiv.gradingManager?.initGUI();
-                    
+
                     jQuery('#bitteWarten').hide();
                     let $loginSpinner = jQuery('#login-spinner>img');
                     $loginSpinner.hide();
                     jQuery('#menupanel-username').html(escapeHtml(user.rufname) + " " + escapeHtml(user.familienname));
-                    
+
                     new UserMenu(that.main).init();
-                    
+
                     if (user.is_teacher) {
                         that.main.initTeacherExplorer(response.classdata);
                     }
-                    
+
 
                     that.main.workspacesOwnerId = user.id;
                     that.main.restoreWorkspaces(response.workspaces, true);
@@ -226,27 +232,27 @@ export class Login {
 
                     that.main.viewModeController.initViewMode();
                     that.main.bottomDiv.hideHomeworkTab();
-                    
+
                     if (!this.main.user.settings.helperHistory.folderButtonDone && that.main.projectExplorer.workspaceListPanel.elements.length > 5) {
-                        
+
                         Helper.showHelper("folderButton", this.main, jQuery('.img_add-folder-dark'));
-        
+
                     }
-        
+
                     that.main.networkManager.initializeSSE();
 
                     this.main.pruefungManagerForStudents?.close();
 
-                    if(!user.is_teacher && !user.is_admin && !user.is_schooladmin){
+                    if (!user.is_teacher && !user.is_admin && !user.is_schooladmin) {
                         this.main.pruefungManagerForStudents = new PruefungManagerForStudents(this.main);
-                        if(response.activePruefung != null){
+                        if (response.activePruefung != null) {
 
                             let workspaceData = this.main.workspaceList.filter(w => w.pruefung_id == response.activePruefung.id)[0].getWorkspaceData(true);
 
                             this.main.pruefungManagerForStudents.startPruefung(response.activePruefung);
                         }
                     }
-    
+
 
                 }
 
@@ -276,7 +282,7 @@ export class Login {
     }
 
 
-    private showLoginForm(){
+    private showLoginForm() {
         jQuery('#login').show();
         jQuery('#main').css('visibility', 'hidden');
         jQuery('#bitteWarten').css('display', 'none');
@@ -307,7 +313,7 @@ export class Login {
 
         // let $gifAnimation = $('<img src="assets/startpage/code_1.gif" class="jo_gif_animation">');
         // $loginAnimationDiv.append($gifAnimation);
-        
+
         // let left = Math.trunc(Math.random()*(screen.width - 400)) + "px";
         // let top = Math.trunc(Math.random()*(screen.height - 400)) + "px";
 

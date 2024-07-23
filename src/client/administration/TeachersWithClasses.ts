@@ -302,6 +302,7 @@ export class TeachersWithClassesMI extends AdminMenuItem {
                 is_admin: false,
                 is_schooladmin: false,
                 is_teacher: true,
+                locked: false,
                 password: Math.round(Math.random() * 10000000) + "x"
             },
         };

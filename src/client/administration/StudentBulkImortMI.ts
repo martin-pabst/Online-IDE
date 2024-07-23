@@ -392,6 +392,7 @@ export class StudentBulkImportMI extends AdminMenuItem {
                 is_admin: false,
                 is_schooladmin: false,
                 is_teacher: false,
+                locked: false,
                 klasse_id: -1,
                 schule_id: -1
             });

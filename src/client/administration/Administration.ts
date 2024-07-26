@@ -12,6 +12,7 @@ import "/include/css/lib/w2ui-2.0.css"
 import "/include/css/icons.css";
 import "/include/css/administration.css";
 import { w2utils } from "../lib/w2ui-2.0.es6.js";
+import { AutoLogout } from "../main/AutoLogout.js";
 
 
 export class Administration {
@@ -42,6 +43,7 @@ export class Administration {
             that.userData = response.user;
             that.classes = response.classdata;
             this.initMenu();
+            new AutoLogout();
             jQuery('#schoolName').text(response.schoolName);
         }, (message) => {
             alert(message);

@@ -13,6 +13,9 @@
     <link rel='stylesheet' type='text/css' media='screen' href='assets/fonts/fonts.css'>
     <link rel='stylesheet' type='text/css' media='screen' href='assets/css/diagram.css'>
 
+    <!-- VIDIS -->
+    <script src="https://repo.vidis.schule/repository/vidiscdn/latest/vidisLogin.umd.js"></script>
+
     <script src="lib/pako/pako.js"></script>
     <script src="lib/jszip/jszip.min.js"></script>
     <script src="lib/p5.js/p5.js"></script>
@@ -134,6 +137,10 @@
             <div>
                 (*) Ohne Repository und Lehrkraft-Funktionen
             </div>
+            <!-- <div>
+                <vidis-login loginurl="https://online-ide.de/vidisRedirect"></vidis-login>
+            </div> -->
+            <div><a href="https://aai-test.vidis.schule/auth/realms/vidis/protocol/openid-connect/auth?client_id=online-ide-o&response_type=code&scope=openid&redirect_uri=https://online-ide.de/vidisRedirect">VIDIS-Test</a></div>
             <div id="login-datenschutz">
                 <a href="https://www.learnj.de/doku.php?id=ide:datenschutzerklaerung"
                     target="_blank">Datenschutzerklärung</a> -

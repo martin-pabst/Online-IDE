@@ -1012,13 +1012,14 @@ export abstract class ShapeHelper extends ActorHelper {
                 }
             }
 
-            if (this["turtle"]) {
-                if (this.collidesWith(shapeHelper)) {
-                    return true;
-                } else {
-                    continue;
-                }
-            }
+            // This makes no sense => removed 06.08.2024
+            // if (this["turtle"]) {
+            //     if (this.collidesWith(shapeHelper)) {
+            //         return true;
+            //     } else {
+            //         continue;
+            //     }
+            // }
 
             let bb = this.displayObject.getBounds();
             let bb1 = shapeHelper.displayObject.getBounds();

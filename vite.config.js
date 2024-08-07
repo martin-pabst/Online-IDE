@@ -50,7 +50,7 @@ export default defineConfig({
         statistics: resolve(__dirname, 'statistics.html'),
         shortcuts: resolve(__dirname, 'shortcuts.html'),
         'diagram-worker': './src/client/main/gui/diagrams/classdiagram/Router.ts',
-        'sqljs-worker': './src/client/tools/database/sqljsWorker.ts'
+        'sqljs-worker': './src/tools/database/sqljsWorker.ts'
       },
       output: {
         entryFileNames: assetInfo => {

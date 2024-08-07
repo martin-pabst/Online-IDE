@@ -1,4 +1,4 @@
-import { DecimalFormat } from "../tools/DecimalFormat.js";
+import { DecimalFormat } from "../../tools/DecimalFormat.js";
 
 let df = new DecimalFormat();
 

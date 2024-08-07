@@ -5,7 +5,7 @@ import { doublePrimitiveType, stringPrimitiveType } from "../../../compiler/type
 import { Method, Parameterlist } from "../../../compiler/types/Types.js";
 import { Interpreter } from "../../../interpreter/Interpreter.js";
 import { RuntimeObject } from "../../../interpreter/RuntimeObject.js";
-import { lightenDarkenIntColor } from "../../../tools/HtmlTools.js";
+import { lightenDarkenIntColor } from "../../../../tools/HtmlTools.js";
 import { MouseEvent as JOMouseEvent } from "../World.js";
 import { GuiTextComponentHelper } from './GuiTextComponent.js';
 

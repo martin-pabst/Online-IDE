@@ -1,6 +1,6 @@
 import jQuery from 'jquery';
 import { Main } from "../main/Main.js";
-import { downloadFile, makeDiv, openContextMenu } from "../tools/HtmlTools.js";
+import { downloadFile, makeDiv, openContextMenu } from "../../tools/HtmlTools.js";
 import { ImageFile, SpriteData } from "./ImageFile.js";
 import { EditableSpritesheet } from "./EditableSpritesheet.js";
 import { SpritesheetData } from "./SpritesheetData.js";

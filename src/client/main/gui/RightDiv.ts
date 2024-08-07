@@ -1,6 +1,6 @@
 import { InterpreterState } from "../../interpreter/Interpreter.js";
 import { WorldHelper } from "../../runtimelibrary/graphics/World.js";
-import { makeTabs } from "../../tools/HtmlTools.js";
+import { makeTabs } from "../../../tools/HtmlTools.js";
 import { Main } from "../Main.js";
 import { ClassDiagram } from "./diagrams/classdiagram/ClassDiagram.js";
 import { ObjectDiagram } from "./diagrams/objectdiagram/ObjectDiagram.js";

@@ -2,7 +2,7 @@ import { Klass, Interface, Visibility } from "./Class.js";
 import { Method, Attribute, Type, PrimitiveType, Variable } from "./Types.js";
 import { objectType } from "./PrimitiveTypes.js";
 import { ArrayType } from "./Array.js";
-import { formatAsJavadocComment } from "../../tools/StringTools.js";
+import { formatAsJavadocComment } from "../../../tools/StringTools.js";
 
 export function getDeclarationAsString(element: Klass | Interface | Method | Attribute | Variable,
     indent: string = "", short: boolean = false): string {

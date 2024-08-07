@@ -1,6 +1,6 @@
 import jQuery from 'jquery';
 import { InterpreterState } from "../../interpreter/Interpreter.js";
-import { SoundTools } from "../../tools/SoundTools.js";
+import { SoundTools } from "../../../tools/SoundTools.js";
 import { MainBase } from "../MainBase.js";
 
 export type ButtonToggler = (state: boolean) => void;

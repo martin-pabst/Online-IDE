@@ -1,4 +1,4 @@
-import { QueryResult } from "../../tools/database/DatabaseTool.js";
+import { QueryResult } from "../../../tools/database/DatabaseTool.js";
 import { Module } from "../../compiler/parser/Module.js";
 import { Klass } from "../../compiler/types/Class.js";
 import { booleanPrimitiveType, charPrimitiveType, doublePrimitiveType, floatPrimitiveType, intPrimitiveType, StringPrimitiveType, stringPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";

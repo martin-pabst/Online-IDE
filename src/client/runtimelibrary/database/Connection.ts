@@ -1,13 +1,13 @@
 import { DatabaseData, SendingStatementsMessageFromServer } from "../../communication/Data.js";
 import { Main } from "../../main/Main.js";
-import { DatabaseTool, QueryResult } from "../../tools/database/DatabaseTool.js";
+import { DatabaseTool, QueryResult } from "../../../tools/database/DatabaseTool.js";
 import { Module } from "../../compiler/parser/Module.js";
 import { Klass } from "../../compiler/types/Class.js";
 import { Method, Parameterlist } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { stringPrimitiveType, voidPrimitiveType } from "../../compiler/types/PrimitiveTypes.js";
 import { PreparedStatementHelper } from "./DatabasePreparedStatement.js";
-import { DatabaseNewLongPollingListener } from "../../tools/database/DatabaseNewLongPollingListener.js";
+import { DatabaseNewLongPollingListener } from "../../../tools/database/DatabaseNewLongPollingListener.js";
 
 export class ConnectionClass extends Klass {
 

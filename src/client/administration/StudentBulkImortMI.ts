@@ -5,7 +5,7 @@ import { Administration } from "./Administration.js";
 import { TeachersWithClassesMI } from "./TeachersWithClasses.js";
 import { PasswordPopup } from "./PasswordPopup.js";
 import { UserMenu } from "../main/gui/UserMenu.js";
-import { setSelectItems, getSelectedObject } from "../tools/HtmlTools.js";
+import { setSelectItems, getSelectedObject } from "../../tools/HtmlTools.js";
 import { w2grid } from "../lib/w2ui-2.0.es6.js";
 
 declare var w2prompt: any;

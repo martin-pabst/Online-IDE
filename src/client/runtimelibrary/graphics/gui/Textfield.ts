@@ -7,7 +7,7 @@ import { FilledShapeHelper } from "../FilledShape.js";
 import { InternalKeyboardListener, InternalMouseListener, MouseEvent as JOMouseEvent } from "../World.js";
 import { Interpreter } from "../../../interpreter/Interpreter.js";
 import * as PIXI from 'pixi.js';
-import { copyTextToClipboard } from "../../../tools/HtmlTools.js";
+import { copyTextToClipboard } from "../../../../tools/HtmlTools.js";
 import { GuiTextComponentHelper } from "./GuiTextComponent.js";
 
 export class TextFieldClass extends Klass {

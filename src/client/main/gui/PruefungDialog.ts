@@ -1,13 +1,13 @@
 import { CRUDPruefungRequest, CRUDPruefungResponse, ClassData, GetPruefungStudentStatesRequest, GetPruefungStudentStatesResponse, Pruefung, PruefungCaptions, PruefungState, UserData } from "../../communication/Data.js";
 import { ButtonClass } from "../../runtimelibrary/graphics/gui/Button.js";
-import { setSelectItems } from "../../tools/HtmlTools.js";
+import { setSelectItems } from "../../../tools/HtmlTools.js";
 import { Workspace } from "../../workspace/Workspace.js";
 import { Main } from "../Main.js";
 import { MainBase } from "../MainBase.js";
 import { CheckboxState, Dialog } from "./Dialog.js";
 import jQuery from "jquery";
-import { GUIButton } from "../../tools/components/GUIButton.js";
-import { getSelectedObject } from "../../tools/HtmlTools.js";
+import { GUIButton } from "../../../tools/components/GUIButton.js";
+import { getSelectedObject } from "../../../tools/HtmlTools.js";
 import { ajaxAsync } from "../../communication/AjaxHelper.js";
 
 export class PruefungDialog {

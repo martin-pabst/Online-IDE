@@ -5,7 +5,7 @@ import { ajax, csrfToken } from "../../communication/AjaxHelper.js";
 import { WorkspaceImporter } from "./WorkspaceImporter.js";
 import jQuery from 'jquery';
 import { Workspace } from "../../workspace/Workspace.js";
-import { downloadFile } from "../../tools/HtmlTools.js";
+import { downloadFile } from "../../../tools/HtmlTools.js";
 
 declare var BUILD_DATE: string;
 declare var APP_VERSION: string;

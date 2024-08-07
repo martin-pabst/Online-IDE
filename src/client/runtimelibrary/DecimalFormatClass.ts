@@ -3,7 +3,7 @@ import { Klass, Visibility } from "../compiler/types/Class.js";
 import { doublePrimitiveType, stringPrimitiveType } from "../compiler/types/PrimitiveTypes.js";
 import { Attribute, Method, Parameterlist, Value } from "../compiler/types/Types.js";
 import { RuntimeObject } from "../interpreter/RuntimeObject.js";
-import { DecimalFormat } from "../tools/DecimalFormat.js";
+import { DecimalFormat } from "../../tools/DecimalFormat.js";
 
 export class DecimalFormatClass extends Klass {
 

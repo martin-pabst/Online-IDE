@@ -31,12 +31,12 @@ import { RepositorySettingsManager } from "../repository/update/RepositorySettin
 import { RepositoryCheckoutManager } from "../repository/update/RepositoryCheckoutManager.js";
 import { WindowStateManager } from "./gui/WindowStateManager.js";
 import { TextPositionWithModule } from "../compiler/types/Types.js";
-import { checkIfMousePresent } from "../tools/HtmlTools.js";
+import { checkIfMousePresent } from "../../tools/HtmlTools.js";
 import { InconsistencyFixer } from "../workspace/InconsistencyFixer.js";
 import { SpriteManager } from "../spritemanager/SpriteManager.js";
 import * as PIXI from 'pixi.js';
 import { PruefungManagerForStudents } from './pruefung/PruefungManagerForStudents.js';
-import { DatabaseNewLongPollingListener } from '../tools/database/DatabaseNewLongPollingListener.js';
+import { DatabaseNewLongPollingListener } from '../../tools/database/DatabaseNewLongPollingListener.js';
 import { PushClientManager } from '../communication/pushclient/PushClientManager.js';
 
 export class Main implements MainBase {

@@ -3,7 +3,7 @@ import { Module } from "../compiler/parser/Module.js";
 import { AccordionElement } from "../main/gui/Accordion.js";
 import { Main } from "../main/Main.js";
 import { SqlIdeUrlHolder } from "../main/SqlIdeUrlHolder.js";
-import { CacheManager } from "../tools/database/CacheManager.js";
+import { CacheManager } from "../../tools/database/CacheManager.js";
 import { Workspace } from "../workspace/Workspace.js";
 import { ajax, csrfToken, PerformanceCollector } from "./AjaxHelper.js";
 import { ClassData, CreateOrDeleteFileOrWorkspaceRequest, CRUDResponse, DatabaseData, DistributeWorkspaceRequest, DistributeWorkspaceResponse, DuplicateWorkspaceRequest, DuplicateWorkspaceResponse, FileData, GetDatabaseRequest, getDatabaseResponse, GetTemplateRequest, JAddStatementRequest, JAddStatementResponse, JRollbackStatementRequest, JRollbackStatementResponse, ObtainSqlTokenRequest, ObtainSqlTokenResponse, SendUpdatesRequest, SendUpdatesResponse, SetRepositorySecretRequest, SetRepositorySecretResponse, UpdateUserSettingsRequest, UpdateUserSettingsResponse, WorkspaceData } from "./Data.js";

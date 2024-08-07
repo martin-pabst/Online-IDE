@@ -4,20 +4,20 @@ import { TextPosition } from "../../compiler/lexer/Token.js";
 import { File, Module } from "../../compiler/parser/Module.js";
 import { ProgramPrinter } from "../../compiler/parser/ProgramPrinter.js";
 import { InterpreterState } from "../../interpreter/Interpreter.js";
-import { downloadFile, makeEditable, openContextMenu } from "../../tools/HtmlTools.js";
+import { downloadFile, makeEditable, openContextMenu } from "../../../tools/HtmlTools.js";
 import { Workspace } from "../../workspace/Workspace.js";
 import { Main } from "../Main.js";
 import { AccordionPanel, Accordion, AccordionElement, AccordionContextMenuItem } from "./Accordion.js";
 import { Helper } from "./Helper.js";
 import { WorkspaceData, Workspaces, ClassData, UserData, GetWorkspacesRequest, GetWorkspacesResponse, Pruefung, FileData } from "../../communication/Data.js";
-import { dateToString } from "../../tools/StringTools.js";
+import { dateToString } from "../../../tools/StringTools.js";
 import { DistributeToStudentsDialog } from "./DistributeToStudentsDialog.js";
 import { WorkspaceSettingsDialog } from "./WorkspaceSettingsDialog.js";
 import { SpritesheetData } from "../../spritemanager/SpritesheetData.js";
 import { FileTypeManager } from './FileTypeManager.js';
 import { ajax, ajaxAsync } from '../../communication/AjaxHelper.js';
 import { TeacherExplorer } from './TeacherExplorer.js';
-import { DatabaseNewLongPollingListener } from '../../tools/database/DatabaseNewLongPollingListener.js';
+import { DatabaseNewLongPollingListener } from '../../../tools/database/DatabaseNewLongPollingListener.js';
 
 
 export class ProjectExplorer {

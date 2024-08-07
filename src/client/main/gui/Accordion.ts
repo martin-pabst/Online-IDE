@@ -1,7 +1,7 @@
 import jQuery from 'jquery';
-import { openContextMenu, makeEditable, ContextMenuItem, jo_mouseDetected, animateToTransparent } from "../../tools/HtmlTools.js";
+import { openContextMenu, makeEditable, ContextMenuItem, jo_mouseDetected, animateToTransparent } from "../../../tools/HtmlTools.js";
 import { Helper } from "./Helper.js";
-import { escapeHtml } from "../../tools/StringTools.js";
+import { escapeHtml } from "../../../tools/StringTools.js";
 import { isJSDocThisTag, isThisTypeNode } from "typescript";
 import { WorkspaceImporter } from "./WorkspaceImporter.js";
 import { Main } from "../Main.js";

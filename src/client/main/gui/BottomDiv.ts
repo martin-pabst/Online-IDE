@@ -1,5 +1,5 @@
 import jQuery from 'jquery';
-import { makeTabs } from "../../tools/HtmlTools.js";
+import { makeTabs } from "../../../tools/HtmlTools.js";
 import { Main } from "../Main.js";
 import { ProgramPrinter } from "../../compiler/parser/ProgramPrinter.js";
 import { Workspace } from "../../workspace/Workspace.js";

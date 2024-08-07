@@ -1,7 +1,7 @@
 import jQuery from 'jquery';
 import { Main } from "../../main/Main.js";
 import { Workspace } from "../../workspace/Workspace.js";
-import { makeDiv, SelectItem, setSelectItems, getSelectedObject } from "../../tools/HtmlTools.js";
+import { makeDiv, SelectItem, setSelectItems, getSelectedObject } from "../../../tools/HtmlTools.js";
 import { RepositoryUser, GetRepositoryRequest, GetRepositoryResponse, GetRepositoryUserListRequest, GetRepositoryUserListResponse, UserData, GetRepositoryListRequest, GetRepositoryListResponse, RepositoryInfo, UpdateRepositoryRequest, UpdateRepositoryResponse, AttachWorkspaceToRepositoryRequest, WorkspaceData, AttachWorkspaceToRepositoryResponse } from "../../communication/Data.js";
 import { ajax } from "../../communication/AjaxHelper.js";
 import { TeachersWithClassesMI } from "../../administration/TeachersWithClasses.js";

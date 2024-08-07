@@ -2,7 +2,7 @@ import jQuery from 'jquery';
 import { TeachersWithClassesMI } from "../../administration/TeachersWithClasses.js";
 import { RepositoryFileEntry } from "../../communication/Data.js";
 import { File } from "../../compiler/parser/Module.js";
-import { makeDiv } from "../../tools/HtmlTools.js";
+import { makeDiv } from "../../../tools/HtmlTools.js";
 import { SynchronizationManager } from "./RepositorySynchronizationManager.js";
 import { SynchroFile, SynchroWorkspace } from "./SynchroWorkspace.js";
 

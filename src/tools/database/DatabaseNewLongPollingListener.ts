@@ -1,7 +1,7 @@
-import { csrfToken } from "../../communication/AjaxHelper.js";
-import { NetworkManager } from "../../communication/NetworkManager.js";
-import { ServerSentMessage } from "../../communication/pushclient/BasePushClientManager.js";
-import { SqlIdeUrlHolder } from "../../main/SqlIdeUrlHolder.js";
+import { csrfToken } from "../../client/communication/AjaxHelper.js";
+import { NetworkManager } from "../../client/communication/NetworkManager.js";
+import { ServerSentMessage } from "../../client/communication/pushclient/BasePushClientManager.js";
+import { SqlIdeUrlHolder } from "../../client/main/SqlIdeUrlHolder.js";
 
 type JavaRegisterDatabaseSSEListenerRequest = { token: string, registerOrUnregister: "register" | "unregister" }
 type JavaRegisterDatabaseSSEListenerResponse = { success: boolean, message: string }

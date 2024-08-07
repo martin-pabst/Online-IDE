@@ -5,7 +5,7 @@ import { Module } from "../compiler/parser/Module.js";
 import { PrintManager } from "../main/gui/PrintManager.js";
 import { RuntimeObject } from "../interpreter/RuntimeObject.js";
 import { ArrayType } from "../compiler/types/Array.js";
-import { abstandPunktZuGerade, abstandPunktZuStrecke, polygonEnthältPunkt, Punkt, schnittpunkteKreisStrecke, streckeSchneidetStrecke, vektorVonPolarkoordinaten } from "../tools/MatheTools.js";
+import { abstandPunktZuGerade, abstandPunktZuStrecke, polygonEnthältPunkt, Punkt, schnittpunkteKreisStrecke, streckeSchneidetStrecke, vektorVonPolarkoordinaten } from "../../tools/MatheTools.js";
 import { param } from "jquery";
 
 export class MathToolsClass extends Klass {

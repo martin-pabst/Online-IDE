@@ -15,7 +15,7 @@ import { InputManager } from "./InputManager.js";
 import { WorldHelper } from "../runtimelibrary/graphics/World.js";
 import { Helper } from "../main/gui/Helper.js";
 import { TimerClass } from "../runtimelibrary/Timer.js";
-import { KeyboardTool } from "../tools/KeyboardTool.js";
+import { KeyboardTool } from "../../tools/KeyboardTool.js";
 import { ProgramControlButtons } from "../main/gui/ProgramControlButtons.js";
 import { MainBase } from "../main/MainBase.js";
 import { ListHelper } from "../runtimelibrary/collections/ArrayList.js";
@@ -24,7 +24,7 @@ import { WebSocketRequestKeepAlive } from "../communication/Data.js";
 import { MainEmbedded } from "../embedded/MainEmbedded.js";
 import { ProcessingHelper } from "../runtimelibrary/graphics/Processing.js";
 import { GNGEreignisbehandlungHelper } from "../runtimelibrary/gng/GNGEreignisbehandlung.js";
-import { GamepadTool } from "../tools/GamepadTool.js";
+import { GamepadTool } from "../../tools/GamepadTool.js";
 import { ConnectionHelper } from "../runtimelibrary/database/Connection.js";
 import { FileTypeManager } from '../main/gui/FileTypeManager.js';
 

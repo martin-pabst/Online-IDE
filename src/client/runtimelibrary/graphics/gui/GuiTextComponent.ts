@@ -5,7 +5,7 @@ import { booleanPrimitiveType, doublePrimitiveType, intPrimitiveType, stringPrim
 import { Method, Parameterlist } from "../../../compiler/types/Types.js";
 import { Interpreter } from "../../../interpreter/Interpreter.js";
 import { RuntimeObject } from "../../../interpreter/RuntimeObject.js";
-import { lightenDarkenIntColor } from "../../../tools/HtmlTools.js";
+import { lightenDarkenIntColor } from "../../../../tools/HtmlTools.js";
 import { FilledShapeHelper } from "../FilledShape.js";
 import { InternalMouseListener, MouseEvent as JOMouseEvent } from "../World.js";
 import { GuiComponentHelper } from './GuiComponent.js';

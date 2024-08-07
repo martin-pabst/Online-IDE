@@ -6,7 +6,7 @@ import { ClassBox, SerializedClassBox } from "./ClassBox.js";
 import { DiagramArrow } from "./DiagramArrow.js";
 import { RoutingInput, RoutingOutput } from "./Router.js";
 import { MainBase } from "../../../MainBase.js";
-import { openContextMenu } from "../../../../tools/HtmlTools.js";
+import { openContextMenu } from "../../../../../tools/HtmlTools.js";
 import { TeachersWithClassesMI } from "../../../../administration/TeachersWithClasses.js";
 import jQuery from 'jquery';
 

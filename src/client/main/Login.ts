@@ -4,12 +4,12 @@ import { LoginRequest, LoginResponse, LogoutRequest, TicketLoginRequest, UserDat
 import { Main } from "./Main.js";
 import { Helper } from "./gui/Helper.js";
 import { InterpreterState } from "../interpreter/Interpreter.js";
-import { SoundTools } from "../tools/SoundTools.js";
+import { SoundTools } from "../../tools/SoundTools.js";
 import { UserMenu } from "./gui/UserMenu.js";
-import { escapeHtml } from "../tools/StringTools.js";
+import { escapeHtml } from "../../tools/StringTools.js";
 import { PruefungManagerForStudents } from './pruefung/PruefungManagerForStudents.js';
 import { PushClientManager } from '../communication/pushclient/PushClientManager.js';
-import { DatabaseNewLongPollingListener } from '../tools/database/DatabaseNewLongPollingListener.js';
+import { DatabaseNewLongPollingListener } from '../../tools/database/DatabaseNewLongPollingListener.js';
 import { SqlIdeUrlHolder } from './SqlIdeUrlHolder.js';
 import { AutoLogout } from './AutoLogout.js';
 

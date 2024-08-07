@@ -3,7 +3,7 @@ import { ajax } from "../../communication/AjaxHelper.js";
 import { GetRepositoryRequest, GetRepositoryResponse, Repository, GainRepositoryLockRequest, GainRepositoryLockResponse, LeaseRepositoryLockRequest, LeaseRepositoryLockResponse } from "../../communication/Data.js";
 import { EmbeddedSlider } from "../../embedded/EmbeddedSlider.js";
 import { Main } from "../../main/Main.js";
-import { makeDiv } from "../../tools/HtmlTools.js";
+import { makeDiv } from "../../../tools/HtmlTools.js";
 import { Workspace } from "../../workspace/Workspace.js";
 import { HistoryElement } from "./HistoryElement.js";
 import { RepositoryTool } from "./RepositoryTool.js";

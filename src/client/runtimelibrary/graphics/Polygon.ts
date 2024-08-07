@@ -7,9 +7,9 @@ import { FilledShapeHelper } from "./FilledShape.js";
 import { ArrayType } from "../../compiler/types/Array.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { ShapeHelper } from "./Shape.js";
-import { convexhull } from "../../tools/ConvexHull.js";
+import { convexhull } from "../../../tools/ConvexHull.js";
 import { GroupHelper } from "./Group.js";
-import { polygonEnthältPunkt, streckenzugEnthältPunkt } from "../../tools/MatheTools.js";
+import { polygonEnthältPunkt, streckenzugEnthältPunkt } from "../../../tools/MatheTools.js";
 import * as PIXI from 'pixi.js';
 
 

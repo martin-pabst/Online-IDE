@@ -5,7 +5,7 @@ import { Module } from "../compiler/parser/Module.js";
 import { PrintManager } from "../main/gui/PrintManager.js";
 import { RuntimeObject } from "../interpreter/RuntimeObject.js";
 import { EnumRuntimeObject } from "../compiler/types/Enum.js";
-import { SoundTools } from "../tools/SoundTools.js";
+import { SoundTools } from "../../tools/SoundTools.js";
 
 export class SystemToolsClass extends Klass {
 

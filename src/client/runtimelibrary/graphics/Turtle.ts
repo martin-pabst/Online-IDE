@@ -5,7 +5,7 @@ import { Method, Parameterlist, Value } from "../../compiler/types/Types.js";
 import { RuntimeObject } from "../../interpreter/RuntimeObject.js";
 import { FilledShapeHelper } from "./FilledShape.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
-import { Punkt, abstandPunktZuStrecke, polygonBerührtPolygon, polygonEnthältPunkt, steckenzugSchneidetStreckenzug, streckenzugEnthältPunkt } from "../../tools/MatheTools.js";
+import { Punkt, abstandPunktZuStrecke, polygonBerührtPolygon, polygonEnthältPunkt, steckenzugSchneidetStreckenzug, streckenzugEnthältPunkt } from "../../../tools/MatheTools.js";
 import { ShapeHelper } from "./Shape.js";
 import * as PIXI from 'pixi.js';
 import { ColorHelper } from "./ColorHelper.js";

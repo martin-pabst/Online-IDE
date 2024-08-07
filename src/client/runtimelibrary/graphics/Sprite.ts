@@ -12,7 +12,7 @@ import { ArrayType } from "../../compiler/types/Array.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { SpriteLibraryPage } from "../../help/SpriteLibraryPage.js";
 import { RenderTexture } from "@pixi/core";
-import { convexhull } from "../../tools/ConvexHull.js";
+import { convexhull } from "../../../tools/ConvexHull.js";
 import { GroupHelper } from "./Group.js";
 import * as PIXI from 'pixi.js';
 import { RepeatType } from "./RepeatType.js";

@@ -10,7 +10,7 @@ import { RightDiv } from "../main/gui/RightDiv.js";
 import { MainBase } from "../main/MainBase.js";
 import { Workspace } from "../workspace/Workspace.js";
 import { JOScript } from "./EmbeddedStarter.js";
-import { downloadFile, makeDiv, makeTabs, openContextMenu } from "../tools/HtmlTools.js";
+import { downloadFile, makeDiv, makeTabs, openContextMenu } from "../../tools/HtmlTools.js";
 import { EmbeddedSlider } from "./EmbeddedSlider.js";
 import { EmbeddedFileExplorer } from "./EmbeddedFileExplorer.js";
 import { TextPosition } from "../compiler/lexer/Token.js";

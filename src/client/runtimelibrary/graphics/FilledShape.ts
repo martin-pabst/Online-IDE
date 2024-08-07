@@ -9,7 +9,7 @@ import { WorldHelper } from "./World.js";
 import { Interpreter } from "../../interpreter/Interpreter.js";
 import { ColorClassIntrinsicData } from "./Color.js";
 import { FilledShapeDefaults } from "./FilledShapeDefaults.js";
-import { polygonEnthältPunkt, polygonzugEnthältPunkt } from "../../tools/MatheTools.js";
+import { polygonEnthältPunkt, polygonzugEnthältPunkt } from "../../../tools/MatheTools.js";
 
 export class FilledShapeClass extends Klass {
 

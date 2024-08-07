@@ -1,5 +1,5 @@
 import jQuery from 'jquery';
-import { convertPxToNumber } from "../../../tools/HtmlTools.js";
+import { convertPxToNumber } from "../../../../tools/HtmlTools.js";
 
 export class ZoomControl {
     

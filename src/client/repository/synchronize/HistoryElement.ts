@@ -1,6 +1,6 @@
 import { RepositoryHistoryEntry, Repository, RepositoryHistoryFileEntry, RepositoryFileEntry } from "../../communication/Data.js";
 import { SynchronizationManager } from "./RepositorySynchronizationManager.js";
-import { makeDiv, openContextMenu } from "../../tools/HtmlTools.js";
+import { makeDiv, openContextMenu } from "../../../tools/HtmlTools.js";
 import { SynchroWorkspace } from "./SynchroWorkspace.js";
 import jQuery from "jquery";
 

@@ -1,6 +1,6 @@
 import { Module, ModuleStore } from "../compiler/parser/Module.js";
 import { MainEmbedded } from "./MainEmbedded.js";
-import { openContextMenu, makeEditable } from "../tools/HtmlTools.js";
+import { openContextMenu, makeEditable } from "../../tools/HtmlTools.js";
 import { JOScript } from "./EmbeddedStarter.js";
 import jQuery from "jquery";
 import { FileTypeManager } from "../main/gui/FileTypeManager.js";

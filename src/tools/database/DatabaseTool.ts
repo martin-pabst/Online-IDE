@@ -1,4 +1,4 @@
-import { MainBase } from "../../main/MainBase.js";
+import { MainBase } from "../../client/main/MainBase.js";
 import { WorkerSim } from "./sqljsWorkerSim.js";
 
 export type DatabaseDumpType = "binaryUncompressed" | "binaryCompressed" | "other";

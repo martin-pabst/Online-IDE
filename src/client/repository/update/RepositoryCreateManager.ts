@@ -1,7 +1,7 @@
 import jQuery from 'jquery';
 import { Main } from "../../main/Main.js";
 import { Workspace } from "../../workspace/Workspace.js";
-import { makeDiv, SelectItem, getSelectedObject, setSelectItems } from "../../tools/HtmlTools.js";
+import { makeDiv, SelectItem, getSelectedObject, setSelectItems } from "../../../tools/HtmlTools.js";
 import { RepositoryUser, GetRepositoryRequest, GetRepositoryResponse, GetRepositoryUserListRequest, GetRepositoryUserListResponse, UserData } from "../../communication/Data.js";
 import { ajax } from "../../communication/AjaxHelper.js";
 

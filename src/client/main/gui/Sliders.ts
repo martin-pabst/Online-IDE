@@ -1,5 +1,5 @@
 import jQuery from 'jquery';
-import { jo_mouseDetected } from "../../tools/HtmlTools.js";
+import { jo_mouseDetected } from "../../../tools/HtmlTools.js";
 import { Main } from "../Main.js";
 import { ZoomControl } from "./diagrams/ZoomControl.js";
 

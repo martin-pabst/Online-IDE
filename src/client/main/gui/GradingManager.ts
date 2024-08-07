@@ -1,9 +1,9 @@
 import jQuery from 'jquery';
 import { MainBase } from "../MainBase.js";
-import { makeDiv } from "../../tools/HtmlTools.js";
+import { makeDiv } from "../../../tools/HtmlTools.js";
 import { Workspace } from "../../workspace/Workspace.js";
 import { File, Module } from "../../compiler/parser/Module.js";
-import { stringToDate, dateToStringWithoutTime } from "../../tools/StringTools.js";
+import { stringToDate, dateToStringWithoutTime } from "../../../tools/StringTools.js";
 import { Main } from "../Main.js";
 import { PushClientManager } from '../../communication/pushclient/PushClientManager.js';
 

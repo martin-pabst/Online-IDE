@@ -1,4 +1,4 @@
-import { Punkt, abstandPunktZuGerade, abstand } from "../../tools/MatheTools.js";
+import { Punkt, abstandPunktZuGerade, abstand } from "../../../tools/MatheTools.js";
 import { WorldHelper } from "./World.js";
 import { SpriteHelper } from "./Sprite.js";
 import * as PIXI from 'pixi.js';

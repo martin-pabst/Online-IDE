@@ -469,7 +469,7 @@ export class NetworkManager {
         }
 
         for (let remoteFile of filesFromServer) {
-            let module = fileIdToLocalModuleMap[remoteFile.id];
+            let module = fileIdToLocalModuleMap.get(remoteFile.id);
             if (module != null && module.file.text != remoteFile.text) {
                 module.file.text = remoteFile.text;
                 module.model.setValue(remoteFile.text); // Hier passierts!

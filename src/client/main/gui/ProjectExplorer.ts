@@ -75,8 +75,10 @@ export class ProjectExplorer {
                     panelElement: accordionElement,
                     identical_to_repository_version: false,
                 };
+
                 that.fileListPanel.setElementClass(accordionElement, FileTypeManager.filenameToFileType(accordionElement.name).iconclass)
                 let m = new Module(f, that.main);
+                accordionElement.externalElement = m;
                 let modulStore = that.main.currentWorkspace.moduleStore;
                 modulStore.putModule(m);
                 that.setModuleActive(m);
@@ -315,6 +317,7 @@ export class ProjectExplorer {
                 w.isFolder = false;
                 w.path = accordionElement.path.join("/");
                 that.main.workspaceList.push(w);
+                accordionElement.externalElement = w;
 
                 that.main.networkManager.sendCreateWorkspace(w, that.main.workspacesOwnerId, (error: string) => {
                     if (error == null) {

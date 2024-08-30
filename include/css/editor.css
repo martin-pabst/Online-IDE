@@ -658,15 +658,15 @@ body .monaco-editor-hover .monaco-tokenized-source {
 .jo_file {
     display: flex;
     position: relative;
-    font-size: 9pt;
+    font-size: 11px;
     padding-left: 10px;
     user-select: none;
     -ms-user-select: none;
     cursor: pointer;
     width: 100%;
     box-sizing: border-box;
-    height: 22px;
-    line-height: 22px;
+    height: 19px;
+    line-height: 19px;
     overflow: hidden;
     white-space: nowrap;
     user-select: none;

@@ -25,9 +25,13 @@ import spritesheetjson from '/include/graphics/spritesheet.json.txt';
 import spritesheetpng from '/include/graphics/spritesheet.png';
 import { PixiSpritesheetData } from "../spritemanager/PixiSpritesheetData.js";
 
+declare var BUILD_DATE: string;
+declare var APP_VERSION: string;
 
 
 jQuery(function () {
+
+    document.getElementById('versionDiv').textContent = "Version " + APP_VERSION + " vom " + BUILD_DATE;
 
     let main = new Main();
 

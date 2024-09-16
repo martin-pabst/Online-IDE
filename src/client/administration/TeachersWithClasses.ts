@@ -69,6 +69,7 @@ export class TeachersWithClassesMI extends AdminMenuItem {
                 { field: 'username', text: 'Benutzername', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
                 { field: 'rufname', text: 'Rufname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
                 { field: 'familienname', text: 'Familienname', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
+                { field: 'locked', text: 'Locked', size: '15%', sortable: true, resizable: false, editable: { type: 'checkbox', style: 'text-align: center' } },
                 {
                     field: 'numberOfClasses', text: 'Klassen', size: '30%', sortable: true, resizable: true,
                     render: function (record: TeacherData) {
@@ -400,6 +401,7 @@ export class TeachersWithClassesMI extends AdminMenuItem {
             teacher["username"] = teacher.userData.username;
             teacher["familienname"] = teacher.userData.familienname;
             teacher["rufname"] = teacher.userData.rufname;
+            teacher["locked"] = teacher.userData.locked;
             teacher["text"] = teacher.userData.rufname + " " + teacher.userData.familienname
         }
 

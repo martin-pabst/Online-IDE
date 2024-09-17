@@ -16,7 +16,7 @@ import { AutoLogout } from './AutoLogout.js';
 export class Login {
 
     constructor(private main: Main) {
-        new AutoLogout(this);
+        // new AutoLogout(this);
     }
 
     initGUI(isLoginWithTicket: boolean) {

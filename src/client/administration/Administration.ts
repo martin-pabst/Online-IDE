@@ -43,7 +43,7 @@ export class Administration {
             that.userData = response.user;
             that.classes = response.classdata;
             this.initMenu();
-            new AutoLogout();
+            // new AutoLogout();
             jQuery('#schoolName').text(response.schoolName);
         }, (message) => {
             alert(message);

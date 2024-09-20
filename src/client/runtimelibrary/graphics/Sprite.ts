@@ -141,6 +141,8 @@ export class SpriteClass extends Klass {
 
                 sh.setTexture(spriteLibraryEntry.enumValue.identifier);
 
+        
+
             }, false, false, 'Ändert das Bild des Sprites. SpriteLibraryEntry ist ein Auzählungstyp (enum). Gib einfach SpriteLibraryEntry gefolgt von einem Punkt ein, dann erhältst Du ein Auswahl von Bildern. Einen Überblick über die Bilder bekommst Du auch über den Menüpunkt Hilfe->Sprite-Bilderübersicht.', false));
 
         this.addMethod(new Method("setImage", new Parameterlist([
@@ -669,6 +671,20 @@ export class SpriteHelper extends ShapeHelper {
             if(!this.isTileSprite){
                 this.hitPolygonInitial = HitPolygonStore.getPolygonForTexture(name, index, this, new PIXI.Sprite(sheet.textures[nameWithIndex]));
                 this.hitPolygonDirty = true;
+            }
+        
+            let oldCenterX = this.centerXInitial;
+            let oldCenterY = this.centerYInitial;
+
+            this.centerXInitial = sprite.width / 2;
+            this.centerYInitial = sprite.height / 2;
+
+            if(this.displayObject.parent){
+                this.displayObject.localTransform.append(new PIXI.Matrix().translate(oldCenterX - this.centerXInitial, oldCenterY - this.centerYInitial));
+                //@ts-ignore
+                this.displayObject.transform.onChange();
+                this.displayObject.updateTransform();
+                this.setHitPolygonDirty(true);
             }
 
         } else {

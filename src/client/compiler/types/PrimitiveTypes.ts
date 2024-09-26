@@ -777,7 +777,7 @@ export class StringPrimitiveType extends Klass {
         }
 
         if (secondOperandType != null) {
-            return opTypeMap[secondOperandType.identifier];
+            return opTypeMap[secondOperandType.identifier.toLocaleLowerCase()];
         }
 
         return opTypeMap["none"];

@@ -724,10 +724,10 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
         }
     }
 
-    openChooseClassPopup(callback: (newClass: ClassData) => void, classList: any) {
+    openChooseClassPopup(callback: (newClass: ClassData) => void, classList: {name: string}[]) {
 
         w2ui["chooseClassForm"].myCallback = callback;
-        w2ui["chooseClassForm"].fields[0].options.items = classList;
+        w2ui["chooseClassForm"].fields[0].options.items = classList.sort((a, b) => a.name.localeCompare(b.name));
 
         //@ts-ignore
         w2popup.open({

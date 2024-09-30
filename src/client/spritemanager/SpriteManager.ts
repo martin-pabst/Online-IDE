@@ -265,7 +265,7 @@ export class SpriteManager {
             $indexInput.addClass('jo_sm_index');
     
             $seriesInput.on("input", () => { imageData.series = <string>$seriesInput.val(); that.checkSeriesAndIndexesAndSetNextSpriteIndex(); })
-            $indexInput.on("input", () => { imageData.index = <number>$indexInput.val(); that.checkSeriesAndIndexesAndSetNextSpriteIndex(); })
+            $indexInput.on("input", () => { imageData.index = <number><any>$indexInput.val(); that.checkSeriesAndIndexesAndSetNextSpriteIndex(); })
         }
         
         let $infoDiv = makeDiv(null, "jo_sm_infoDiv", "Breite: " + imageData.width + " px, Höhe: " + imageData.height + " px", null, $inputInfoDiv);

@@ -66,7 +66,7 @@ export class Editor implements monaco.languages.RenameProvider {
                 // { token: 'comment.js', foreground: '008800', fontStyle: 'bold italic underline' },
 
                 // semantic tokens:
-                {token: 'property', foreground: 'ffffff' ,fontStyle: 'bold'},
+                { token: 'property', foreground: 'ffffff', fontStyle: 'bold' },
             ],
             colors: {
                 "editor.background": "#1e1e1e",
@@ -183,11 +183,11 @@ export class Editor implements monaco.languages.RenameProvider {
 
             if ([InterpreterState.done, InterpreterState.error, InterpreterState.not_initialized].indexOf(state) < 0) {
 
-                for(let kdp of keysWhichDontStopProgram){
-                    if(e.code.indexOf(kdp) >= 0) return;
+                for (let kdp of keysWhichDontStopProgram) {
+                    if (e.code.indexOf(kdp) >= 0) return;
                 }
 
-                if(e.code == "KeyC" && e.ctrlKey ) return;
+                if (e.code == "KeyC" && e.ctrlKey) return;
 
                 this.main.getActionManager().trigger("interpreter.stop");
             }
@@ -214,25 +214,24 @@ export class Editor implements monaco.languages.RenameProvider {
 
             _main.windowStateManager.registerBackButtonListener((event: PopStateEvent) => {
                 let historyEntry: HistoryEntry = <HistoryEntry>event.state;
-                if(event.state == null) return;
+                if (event.state == null) return;
                 let workspace: Workspace = _main.workspaceList.find((ws) => ws.id == historyEntry.workspace_id);
-                if(workspace == null) return;
+                if (workspace == null) return;
                 let module: Module = workspace.moduleStore.findModuleById(historyEntry.module_id);
-                if(module == null) return; 
+                if (module == null) return;
 
                 // console.log("Processing pop state event, returning to module " + historyEntry.module_id);
 
-                if(workspace != _main.currentWorkspace) 
-                {
+                if (workspace != _main.currentWorkspace) {
                     that.dontPushNextCursorMove++;
                     _main.projectExplorer.setWorkspaceActive(workspace);
                     that.dontPushNextCursorMove--;
                 }
-                if(module != _main.getCurrentlyEditedModule()){
+                if (module != _main.getCurrentlyEditedModule()) {
                     that.dontPushNextCursorMove++;
                     _main.projectExplorer.setModuleActive(module);
                     that.dontPushNextCursorMove--;
-                } 
+                }
                 that.dontPushNextCursorMove++;
                 that.editor.setPosition(historyEntry.position);
                 that.editor.revealPosition(historyEntry.position);
@@ -252,17 +251,17 @@ export class Editor implements monaco.languages.RenameProvider {
         this.editor.onDidChangeCursorPosition((event) => {
 
             let currentModelId = this.main.getCurrentlyEditedModule()?.file?.id;
-            if(currentModelId == null) return;
+            if (currentModelId == null) return;
             let pushNeeded = this.lastPosition == null
                 || event.source == "api"
                 || currentModelId != this.lastPosition.module_id
                 || Math.abs(this.lastPosition.position.lineNumber - event.position.lineNumber) > 20;
-            
-            if(pushNeeded && this.dontPushNextCursorMove == 0){
-                this.pushHistoryState(false, this.getPositionForHistory());
-            } else if(currentModelId == history.state?.module_id){
 
-                    this.pushHistoryState(true, this.getPositionForHistory());
+            if (pushNeeded && this.dontPushNextCursorMove == 0) {
+                this.pushHistoryState(false, this.getPositionForHistory());
+            } else if (currentModelId == history.state?.module_id) {
+
+                this.pushHistoryState(true, this.getPositionForHistory());
             }
 
             that.onDidChangeCursorPosition(event.position);
@@ -275,7 +274,7 @@ export class Editor implements monaco.languages.RenameProvider {
         this.editor.onDidChangeModel((event) => {
 
             let element: HTMLDivElement = <any>$element.find('.monaco-editor')[0];
-            if(element != null){
+            if (element != null) {
                 element.removeEventListener("wheel", mouseWheelListener);
                 element.addEventListener("wheel", mouseWheelListener, { passive: false });
             }
@@ -299,16 +298,16 @@ export class Editor implements monaco.languages.RenameProvider {
 
                 let pushNeeded = this.lastPosition == null
                     || module.file.id != this.lastPosition.module_id;
-                
-                if(pushNeeded && this.dontPushNextCursorMove == 0){
+
+                if (pushNeeded && this.dontPushNextCursorMove == 0) {
                     this.pushHistoryState(false, this.getPositionForHistory());
-                }    
+                }
 
             }
 
         });
 
-//        monaco.languages.registerDocumentRangeSemanticTokensProvider('myJava', new MySemanticTokenProvider(this.main));
+        //        monaco.languages.registerDocumentRangeSemanticTokensProvider('myJava', new MySemanticTokenProvider(this.main));
 
         monaco.languages.registerRenameProvider('myJava', this);
         monaco.languages.registerColorProvider('myJava', new MyColorProvider(this.main));
@@ -358,8 +357,8 @@ export class Editor implements monaco.languages.RenameProvider {
 
     getPositionForHistory(): HistoryEntry {
         let module = this.main.getCurrentlyEditedModule();
-        if(module == null) return;
-        
+        if (module == null) return;
+
         return {
             position: this.editor.getPosition(),
             workspace_id: this.main.getCurrentWorkspace().id,
@@ -368,16 +367,16 @@ export class Editor implements monaco.languages.RenameProvider {
     }
 
     lastPushTime: number = 0;
-    pushHistoryState(replace: boolean, historyEntry: HistoryEntry){
+    pushHistoryState(replace: boolean, historyEntry: HistoryEntry) {
 
-        if(this.main.isEmbedded() || historyEntry == null) return;
+        if (this.main.isEmbedded() || historyEntry == null) return;
 
-        if(replace){
+        if (replace) {
             history.replaceState(historyEntry, ""); //`Java-Online, ${module.file.name} (Zeile ${this.lastPosition.position.lineNumber}, Spalte ${this.lastPosition.position.column})`);
             // console.log("Replace History state with workspace-id: " + historyEntry.workspace_id + ", module-id: " + historyEntry.module_id);
         } else {
             let time = new Date().getTime();
-            if(time - this.lastPushTime > 200){
+            if (time - this.lastPushTime > 200) {
                 history.pushState(historyEntry, ""); //`Java-Online, ${module.file.name} (Zeile ${historyEntry.position.lineNumber}, Spalte ${historyEntry.position.column})`);
             } else {
                 history.replaceState(historyEntry, "");
@@ -416,7 +415,7 @@ export class Editor implements monaco.languages.RenameProvider {
             const prevLine = model.getLineContent(position.lineNumber - 1);
             if (prevLine.trim().indexOf("/*") === 0 && !prevLine.trimRight().endsWith("*/")) {
                 const nextLine = position.lineNumber < model.getLineCount() ? model.getLineContent(position.lineNumber + 1) : "";
-                if(!nextLine.trim().startsWith("*")){
+                if (!nextLine.trim().startsWith("*")) {
                     let spacesAtBeginningOfLine: string = prevLine.substr(0, prevLine.length - prevLine.trimLeft().length);
                     if (prevLine.trim().indexOf("/**") === 0) {
                         insertTextAndSetCursor(position, "\n" + spacesAtBeginningOfLine + " */", position.lineNumber, position.column + 3 + spacesAtBeginningOfLine.length);
@@ -425,7 +424,7 @@ export class Editor implements monaco.languages.RenameProvider {
                     }
                 }
             }
-        } else if(text == '"' && this.currentlyEditedModuleIsJava()) {
+        } else if (text == '"' && this.currentlyEditedModuleIsJava()) {
             //a: x| -> x"|"
             //d: "|x -> ""|x
             //c: "|" -> """\n|\n"""
@@ -438,39 +437,32 @@ export class Editor implements monaco.languages.RenameProvider {
             const line = model.getLineContent(position.lineNumber);
             let doInsert: boolean = true;
             let charBefore1: string = "x";
-            if(position.column > 3){
+            if (position.column > 3) {
                 charBefore1 = line.charAt(position.column - 3);
             }
-            let charBefore2: string = "x";
-            if(position.column > 4){
-                charBefore2 = line.charAt(position.column - 4);
-            }
             let charAfter: string = "x";
-            if(position.column - 1 < line.length){
+            if (position.column - 1 < line.length) {
                 charAfter = line.charAt(position.column - 1);
             }
 
-            if(!isSelected){
-                if(charBefore1 != '"' && charAfter != '"'){
+            if (!isSelected) {
+                if (charBefore1 != '"' && charAfter != '"') {
                     insertTextAndSetCursor(position, '"', position.lineNumber, position.column);
-                } 
-                // else if(charAfter == '"'){
-                    // let pos1 = {...position, column: position.column + 1};
-                    // insertTextAndSetCursor(pos1, '\n\n"""', position.lineNumber + 1, 1);
-                // }
-                else if(charBefore1 == '"' && charAfter == '"'){
+                }
+                else if (charAfter == '"') {
+                    let pos1 = { ...position, column: position.column + 1 };
+                    // insertTextAndSetCursor(pos1, '', position.lineNumber, position.column + 1);
+                    const range = new monaco.Range(
+                        pos1.lineNumber,
+                        pos1.column - 1,
+                        pos1.lineNumber,
+                        pos1.column + 2
+                    );
                     this.editor.executeEdits("new-bullets", [
-                        { range: {
-                            startColumn: position.column,
-                            startLineNumber: position.lineNumber,
-                            endColumn: position.column + 1,
-                            endLineNumber: position.lineNumber
-                        }, 
-                        text: "" }
+                        { range, text: '' }
                     ]);
-                } else if(charBefore1 == '"' && charBefore2 == '"' && charAfter != '"'){
-                    insertTextAndSetCursor(position, '\n\n""";', position.lineNumber + 1, 1);
-                } 
+
+                }
             }
 
 
@@ -605,7 +597,7 @@ export class Editor implements monaco.languages.RenameProvider {
 
             // An optional array of keybindings for the action.
             keybindings: [
-                monaco.KeyMod.CtrlCmd | monaco.KeyCode.US_COMMA ],
+                monaco.KeyMod.CtrlCmd | monaco.KeyCode.US_COMMA],
 
             // A precondition for this action.
             precondition: null,
@@ -679,7 +671,7 @@ export class Editor implements monaco.languages.RenameProvider {
     }
 
     onMarginMouseDown(lineNumber: number) {
-        if(!this.currentlyEditedModuleIsJava()) return;
+        if (!this.currentlyEditedModuleIsJava()) return;
         let module = this.getCurrentlyEditedModule();
         if (module == null) {
             return;
@@ -768,30 +760,30 @@ export class Editor implements monaco.languages.RenameProvider {
     resolveRenameLocation(model: monaco.editor.ITextModel, position: monaco.Position,
         token: monaco.CancellationToken): monaco.languages.ProviderResult<monaco.languages.RenameLocation & monaco.languages.Rejection> {
 
-            let currentlyEditedModule = this.getCurrentlyEditedModule();
-            if (currentlyEditedModule == null) {
-                return {
-                    range: null,
-                    text: "Dieses Symbol kann nicht umbenannt werden.",
-                    rejectReason: "Dieses Symbol kann nicht umbenannt werden."
-                };
-            }
-            
-            let element = currentlyEditedModule.getElementAtPosition(position.lineNumber, position.column);
-            if (element == null || element.declaration == null) {
-                return {
-                    range: null,
-                    text: "Dieses Symbol kann nicht umbenannt werden.",
-                    rejectReason: "Dieses Symbol kann nicht umbenannt werden."
-                };
-            }
-    
-            let pos = element.declaration.position;
-
+        let currentlyEditedModule = this.getCurrentlyEditedModule();
+        if (currentlyEditedModule == null) {
             return {
-                range: {startColumn: position.column, startLineNumber: position.lineNumber, endLineNumber: position.lineNumber, endColumn: position.column + pos.length},
-                text: element.identifier
+                range: null,
+                text: "Dieses Symbol kann nicht umbenannt werden.",
+                rejectReason: "Dieses Symbol kann nicht umbenannt werden."
             };
+        }
+
+        let element = currentlyEditedModule.getElementAtPosition(position.lineNumber, position.column);
+        if (element == null || element.declaration == null) {
+            return {
+                range: null,
+                text: "Dieses Symbol kann nicht umbenannt werden.",
+                rejectReason: "Dieses Symbol kann nicht umbenannt werden."
+            };
+        }
+
+        let pos = element.declaration.position;
+
+        return {
+            range: { startColumn: position.column, startLineNumber: position.lineNumber, endLineNumber: position.lineNumber, endColumn: position.column + pos.length },
+            text: element.identifier
+        };
 
     }
 
@@ -837,7 +829,7 @@ export class Editor implements monaco.languages.RenameProvider {
 
         });
 
-//        console.log(resourceEdits);
+        //        console.log(resourceEdits);
 
         return {
             edits: resourceEdits

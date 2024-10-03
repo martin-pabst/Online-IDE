@@ -15,6 +15,8 @@ import { AutoLogout } from './AutoLogout.js';
 
 export class Login {
 
+    loggedInWithVidis: boolean = false;
+
     constructor(private main: Main) {
         // new AutoLogout(this);
     }
@@ -126,7 +128,13 @@ export class Login {
             ajax('logout', logoutRequest, () => {
                 // window.location.href = 'index.html';
 
-                that.showLoginForm();
+                if(this.loggedInWithVidis){
+                    window.location.assign("https://aai-test.vidis.schule/auth/realms/vidis/protocol/openid-connect/logout?ID_TOKEN_HINT=" + this.main.user.vidis_sub + "&post_logout_redirect_uri=https%3A%2F%2Fwww.online-ide.de");
+
+                } else {
+                    that.showLoginForm();
+                }
+
 
             });
         });
@@ -262,14 +270,14 @@ export class Login {
 
     }
 
-    loginWithSingleUseToken() {
+    loginWithVidis() {
+        this.loggedInWithVidis = true;
         jQuery('#login').hide();
         jQuery('#main').css('visibility', 'visible');
 
         jQuery('#bitteWartenText').html('Bitte warten ...');
         jQuery('#bitteWarten').css('display', 'flex');
         this.sendLoginRequest();
-
     }
 
 

@@ -36,7 +36,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
     onMenuButtonPressed($mainHeading: JQuery<HTMLElement>, $tableLeft: JQuery<HTMLElement>,
         $tableRight: JQuery<HTMLElement>, $mainFooter: JQuery<HTMLElement>) {
 
-        $tableRight.css('flex', '1');
+        $tableRight.css('flex', '2');
 
         let that = this;
 
@@ -61,7 +61,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                     { field: 'id', text: 'ID', size: '20px', sortable: true, hidden: true },
                     { field: 'name', text: 'Bezeichnung', size: '30%', sortable: true, resizable: true, editable: { type: 'text' } },
                     {
-                        field: 'numberOfStudents', text: 'Schüler/innen', size: '30%', sortable: false, resizable: true,
+                        field: 'numberOfStudents', text: 'Anz.', size: '20%', sortable: false, resizable: true,
                         render: function (record: ClassData) {
                             return '<div>' + record.students.length + '</div>';
                         }
@@ -149,7 +149,10 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                         { field: 'username', text: 'Benutzername', size: '25%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
                         { field: 'rufname', text: 'Rufname', size: '25%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
                         { field: 'familienname', text: 'Familienname', size: '25%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
-                        { field: 'locked', text: 'Locked', size: '15%', sortable: true, resizable: false, editable: { type: 'checkbox', style: 'text-align: center' } },
+                        { field: 'locked', text: 'Locked', size: '10%', sortable: true, resizable: false, editable: { type: 'checkbox', style: 'text-align: center' } },
+                        { field: 'vidis_sub', text: 'vidis-id', hidden: true, size: '25%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n'},
+                        { field: 'vidis_akronym', text: 'vidis-Kürzel', hidden: true, size: '25%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
+                        { field: 'vidis_klasse', text: 'vidis-Klasse', hidden: true, size: '10%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
                         {
                             field: 'id', text: 'PW', size: '40px', sortable: false, render: (e) => {
                                 return '<div class="pw_button" title="Passwort ändern" data-recid="' + e.recid + '" style="visibility: hidden">PW!</div>';
@@ -716,7 +719,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                         w2popup.close();
                     },
                     "OK": function () {
-                        w2popup.close();
+                        w2popup.close(); 
                         this.myCallback(this.record.newClass);
                     }
                 }
@@ -724,7 +727,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
         }
     }
 
-    openChooseClassPopup(callback: (newClass: ClassData) => void, classList: {name: string}[]) {
+    openChooseClassPopup(callback: (newClass: ClassData) => void, classList: any) {
 
         w2ui["chooseClassForm"].myCallback = callback;
         w2ui["chooseClassForm"].fields[0].options.items = classList.sort((a, b) => a.name.localeCompare(b.name));

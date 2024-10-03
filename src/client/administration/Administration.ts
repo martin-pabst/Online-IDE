@@ -13,6 +13,7 @@ import "/include/css/icons.css";
 import "/include/css/administration.css";
 import { w2utils } from "../lib/w2ui-2.0.es6.js";
 import { AutoLogout } from "../main/AutoLogout.js";
+import { SchoolSettings as SchoolSettingsMI } from "./SchoolSettingsMI.js";
 
 
 export class Administration {
@@ -21,6 +22,7 @@ export class Administration {
 
     menuItems: AdminMenuItem[] = [
         new SchoolsWithAdminsMI(this),
+        new SchoolSettingsMI(this),
         new TeachersWithClassesMI(this),
         new ClassesWithStudentsMI(this),
         new StudentBulkImportMI(this),
@@ -43,7 +45,7 @@ export class Administration {
             that.userData = response.user;
             that.classes = response.classdata;
             this.initMenu();
-            // new AutoLogout();
+            new AutoLogout();
             jQuery('#schoolName').text(response.schoolName);
         }, (message) => {
             alert(message);

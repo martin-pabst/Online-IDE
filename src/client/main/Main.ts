@@ -31,7 +31,7 @@ import { RepositorySettingsManager } from "../repository/update/RepositorySettin
 import { RepositoryCheckoutManager } from "../repository/update/RepositoryCheckoutManager.js";
 import { WindowStateManager } from "./gui/WindowStateManager.js";
 import { TextPositionWithModule } from "../compiler/types/Types.js";
-import { checkIfMousePresent } from "../../tools/HtmlTools.js";
+import { checkIfMousePresent, getCookieValue } from "../../tools/HtmlTools.js";
 import { InconsistencyFixer } from "../workspace/InconsistencyFixer.js";
 import { SpriteManager } from "../spritemanager/SpriteManager.js";
 import * as PIXI from 'pixi.js';
@@ -167,16 +167,14 @@ export class Main implements MainBase {
         checkIfMousePresent();
         
         this.login = new Login(this);
-        let hashIndex: number = window.location.href.indexOf('#');
-        if(hashIndex > 0){
-    
-            var ticket = window.location.href.substr(hashIndex + 1);
-            window.history.replaceState({}, "Online-IDE", window.location.href.substr(0, hashIndex));
-            this.login.initGUI(true);
-            this.login.loginWithTicket(ticket);
-    
+
+        let singleUseToken: string | undefined = getCookieValue("singleUseToken");
+
+        if(singleUseToken){
+            this.login.initGUI();
+            this.login.loginWithSingleUseToken();    
         } else {
-            this.login.initGUI(false);
+            this.login.initGUI();
         }
     
 

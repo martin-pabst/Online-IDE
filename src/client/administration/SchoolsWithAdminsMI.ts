@@ -58,12 +58,13 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
             columns: [
                 { field: 'id', text: 'ID', size: '20px', sortable: true, hidden: true },
                 { field: 'name', text: 'Bezeichnung', size: '30%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
-                { field: 'kuerzel', text: 'Kürzel', size: '10%', sortable: true, resizable: true, editable: { type: 'text', maxlength: "10" } },
+                { field: 'kuerzel', text: 'Kürzel', size: '10%', sortable: true, resizable: true, editable: { type: 'text', maxlength: "10" }, hidden: true },
+                { field: 'vidis_schulkennung', text: 'Vidis-Kennung', size: '30%', sortable: true, resizable: true, editable: { type: 'text', maxlength: "256" } },
                 { field: 'numberOfClasses', text: 'Klassen', size: '30%', sortable: true, resizable: true },
-                { field: 'numberOfUsers', text: 'User', size: '30%', sortable: true, resizable: true },
-                { field: 'userMinutesLastMonth', text: 'Hours(m)', size: '20%', sortable: true, resizable: true },
-                { field: 'userMinutesLastYear', text: 'Hours(y)', size: '20%', sortable: true, resizable: true },
-                { field: 'userMinutesOverall', text: 'Hours(all)', size: '20%', sortable: true, resizable: true },
+                { field: 'numberOfUsers', text: 'Users', size: '30%', sortable: true, resizable: true },
+                { field: 'userMinutesLastMonth', text: '(m)', size: '20%', sortable: true, resizable: true },
+                { field: 'userMinutesLastYear', text: '(y)', size: '20%', sortable: true, resizable: true },
+                { field: 'userMinutesOverall', text: '(all)', size: '20%', sortable: true, resizable: true },
             ],
             searches: [
                 { field: 'name', label: 'Bezeichnung', type: 'text' }
@@ -126,6 +127,9 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
                 { field: 'familienname', text: 'Familienname', size: '25%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
                 { field: 'is_schooladmin', text: 'Admin', size: '10%', sortable: true, resizable: false, editable: { type: 'checkbox', style: 'text-align: center' } },
                 { field: 'locked', text: 'Locked', size: '15%', sortable: true, resizable: false, editable: { type: 'checkbox', style: 'text-align: center' } },
+                { field: 'vidis_sub', text: 'vidis-id', hidden: true, size: '25%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n'},
+                { field: 'vidis_akronym', text: 'vidis-Kürzel', hidden: true, size: '25%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
+                { field: 'vidis_klasse', text: 'vidis-Klasse', hidden: true, size: '10%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
                 {
                     field: 'id', text: 'PW', size: '40px', sortable: false, render: (e) => {
                         return '<div class="pw_button" title="Passwort ändern" data-recid="' + e.recid + '" style="visibility: hidden">PW!</div>';
@@ -276,6 +280,8 @@ export class SchoolsWithAdminsMI extends AdminMenuItem {
     }
 
     onUpdateSchool(event: any) {
+
+        if(event.phase == 'after') return;
 
         let data: SchoolData = <SchoolData>this.schoolGrid.records[event.detail.index];
         let field = this.schoolGrid.columns[event.detail.column]["field"];

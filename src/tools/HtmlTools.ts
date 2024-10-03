@@ -334,3 +334,12 @@ export function lightenDarkenHexColor(col: string, amount: number) {
     var newColor = b | (g << 8) | (r << 16);
     return newColor;
   }
+
+  export function getCookieValue(name: string): string | undefined 
+    {
+      const regex = new RegExp(`(^| )${name}=([^;]+)`)
+      const match = document.cookie.match(regex)
+      if (match) {
+        return match[2]
+      }
+   }

@@ -49,6 +49,7 @@ export default defineConfig({
         spriteLibrary: resolve(__dirname, 'spriteLibrary.html'),
         statistics: resolve(__dirname, 'statistics.html'),
         shortcuts: resolve(__dirname, 'shortcuts.html'),
+        registeruser: resolve(__dirname, 'registerUser.html'),
         'diagram-worker': './src/client/main/gui/diagrams/classdiagram/Router.ts',
         'sqljs-worker': './src/tools/database/sqljsWorker.ts'
       },

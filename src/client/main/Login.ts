@@ -19,14 +19,12 @@ export class Login {
         // new AutoLogout(this);
     }
 
-    initGUI(isLoginWithTicket: boolean) {
+    initGUI() {
 
         let that = this;
-        if (!isLoginWithTicket) {
-            jQuery('#login').css('display', 'flex');
-            jQuery('#bitteWarten').css('display', 'none');
-            this.startAnimations();
-        }
+        jQuery('#login').css('display', 'flex');
+        jQuery('#bitteWarten').css('display', 'none');
+        this.startAnimations();
 
         let $loginSpinner = jQuery('#login-spinner>img');
 
@@ -88,7 +86,7 @@ export class Login {
                 loginHappened = false;
             }, 1000);
 
-            this.sendLoginRequest(null);
+            this.sendLoginRequest();
 
         });
 
@@ -139,7 +137,7 @@ export class Login {
 
     }
 
-    sendLoginRequest(ticket: string) {
+    sendLoginRequest() {
         let that = this;
 
         let servlet = "login";
@@ -147,13 +145,6 @@ export class Login {
         let loginRequest: LoginRequest | TicketLoginRequest = {
             username: <string>jQuery('#login-username').val(),
             password: <string>jQuery('#login-password').val()
-        }
-
-        if (ticket != null) {
-            servlet = "ticketLogin";
-            loginRequest = {
-                ticket: ticket
-            }
         }
 
         ajax(servlet, loginRequest, (response: LoginResponse) => {
@@ -271,13 +262,13 @@ export class Login {
 
     }
 
-    loginWithTicket(ticket: string) {
+    loginWithSingleUseToken() {
         jQuery('#login').hide();
         jQuery('#main').css('visibility', 'visible');
 
         jQuery('#bitteWartenText').html('Bitte warten ...');
         jQuery('#bitteWarten').css('display', 'flex');
-        this.sendLoginRequest(ticket);
+        this.sendLoginRequest();
 
     }
 

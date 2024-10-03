@@ -882,3 +882,14 @@ export type UpdatePruefungSchuelerDataRequest = {
     attended_exam: boolean;
     attributesToUpdate: string;
 }
+
+export type VidisNewUserRequest = {
+    username: string | null,
+    password: string | null,
+
+    // alternative:
+    rufname: string | null,
+    familienname: string | null,
+    klasse: string | null;
+}
+

@@ -30,6 +30,9 @@ declare var APP_VERSION: string;
 
 
 jQuery(function () {
+    setTimeout(() => {
+        jQuery(jQuery('vidis-login')[0].shadowRoot).find('.entry-button-label').text('Amelden mit VIDIS (Test)')
+    }, 500);
 
     document.getElementById('versionDiv').textContent = "Version " + APP_VERSION + " vom " + BUILD_DATE;
 

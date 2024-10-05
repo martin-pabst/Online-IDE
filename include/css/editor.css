@@ -95,7 +95,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
 }
 
 .isidigitaldiv {
-    z-index: 2000;
+    z-index: 1;
 }
 
 .isidigitalimg:hover {

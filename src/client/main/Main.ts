@@ -38,6 +38,7 @@ import * as PIXI from 'pixi.js';
 import { PruefungManagerForStudents } from './pruefung/PruefungManagerForStudents.js';
 import { DatabaseNewLongPollingListener } from '../../tools/database/DatabaseNewLongPollingListener.js';
 import { PushClientManager } from '../communication/pushclient/PushClientManager.js';
+import { setCookie } from '../../tools/HttpTools.js';
 
 export class Main implements MainBase {
 

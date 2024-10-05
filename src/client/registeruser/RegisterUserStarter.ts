@@ -1,10 +1,17 @@
 import { getCookieValue } from '../../tools/HtmlTools';
+import { setCookie } from '../../tools/HttpTools';
 import { ajaxAsync } from '../communication/AjaxHelper';
 import { BaseResponse, VidisNewUserRequest } from '../communication/Data';
 import '/include/css/registerUser.css';
 
+type NewUserResponse = {success: boolean, message: string, sqlIDEToken: string | null}
 
 window.onload = () => {
+
+    let sqlIdeToken = location.search.split('sqlIdeToken=')[1];
+    if(sqlIdeToken){
+        setCookie("singleUseToken", sqlIdeToken, 600);
+    }
 
     document.getElementById('newAccountButton').addEventListener('pointerdown', () => {
         let rufname: string = (<HTMLInputElement>document.getElementById('rufname')).value + "";
@@ -62,12 +69,16 @@ function doVidisRequest(request: VidisNewUserRequest){
         method: "POST",
         body: JSON.stringify(request)
     }).then(resp => {
-        resp.json().then((newUserResponse: BaseResponse) => {
+        resp.json().then((newUserResponse: NewUserResponse) => {
             if(newUserResponse.success){
                 
-                console.log(getCookieValue("singleUseToken"));
+                if(newUserResponse.sqlIDEToken){
+                    window.location.assign("https://sql-ide.de/index.html?singleUseToken=" + newUserResponse.sqlIDEToken);
+                } else {
+                    window.location.assign("/index.html");
+                }
 
-                window.location.assign("/index.html");
+
             } else {
                 alert("Fehler beim Anmelden:\n" + newUserResponse.message);
             }

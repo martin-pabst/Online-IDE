@@ -18,7 +18,7 @@ export class Login {
     loggedInWithVidis: boolean = false;
 
     constructor(private main: Main) {
-        // new AutoLogout(this);
+        new AutoLogout(this);
     }
 
     initGUI() {

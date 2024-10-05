@@ -10,8 +10,8 @@ export class AutoLogout {
     constructor(login?: Login) {
         let that = this;
         setInterval(() => {
-            that.logoutAfterMinutes--;
-            if (that.logoutAfterMinutes == 0) {
+            that.counterInMinutes--;
+            if (that.counterInMinutes == 0) {
                 if (login) {
                     login.logout();
                 } else {
@@ -33,14 +33,13 @@ export class AutoLogout {
     reset() {
         this.counterInMinutes = this.logoutAfterMinutes;
     }
-
-
+    
+    
     logout() {
         let logoutRequest: LogoutRequest = {
             currentWorkspaceId: null
         }
 
-        let that = this;
         ajax('logout', logoutRequest, () => {
             window.location.href = 'index.html';
         });

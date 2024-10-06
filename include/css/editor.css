@@ -353,6 +353,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
 .jo_sliderknob {
     position: absolute;
     top: -8px;
+    transform: scale(1.5);
     /* cursor: move !important; */
 }
 
@@ -516,7 +517,7 @@ body .monaco-editor-hover .monaco-tokenized-source {
 }
 
 #view-mode {
-    margin-right: 8px !important;
+    margin-right: 24px !important;
 }
 
 #debugpanel>div {

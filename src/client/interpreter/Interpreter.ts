@@ -1599,6 +1599,10 @@ export class Interpreter {
         
         let oldState = this.state;
         this.state = state;
+
+        if(state == InterpreterState.running){
+            (<HTMLDivElement>document.getElementById('jo_runtab')).focus();
+        }
         
         this.blurDebuggerIfNecessary();
 

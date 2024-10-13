@@ -494,6 +494,5 @@ export class Main implements MainBase {
         return Workspace.restoreFromData(workspaceData, this);
     }
 
-
 }
 

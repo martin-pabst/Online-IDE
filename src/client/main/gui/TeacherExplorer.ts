@@ -1,6 +1,6 @@
 import { AccordionPanel, AccordionElement } from "./Accordion.js";
 import { Main } from "../Main.js";
-import { ClassData, UserData, Pruefung, PruefungCaptions } from "../../communication/Data.js";
+import { ClassData, UserData, Pruefung, PruefungCaptions, getUserDisplayName } from "../../communication/Data.js";
 import { ajaxAsync, csrfToken } from "../../communication/AjaxHelper.js";
 import { Workspace } from "../../workspace/Workspace.js";
 import { GUIToggleButton } from "../../../tools/components/GUIToggleButton.js";
@@ -189,14 +189,16 @@ export class TeacherExplorer {
             if (b.familienname > a.familienname) return 1;
             if (a.rufname > b.rufname) return -1;
             if (b.rufname > a.rufname) return 1;
+            if(a.username > b.username) return -1;
+            if(b.username > a.username) return 1;
             return 0;
         })
 
         for (let i = 0; i < userDataList.length; i++) {
             let ud = userDataList[i];
             let ae: AccordionElement = {
-                name: ud.familienname + ", " + ud.rufname,
-                sortName: ud.familienname + " " + ud.rufname,
+                name: getUserDisplayName(ud),
+                sortName: getUserDisplayName(ud),
                 externalElement: ud,
                 isFolder: false,
                 path: [],

@@ -345,6 +345,7 @@ export class ProjectExplorer {
             (workspace: Workspace, successfulNetworkCommunicationCallback: () => void) => {
                 that.main.networkManager.sendDeleteWorkspaceOrFile("workspace", workspace.id, (error: string) => {
                     if (error == null) {
+                        that.fileListPanel.$buttonNew.hide();
                         that.main.removeWorkspace(workspace);
                         that.fileListPanel.clear();
                         that.main.getMonacoEditor().setModel(null);

@@ -752,7 +752,9 @@ export class AccordionPanel {
                             that.elements.splice(that.elements.indexOf(element), 1);
 
                             if (that.selectCallback != null) {
-                                if (that.elements.length > 0) {
+
+                                let firstWorkspace = that.elements.find(el => !el.isFolder);
+                                if(firstWorkspace){
                                     that.select(that.elements[0].externalElement);
                                 } else {
                                     that.select(null);

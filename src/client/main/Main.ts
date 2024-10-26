@@ -31,7 +31,7 @@ import { RepositorySettingsManager } from "../repository/update/RepositorySettin
 import { RepositoryCheckoutManager } from "../repository/update/RepositoryCheckoutManager.js";
 import { WindowStateManager } from "./gui/WindowStateManager.js";
 import { TextPositionWithModule } from "../compiler/types/Types.js";
-import { checkIfMousePresent, getCookieValue } from "../../tools/HtmlTools.js";
+import { checkIfMousePresent, findGetParameter, getCookieValue } from "../../tools/HtmlTools.js";
 import { InconsistencyFixer } from "../workspace/InconsistencyFixer.js";
 import { SpriteManager } from "../spritemanager/SpriteManager.js";
 import * as PIXI from 'pixi.js';
@@ -169,11 +169,12 @@ export class Main implements MainBase {
         
         this.login = new Login(this);
 
-        let singleUseToken: string | undefined = getCookieValue("singleUseToken");
+        // let singleUseToken: string | undefined = getCookieValue("singleUseToken");
+        let singleUseToken: string | undefined = findGetParameter("singleUseToken");
 
         if(singleUseToken){
             this.login.initGUI();
-            this.login.loginWithVidis();    
+            this.login.loginWithVidis(singleUseToken);    
         } else {
             this.login.initGUI();
         }

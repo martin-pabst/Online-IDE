@@ -1,6 +1,6 @@
 import jQuery from 'jquery';
 import { ajax } from "../communication/AjaxHelper.js";
-import { getUserDisplayName, LoginRequest, LoginResponse, LogoutRequest, TicketLoginRequest, UserData } from "../communication/Data.js";
+import { getUserDisplayName, LoginRequest, LoginResponse, LogoutRequest, UserData } from "../communication/Data.js";
 import { Main } from "./Main.js";
 import { Helper } from "./gui/Helper.js";
 import { InterpreterState } from "../interpreter/Interpreter.js";
@@ -88,7 +88,7 @@ export class Login {
                 loginHappened = false;
             }, 1000);
 
-            this.sendLoginRequest();
+            this.sendLoginRequest(null);
 
         });
 
@@ -145,14 +145,15 @@ export class Login {
 
     }
 
-    sendLoginRequest() {
+    sendLoginRequest(singleUseToken: string | null) {
         let that = this;
 
         let servlet = "login";
 
-        let loginRequest: LoginRequest | TicketLoginRequest = {
+        let loginRequest: LoginRequest = {
             username: <string>jQuery('#login-username').val(),
-            password: <string>jQuery('#login-password').val()
+            password: <string>jQuery('#login-password').val(),
+            singleUseToken: singleUseToken
         }
 
         ajax(servlet, loginRequest, (response: LoginResponse) => {
@@ -271,14 +272,14 @@ export class Login {
 
     }
 
-    loginWithVidis() {
+    loginWithVidis(singleUseToken: string) {
         this.loggedInWithVidis = true;
         jQuery('#login').hide();
         jQuery('#main').css('visibility', 'visible');
 
         jQuery('#bitteWartenText').html('Bitte warten ...');
         jQuery('#bitteWarten').css('display', 'flex');
-        this.sendLoginRequest();
+        this.sendLoginRequest(singleUseToken);
     }
 
 

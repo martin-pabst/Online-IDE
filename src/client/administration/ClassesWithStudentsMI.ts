@@ -150,7 +150,7 @@ export class ClassesWithStudentsMI extends AdminMenuItem {
                         { field: 'rufname', text: 'Rufname', size: '25%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
                         { field: 'familienname', text: 'Familienname', size: '25%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
                         { field: 'locked', text: 'Locked', size: '10%', sortable: true, resizable: false, editable: { type: 'checkbox', style: 'text-align: center' } },
-                        { field: 'vidis_sub', text: 'vidis-id', hidden: true, size: '25%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n'},
+                        { field: 'vidis_sub', text: 'vidis-id', hidden: false, size: '25%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n'},
                         { field: 'vidis_akronym', text: 'vidis-Kürzel', hidden: true, size: '25%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
                         { field: 'vidis_klasse', text: 'vidis-Klasse', hidden: true, size: '10%', sortable: true, resizable: true, editable: { type: 'text' }, sortMode: 'i18n' },
                         {

@@ -403,7 +403,7 @@ export class StudentBulkImportMI extends AdminMenuItem {
     }
 
     static getRandomPassword(minimumLength: number = 8, minimumNumberOfCategries: number = 3): string {
-        let categoryList: string[] = ["abcdefghkmnpqrstuvwxy", "ABCDEFGHKLMNPQRSTUVW", "123456789", "#!§$%&/()=[]{}*+:;,.-<>"];
+        let categoryList: string[] = ["abcdefghkmnpqrstuvwxy", "ABCDEFGHKLMNPQRSTUVW", "123456789", "#!$%&/()=[]{}*+:;,.-"];
 
         let goodCharacters: string = categoryList.join("");
 

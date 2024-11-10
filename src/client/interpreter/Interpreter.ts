@@ -1078,7 +1078,8 @@ export class Interpreter {
                 let parameterBegin = stackTop + 1 + node.stackframeBegin;
                 let parameters1 = method.parameterlist.parameters;
                 for (let i = parameterBegin + 1; i <= stackTop; i++) {
-                    if (this.stack[i] != null && this.stack[i].type instanceof PrimitiveType) {
+                    // if (this.stack[i] != null && this.stack[i].type instanceof PrimitiveType) {
+                    if (this.stack[i] != null){
                         stack[i] = {
                             type: parameters1[i - parameterBegin - 1].type,  // cast to parameter type...
                             value: stack[i].value
@@ -1601,7 +1602,7 @@ export class Interpreter {
         this.state = state;
 
         if(state == InterpreterState.running){
-            (<HTMLDivElement>document.getElementById('jo_runtab')).focus();
+            (<HTMLDivElement>document.getElementById('jo_runtab'))?.focus();
         }
         
         this.blurDebuggerIfNecessary();

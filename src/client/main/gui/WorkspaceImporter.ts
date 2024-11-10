@@ -31,7 +31,9 @@ export class WorkspaceImporter {
         let exportedWorkspaces: ExportedWorkspace[] = [];
         
         let $errorDiv = this.dialog.description("", "red");
-        let $workspacePreviewDiv = jQuery(`<ul></ul>`);
+        let $workspacePreviewDiv = jQuery('<div class="jo_scrollable" style="height: 300px; overflow: auto; background-color: #ffffff24"></div>');
+        let $workspacePreviewList = jQuery(`<ul></ul>`);
+        $workspacePreviewDiv.append($workspacePreviewList);
         
         let registerFiles = (files: FileList) => {
             for (let i = 0; i < files.length; i++) {
@@ -52,7 +54,7 @@ export class WorkspaceImporter {
                     }
 
                     exportedWorkspaces.push(ew);
-                    $workspacePreviewDiv.append(jQuery(`<li>Workspace ${ew.name} mit ${ew.modules.length} Dateien</li>`));
+                    $workspacePreviewList.append(jQuery(`<li>Workspace ${ew.name} mit ${ew.modules.length} Dateien</li>`));
 
                 };
                 reader.readAsText(f);

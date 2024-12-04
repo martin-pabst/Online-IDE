@@ -2176,6 +2176,7 @@ export class Parser {
         let simplements: TypeNode[] = [];
 
         while (this.comesToken([TokenType.keywordExtends, TokenType.keywordImplements])) {
+                        
             if (this.comesToken(TokenType.keywordExtends) && !isInterface) {
                 if (sextends != null) {
                     this.pushError("Eine Klasse kann nicht Unterklasse von zwei anderen Klassen sein, es darf also hier nur ein Mal 'extends...' stehen.", "error", sextends.position);
@@ -2187,7 +2188,11 @@ export class Parser {
                 }
             }
 
-            if ((!isInterface && this.comesToken(TokenType.keywordImplements)) || (isInterface && this.comesToken(TokenType.keywordExtends))) {
+            if(isInterface && this.comesToken(TokenType.keywordImplements)){
+                this.pushError("Wenn ein Interface von einem anderen 'erbt', muss 'extends' verwendet werden.", "error");
+            }
+            
+            if ((!isInterface && this.comesToken(TokenType.keywordImplements)) || (isInterface && this.comesToken([TokenType.keywordImplements, TokenType.keywordExtends]))) {
                 if (simplements.length > 0) {
                     this.pushError("Es darf hier nur ein Mal 'implements' stehen, hinter 'implements' ist aber eine kommaseparierte Liste von Interfaces erlaubt.", "warning");
                 }

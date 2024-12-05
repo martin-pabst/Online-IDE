@@ -22,6 +22,7 @@ import { SpritesheetData } from "../spritemanager/SpritesheetData.js";
 import * as PIXI from 'pixi.js';
 import jQuery from "jquery";
 import { FileTypeManager } from "../main/gui/FileTypeManager.js";
+import { OnlineIDEAccessImpl } from "./IDEInterface.js";
 
 
 type JavaOnlineConfig = {
@@ -147,6 +148,10 @@ export class MainEmbedded implements MainBase {
         }
 
         this.semicolonAngel = new SemicolonAngel(this);
+
+        //@ts-ignore
+        window.ONLINE_IDE_ACCESS = new OnlineIDEAccessImpl();
+        OnlineIDEAccessImpl.registerIDE(this);
 
     }
 

@@ -21,8 +21,7 @@ export class Dialog {
         this.$dialog.append(jQuery(
             '<div style="height: 20px"></div>' +
             '<div class="dialog-main"></div>' +
-            '<div class="dialog-footer"></div>' +
-            '<div style="flex: 4"></div>'
+            '<div class="dialog-footer"></div>' 
         ));
         this.$dialogMain = this.$dialog.find('.dialog-main');
         this.$dialogFooter = this.$dialog.find('.dialog-footer');

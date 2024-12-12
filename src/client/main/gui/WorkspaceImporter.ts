@@ -31,7 +31,7 @@ export class WorkspaceImporter {
         let exportedWorkspaces: ExportedWorkspace[] = [];
         
         let $errorDiv = this.dialog.description("", "red");
-        let $workspacePreviewDiv = jQuery('<div class="jo_scrollable" style="height: 300px; overflow: auto; background-color: #ffffff24"></div>');
+        let $workspacePreviewDiv = jQuery('<div class="jo_scrollable" style="flex-basis: 20px; flex-grow: 1; overflow: auto; background-color: #ffffff60"></div>');
         let $workspacePreviewList = jQuery(`<ul></ul>`);
         $workspacePreviewDiv.append($workspacePreviewList);
         

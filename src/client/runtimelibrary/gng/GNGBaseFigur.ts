@@ -20,26 +20,28 @@ export class GNGBaseFigurClass extends Klass {
         this.setBaseClass(objectType);
 
         this.addAttribute(new Attribute("farbe", stringPrimitiveType, (value: Value) => { 
-            let farbe = value.object.gngAttributes.colorString;
+            let farbe = value.object.gngAttributes?.colorString;
             value.value = farbe == null ? "schwarz" : farbe;
         }, false, Visibility.protected, false, "Farbe des Grafikobjekts"));
 
         this.addAttribute(new Attribute("x", intPrimitiveType, (value: Value) => { 
-            value.value = Math.round(value.object.gngAttributes.moveAnchor.x); 
+            value.value = value.object.gngAttributes ? Math.round(value.object.gngAttributes.moveAnchor.x) : 0; 
         }, false, Visibility.protected, false, "x-Position des Grafikobjekts"));
         this.addAttribute(new Attribute("y", intPrimitiveType, (value: Value) => { 
-            value.value = Math.round(value.object.gngAttributes.moveAnchor.y); 
+            value.value = value.object.gngAttributes ? Math.round(value.object.gngAttributes.moveAnchor.y) : 0; 
         }, false, Visibility.protected, false, "y-Position des Grafikobjekts"));
-
+        
         this.addAttribute(new Attribute("winkel", intPrimitiveType, (value: Value) => { 
+            if(!value.object.intrinsicData["Actor"]) return;
             value.value = value.object.intrinsicData["Actor"].angle 
         }, false, Visibility.protected, false, "Blickrichtung des Grafikobjekts in Grad"));
-
+        
         this.addAttribute(new Attribute("größe", intPrimitiveType, (value: Value) => { 
-            value.value = Math.round(value.object.gngAttributes.width); 
+            value.value = value.object.gngAttributes ? Math.round(value.object.gngAttributes.width) : 0; 
         }, false, Visibility.protected, false, "Größe des Grafikobjekts (100 entspricht 'normalgroß')"));
-
+        
         this.addAttribute(new Attribute("sichtbar", booleanPrimitiveType, (value: Value) => { 
+            if(!value.object.intrinsicData["Actor"]) return;
             value.value = value.object.intrinsicData["Actor"].displayObject?.visible 
         }, false, Visibility.protected, false, "true, wenn das Grafikobjekt sichtbar ist"));
 

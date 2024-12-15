@@ -17,6 +17,17 @@ html, body {
     margin-right: auto;
 }
 
+#version20betaDiv {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 8px;
+    font-size: 120%;
+}
+
+#version20betaDiv>a {
+    color: #4973f4;
+}
+
 
 /**
     BugFix for Monaco editor. Without this code editor pane of References-Widget is 5px wide and 5px high
